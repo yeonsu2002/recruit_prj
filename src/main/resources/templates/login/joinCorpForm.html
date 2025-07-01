@@ -300,7 +300,7 @@ function chkCorpNum(){
 			var data = {
 				    "b_no": [corpNo] // 사업자번호 "xxxxxxx" 로 조회 시,
 				   }; 
-			let apiKey = "f2XGVPM83eg%2B2DjAAuAr6wEkvRlk4KwQYLDV1WkrveBZOQ6upT8O2otcjEJEiqqllEIhN%2B2KvRi2EKceHA5fJQ%3D%3D";	   
+			let apiKey = "";	   
 				$.ajax({
 				  url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + apiKey,  // serviceKey 값을 입력
 				  type: "POST",
