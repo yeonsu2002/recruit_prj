@@ -61,6 +61,10 @@ body {
 .form-group {
     margin-bottom: 25px;
 }
+.form-group-corpNo {
+		margin-bottom: 10px;
+}
+
 
 .form-label {
     display: block;
@@ -222,3 +226,48 @@ body {
 .checkbox-item .terms-detail-emoji {
 	flex: 0.1;
 } 
+
+.upload-file-container {
+	display:flex;
+	gap : 8px;
+	flex-direction: column;
+	align-items: center;
+}
+
+.upload-img-box {
+  width: 80%;
+  height: 250px; /* 또는 원하는 고정 높이 */
+  background-color: #F0F4FF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* 수직 중앙 정렬 */
+  align-items: center;      /* 수평 중앙 정렬 */
+}
+.upload-btn-box{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.upload-img-box-svg {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.form-select{
+	width: 80%;
+}
+
+.zipcode-box {
+	width: 60%;
+	display: flex;
+	gap: 8px;
+}
+
+.zipcode-box > input:first-of-type {
+	flex : 5;
+}
+
+.zipcode-box > input:first-of-type(2) {
+	flex : 5;
+}
