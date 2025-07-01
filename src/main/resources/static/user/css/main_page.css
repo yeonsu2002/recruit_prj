@@ -69,9 +69,10 @@
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: 24px;
-	flex-wrap: wrap;
+	flex-wrap: nowrap; /* wrap을 nowrap으로 변경 */
 	margin-top: 40px;
 }
+
 
 
 .header-section {
@@ -110,44 +111,105 @@
 
 /* 공지 */
   .notice-wrapper {
-      flex: none;          /* 크기 비율 무시하고 정확한 너비 사용 */
-	  margin-left: 10px;      /* 왼쪽으로 완전히 붙임 */
-	  margin-right: auto;  /* 오른쪽 여백 늘려서 왼쪽 정렬 유도 */
-  }
+  flex: none;
+  width: 370px;         /* 기존보다 크게 */
+  margin-left: 10px;
+}
+
 
   .notice-info {
-	    width: 300px;
+	    width: 370px;
 	    min-width: 250px;
 	    border: 1px solid #ccc;
 	    border-radius: 8px;
 	    background-color: rgba(240, 240, 240, 0.8);
 	    padding: 20px;
 	    box-sizing: border-box;
+	    
   }	
 
-	@media (max-width: 768px) {
-		.hero-title {
-			font-size: 28px;
-		}
-		.side-by-side-section {
-			flex-direction: column;
-			align-items: center;
-		}
-		.header-section {
-			width: 100%;
-		}
-	  }
-	  
-	  .announcement-section {
-  width: 100%;
-  padding: 20px;
-  background-color: #f9f9f9;
+/* 기존 .side-by-side-section 부분을 다음과 같이 수정하세요 */
+
+.side-by-side-section {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 24px;
+	flex-wrap: nowrap; /* wrap을 nowrap으로 변경 */
+	margin-top: 40px;
 }
+
+/* 미디어 쿼리도 추가로 수정 */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 28px;
+    }
+    
+    .side-by-side-section {
+        gap: 15px;
+        flex-wrap: nowrap !important; /* 강제로 nowrap 적용 */
+    }
+    
+    .header-section {
+        width: 65%; /* 비율 조정 */
+        min-width: 280px;
+        flex-shrink: 1; /* 줄어들 수 있도록 */
+    }
+    
+    .notice-wrapper {
+        flex-shrink: 0; /* 공지는 줄어들지 않게 */
+    }
+    
+    .notice-info {
+        width: 200px; /* 고정 너비로 변경 */
+        min-width: 180px;
+        padding: 15px;
+    }
+    
+    .notice-info h5 {
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .side-by-side-section {
+        gap: 10px;
+        flex-wrap: nowrap !important;
+    }
+    
+    .header-section {
+        width: auto; /* auto로 변경 */
+        flex: 1; /* 남은 공간 차지 */
+        min-width: 200px;
+    }
+    
+    .notice-info {
+        width: 150px;
+        min-width: 130px;
+        padding: 10px;
+    }
+    
+    .notice-info h5 {
+        font-size: 10px !important;
+        line-height: 1.2;
+    }
+}
+
+
+
+ .announcement-section {
+  width: auto;
+  min-width: fit-content;
+  overflow-x: visible;
+}
+
 
 .announcement-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 20px;
+  /* overflow-x: auto; <-- 이 부분 제거 */
+  min-width: fit-content; /* 내용이 넓으면 줄어들지 않게 */
 }
 
 .announcement-card {
@@ -155,9 +217,51 @@
   border: 1px solid #ddd;
   padding: 16px;
   width: 265px;
+  min-width: 265px;
+  flex-shrink: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   box-sizing: border-box;
+}
+/* 모바일에서도 카드 크기 유지 */
+@media (max-width: 768px) {
+  .announcement-list {
+    gap: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .announcement-card {
+    width: 265px; /* 모바일에서도 동일한 크기 유지 */
+    min-width: 265px;
+  }
+}
+
+/* 모바일에서도 카드 크기 유지 */
+@media (max-width: 768px) {
+  .announcement-list {
+    gap: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .announcement-card {
+    width: 265px; /* 모바일에서도 동일한 크기 유지 */
+    min-width: 265px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcement-list {
+    gap: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  .announcement-card {
+    width: 265px; /* 아주 작은 화면에서도 크기 유지 */
+    min-width: 265px;
+  }
 }
 
 .image-wrapper {
@@ -318,4 +422,52 @@
     right: 10px;
 }
 
+.user-info-box {
+  border: 1px solid #ccc;                /* notice-info와 같은 테두리 */
+  background-color: #fafaff;             /* 아주 연한 연보라 배경 */
+  padding: 20px;                         /* notice-info와 동일 padding */
+  border-radius: 8px;                    /* notice-info와 동일 radius */
+  margin-bottom: 12px;
+  width: 370px;                          /* notice-info width 에 맞춤 */
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* 같은 수준의 그림자 */
+  font-family: 'Segoe UI', 'Helvetica', sans-serif;
+}
+
+.user-welcome {
+  margin: 0 0 6px 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.user-email {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #666;
+  word-break: break-all; /* 이메일 줄바꿈 방지 */
+}
+
+.user-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.user-buttons button {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.user-buttons button:hover {
+  background-color: #f0f0f8; /* 연보라 빛 도는 흰색 */
+  border-color: #b5b5e0;    /* 좀 더 진한 연보라 */
+}
 

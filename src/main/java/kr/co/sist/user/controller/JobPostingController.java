@@ -9,7 +9,26 @@ public class JobPostingController {
 	@GetMapping("/user/job_posting")
 	public String JobPostingPage() {
 		
-		return "/user/job_posting";
+		return "user/job_posting";
 	}
+	
+	@GetMapping("/user/job_posting_detail")
+	public String JobPostingDetailPage() {
+		
+		return "user/job_posting_detail";
+	}
+	
+	@GetMapping("/user/company_info")
+	public String companyInfo() {
+		
+		return "user/company_info";
+	}
+	
+	@GetMapping("/user/review")
+	public String review() {
+		
+		return "user/review";
+	}
+
 
 }

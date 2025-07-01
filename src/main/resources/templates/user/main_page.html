@@ -8,13 +8,13 @@
 <link rel="stylesheet" th:href="@{/user/css/footer.css}" />
 <link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
 <style type="text/css">
-</style>
+</style>   
 <script type="text/javascript">
 
 let current = 0;
-const total = 4;
+const total = 4; 
 
-function moveSlide(direction) {
+function moveSlide(direction) {    
     current += direction;
     if (current >= total) current = 0;
     if (current < 0) current = total - 1;
@@ -65,16 +65,15 @@ setInterval(() => moveSlide(1), 5000);
       <div class="header-carousel-track">
         <!-- 첫번째 공고 -->
         <div class="main-img">
-          <img alt="삼성전자" src="/images/building.jpg" />
+          <img alt="삼성전자" src="/images/samsung.jpg" />
           <div class="main-content">
             <h2>삼성전자</h2>
             <p>전산팀 서버 개발자 모집</p>
-          </div>
         </div>
-
+        </div>	
         <!-- 두번째 공고 -->
         <div class="main-img">
-          <img alt="LG전자" src="/images/building2.jpg" />
+          <img alt="LG전자" src="/images/Lg.jpg" />
           <div class="main-content">
             <h2>LG전자</h2>
             <p>웹 프론트엔드 개발자</p>
@@ -83,7 +82,7 @@ setInterval(() => moveSlide(1), 5000);
 
         <!-- 세번째 공고 -->
         <div class="main-img">
-          <img alt="네이버" src="/images/building3.jpg" />
+          <img alt="네이버" src="/images/naver.jpg" />
           <div class="main-content">
             <h2>네이버</h2>
             <p>백엔드 개발자 채용</p>
@@ -92,7 +91,7 @@ setInterval(() => moveSlide(1), 5000);
 
         <!-- 네번째 공고 -->
         <div class="main-img">
-          <img alt="카카오" src="/images/building4.jpg" />
+          <img alt="카카오" src="/images/kakao.jpg" />
           <div class="main-content">
             <h2>카카오</h2>
             <p>모바일 앱 개발자</p>
@@ -107,13 +106,27 @@ setInterval(() => moveSlide(1), 5000);
     </div>
 </div>
 
-    <div class="notice-wrapper">
-      <h2 style="color: #1DD45A;">Notice</h2>
-      <div class="notice-info">
-        <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
-        <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
-      </div>
+
+
+
+
+  <div class="notice-wrapper">
+  
+  <div class="user-info-box">
+    <p class="user-welcome">유연수님 반가워요</p>
+    <p class="user-email">yeonsu@naver.com</p>
+    <div class="user-buttons">
+      <button>이력서작성</button>
+      <button>마이페이지</button>
     </div>
+  </div>
+
+  <h2 style="color: #1DD45A;">Notice</h2>
+  <div class="notice-info">
+    <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
+    <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
+  </div>
+</div>
   </div>
 	<br><br>
 	
@@ -124,7 +137,7 @@ setInterval(() => moveSlide(1), 5000);
   <div class="announcement-list">
     <div class="announcement-card">
       <div class="image-wrapper">
-        <img src="/images/building.jpg" alt="회사 이미지" />
+        <img src="/images/samsung.jpg" alt="회사 이미지" />
       </div>
 
       <div class="company-name">삼성전자</div>
@@ -139,7 +152,7 @@ setInterval(() => moveSlide(1), 5000);
      <div class="announcement-list">
     <div class="announcement-card">
       <div class="image-wrapper">
-        <img src="/images/building2.jpg" alt="회사 이미지" />
+        <img src="/images/Lg.jpg" alt="회사 이미지" />
       </div>
 
       <div class="company-name">LG전자</div>
@@ -155,7 +168,7 @@ setInterval(() => moveSlide(1), 5000);
      <div class="announcement-list">
     <div class="announcement-card">
       <div class="image-wrapper">
-        <img src="/images/building3.jpg" alt="회사 이미지" />
+        <img src="/images/naver.jpg" alt="회사 이미지" />
       </div>
 
       <div class="company-name">네이버</div>
@@ -171,7 +184,7 @@ setInterval(() => moveSlide(1), 5000);
      <div class="announcement-list">
     <div class="announcement-card">
       <div class="image-wrapper">
-        <img src="/images/building4.jpg" alt="회사 이미지" />
+        <img src="/images/kakao.jpg" alt="회사 이미지" />
       </div>
 
       <div class="company-name">카카오</div>

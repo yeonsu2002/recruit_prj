@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
+<link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
+<style type="text/css">
+.company_info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px; /* 이미지와 정보 사이 간격 */
+}
+
+.company_info img {
+  width: 80px; /* 원하는 크기로 */
+  height: auto;
+  border-radius: 4px; /* 둥글게 처리 */
+}
+
+.info_box p {
+  margin: 4px 0;
+  font-size: 18px;
+}
+
+.stack span {
+  display: inline-block;
+  margin: 6px 8px 6px 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.stack span:hover {
+  background-color: #ddd;
+}
+.stack span.active {
+  background-color: #00c471;
+  color: #fff;
+  font-weight: bold;
+}
+
+.info-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.info-title {
+  font-size: 14px;
+  color: #555;
+}
+
+.info-value {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.info-source {
+  font-size: 12px;
+  color: #999;
+}
+
+.salary-block {
+  display: inline-block;
+  width: 48%;
+  vertical-align: top;
+}
+
+.positions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.position-card {
+  flex: 1 1 45%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background-color: #fff;
+}
+
+.d-day {
+  color: #ff5722;
+  font-weight: bold;
+}
+
+.position-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.skills {
+  font-size: 12px;
+  color: #666;
+}
+
+.reviews {
+  font-size: 24px;
+  color: #ffb400;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.write-review-btn {
+  background-color: #00c471;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.write-review-btn:hover {
+  background-color: #009e5f;
+}
+
+</style>   
+<script type="text/javascript">
+
+
+</script>
+</head>
+<body>
+<header>
+<div th:replace="~{fragments/header :: header}"></div>
+</header>
+<main>
+<div class="main-container">
+<div class="row">
+  <div class="col-4">
+    <div id="simple-list-example" class="d-flex flex-column gap-2 simple-list-example-scrollspy text-center">
+      <a class="p-1 rounded" href="#simple-list-item-1">기업정보</a>
+      <a class="p-1 rounded" href="#simple-list-item-2">회사소개</a>
+      <a class="p-1 rounded" href="#simple-list-item-3">기술스택</a>
+      <a class="p-1 rounded" href="#simple-list-item-3">복지 및 혜택</a>
+      <a class="p-1 rounded" href="#simple-list-item-4">기업 직원 규모</a>
+      <a class="p-1 rounded" href="#simple-list-item-5">평균 연봉 정도</a>
+      <a class="p-1 rounded" href="#simple-list-item-5">채용중인 포지션</a>
+      <a class="p-1 rounded" href="#simple-list-item-5">기업후기</a>
+    </div>
+  </div>
+  <div class="col-8">
+  <div class="company_name">
+  <h2>삼성전자</h2>
+  </div>
+  <br><br>
+  
+    <div data-bs-spy="scroll" data-bs-target="#simple-list-example" data-bs-offset="0" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
+      <h4 id="simple-list-item-1">기업정보</h4>
+     <div class="company_info">
+	  <img alt="기업 로고" src="/images/samsung.jpg" style="width:100px" height="auto"/>
+	  <br>
+	  <div class="info_box">
+	    <p>업종:  응용 소프트웨어 개발 및 공급업</p>
+	    <p>대표자명:  안종오</p>
+	    <p>업력:  9년차 (2017년 7월 설립)</p>
+	    <p>대표주소:  서울 강남구 학동로25길 37</p>
+	    <p>사업내용:  모바일 어플리케이션 개발, 공급</p>
+	    <p>홈페이지:  <a href="http://www.dear-u.co/" target="_blank">http://www.dear-u.co/</a></p>
+	  </div>
+	</div>
+	<br><br>
+      <h4 id="simple-list-item-2">회사소개</h4>
+      <p>삼성전자는 사람과 사회를 생각하는 글로벌 일류기업을 추구합니다.
+	 ‘경영이념, 핵심가치, 경영원칙’의 가치체계를 경영의 나침반으로 삼고, 
+	  인재와 기술을 바탕으로 최고의 제품과 서비스를 창출하여 인류사회에 공헌하는 것을 궁극적인 목표로 삼고 있습니다. 
+	  이를 위해 삼성전자가 지켜나갈 약속인 5가지 경영원칙을 세부원칙과 행동지침으로 구체화하여
+	  삼성전자 임직원이 지켜야 할 행동규범(Global Code of Conduct)으로 제정하였으며, 
+	  모든 임직원의 사고와 행동에 5가지 핵심가치를 내재화하여 삼성전자의 지속적인 성장을 견인하고 미래 방향성을 제시하고자 합니다.</p>
+	  <br><br>
+	  <div>
+	  <img alt="기업 이미지" src="/images/samsung.jpg" style="width:500px" height="auto"/>
+	  </div>
+	  <br><br>
+     <h4 id="simple-list-item-3" style="font-size: 20px">기술스택</h4>
+		<div class="stack">
+		  <span>Java</span>
+		  <span>C++</span>
+		  <span>Linux</span>
+		  <span>JavaScript</span>
+		  <span>MySQL</span>
+		  <span>AWS</span>
+		  <span>React</span>
+		</div>
+		<br><br>
+      
+      
+      <h4 id="simple-list-item-4">복지 및 혜택</h4>
+      <p>
+        • 출퇴근: 자율(시차)출퇴근제<br>
+		• 교육: 신입사원 교육(OJT) / 리더쉽,직무교육/ 사내 외국어 강좌운영<br>
+		• 지원금/보험: 단체상해보험 / 건강검진지원/ 독감예방접종 지원<br>
+		• 조직문화: 수평적 조직문화 / 자율복장/ 님,닉네임 문화<br>
+		• 근무환경 : 사원증지급 / 카페테리아운영/ 스낵바 운영, 웰컴KIT지급<br>
+		• 급여제도 : 4대보험/연차수당/퇴직연금/ 회식비, 중식비 지원, 임직원 우수인재 추천보상제도 운영/ 통신비 지원<br>
+		• 선물: 명절선물/귀향비 지급<br>
+		• 리프레쉬: 연차,반차/ 경조휴가 / 장기근속 포상<br>
+		• 기타: 계열사 할인<br>
+      
+      </p>
+      <br><br>
+    <h4 id="simple-list-item-4">기업 직원 규모</h4>
+<div class="info-card">
+  <p class="info-title">전체 직원수</p>
+  <p class="info-value">94명</p>
+  <p class="info-source">출처: 국민연금</p>
+</div>
+<br><br>
+<h4 id="simple-list-item-5">평균 연봉 정도</h4>
+<div class="info-card">
+  <div class="salary-block">
+    <p class="info-title">전체</p>
+    <p class="info-value">8,667만원</p>
+  </div>
+  <div class="salary-block">
+    <p class="info-title">신뢰도</p>
+    <p class="info-value">보통</p>
+  </div>
+</div>
+<br><br>
+<h4 id="simple-list-item-5">채용중인 포지션</h4>
+<div class="positions">
+  <div class="position-card">
+    <p class="d-day">D-4</p>
+    <p class="position-title">DBA</p>
+    <p class="skills">NoSQL · MySQL · AWS</p>
+  </div>
+  <div class="position-card">
+    <p class="d-day">D-19</p>
+    <p class="position-title">메시징 서비스 개발자 채용</p>
+    <p class="skills">REST API · Java · NoSQL · Django · MySQL · Spring Boot</p>
+  </div>
+  <div class="position-card">
+    <p class="d-day">D-24</p>
+    <p class="position-title">iOS 앱 개발자 채용</p>
+    <p class="skills">REST API · Git · SQLite · Objective-C · Swift · iOS</p>
+  </div>
+  <div class="position-card">
+    <p class="d-day">D-26</p>
+    <p class="position-title">SRE 포지션 채용</p>
+    <p class="skills">Linux · Docker · Kafka · Redis · Windows · AWS</p>
+  </div>
+</div>
+<br><br>
+<div>
+<h4 id="simple-list-item-5">기업 후기</h4>
+<a href="/user/review" type="button" class="write-review-btn">자세히 보기</a>
+</div>
+
+  </div>
+</div>
+
+</div>
+</main>
+<footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+</body>
+</html>
+

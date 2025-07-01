@@ -1,0 +1,208 @@
+
+.stack span {
+  display: inline-block;
+  margin: 6px 8px 6px 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.stack span:hover {
+  background-color: #ddd;
+}
+.stack span.active {
+  background-color: #00c471;
+  color: #fff;
+  font-weight: bold;
+}
+
+.job-info-box {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  margin-top: 30px;
+}
+
+.job-info-box > div {
+  margin-bottom: 16px;
+}
+
+.job-info-box h2 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.job-info-box p {
+  font-size: 14px;
+  color: #444;
+  margin: 0;
+}
+
+/* 플로팅 사이드바 */
+.floating-sidebar {
+  position: fixed;
+  top: 35%;
+  left: 1200px;
+  transform: translateY(-50%);
+  width: 280px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.company-floating-card {
+  background: white;
+  border-radius: 0;          /* 각지게 */
+  padding: 20px;
+  box-shadow: none;         /* 그림자 제거 */
+  border: 1px solid #e0e0e0;
+}
+
+.company-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.logo-placeholder {
+  width: 50px;
+  height: 50px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.company-title h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.company-title span {
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+}
+
+.company-title span:hover {
+  color: #00c471;
+}
+
+.company-info-section {
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item .label {
+  font-size: 14px;
+  color: #666;
+}
+
+.info-item .value {
+  font-size: 14px;
+  color: #333;
+}
+
+.homepage-link {
+  color: #00c471;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.homepage-link:hover {
+  text-decoration: underline;
+}
+
+.floating-apply-btn {
+  width: 100%;
+  background: #00c471;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: background 0.2s;
+}
+
+.floating-apply-btn:hover {
+  background: #00b366;
+}
+
+.floating-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.floating-action-btn {
+  flex: 1;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.floating-action-btn:hover {
+  background: #f8f9fa;
+  border-color: #00c471;
+}
+
+.floating-action-btn .icon {
+  font-size: 16px;
+}
+
+.floating-action-btn .text {
+  font-size: 11px;
+  color: #666;
+}
+
+/* 반응형 - 모바일에서 숨김 */
+@media (max-width: 1024px) {
+  .floating-sidebar {
+    display: none;
+  }
+}
+
+/* 스크롤 애니메이션 */
+.floating-sidebar.scroll-up {
+  transform: translateY(-60%);
+}
+
+.floating-sidebar.scroll-down {
+  transform: translateY(-40%);
+}
+
+.detail h2 {
+ 		
+    font-size: 16px; 
+    font-weight: normal;  /* 예: 두께 줄이기 */
+    line-height: 1.2;     /* 줄간격 조절 */
+    font-weight: bold;
+}

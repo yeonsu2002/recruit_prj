@@ -7,10 +7,68 @@
 <link rel="stylesheet" th:href="@{/user/css/header.css}" />
 <link rel="stylesheet" th:href="@{/user/css/footer.css}" />
 <link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
+<link rel="stylesheet" th:href="@{/user/css/job_posting.css}"/>
 <style type="text/css">
 </style>   
 <script type="text/javascript">
 
+/* 기술스택 */
+document.addEventListener('DOMContentLoaded', function() {
+	  var btn = document.getElementById('techStackBtn');
+	  var dropdown = document.getElementById('techStackDropdown');
+
+	  btn.addEventListener('click', function() {
+	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  });
+
+	  document.addEventListener('click', function(event) {
+	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
+	      dropdown.style.display = 'none';
+	    }
+	  });
+	});
+
+/* 경력 */
+document.addEventListener('DOMContentLoaded', function() {
+	  var btn = document.getElementById('historyBtn');
+	  var dropdown = document.getElementById('historyDropdown');
+
+	  btn.addEventListener('click', function() {
+	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  });
+
+	  document.addEventListener('click', function(event) {
+	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
+	      dropdown.style.display = 'none';
+	    }
+	  });
+	});
+
+/* 지역 */
+document.addEventListener('DOMContentLoaded', function() {
+	  var btn = document.getElementById('areaBtn');
+	  var dropdown = document.getElementById('areaDropdown');
+
+	  btn.addEventListener('click', function() {
+	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  });
+
+	  document.addEventListener('click', function(event) {
+	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
+	      dropdown.style.display = 'none';
+	    }
+	  });
+	});
+
+document.addEventListener('DOMContentLoaded', function() {
+	  var seoulBtn = document.getElementById('seoulBtn');
+	  var seoulSub = document.getElementById('seoulSub');
+
+	  seoulBtn.addEventListener('click', function(event) {
+	    event.stopPropagation(); // 드롭다운 닫히는 거 방지
+	    seoulSub.style.display = (seoulSub.style.display === 'block') ? 'none' : 'block';
+	  });
+	});
 
 </script>
 </head>
@@ -21,6 +79,154 @@
 <main>
 <div class="main-container">
 
+<div class="stack">
+<span>전체</span>
+<span>서버/백엔드 개발자</span>
+<span>프론트엔드 개발자</span>
+<span>웹 풀스택 개발자</span>
+<span>안드로이드 개발자</span>
+<span>iOS 개발자</span>
+<span>크로스플랫폼 앱개발자</span>
+<span>게임 클라이언트 개발자</span>
+<span>게임 서버 개발자</span>
+<span>DBA</span>
+<span>빅데이터 엔지니어</span>
+<span>인공지능/머신러닝</span>
+<span>devops/시스템 엔지니어</span>
+<span>정보보안 담당자</span>
+<span>QA 엔지니어</span>
+<span>개발 PM</span>
+<span>HW/임베디드</span>
+<span>SW/솔루션</span>
+<span>웹퍼블리셔</span>
+<span>VR/AR/3D</span>
+<span>블록체인</span>
+<span>기술지원</span>
+
+</div>
+<br>
+<div>
+
+<div class="filter-container">
+  <button class="filter-btn" id="techStackBtn">기술스택 ▾</button>
+  <div class="dropdown" id="techStackDropdown">
+    <span>Java</span>
+    <span>C++</span>
+    <span>Linux</span>
+    <span>JavaScript</span>
+    <span>MySQL</span>
+    <span>AWS</span>
+    <span>React</span>
+    <span>Python</span>
+  </div>
+  
+   <button class="filter-btn" id="historyBtn">경력 ▾</button>
+    <div class="dropdown" id="historyDropdown">
+    <span>전체</span>
+    <span>신입</span>
+    <span>1년</span>
+    <span>2년</span>
+    <span>3년</span>
+    <span>4년</span>
+    <span>5년</span>
+    <span>6년</span>
+    <span>7년</span>
+    <span>8년</span>
+    <span>9년</span>
+    <span>10년 이상</span>
+  </div>
+  
+    <button class="filter-btn" id="areaBtn">지역 ▾</button>
+   <div class="dropdown" id="areaDropdown">
+  <span id="seoulBtn">서울</span>
+  <span>경기</span>
+  <span>강원</span>
+  <span>인천</span>
+  <span>부산</span>
+  <span>충북</span>
+  <span>충남</span>
+  
+  <div id="seoulSub" style="display: none; margin-top:8px;">
+    <span>강남구</span>
+    <span>강동구</span>
+    <span>서초구</span>
+    <span>종로구</span>
+  </div>
+</div>
+</div>
+
+</div>
+<br><br>
+
+
+<!--  공고( 인기순 ) -->
+	<div class="announcement-section">
+  <div class="announcement-list">
+     <a href="/user/job_posting_detail" class="announcement-card-link">
+    <div class="announcement-card">
+    
+      <div class="image-wrapper">
+        <img src="/images/samsung.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">삼성전자</div>
+      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+      </a>
+    </div>
+    
+    <!-- 두번째 공고 -->
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/Lg.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">삼성전자</div>
+      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+
+
+
+    <!-- 세번째 공고 -->
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/naver.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">네이버</div>
+      <div class="announcement-title"><strong>백엔드 개발자 채용</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    
+        
+    <!-- 네번째 공고 -->
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/kakao.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">카카오</div>
+      <div class="announcement-title"><strong>모바일 앱 개발자</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    </div>
+    </div>
+
+
+
 </div>
 </main>
 <footer>
@@ -28,4 +234,3 @@
 </footer>
 </body>
 </html>
-

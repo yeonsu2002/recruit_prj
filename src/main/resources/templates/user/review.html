@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
+<link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
+<style type="text/css">
+/* ===== 공통 ===== */
+.review-section {
+  margin-top: 20px;
+}
+
+.main-container {
+  padding: 20px;
+  /* 필요 시 추가 */
+}
+
+/* ===== 회사 정보/리뷰 요약 박스 ===== */
+.company_info_wrap {
+  display: flex;
+  gap: 16px; /* 좌우 박스 간격 */
+}
+
+/* 좌측/우측 박스 공통 스타일 */
+.left_box, .right_box {
+  flex: 1;
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* ===== 왼쪽 회사 정보 ===== */
+.company_info {
+  display: flex;
+  gap: 16px;
+}
+
+.company_info img {
+  width: 100px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.info_box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* ===== 오른쪽 리뷰 요약 ===== */
+.company_review_summary {
+  text-align: center;
+}
+
+.company_review_summary .total_review {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.score_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.score_number {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.stars {
+  color: #ffb400;
+  font-size: 20px;
+}
+
+.write_review_btn {
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.write_review_btn:hover {
+  background-color: #333;
+}
+
+/* ===== 리뷰 목록 ===== */
+.review-list {
+  margin: 16px 0;
+}
+
+.review-item {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background-color: #fafafa;
+}
+
+.review-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.review-subtitle {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pagination a, .pagination span {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+}
+
+.pagination a.active {
+  background-color: #00c471;
+  color: white;
+  font-weight: bold;
+}
+
+.pagination a:hover {
+  background-color: #eee;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background-color: #fafafa;
+  gap: 12px; /* 이미지와 내용 간격 */
+}
+
+.review-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* 원형 프로필 */
+  object-fit: cover;
+}
+
+.review-content {
+  flex: 1; /* 남은 공간 채우기 */
+}
+
+.review-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.review-subtitle {
+  margin: 4px 0;
+  font-size: 14px;
+}
+</style>   
+<script type="text/javascript">
+
+
+</script>
+</head>
+<body>
+<header>
+<div th:replace="~{fragments/header :: header}"></div>
+</header>
+<main>
+<div class="main-container">
+<div class="review-section">
+  <h4 id="simple-list-item-5">기업 후기</h4>
+
+ <div class="company_info_wrap">
+  <div class="left_box">
+    <div class="company_info">
+      <img alt="기업 로고" src="/images/samsung.jpg" style="width:100px" height="auto"/>
+      <div class="info_box">
+        <p>업종: 응용 소프트웨어 개발 및 공급업</p>
+        <p>대표자명: 안종오</p>
+        <p>업력: 9년차 (2017년 7월 설립)</p>
+        <p>대표주소: 서울 강남구 학동로25길 37</p>
+        <p>사업내용: 모바일 어플리케이션 개발, 공급</p>
+        <p>홈페이지: <a href="http://www.dear-u.co/" target="_blank">http://www.dear-u.co/</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="right_box">
+    <div class="company_review_summary">
+      <p class="total_review">전체 리뷰 통계 (18명)</p>
+      <div class="score_box">
+        <span class="score_number">3.9</span>
+        <span class="stars">⭐⭐⭐⭐☆</span>
+      </div>
+      <button type="button" class="write_review_btn">리뷰 작성</button>
+    </div>
+  </div>
+</div>
+  <div class="review-list">
+  <div class="review-item">
+    <div class="review-profile">
+      <img src="/images/default_img.png" alt="프로필 이미지">
+    </div>
+    <div class="review-content">
+      <p class="review-title">“짧은 기간동안 급성장한 기업으로 성장가능성이 높았다.”</p>
+      <p class="review-subtitle"><strong>장점</strong><br>스타트업인데도 불구하고...</p>
+      <p class="review-subtitle"><strong>단점</strong><br>스타트업이다 보니 아직...</p>
+    </div>
+  </div>
+  
+  <div class="review-item">
+    <div class="review-profile">
+      <img src="/images/default_img.png" alt="프로필 이미지">
+    </div>
+    <div class="review-content">
+      <p class="review-title">“쉬운 업무 부담 없는 업무 모두 함께 역량을 펼칠 수 있는 회사”</p>
+      <p class="review-subtitle"><strong>장점</strong><br>서로 서로 도와주면서...</p>
+      <p class="review-subtitle"><strong>단점</strong><br>아직 더 기계화 되는 과정...</p>
+    </div>
+  </div>
+</div>
+
+  <div class="pagination">
+    <a href="#">«</a>
+    <a href="#" class="active">1</a>
+    <a href="#">2</a>
+    <a href="#">3</a>
+    <span>...</span>
+    <a href="#">10</a>
+    <a href="#">»</a>
+  </div>
+</div>
+</div>
+</main>
+<footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+</body>
+</html>
+
