@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 페이지</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/login/login_form.css}" >
+<script type="text/javascript">
+$(function(){
+	// 탭 전환 기능
+	document.querySelectorAll('.tab').forEach(tab => {
+		tab.addEventListener('click', function() {
+	    // 모든 탭에서 active 클래스 제거 (위에서는 개인회원, 기업회원 두개뿐)
+	    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+	    // 클릭한 탭에 active 클래스 추가
+	    this.classList.add('active');
+    });
+	});
+	
+	// 폼 제출 처리
+	document.querySelector('form').addEventListener('submit', function(e) {
+	  e.preventDefault(); // 기본 제출 동작 방지
+		if($(".user-type").hasClass("active")){
+			alert("개인회원 폼 전송");
+			document.getElementById("frm").action = "/user/login";
+			document.getElementById("frm").submit();
+			
+		}
+	  if($(".corp-type").hasClass("active")){
+		  alert("기업회원 폼 전송");
+			document.getElementById("frm").action = "/corp/login";
+			document.getElementById("frm").submit();
+	  }
+	  
+	  
+	});
+	
+});
+
+/* 일반유저, 기업유저 회원가입 페이지 이동 */
+function joinPageForm(){
+	let url = '/user/join';
+	if($(".corp-type").hasClass("active")){
+		url = '/corp/join';
+	}
+	location.href=url;
+}
+
+
+
+</script>
+</head>
+<body>
+	<div class="login-container">
+		<!-- 탭 메뉴 -->
+		<div class="tab-container">
+			<div class="tab-menu">
+				<div class="user-type tab active">개인회원</div>
+				<div class="corp-type tab">기업회원</div>
+			</div>
+		</div>
+
+		<!-- 로그인 폼을 테이블로 구성 -->
+		<form th:action="@{/void}" method="post" id="frm">
+			<table class="login-table">
+				<tr>
+					<td><input type="text" class="input-field" placeholder="아이디"
+						required></td>
+				</tr>
+				<tr>
+					<td><input type="password" class="input-field"
+						placeholder="비밀번호" required></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="checkbox-container">
+							<div class="checkbox-item">
+								<input type="checkbox" id="remember"> <label
+									for="remember">로그인 유지</label>
+							</div>
+							<div class="checkbox-item">
+								<input type="checkbox" id="autofill"> <label
+									for="autofill">아이디 저장</label>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button type="submit" class="login-button">로그인</button>
+					</td>
+				</tr>
+			</table>
+		</form>
+
+		<div class="bottom-links">
+			<a href="#" onclick="alert('아이디 찾기 기능')">아이디 찾기</a> 
+			<span>|</span> 
+			<a href="#" onclick="alert('비밀번호 찾기 기능')">비밀번호 찾기</a>
+			<span>|</span> 
+			<a href="#" onclick="joinPageForm()">회원가입</a>
+		</div>
+
+		<div class="social-login">
+			<div class="social-login-text">소셜 계정으로 간편 로그인</div>
+			<div class="social-buttons">
+				<button class="social-button naver" onclick="alert('네이버 로그인')">N</button>
+				<button class="social-button kakao" onclick="alert('카카오 로그인')">💬</button>
+				<button class="social-button google" onclick="alert('구글 로그인')">G</button>
+				<button class="social-button facebook" onclick="alert('페이스북 로그인')">f</button>
+				<button class="social-button apple" onclick="alert('애플 로그인')">🍎</button>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

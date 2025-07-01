@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
+<link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
+<style type="text/css">
+</style>
+<script type="text/javascript">
+
+let current = 0;
+const total = 4;
+
+function moveSlide(direction) {
+    current += direction;
+    if (current >= total) current = 0;
+    if (current < 0) current = total - 1;
+    updateSlide();
+}
+
+function updateSlide() {
+    const track = document.querySelector('.header-carousel-track');
+    track.style.transform = `translateX(-${current * 100}%)`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('prevBtn').addEventListener('click', function() {
+        moveSlide(-1);
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', function() {
+        moveSlide(1);
+    });
+});
+
+setInterval(() => moveSlide(1), 5000);
+
+</script>
+</head>
+<body>
+<header>
+<div th:replace="~{fragments/header :: header}"></div>
+</header>
+<main>
+<div class="main-container">
+		<!-- 히어로 섹션 -->
+	<section class="hero-section">
+		<h1 class="hero-title">개발자 커리어의 시작</h1>
+		<p class="hero-subtitle">전국 최고의 IT 기업들이 당신을 기다리고 있습니다</p>
+		<div class="hero-search">
+			<input type="text" class="hero-search-box"
+				placeholder="어떤 포지션을 찾고 계신가요?" />
+			<button class="hero-search-button">🔍</button>
+		</div>
+	</section>
+	
+<!-- 오른쪽 헤더부분 : 채용공고 + 공지 -->
+<div class="side-by-side-section">
+  <div class="header-section">
+    <!-- Carousel Container -->
+    <div class="header-carousel-container">
+      <div class="header-carousel-track">
+        <!-- 첫번째 공고 -->
+        <div class="main-img">
+          <img alt="삼성전자" src="/images/building.jpg" />
+          <div class="main-content">
+            <h2>삼성전자</h2>
+            <p>전산팀 서버 개발자 모집</p>
+          </div>
+        </div>
+
+        <!-- 두번째 공고 -->
+        <div class="main-img">
+          <img alt="LG전자" src="/images/building2.jpg" />
+          <div class="main-content">
+            <h2>LG전자</h2>
+            <p>웹 프론트엔드 개발자</p>
+          </div>
+        </div>
+
+        <!-- 세번째 공고 -->
+        <div class="main-img">
+          <img alt="네이버" src="/images/building3.jpg" />
+          <div class="main-content">
+            <h2>네이버</h2>
+            <p>백엔드 개발자 채용</p>
+          </div>
+        </div>
+
+        <!-- 네번째 공고 -->
+        <div class="main-img">
+          <img alt="카카오" src="/images/building4.jpg" />
+          <div class="main-content">
+            <h2>카카오</h2>
+            <p>모바일 앱 개발자</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 좌우 버튼 -->
+      <button class="header-carousel-btn prev" id="prevBtn">‹</button>
+      <button class="header-carousel-btn next" id="nextBtn">›</button>
+ 
+    </div>
+</div>
+
+    <div class="notice-wrapper">
+      <h2 style="color: #1DD45A;">Notice</h2>
+      <div class="notice-info">
+        <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
+        <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
+      </div>
+    </div>
+  </div>
+	<br><br>
+	
+	<!--  공고( 인기순 ) -->
+	<div class="announcement-section">
+  <h3>인기순</h3>
+  <br>
+  <div class="announcement-list">
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/building.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">삼성전자</div>
+      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    
+    <!-- 두번째 공고 -->
+     <div class="announcement-list">
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/building2.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">LG전자</div>
+      <div class="announcement-title"><strong>웹 프론트엔드 개발자</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    
+        
+    <!-- 세번째 공고 -->
+     <div class="announcement-list">
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/building3.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">네이버</div>
+      <div class="announcement-title"><strong>백엔드 개발자 채용</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    
+        
+    <!-- 네번째 공고 -->
+     <div class="announcement-list">
+    <div class="announcement-card">
+      <div class="image-wrapper">
+        <img src="/images/building4.jpg" alt="회사 이미지" />
+      </div>
+
+      <div class="company-name">카카오</div>
+      <div class="announcement-title"><strong>모바일 앱 개발자</strong></div>
+      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+      <div class="company-info">
+        <span>서울 마포구</span> | <span>경력 3년</span>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+  </div>
+</div>
+	
+
+</div>
+</main>
+<footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+</body>
+</html>
+

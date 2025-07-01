@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>일반회원 가입 페이지</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/login/joinUserForm.css}">
+<style>
+    
+</style>
+<script type="text/javascript">
+$(function(){
+	
+	//모달 골라 보기 호출
+	showTheModal(); 
+	
+	// 전체 동의 체크박스 기능
+	document.getElementById('terms1').addEventListener('change', function() {
+	    const checkboxes = document.querySelectorAll('.checkbox-input:not(#terms1)');
+	    checkboxes.forEach(checkbox => {
+	        checkbox.checked = this.checked;
+	    });
+	});
+	
+	// 개별 체크박스 변경 시 전체 동의 상태 업데이트
+	document.querySelectorAll('.checkbox-input:not(#terms1)').forEach(checkbox => {
+	    checkbox.addEventListener('change', function() {
+	        const allCheckboxes = document.querySelectorAll('.checkbox-input:not(#terms1)');
+	        const checkedBoxes = document.querySelectorAll('.checkbox-input:not(#terms1):checked');
+	        document.getElementById('terms1').checked = allCheckboxes.length === checkedBoxes.length;
+	    });
+	});
+	
+	// 폼 제출 처리
+	document.querySelector('form').addEventListener('submit', function(e) {
+	    e.preventDefault();
+	    //예외처리 검사 함수 호출
+	    if(validateForm()){
+		    alert('회원가입 양식이 제출되었습니다!');
+		    //this.submit();
+	    }
+	    
+	});
+	
+	//폼 예외처리 검사
+	function validateForm(){
+		let flag = true;
+
+		
+		//약관 - 필수 항목 체크 여부 확인
+		let termFlag = true;
+		document.querySelectorAll('.checkbox-input.required').forEach(checkbox => {
+			if(!checkbox.checked){
+				termFlag = false;
+			}
+		});
+		if(!termFlag){
+			alert('필수 약관에 동의해주세요.');
+			flag = false;			
+		}
+		
+		
+		
+		return flag;
+	}//validateForm()
+	
+	
+	//인증번호 처리, 인증요청 버튼을 클릭시 (180초하자)
+	document.getElementById('codeBtn').addEventListener('click', function(){
+		alert("디버깅모드로 5초만 유지합니다.");
+		//인증번호 입력칸& 확인버튼 표시
+		document.getElementById('confirmNumberFrm').style.display='block';
+		//display를 none → block으로 바꾸면 기존 flex 속성은 사라집니다. 따라서 다시 설정해줘야합니다.
+		document.getElementById('confirmNumberFrm').style.display='flex';
+		//확인버튼은 6개 숫자일 경우에만 감지하여 확인버튼을 활성화 
+		document.getElementById('confirmNumber').addEventListener('input', function(e){
+			let length = this.value.length;
+			const btn = document.getElementById('confirmBtn');
+			if(length == 6){
+				btn.disabled = false;
+			} else {
+				btn.disabled = true;
+			}
+		})
+		//보냈으므로 인증요청 버튼의 텍스트를 재전송으로 변경
+		document.getElementById('codeBtn').textContent='재전송'; 
+		//타이머 시작
+		startTimer(5, $("#timer"));
+		document.getElementById('remainTime').style.display='block'; //남은 인증시간 표시, 만료시 숨김으로 해놨으므로 재전송시 필요
+		document.getElementById('verification-error').style.display='none';  //인증시간 만료 표시 숨김, 재전송시 필요
+		//
+		
+	});
+	
+	
+
+	//이메일 인증번호 확인버튼에 이벤트리스너 등록 (참조만 넘기는거에 주의, ..() x)
+	document.getElementById('confirmBtn').addEventListener('click', checkConfirmNumber); 
+	
+}); //ready
+
+
+//확인버튼 이벤트리스너에 등록될 인증번호확인 함수
+function checkConfirmNumber(){
+	//확인버튼 클릭시 인증번호가 일치하지 않을 때 (예시로 123456으로 해놨음. 수정하자~)
+	if(document.getElementById('confirmNumber').value != 123456){
+		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
+		document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
+		document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
+	} else {
+		//인증에 성공할 때
+		alert('인증번호가 일치합니다.');
+		//타이머종료
+		clearInterval(timerInterval);
+		
+		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
+		document.getElementById('verification-success').style.display='block';  //성공 텍스트 표시
+		document.getElementById('confirmBtn').disabled = true; //맞으니까 이제 확인버튼 막아
+		document.getElementById('codeBtn').disabled = true; //맞으니까 이제 재전송버튼도 막아
+		document.getElementById('confirmNumber').readOnly = true; //번호입력창도 막아
+		
+		document.getElementById('verification-error').style.display = 'none'; //혹시나해서 
+		
+		return;
+	}
+}
+
+// 모달창 골라 열기 
+function showTheModal(){
+	// 약관 버튼 클릭 시 직접 모달 내용 변경
+	document.querySelectorAll('.term-btn').forEach(btn => {
+		btn.addEventListener('click', function(e){
+			// 클릭된 버튼의 data-term 속성 가져오기
+			const selectedTerm = this.getAttribute('data-term');
+			//console.log('선택된 약관:', selectedTerm);
+			
+			//모든 term fragment를 숨기기 			
+			document.querySelectorAll('.term-fragment').forEach(div => {
+				div.style.display = 'none';
+			});
+			
+			//선택하 항목만 표시
+			const target = document.getElementById(selectedTerm);
+			if(target){
+				target.style.display = 'block';
+			}
+			
+		});
+	});
+} //showTheModal()
+
+
+//------- 타이머 함수 ---------
+let timerInterval; // 🔸 전역으로 선언해야 기존 타이머 clear 가능
+
+function startTimer(duration, display) {
+    let timer = duration;
+    let minutes, seconds;
+    
+    // 기존 타이머가 있다면 정리
+    clearInterval(timerInterval);
+    
+    timerInterval = setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        
+        display.text(minutes + ":" + seconds);
+        
+        //인증시간 만료시
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            document.getElementById('remainTime').style.display='none';
+            //display.text("00:00");
+            $("#verification-error").show();
+            $("#verification-error").text("인증 시간이 만료되었습니다. 다시 시도해주세요.");
+            
+            // 만료됐으므로 세션의 인증코드 번호 삭제 
+            $.ajax({
+                url : "",
+                type : "POST"
+            });
+            
+            //만료됐으므로 확인버튼의 이벤트리스너 삭제
+            document.getElementById('confirmBtn').removeEventListener('click', checkConfirmNumber);
+        }
+    }, 1000);
+}
+
+</script>
+</head>
+<body>
+ <div class="header">
+        <div class="header-content">
+            <a th:href="@{/}"> <img th:src="@{/images/logo.png}" class="logo" style="width: 100px; height: 50px;"></a>
+            <a th:href="@{/login}" class="login-link">로그인</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="form-title">민기인력 개인회원 가입</h1>
+        
+        <form id="frm">
+            <div class="form-group">
+                <label class="form-label">아이디</label>
+                <input type="text" name="username" class="form-input" placeholder="4~20자(영어/숫자, 2자 이상은문자+숫자조합">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">비밀번호</label>
+                <input type="password" name="password" class="form-input" placeholder="8~16자(영문 대소문자/숫자/특수문자, 3가지 이상은필수조합)">
+            </div>
+
+            <div class="form-group">
+            	<label class="form-label">휴대폰</label>
+            	<input type="text" name="phone" class="form-input" placeholder="'-'만 빼고 숫자만 입력">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이메일</label>
+                <div class="email-container">
+	                <input type="email" class="form-input" placeholder="name@mingihire.co.kr">
+	                <button type="button" id="codeBtn" class="btn btn-primary btn-sm" >인증요청</button>
+                </div>
+                <div id="confirmNumberFrm" class="email-container" style="margin-top: 5px; display: none; gap: 8px;">
+	                <input type="text" id="confirmNumber" class="form-input" placeholder="인증번호를 입력해주세요." style="flex: 8;">
+	                <button type="button" id="confirmBtn" class="btn btn-success btn-sm" style="flex: 2;" disabled>확인</button> <!-- js: 숫자 6자리일경우에만 활성화 -->
+                </div>
+                <div id="remainTime" style="display: none">
+	                <span style="color: red; font-size: 12px;" >남은시간: </span>
+	                <span id="timer" style="margin-top: 5px; color: red; font-size: 12px;"></span>
+                </div>
+                <!-- <div id="timer" style="margin-top: 5px; color: red; font-weight: bold;"></div> -->
+                <div id="verification-error" style="margin-top: 5px; color: red; font-weight: bold;"></div>
+                <div id="verification-success" style="margin-top: 5px; color: green; font-weight: bold; display: none; font-size: 12px;">인증에 성공하셨습니다.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이름</label>
+                <input type="name" class="form-input" placeholder="이름입력">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">생년월일</label>
+                <input type="birth" class="form-input" placeholder="YYYYMMDD">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">약관</label>
+                <div class="terms-section">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item required-checkbox">
+                            <input type="checkbox" class="checkbox-input" id="terms1">
+                            <label for="terms1" class="checkbox-label"><strong>전체 동의</strong></label>
+                        </div>
+                        <div class="checkbox-item">
+                       		<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input required" id="terms2">
+                            <label for="terms2" class="checkbox-label"><strong>(필수) 개인회원 약관에 동의</strong></label>
+                       		</div>
+                     			<div class="terms-detail-emoji">
+                     				<a type="button" class="term-btn" data-term="userTerms" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>
+                        </div>
+                        <div class="checkbox-item">
+                        	<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input required" id="terms3">
+                            <label for="terms3" class="checkbox-label"><strong>(필수) 개인정보 수집 및 이용에 동의</strong></label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="privacyTerm" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>
+                        </div>
+                        <div class="checkbox-item">
+                          <div class="terms-title">  
+                            <input type="checkbox" class="checkbox-input" id="terms4">
+                            <label for="terms4" class="checkbox-label">(선택) 위치기반서비스 이용동의에 동의</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                       			<a type="button" class="term-btn" data-term="locationTerm" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div> 
+                        </div>
+                        <div class="checkbox-item">
+                          <div class="terms-title"> 
+                            <input type="checkbox" class="checkbox-input" id="terms5">
+                            <label for="terms5" class="checkbox-label">(선택) 마케팅 정보 수신 동의 · 이메일</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="marketingTerm_email" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>  
+                        </div>
+                        <div class="checkbox-item">
+ 													<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input" id="terms6">
+                            <label for="terms6" class="checkbox-label">(선택) 마케팅 정보 수신 동의 · SMS/MMS</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="marketingTerm_sms" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn" >다음단계</button>
+        </form>
+    </div>
+    
+    <!-- Vertically centered scrollable modal -->
+    <div class="modal fade" id="showTerm" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			  <div class="modal-content">
+			  
+			  	<div class="modal-header">
+			  		<h5 class="modal-title" id="myModalLabel">이용약관</h5>
+			  		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+			  	</div>
+			  	
+	      	<div class="modal-body" id="modalBodyContent">
+	      		<!-- th:replace는 "fragment를 찾는 역할, 경로는 fragments일 필요없음, 그리고 해당 태그를 fragment내용으로 교체하면서 style="dislplay:none"이 무시되고 사라질수있음-->
+	      		<!-- 또한 replace는 fragment로 대체되면서 div의 id, class, style, data-* 속성 모두 사라짐.. 따라서 insert를 쓰자  -->
+						<div id="userTerms" class="term-fragment" style="display: none;" th:insert="~{login/terms/userTerms :: userTerms}"></div>
+						<div id="privacyTerm" class="term-fragment" style="display: none;" th:insert="~{login/terms/privacyPolicyAgreement :: privacyTerm}"></div>
+						<div id="locationTerm" class="term-fragment" style="display: none;" th:insert="~{login/terms/locationTerms :: locationTerm}"></div>
+						<div id="marketingTerm_email" class="term-fragment" style="display: none;" th:insert="~{login/terms/marketingTerms_email :: marketingTerm_email}"></div>
+						<div id="marketingTerm_sms" class="term-fragment" style="display: none;" th:insert="~{login/terms/marketingTerms_sms :: marketingTerm_sms}"></div>
+		      </div>
+			  </div>
+			</div>
+    </div>
+
+</body>
+</html>

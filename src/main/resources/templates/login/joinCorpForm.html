@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>기업회원 가입 페이지</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/login/joinCorpForm.css}"/>
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+$(function(){
+	
+}); //ready
+</script>
+</head>
+<body>
+ <div class="header">
+        <div class="header-content">
+            <a th:href="@{/}"> <img th:src="@{/images/logo.png}" class="logo" style="width: 100px; height: 50px;"></a>
+            <a th:href="@{/login}" class="login-link">로그인</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="form-title">민기인력 기업회원 가입</h1>
+        
+        <form id="frm">
+            <div class="form-group">
+                <label class="form-label" style="font-weight: bold;">사업자등록번호</label>
+                <input type="text" name="corpNo" class="form-input" placeholder="사업자 등록번호 직접 입력(10자리)">
+                <script type="text/javascript">
+                	if(corpNo == false){
+                		alert("폐업 처리된 사업자번호입니다. 회원가입을 진행할 수 없습니다.");
+                	}
+                	
+                	if("확인완료했는데 다시 input창을 클릭하면"){
+                		alert("사업자등록번호 재입력시 기업인증을 다시 신청해 주세요.");
+                	}
+                </script>
+            </div>
+            <div>
+            	<!-- 모두 input으로 ajax처리중  -->
+            	<span>사업자 등록번호를 입력하세요.</span>
+            	<span>사업자 번호는 숫자만 입력하세요.</span>
+            	<span>올바른 사업자번호가 아닙니다.</span>
+            	<span>사업자등록번호 확인완료, 기업인증에 사업자등록증명원을 첨부해주세요.</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">기업인증</label>
+                <input type="text" name="username" class="form-input" placeholder="4~20자(영어/숫자, 2자 이상은문자+숫자조합">
+            </div>
+            <div class="form-group">
+                <label class="form-label">기업명</label>
+                <input type="text" name="username" class="form-input" placeholder="기업명 입력(사업자등록증명원 기업명))">
+            </div>
+            <div class="form-group">
+                <label class="form-label">대표자</label>
+                <input type="text" name="username" class="form-input" placeholder="예시(김라민 외1명(사업자등록증명원 대표자명)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">회사주소</label>
+                <!-- 주소찾기input 클릭시 다음주소API호출 -->
+                <input type="text" name="username" class="form-input" placeholder="주소찾기">
+                <input type="text" name="username" class="form-input" placeholder="상세주소">
+            </div>
+            <div class="form-group">
+                <label class="form-label">업종</label>
+                <input type="text" name="username" class="form-input" placeholder="업종선택" readonly>
+                <input type="button" name="username" class="btn btn-primary" value="선택">
+            </div>
+            <div class="form-group">
+                <label class="form-label">개업일</label>
+                <input type="text" name="username" class="form-input" placeholder="개업일 입력(YYYYMMDD)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">담당자 본인 인증 : 이메일로하자 우리는</label>
+                <input type="button" name="username" class="btn btn-primary" value="이메일" >
+            </div>
+            <div class="form-group">
+                <label class="form-label">아이디</label>
+                <input type="text" name="username" class="form-input" placeholder="4~20자리 / 영문,숫자,특수문자'_'사용 가능">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">패스워드</label>
+                <input type="password" name="password" class="form-input" placeholder="8~16자리 / 영문대소문자, 숫자, 특수문자 조합">
+            </div>
+
+            <div class="form-group">
+            	<label class="form-label">휴대폰</label>
+            	<input type="text" name="phone" class="form-input" placeholder="'-'만 빼고 숫자만 입력">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이메일</label>
+                <div class="email-container">
+	                <input type="email" class="form-input" placeholder="name@mingihire.co.kr">
+	                <button type="button" id="codeBtn" class="btn btn-primary btn-sm" >인증요청</button>
+                </div>
+                <div id="confirmNumberFrm" class="email-container" style="margin-top: 5px; display: none; gap: 8px;">
+	                <input type="text" id="confirmNumber" class="form-input" placeholder="인증번호를 입력해주세요." style="flex: 8;">
+	                <button type="button" id="confirmBtn" class="btn btn-success btn-sm" style="flex: 2;" disabled>확인</button> <!-- js: 숫자 6자리일경우에만 활성화 -->
+                </div>
+                <div id="remainTime" style="display: none">
+	                <span style="color: red; font-size: 12px;" >남은시간: </span>
+	                <span id="timer" style="margin-top: 5px; color: red; font-size: 12px;"></span>
+                </div>
+                <!-- <div id="timer" style="margin-top: 5px; color: red; font-weight: bold;"></div> -->
+                <div id="verification-error" style="margin-top: 5px; color: red; font-weight: bold;"></div>
+                <div id="verification-success" style="margin-top: 5px; color: green; font-weight: bold; display: none; font-size: 12px;">인증에 성공하셨습니다.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">이름</label>
+                <input type="name" class="form-input" placeholder="이름입력">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">약관</label>
+                <div class="terms-section">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item required-checkbox">
+                            <input type="checkbox" class="checkbox-input" id="terms1">
+                            <label for="terms1" class="checkbox-label"><strong>전체 동의</strong></label>
+                        </div>
+                        <div class="checkbox-item">
+                       		<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input required" id="terms2">
+                            <label for="terms2" class="checkbox-label"><strong>(필수) 기업회원 약관에 동의</strong></label>
+                       		</div>
+                     			<div class="terms-detail-emoji">
+                     				<a type="button" class="term-btn" data-term="userTerms" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>
+                        </div>
+                        <div class="checkbox-item">
+                        	<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input required" id="terms3">
+                            <label for="terms3" class="checkbox-label"><strong>(필수) 개인정보 수집 및 이용에 동의</strong></label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="privacyTerm" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>
+                        </div>
+                        <div class="checkbox-item">
+                          <div class="terms-title">  
+                            <input type="checkbox" class="checkbox-input" id="terms4">
+                            <label for="terms4" class="checkbox-label">(필수) SMS발송 서비스 약관에 동의</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                       			<a type="button" class="term-btn" data-term="locationTerm" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div> 
+                        </div>
+                        <div class="checkbox-item">
+                          <div class="terms-title"> 
+                            <input type="checkbox" class="checkbox-input" id="terms5">
+                            <label for="terms5" class="checkbox-label">(선택) 마케팅 정보 수신 동의 · 이메일</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="marketingTerm_email" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>  
+                        </div>
+                        <div class="checkbox-item">
+ 													<div class="terms-title">
+                            <input type="checkbox" class="checkbox-input" id="terms6">
+                            <label for="terms6" class="checkbox-label">(선택) 마케팅 정보 수신 동의 · SMS/MMS</label>
+                          </div>
+                          <div class="terms-detail-emoji">
+                        		<a type="button" class="term-btn" data-term="marketingTerm_sms" data-bs-toggle="modal" data-bs-target='#showTerm'> > </a>
+                       		</div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn" >다음단계</button>
+        </form>
+    </div>
+    
+    <!-- Vertically centered scrollable modal -->
+    <div class="modal fade" id="showTerm" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			  <div class="modal-content">
+			  
+			  	<div class="modal-header">
+			  		<h5 class="modal-title" id="myModalLabel">이용약관</h5>
+			  		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+			  	</div>
+			  	 
+	      	<div class="modal-body" id="modalBodyContent">
+	      		<!-- th:replace는 "fragment를 찾는 역할, 경로는 fragments일 필요없음, 그리고 해당 태그를 fragment내용으로 교체하면서 style="dislplay:none"이 무시되고 사라질수있음-->
+	      		<!-- 또한 replace는 fragment로 대체되면서 div의 id, class, style, data-* 속성 모두 사라짐.. 따라서 insert를 쓰자  -->
+						<div id="userTerms" class="term-fragment" style="display: none;" th:insert="~{login/terms/userTerms :: userTerms}"></div>
+						<div id="privacyTerm" class="term-fragment" style="display: none;" th:insert="~{login/terms/privacyPolicyAgreement :: privacyTerm}"></div>
+						<div id="locationTerm" class="term-fragment" style="display: none;" th:insert="~{login/terms/locationTerms :: locationTerm}"></div>
+						<div id="marketingTerm_email" class="term-fragment" style="display: none;" th:insert="~{login/terms/marketingTerms_email :: marketingTerm_email}"></div>
+						<div id="marketingTerm_sms" class="term-fragment" style="display: none;" th:insert="~{login/terms/marketingTerms_sms :: marketingTerm_sms}"></div>
+		      </div>
+			  </div>
+			</div>
+    </div>
+
+</body>
+</html>

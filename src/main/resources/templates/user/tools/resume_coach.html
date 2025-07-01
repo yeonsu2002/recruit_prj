@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/tools/css/tools_header.css}"/>
+<link rel="stylesheet" th:href="@{/user/tools/css/resume_coach.css}"/>
+
+<style type="text/css">
+</style>
+</head>
+
+<body>
+<header>
+  <div th:replace="~{fragments/header :: header}"></div>
+</header>
+
+<main>
+  <div th:replace="~{user/tools/tools_header :: tools-header}"></div>
+<div>
+  <div class="resume-coaching-container">
+    <div class="resume-input-section">
+      <label for="resumeInput" class="section-title">자기소개서</label>
+      <textarea id="resumeInput" placeholder="자기소개서를 입력해주세요.
+사람인 자소서 검점 AI가 더 돋보이는 자소서를 첨삭해 드려요!
+최소 200자 이상 최대 4000자까지 입력해주셔야 첨삭가능합니다."></textarea>
+    </div>
+    <div class="resume-coaching-section">
+      <label class="section-title">코칭</label>
+      <textarea readonly placeholder=""></textarea>
+    </div>
+  </div>
+
+  <div class="resume-info">
+    AI자소서 코칭은 입력하신 자기소개서와 그 정보를 바탕으로 추천 및 분석하며, 관련 사항은 1년간 보관됩니다.<br>
+    (다만, 알리미를 거절 및 회원탈퇴 등을 위해 필요한 경우 수집한 정보는 기업사정에 따라 기간 동안 보관 및 이용할 수 있습니다.)<br>
+    등의 내용을 올바르게 입력하신 것으로 보아 AI자소서 코칭 서비스를 제공합니다.<br>
+    AI자소서 코칭 분석시 입력하신 정보는 기명화되며, 작성자 정보로 분석하지 않으므로 AI자소서 코칭 분석 내역의 목적이나 삭제는 추가하며, 코칭 내용은 외부에 노출되지 않습니다.
+  </div>
+
+  <div class="resume-buttons">
+    <button type="button" class="reset-button">초기화</button>
+    <button type="button" class="analyze-button">동의 후 분석</button>
+  </div>
+ </div>
+</main>
+
+<footer>
+  <div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+</body>
+</html>
