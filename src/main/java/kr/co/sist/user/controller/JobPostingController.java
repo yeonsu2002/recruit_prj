@@ -10,7 +10,7 @@ public class JobPostingController {
 	public String JobPostingPage() {
 		
 		return "user/job_posting";
-	}
+	} 
 	
 	@GetMapping("/user/job_posting_detail")
 	public String JobPostingDetailPage() {

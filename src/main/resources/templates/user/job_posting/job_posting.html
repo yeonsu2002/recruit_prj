@@ -12,61 +12,88 @@
 </style>   
 <script type="text/javascript">
 
-/* 기술스택 */
 document.addEventListener('DOMContentLoaded', function() {
-	  var btn = document.getElementById('techStackBtn');
-	  var dropdown = document.getElementById('techStackDropdown');
-
-	  btn.addEventListener('click', function() {
-	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  // 기술스택 드롭다운
+	  const techStackBtn = document.getElementById('techStackBtn');
+	  const techStackDropdown = document.getElementById('techStackDropdown');
+	  techStackBtn.addEventListener('click', function () {
+	    techStackDropdown.style.display = (techStackDropdown.style.display === 'block') ? 'none' : 'block';
 	  });
-
-	  document.addEventListener('click', function(event) {
-	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
-	      dropdown.style.display = 'none';
+	  document.addEventListener('click', function (event) {
+	    if (!techStackBtn.contains(event.target) && !techStackDropdown.contains(event.target)) {
+	      techStackDropdown.style.display = 'none';
 	    }
 	  });
-	});
 
-/* 경력 */
-document.addEventListener('DOMContentLoaded', function() {
-	  var btn = document.getElementById('historyBtn');
-	  var dropdown = document.getElementById('historyDropdown');
-
-	  btn.addEventListener('click', function() {
-	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  // 경력 드롭다운
+	  const historyBtn = document.getElementById('historyBtn');
+	  const historyDropdown = document.getElementById('historyDropdown');
+	  historyBtn.addEventListener('click', function () {
+	    historyDropdown.style.display = (historyDropdown.style.display === 'block') ? 'none' : 'block';
 	  });
-
-	  document.addEventListener('click', function(event) {
-	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
-	      dropdown.style.display = 'none';
+	  document.addEventListener('click', function (event) {
+	    if (!historyBtn.contains(event.target) && !historyDropdown.contains(event.target)) {
+	      historyDropdown.style.display = 'none';
 	    }
 	  });
-	});
 
-/* 지역 */
-document.addEventListener('DOMContentLoaded', function() {
-	  var btn = document.getElementById('areaBtn');
-	  var dropdown = document.getElementById('areaDropdown');
-
-	  btn.addEventListener('click', function() {
-	    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+	  // 지역 드롭다운
+	  const areaBtn = document.getElementById('areaBtn');
+	  const areaDropdown = document.getElementById('areaDropdown');
+	  areaBtn.addEventListener('click', function () {
+	    areaDropdown.style.display = (areaDropdown.style.display === 'block') ? 'none' : 'block';
 	  });
-
-	  document.addEventListener('click', function(event) {
-	    if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
-	      dropdown.style.display = 'none';
+	  document.addEventListener('click', function (event) {
+	    if (!areaBtn.contains(event.target) && !areaDropdown.contains(event.target)) {
+	      areaDropdown.style.display = 'none';
 	    }
 	  });
-	});
 
-document.addEventListener('DOMContentLoaded', function() {
-	  var seoulBtn = document.getElementById('seoulBtn');
-	  var seoulSub = document.getElementById('seoulSub');
-
-	  seoulBtn.addEventListener('click', function(event) {
-	    event.stopPropagation(); // 드롭다운 닫히는 거 방지
+	  // 서울 하위 구
+	  const seoulBtn = document.getElementById('seoulBtn');
+	  const seoulSub = document.getElementById('seoulSub');
+	  seoulBtn.addEventListener('click', function (event) {
+	    event.stopPropagation();
 	    seoulSub.style.display = (seoulSub.style.display === 'block') ? 'none' : 'block';
+	  });
+
+	  
+	  
+	  
+	  //직무 클릭 시 기술스택 표시
+	  const stackTags = document.querySelectorAll('.stack span');
+	  const dynamicStack = document.getElementById('dynamicTechStack');
+
+	  const techStackMap = {
+	    '서버/백엔드 개발자': ['Java', 'Spring Boot', 'Node.js', 'Python', 'Django', 'PHP', 'C++', 'C#', 'AWS', 'MySQL', 'Oracle'],
+	    '프론트엔드 개발자': ['React', 'Vue.js', 'JavaScript' ,'TypeScript', 'Node.js', 'Svelte', 'HTML5','CSS3','AngularJS','jQuery'],
+	    '웹 풀스택 개발자': ['JavaScript', 'React', 'Vue.js' ,'jQuery', 'Node.js', 'HTML5','CSS3','Java','PHP'],
+	    '안드로이드 개발자': ['Kotlin', 'Java', 'C++','RxJava'],
+	    'iOS 개발자': ['Swift', 'Objective-C', 'Rxswift','SwiftUI','Xcode','C++'],
+	    '크로스플랫폼 앱개발자': ['Flutter', 'React Native', 'JavaScript'],
+	    'DBA': ['MySQL', 'Oracle', 'MSSQL','PostgreSQL','NoSql','MariaDB','MongoDB'],
+	    '빅데이터 엔지니어': ['Python', 'SQL', 'R','Hadoop','Spark','Java','Kafka','TensorFlow','PyTorch','Elasticsearch'],
+	    '인공지능/머신러닝': ['Python', 'TensorFlow', 'PyTorch','C++','C','OpenCV','Java'],
+	    'devops/시스템 엔지니어': ['AWS', 'Linux', 'Python','Kubernetes','Docker','Network','GCP','Windows','AZURE','Terraform'],
+	    '정보보안 엔지니어': ['Network', 'ISMS', 'AWS','CISA','CISSP','Firewall','VPN','IPS','CPPG'],
+	    'HW/임베디드': ['C', 'FW', 'Embedded','C++','Linux','Pads','FPGA','PCB','Python','RF'],
+	    'SW/솔루션': ['C++', 'C', 'C#','JAVA','Linux','Python','Embedded','JavaScript','Oracle','.NET','MSSQL'],
+	    '블록체인': ['Blockchain', 'Solidity', 'JAVA','Nft','Node.js','Golang','Python']
+	  };
+
+	  stackTags.forEach(tag => {
+	    tag.addEventListener('click', () => {
+	      const selected = tag.textContent.trim();
+	      const stacks = techStackMap[selected];
+
+	      if (stacks) {
+	        dynamicStack.innerHTML = stacks.map(skill => `<span>${skill}</span>`).join('');
+	        dynamicStack.style.display = 'flex';
+	      } else {
+	        dynamicStack.innerHTML = '';
+	        dynamicStack.style.display = 'none';
+	      }
+	    });
 	  });
 	});
 
@@ -104,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <span>기술지원</span>
 
 </div>
+<div id="dynamicTechStack" style="display: none; margin-top: 20px; flex-wrap: wrap; gap: 8px;"></div>
 <br>
 <div>
 
@@ -136,23 +164,22 @@ document.addEventListener('DOMContentLoaded', function() {
     <span>10년 이상</span>
   </div>
   
-    <button class="filter-btn" id="areaBtn">지역 ▾</button>
-   <div class="dropdown" id="areaDropdown">
-  <span id="seoulBtn">서울</span>
-  <span>경기</span>
-  <span>강원</span>
-  <span>인천</span>
-  <span>부산</span>
-  <span>충북</span>
-  <span>충남</span>
-  
-  <div id="seoulSub" style="display: none; margin-top:8px;">
+  <button class="filter-btn" id="areaBtn">지역 ▾</button>
+ <div class="dropdown" id="areaDropdown">
+  <div class="region-wrapper">
+    <span class="region" data-region="seoul">서울</span>
+    <span class="region" data-region="gyeonggi">경기</span>
+    <span class="region" data-region="gangwon">강원</span>
+    <!-- ... -->
+  </div>
+
+  <!-- 하위 지역은 오른쪽에 위치하게 -->
+  <div class="sub-region-popup" id="subRegionSeoul" style="display: none;">
     <span>강남구</span>
     <span>강동구</span>
     <span>서초구</span>
     <span>종로구</span>
   </div>
-</div>
 </div>
 
 </div>

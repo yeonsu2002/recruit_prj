@@ -125,3 +125,98 @@
   display: block;
   box-sizing: border-box;
 }
+
+#dynamicTechStack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+/* 애니메이션 효과 */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 각 기술스택 태그 */
+#dynamicTechStack span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e8f5e8;
+    color: #333333;
+    border: 1px solid #c8e6c8;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 호버 효과 */
+#dynamicTechStack span:hover {
+    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
+    color: white;
+    border-color: #00c471;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 196, 113, 0.3);
+}
+
+/* 클릭 효과 */
+#dynamicTechStack span:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 196, 113, 0.2);
+}
+
+/* 선택된 상태 */
+#dynamicTechStack span.selected {
+    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
+    color: white;
+    border-color: #00c471;
+    box-shadow: 0 4px 16px rgba(0, 196, 113, 0.25);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    #dynamicTechStack {
+        padding: 15px;
+        gap: 8px;
+    }
+    
+    #dynamicTechStack span {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+}
+
+
+.stack span.job-selected {
+    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 196, 113, 0.3);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
