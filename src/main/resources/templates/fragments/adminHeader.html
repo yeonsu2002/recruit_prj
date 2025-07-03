@@ -1,0 +1,108 @@
+<th:block th:fragment="adminHeader">
+<link rel="stylesheet" th:href="@{/admin/admin_header.css}"/>
+</head>
+<body>
+    <!-- 모바일 메뉴 버튼 -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+    <!-- 사이드바 오버레이 -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- 사이드바 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo" style="width: 80%; height: 80%; object-fit: contain;"></a>
+            </div>
+            <div class="admin-info">
+                <h3>관리자</h3>
+                <p>시스템 관리</p>
+                <a href="/admin/logout" class="sidebar-logout-btn">로그아웃</a>
+            </div>
+        </div>
+        
+
+        <div class="sidebar-menu">
+            <!-- 기본 메뉴 그룹 -->
+            <div class="menu-group">
+                <!-- <a href="#" class="menu-item active">관리자홈</a> -->
+                <a href="#" class="menu-item">대시보드</a>
+                <a href="#" class="menu-item">이력서 관리</a>
+                <a href="#" class="menu-item">공고 관리</a>
+            </div>
+            
+            <!-- 회원 관리 그룹 -->
+            <div class="menu-group">
+                <div class="menu-item main-menu">회원관리</div>
+                <a href="#" class="menu-item sub-menu">회원목록</a>
+                <a href="#" class="menu-item sub-menu">제재내역</a>
+            </div>
+            
+            <!-- 기업 관리 그룹 -->
+            <div class="menu-group">
+                <div class="menu-item main-menu">기업관리</div>
+                <a href="#" class="menu-item sub-menu">기업목록</a>
+                <a href="#" class="menu-item sub-menu">제재목록</a>
+            </div>
+            
+            <!-- 리뷰 관리 그룹 -->
+            <div class="menu-group">
+                <a href="#" class="menu-item">리뷰관리</a>
+            </div>
+            
+            <!-- 상품 관리 그룹 -->
+            <div class="menu-group">
+                <div class="menu-item main-menu">상품관리</div>
+                <a href="#" class="menu-item sub-menu">상품등록</a>
+                <a href="#" class="menu-item sub-menu">상품목록</a>
+                <a href="#" class="menu-item sub-menu">결제목록</a>
+            </div>
+            
+            <!-- 고객센터 관리 그룹 -->
+            <div class="menu-group">
+                <div class="menu-item main-menu">고객센터 관리</div>
+                <a href="#" class="menu-item sub-menu">문의내역</a>
+                <a href="#" class="menu-item sub-menu">FAQ</a>
+            </div>
+        </div>
+    </nav>
+
+  
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+
+        // 메뉴 아이템 클릭 시 활성화 상태 변경
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 모든 메뉴에서 active 클래스 제거
+                document.querySelectorAll('.menu-item').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+
+                // 클릭한 메뉴에 active 클래스 추가
+                this.classList.add('active');
+
+                // 모바일에서는 사이드바 닫기
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</th:block>

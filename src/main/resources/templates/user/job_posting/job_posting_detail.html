@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
+<link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
+<link rel="stylesheet" th:href="@{/user/css/job_posting_detail.css}"/>
+<style type="text/css">
+</style>     
+<script type="text/javascript">
+
+
+</script>
+</head>
+<body>
+<header>
+<div th:replace="~{fragments/header :: header}"></div>
+</header>
+<main>
+<div class="main-container" style="display: flex; gap: 30px;">
+  <div style="flex: 1;">
+  <br>
+    <h2 class="job_posting_title">웹 프론트엔드 개발자</h2>
+    <div class="stack">
+    <br><br>
+    <h2 style="font-size: 20px"><strong>기술스택</strong></h2>
+        <span>Java</span>
+        <span>C++</span>
+        <span>Linux</span>
+        <span>JavaScript</span>
+        <span>MySQL</span>
+        <span>AWS</span>
+        <span>React</span>
+        <span>Python</span>
+    </div>
+    <br>
+    <br>
+    <div>
+    <div class="posting_detail">
+    <h2 style="font-size: 20px">주요업무</h2>
+    <h2 style="font-size: 14px">
+    • 패션앤스타일 백엔드 서비스 설계 및 개발<br>
+    • 서비스 및 인프라의 안정성, 확장성, 효율성 개선 및 유지/보수 업무 진행
+    <br><br><br>
+    <h2 style="font-size: 20px">자격요건</h2>
+    <h2 style="font-size: 14px">
+    • Java / Spring framework(Spring Boot) 개발 가능하신 분<br>
+    • RESTful API 이해와 개발 경험이 있으신 분<br>
+    • RDBMS(Oracle/MySQL 등) 쿼리 개발 가능하신 분<br>
+    • Git/GitHub, Figma 등을 통한 협업 업무 경험이 있으신 분<br>
+    • 원활하게 협업할 수 있는 커뮤니케이션 역량을 보유하신 분<br>
+    • 코딩하는 것을 좋아하고 기술 향상을 위해 끊임없이 노력하시는 분
+    <br><br><br>
+    </h2>
+    
+    <h2 style="font-size: 20px">우대사항</h2>
+    <h2 style="font-size: 14px">
+    • Python 사용 가능자 우대
+    </h2>
+    <br><br><br>
+    <h2 style="font-size: 20px">복지 및 혜택</h2>
+    <h2 style="font-size: 14px">
+    • 급여 외 식대 지원<br>
+    • 건강 검진, 각종 경조사 지원<br>
+    • 명절 선물, 생일 파티<br>
+    • 최신 맥북, 사무용품 지급, 공기 청정기<br>
+    • 자유 복장, 자유로운 연차, 회식 강요 없음
+    <br><br>
+    </h2>
+    </div>
+    <br>
+    <div class="detail">
+    <div class="history"> 
+    <h2>경력</h2>
+    </div>
+    <div class="school"> 
+    <h2>학력</h2>
+    </div>
+    <div class="end"> 
+    <h2>마감일</h2>
+    </div>
+    <div class="zipCode"> 
+    <h2>근무주소</h2>
+    </div>
+    </div>
+	</div>
+ 	<br><br>
+ 	<div>
+    <h2 style="font-size: 30px"><strong>기업소개</strong></h2><br/>
+    <img src="/images/samsung.jpg" style="width: 700px;" height="auto" />
+    <br><br><br>
+    <h2 style="font-size: 15px; width: 700px;" height="auto" >
+    [회사 소개]<br>
+	  삼성전자는 사람과 사회를 생각하는 글로벌 일류기업을 추구합니다.
+	 ‘경영이념, 핵심가치, 경영원칙’의 가치체계를 경영의 나침반으로 삼고, 
+	  인재와 기술을 바탕으로 최고의 제품과 서비스를 창출하여 인류사회에 공헌하는 것을 궁극적인 목표로 삼고 있습니다. 
+	  이를 위해 삼성전자가 지켜나갈 약속인 5가지 경영원칙을 세부원칙과 행동지침으로 구체화하여
+	  삼성전자 임직원이 지켜야 할 행동규범(Global Code of Conduct)으로 제정하였으며, 
+	  모든 임직원의 사고와 행동에 5가지 핵심가치를 내재화하여 삼성전자의 지속적인 성장을 견인하고 미래 방향성을 제시하고자 합니다.
+    </h2>
+    </div>
+    </div>
+ 	</div>
+  
+ <!-- 플로팅 사이드바 -->
+<div class="floating-sidebar">
+  <div class="company-floating-card">
+    <div class="company-logo-section">
+      <div class="logo-placeholder">
+        <span>🏢</span>
+      </div>
+      <div class="company-title">
+        <h4>삼성전자</h4>
+        <span><a href="/user/job_posting/company_info">기업정보 보기 &gt;</a></span>
+      </div>
+    </div>
+    
+    <div class="company-info-section">
+      <div class="info-item">
+        <span class="label">업력</span>
+        <span class="value">5년차 (2021년 설립)</span>
+      </div>
+    </div>
+    
+    <button class="floating-apply-btn">지원하기</button>
+    
+    <div class="floating-actions">
+      <button class="floating-action-btn">
+        <span class="icon">📋</span>
+        <span class="text">스크랩</span>
+      </button>
+    
+    </div>
+  </div>
+</div>
+</main>
+<footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+</body>
+</html>
