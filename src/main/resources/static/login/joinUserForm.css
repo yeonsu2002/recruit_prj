@@ -222,3 +222,17 @@ body {
 .checkbox-item .terms-detail-emoji {
 	flex: 0.1;
 } 
+
+.zipcode-box {
+	width: 60%;
+	display: flex;
+	gap: 8px;
+}
+
+.zipcode-box > input:first-of-type {
+	flex : 5;
+}
+
+.zipcode-box > input:first-of-type(2) {
+	flex : 5;
+}
