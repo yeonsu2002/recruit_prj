@@ -28,9 +28,14 @@ $(function(){
       .removeClass('has-photo');
     $('#photo-input').val('');
   };
-
+  
   // 사진 업로드 클릭 시 파일 선택창 열기
-  $('#photo-upload-box').on('click', () => $('#photo-input').click());
+  $('#photo-upload-box').on('click', function(e) {
+  	// 클릭된 요소가 업로드 박스 자체 또는 자식 중 삭제버튼이 아닌 경우에만 파일 선택창 열기
+ 	 if (!$(e.target).is('#photo-remove-btn')) {
+   	 	$('#photo-input').click();
+  	 }
+  });
 
   // 사진 업로드 후 미리보기 표시
   $('#photo-input').on('change', function() {
@@ -151,6 +156,7 @@ $(function(){
 	</header>
 
 	<main>
+		
 		<div class="main-container">
 			<div class="header-section">
 				<h1>이력서 작성</h1>
@@ -224,17 +230,8 @@ $(function(){
 
 					<div class="job-selection">
 						<label class="form-label">희망 직무를 선택하거나 직접 입력해주세요</label>
-						<div class="mb-3">
-							<button class="btn btn-tag" data-job="서버/백엔드 개발자">서버/백엔드
-								개발자</button>
-							<button class="btn btn-tag" data-job="프론트엔드 개발자">프론트엔드
-								개발자</button>
-							<button class="btn btn-tag" data-job="풀스택 개발자">풀스택 개발자</button>
-							<button class="btn btn-tag" data-job="모바일 개발자">모바일 개발자</button>
-							<button class="btn btn-tag" data-job="블록체인 기획자">블록체인 기획자</button>
-						</div>
 						<input type="text" class="form-control"
-							placeholder="직접 입력하거나 위에서 선택해주세요" id="custom-job">
+							placeholder="직무를 선택해주세요" id="custom-job">
 					</div>
 				</div>
 

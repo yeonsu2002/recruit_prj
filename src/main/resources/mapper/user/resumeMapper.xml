@@ -4,25 +4,11 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
-<mapper namespace="kr.co.sist.emp.EmpMapper">
+<mapper namespace="kr.co.sist.user.mapper.ResumeMapper">
 
-<select id="selectAllDept" resultType="Integer">
-select deptno 
-from dept
+<select id="selectAllPositionCode" resultType="kr.co.sist.user.dto.PositionCodeDTO">
+select position_seq, position_name
+from position_code
 </select>
 
-<select id="selectDeptEmp" parameterType="int" resultType="empDomain">
-select empno, ename, job, mgr, hiredate, sal, comm
-from cp_emp8
-where deptno=#{deptno}
-</select>
-
-<insert id="insertEmp" parameterType="empDTO">
-insert into cp_emp8(empno, ename, job, mgr, hiredate, sal, comm, deptno)
-values(#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{deptno})
-</insert>
-<insert id="insertEmp2" parameterType="empDTO">
-insert into cp_emp9(empno, ename, job, mgr, hiredate, sal, comm, deptno)
-values(#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{deptno})
-</insert>
 </mapper>
