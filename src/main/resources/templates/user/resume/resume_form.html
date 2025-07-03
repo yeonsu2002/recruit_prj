@@ -156,7 +156,9 @@ $(function(){
 	</header>
 
 	<main>
-		
+		<th:block th:each="pc : ${pcList}">
+			<div th:text="${pc.positionName}"></div>
+		</th:block>
 		<div class="main-container">
 			<div class="header-section">
 				<h1>이력서 작성</h1>

@@ -29,9 +29,6 @@ public class ResumeController {
 	@GetMapping("/user/resume/resume_form")
 	public String resumePage(Model model) {
 		
-		List<PositionCodeDTO> list = rs.searchAllPositionCode();
-	    System.out.println("searchAllPositionCode 호출 결과: " + list);
-	    System.out.println("안녕하세요@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		model.addAttribute("pcList", rs.searchAllPositionCode());
 		
 		return "/user/resume/resume_form";
