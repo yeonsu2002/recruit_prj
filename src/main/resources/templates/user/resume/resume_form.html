@@ -2,449 +2,356 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>민기 인력</title>
+<title>이력서 작성</title>
 <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
-<link rel="stylesheet" th:href="@{/user/css/header.css}" />
-<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
-<link rel="stylesheet" th:href="@{/user/css/main_page.css}" />
-
-<style type="text/css">
-    body {
-        background-color: #f4f6f8;
-        font-family: 'Apple SD Gothic Neo', 'Segoe UI', Roboto, sans-serif;
-        color: #333;
-    }
-
-    .main-container {
-        max-width: 900px;
-        margin: 40px auto;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-
-    .profile-section {
-        background: linear-gradient(135deg, #3b5998, #8b9dc3);
-        color: #fff;
-        padding: 50px 40px;
-        display: flex;
-        align-items: center;
-    }
-
-    .profile-photo {
-        flex-shrink: 0;
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 40px;
-        margin-right: 30px;
-        border: 4px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .profile-info h2 {
-        font-size: 2.2rem;
-        margin-bottom: 8px;
-    }
-
-    .subtitle {
-        opacity: 0.85;
-        font-size: 1.1rem;
-        margin-bottom: 15px;
-    }
-
-    .contact-info {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        font-size: 0.95rem;
-    }
-
-    .form-section {
-        padding: 40px;
-    }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 25px;
-        border-bottom: 2px solid #e1e4e8;
-        padding-bottom: 10px;
-    }
-
-    .section-header h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control, .form-select {
-        border: 2px solid #dee2e6;
-        border-radius: 10px;
-        padding: 14px 18px;
-        font-size: 1rem;
-        transition: 0.3s;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #5b6ad0;
-        box-shadow: 0 0 0 0.2rem rgba(91,106,208,0.25);
-    }
-
-    .job-option {
-        background: #f9fafc;
-        border: 2px solid #dee2e6;
-        border-radius: 15px;
-        padding: 25px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .job-option:hover, .job-option.selected {
-        border-color: #5b6ad0;
-        background: rgba(91,106,208,0.05);
-    }
-
-    .job-option i {
-        font-size: 2.2rem;
-        margin-bottom: 12px;
-        color: #5b6ad0;
-    }
-
-    .skill-tag {
-        background: #5b6ad0;
-        color: #fff;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-    }
-
-    .link-group {
-        background: #f9fafc;
-        border-radius: 15px;
-        padding: 20px;
-    }
-
-    .link-item {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 20px;
-    }
-
-    .link-item:last-child {
-        margin-bottom: 0;
-    }
-
-    .link-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-    }
-
-    .github-icon { background: #24292e; color: #fff; }
-    .notion-icon { background: #000; color: #fff; }
-    .blog-icon { background: #ff6b35; color: #fff; }
-
-    .timeline-item, .project-card {
-        background: #f9fafc;
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 20px;
-        border-left: 4px solid #5b6ad0;
-    }
-
-    .btn-primary {
-        background: #5b6ad0;
-        border: none;
-        border-radius: 30px;
-        padding: 14px 35px;
-        font-weight: 600;
-        font-size: 1.2rem;
-        color: #fff;
-        transition: 0.3s;
-    }
-
-    .btn-primary:hover {
-        background: #4b5ac0;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(91,106,208,0.35);
-    }
-
-    .add-btn {
-        background: #e9ebf8;
-        color: #5b6ad0;
-        border: 2px dashed #5b6ad0;
-        border-radius: 10px;
-        padding: 18px;
-        text-align: center;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .add-btn:hover {
-        background: #d8dbf0;
-    }
-
-    @media (max-width: 768px) {
-        .main-container { margin: 20px; border-radius: 15px; }
-        .profile-section { flex-direction: column; text-align: center; }
-        .profile-photo { margin: 0 auto 20px auto; }
-        .contact-info { justify-content: center; }
-        .form-section { padding: 25px; }
-    }
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/user/resume/css/resume_form.css}" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
 </style>
+<script>
+$(function(){
+  /** 사진 업로드 초기화 */
+  const resetPhotoUploadBox = () => {
+    $('#photo-upload-box')
+      .html(`
+        <div class="photo-upload-text">
+          <i class="fas fa-camera"></i>
+          <div>사진 업로드</div>
+          <small>클릭하여 선택</small>
+        </div>
+        <button type="button" class="photo-remove-btn" id="photo-remove-btn">×</button>
+      `)
+      .removeClass('has-photo');
+    $('#photo-input').val('');
+  };
 
-<script type="text/javascript">
+  // 사진 업로드 클릭 시 파일 선택창 열기
+  $('#photo-upload-box').on('click', () => $('#photo-input').click());
+
+  // 사진 업로드 후 미리보기 표시
+  $('#photo-input').on('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      $('#photo-upload-box')
+        .html(`<img src="${e.target.result}" alt="프로필 사진">
+               <button type="button" class="photo-remove-btn" id="photo-remove-btn">×</button>`)
+        .addClass('has-photo');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // 사진 삭제 (이벤트 위임)
+  $(document).on('click', '#photo-remove-btn', e => {
+    e.stopPropagation();
+    resetPhotoUploadBox();
+  });
+
+  // 직무 태그 클릭 시 선택 처리
+  $('.btn-tag').on('click', function(){
+    $('.btn-tag').removeClass('active');
+    $(this).addClass('active');
+    $('#custom-job').val($(this).data('job'));
+  });
+
+  // 기술스택 입력 처리
+  $('#skill-input').on('keypress', function(e){
+    if (e.which === 13 && this.value.trim() !== "") {
+      const skill = this.value.trim();
+      $('#skills').append(`
+        <span class="tag">
+          ${skill}
+          <button type="button" class="remove-tag">×</button>
+        </span>`);
+      this.value = "";
+      return false;
+    }
+  });
+
+  // 기술 태그 삭제 (이벤트 위임)
+  $(document).on('click', '.remove-tag', function(){
+    $(this).parent().remove();
+  });
+
+  /** 학력/경력/프로젝트/기타 공통 추가 함수 */
+  const addItem = (containerSelector, html) => $(containerSelector).append(html);
+
+  // 각 추가 버튼에 맞게 아이템 추가
+  $('#add-edu').on('click', () => addItem('.edu-list', eduHtml()));
+  $('#add-exp').on('click', () => addItem('.exp-list', expHtml()));
+  $('#add-proj').on('click', () => addItem('.proj-list', projHtml()));
+  $('#add-etc').on('click', () => addItem('.etc-list', etcHtml()));
+
+  // 각 항목별 HTML 템플릿 함수 (필요한 항목 추가 시 유지보수 용이)
+  const eduHtml = () => `
+    <div class="item-box">
+      <button type="button" class="item-remove-btn">×</button>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">기간</label><input type="text" class="form-control" placeholder="2020.03 ~ 2024.02"></div>
+        <div class="col-md-6"><label class="form-label">졸업구분</label><select class="form-select"><option selected disabled>선택해주세요</option><option>졸업</option><option>졸업예정</option><option>재학</option><option>휴학</option><option>중퇴</option></select></div>
+        <div class="col-md-6"><label class="form-label">학교명</label><input type="text" class="form-control" placeholder="○○대학교"></div>
+        <div class="col-md-6"><label class="form-label">학과</label><input type="text" class="form-control" placeholder="컴퓨터공학과"></div>
+      </div>
+    </div>`;
+
+  const expHtml = () => `
+    <div class="item-box">
+      <button type="button" class="item-remove-btn">×</button>
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">재직기간</label><input type="text" class="form-control" placeholder="2022.01 ~ 2024.01"></div>
+        <div class="col-md-4"><label class="form-label">회사명</label><input type="text" class="form-control" placeholder="(주)○○회사"></div>
+        <div class="col-md-4"><label class="form-label">직책/직무</label><input type="text" class="form-control" placeholder="주임/백엔드 개발자"></div>
+        <div class="col-12"><label class="form-label">담당업무 및 성과</label><textarea class="form-control" rows="3" placeholder="담당했던 업무와 성과를 구체적으로 입력해주세요"></textarea></div>
+      </div>
+    </div>`;
+
+  const projHtml = () => `
+    <div class="item-box">
+      <button type="button" class="item-remove-btn">×</button>
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">프로젝트 기간</label><input type="text" class="form-control" placeholder="2023.05 ~ 2023.08"></div>
+        <div class="col-md-6"><label class="form-label">프로젝트명</label><input type="text" class="form-control" placeholder="쇼핑몰 웹사이트 개발"></div>
+        <div class="col-12"><label class="form-label">프로젝트 설명</label><input type="text" class="form-control" placeholder="프로젝트에 대한 간단한 설명"></div>
+        <div class="col-12"><label class="form-label">사용 기술</label><input type="text" class="form-control" placeholder="React, Node.js, MongoDB, AWS"></div>
+        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="4" placeholder="프로젝트에서 담당한 역할과 구현한 기능을 상세히 설명해주세요"></textarea></div>
+        <div class="col-md-6"><div class="form-check mt-3"><input class="form-check-input" type="checkbox"><label class="form-check-label">배포/출시 완료</label></div></div>
+        <div class="col-md-6"><label class="form-label">저장소 링크</label><input type="url" class="form-control" placeholder="https://github.com/username/project"></div>
+      </div>
+    </div>`;
+
+  const etcHtml = () => `
+    <div class="item-box">
+      <button type="button" class="item-remove-btn">×</button>
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">취득일/활동기간</label><input type="text" class="form-control" placeholder="2023.05 또는 2023.03~2023.12"></div>
+        <div class="col-md-4"><label class="form-label">활동명/자격증명</label><input type="text" class="form-control" placeholder="정보처리기사"></div>
+        <div class="col-md-4"><label class="form-label">분류</label><select class="form-select"><option selected disabled>선택해주세요</option><option>자격증</option><option>수상</option><option>대외활동</option><option>봉사활동</option><option>교육/강의</option><option>기타</option></select></div>
+        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="3" placeholder="자세한 내용이나 성과를 입력해주세요"></textarea></div>
+      </div>
+    </div>`;
+
+  // 공통 삭제 버튼 처리 (이벤트 위임)
+  $(document).on('click', '.item-remove-btn', function(){
+    $(this).parent().remove();
+  });
+});
 </script>
+
 </head>
 <body>
+
 	<header>
 		<div th:replace="~{fragments/header :: header}"></div>
 	</header>
+
 	<main>
 		<div class="main-container">
-			<!-- 프로필 섹션 -->
-			<div class="profile-section">
-				<div class="row align-items-center">
-					<div class="col-md-3">
-						<div class="profile-photo">
-							<i class="fas fa-user fa-2x" style="opacity: 0.7;"></i>
-						</div>
+			<div class="header-section">
+				<h1>이력서 작성</h1>
+				<p>필요한 정보를 입력하여 이력서를 완성해보세요</p>
+			</div>
+
+			<div class="content-section">
+				<!-- 기본정보 -->
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-user"></i> 기본정보
 					</div>
-					<div class="col-md-9">
-						<div class="profile-info">
-							<h2>주현석</h2>
-							<div class="subtitle">개발자 이력서</div>
+
+					<div class="photo-upload-section">
+						<div class="photo-upload-container">
+							<div class="photo-upload-box" id="photo-upload-box">
+								<div class="photo-upload-text">
+									<i class="fas fa-camera"></i>
+									<div>사진 업로드</div>
+									<small>클릭하여 선택</small>
+								</div>
+								<button type="button" class="photo-remove-btn"
+									id="photo-remove-btn">×</button>
+							</div>
+							<input type="file" id="photo-input" accept="image/*"
+								style="display: none;">
+						</div>
+
+						<div class="contact-info-section">
 							<div class="contact-info">
-								<div class="contact-item">
-									<i class="fas fa-envelope"></i> <span>wngustjr1306@naver.com</span>
+								<div class="row g-3 mb-3">
+									<div class="col-md-6">
+										<label class="form-label">이름</label> <input type="text"
+											class="form-control" placeholder="홍길동">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">이메일</label> <input type="email"
+											class="form-control" placeholder="example@email.com">
+									</div>
 								</div>
-								<div class="contact-item">
-									<i class="fas fa-phone"></i> <span>010-9120-5456</span>
+								<div class="row g-3 mb-3">
+									<div class="col-md-6">
+										<label class="form-label">전화번호</label> <input type="text"
+											class="form-control" placeholder="010-0000-0000">
+									</div>
+									<div class="col-md-6">
+										<label class="form-label">성별</label> <select
+											class="form-select">
+											<option selected disabled>선택해주세요</option>
+											<option>남성</option>
+											<option>여성</option>
+										</select>
+									</div>
 								</div>
-								<div class="contact-item">
-									<i class="fas fa-calendar"></i> <span>1999년생</span>
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label class="form-label">출생연도</label> <input type="number"
+											class="form-control" placeholder="1999">
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="form-section">
-				<!-- 간단 소개 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-user-circle"></i>
-						<h3>간단 소개</h3>
+				<!-- 희망 직무 -->
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-briefcase"></i> 희망 직무
 					</div>
-					<textarea class="form-control" rows="4"
-						placeholder="자신을 간단히 소개해주세요 (3~5줄 이내)"></textarea>
-				</div>
 
-				<!-- 개발 직무 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-code"></i>
-						<h3>개발 직무</h3>
-					</div>
-					<div class="job-selector">
-						<div class="job-option" onclick="selectJob(this)">
-							<i class="fas fa-server"></i>
-							<div style="font-weight: 600;">백엔드</div>
+					<div class="job-selection">
+						<label class="form-label">희망 직무를 선택하거나 직접 입력해주세요</label>
+						<div class="mb-3">
+							<button class="btn btn-tag" data-job="서버/백엔드 개발자">서버/백엔드
+								개발자</button>
+							<button class="btn btn-tag" data-job="프론트엔드 개발자">프론트엔드
+								개발자</button>
+							<button class="btn btn-tag" data-job="풀스택 개발자">풀스택 개발자</button>
+							<button class="btn btn-tag" data-job="모바일 개발자">모바일 개발자</button>
+							<button class="btn btn-tag" data-job="블록체인 기획자">블록체인 기획자</button>
 						</div>
-						<div class="job-option" onclick="selectJob(this)">
-							<i class="fas fa-laptop-code"></i>
-							<div style="font-weight: 600;">프론트엔드</div>
-						</div>
-						<div class="job-option" onclick="selectJob(this)">
-							<i class="fas fa-layer-group"></i>
-							<div style="font-weight: 600;">풀스택</div>
-						</div>
+						<input type="text" class="form-control"
+							placeholder="직접 입력하거나 위에서 선택해주세요" id="custom-job">
 					</div>
 				</div>
 
 				<!-- 기술스택 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-tools"></i>
-						<h3>기술스택</h3>
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-code"></i> 기술스택
 					</div>
-					<input type="text" class="form-control"
-						placeholder="기술스택을 입력해주세요 (예: Java, Spring, React, MySQL)">
-					<div class="skill-tags mt-3">
-						<span class="skill-tag">Java</span> <span class="skill-tag">Spring
-							Boot</span> <span class="skill-tag">React</span> <span class="skill-tag">MySQL</span>
+					<div class="section-help-text">보유하고 있는 기술스택을 입력 후 Enter를
+						눌러주세요</div>
+					<div class="mb-3">
+						<input type="text" class="form-control" id="skill-input"
+							placeholder="예: JavaScript, React, Node.js">
+						<div class="skill-input-help">기술명을 입력하고 Enter를 누르면 태그가 생성됩니다</div>
+						<div id="skills" class="mt-3"></div>
 					</div>
 				</div>
 
 				<!-- 링크 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-link"></i>
-						<h3>링크</h3>
+				<div class="section-card links-section">
+					<div class="section-title">
+						<i class="fas fa-link"></i> 링크
 					</div>
-					<div class="link-group">
-						<div class="link-item">
-							<div class="link-icon github-icon">
-								<i class="fab fa-github"></i>
-							</div>
-							<input type="url" class="form-control" placeholder="GitHub URL">
-						</div>
-						<div class="link-item">
-							<div class="link-icon notion-icon">
-								<i class="fas fa-file-alt"></i>
-							</div>
-							<input type="url" class="form-control" placeholder="Notion URL">
-						</div>
-						<div class="link-item">
-							<div class="link-icon blog-icon">
-								<i class="fas fa-blog"></i>
-							</div>
-							<input type="url" class="form-control" placeholder="Blog URL">
-						</div>
+					<div class="section-help-text">포트폴리오나 프로젝트를 확인할 수 있는 링크를
+						입력해주세요</div>
+
+					<div class="input-group">
+						<span class="input-group-text"><i class="fab fa-github"></i></span>
+						<input type="url" class="form-control"
+							placeholder="https://github.com/username">
+					</div>
+
+					<div class="input-group">
+						<span class="input-group-text"><i class="fas fa-file-alt"></i></span>
+						<input type="url" class="form-control"
+							placeholder="https://notion.so/...">
+					</div>
+
+					<div class="input-group">
+						<span class="input-group-text"><i class="fas fa-blog"></i></span>
+						<input type="url" class="form-control"
+							placeholder="https://blog.example.com">
 					</div>
 				</div>
 
 				<!-- 학력 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-graduation-cap"></i>
-						<h3>학력</h3>
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-graduation-cap"></i> 학력
 					</div>
-					<div class="timeline-item">
-						<div class="row g-3">
-							<div class="col-md-3">
-								<input type="text" class="form-control"
-									placeholder="졸업년도 (예: 2025.02)">
-							</div>
-							<div class="col-md-3">
-								<select class="form-select">
-									<option>학력 구분</option>
-									<option>고등학교</option>
-									<option>전문학사</option>
-									<option>학사</option>
-									<option>석사</option>
-								</select>
-							</div>
-							<div class="col-md-6">
-								<input type="text" class="form-control" placeholder="학교명 입력">
-							</div>
-						</div>
-					</div>
-					<div class="add-btn">
+					<div class="section-help-text">최신 순으로 입력해주세요</div>
+					<div class="edu-list"></div>
+					<button class="add-btn" id="add-edu">
 						<i class="fas fa-plus"></i> 학력 추가
-					</div>
+					</button>
 				</div>
 
 				<!-- 경력 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-briefcase"></i>
-						<h3>경력</h3>
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-briefcase"></i> 경력
 					</div>
-					<div class="timeline-item">
-						<input type="text" class="form-control mb-3"
-							placeholder="근무기간 (예: 2023.01 ~ 2024.01)"> <input
-							type="text" class="form-control mb-3" placeholder="회사명 입력">
-						<textarea class="form-control" rows="3"
-							placeholder="주요 업무 및 성과를 입력해주세요"></textarea>
-					</div>
-					<div class="add-btn">
+					<div class="section-help-text">최신 순으로 입력해주세요</div>
+					<div class="exp-list"></div>
+					<button class="add-btn" id="add-exp">
 						<i class="fas fa-plus"></i> 경력 추가
-					</div>
+					</button>
 				</div>
 
 				<!-- 프로젝트 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-project-diagram"></i>
-						<h3>프로젝트</h3>
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-project-diagram"></i> 프로젝트
 					</div>
-					<div class="project-card">
-						<div class="row g-3 mb-3">
-							<div class="col-md-6">
-								<input type="text" class="form-control"
-									placeholder="진행 기간 (예: 2023.03 ~ 2023.05)">
-							</div>
-							<div class="col-md-6">
-								<input type="text" class="form-control" placeholder="프로젝트명">
-							</div>
-						</div>
-						<textarea class="form-control mb-3" rows="4"
-							placeholder="프로젝트 상세 내용을 입력해주세요"></textarea>
-						<input type="url" class="form-control"
-							placeholder="저장소 링크 (GitHub 등)">
-					</div>
-					<div class="add-btn">
+					<div class="section-help-text">개인 프로젝트나 팀 프로젝트를 입력해주세요</div>
+					<div class="proj-list"></div>
+					<button class="add-btn" id="add-proj">
 						<i class="fas fa-plus"></i> 프로젝트 추가
+					</button>
+				</div>
+
+				<!-- 기타사항 -->
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-star"></i> 기타사항
 					</div>
+					<div class="section-help-text">자격증, 수상경력, 대외활동 등을 입력해주세요</div>
+					<div class="etc-list"></div>
+					<button class="add-btn" id="add-etc">
+						<i class="fas fa-plus"></i> 기타사항 추가
+					</button>
 				</div>
 
 				<!-- 자기소개서 -->
-				<div class="mb-5">
-					<div class="section-header">
-						<i class="fas fa-pen-fancy"></i>
-						<h3>자기소개서</h3>
+				<div class="section-card">
+					<div class="section-title">
+						<i class="fas fa-pen-fancy"></i> 자기소개서
 					</div>
-					<textarea class="form-control" rows="8"
-						placeholder="자기소개서 내용을 입력해주세요"></textarea>
+					<div class="mb-3">
+						<label class="form-label">제목</label> <input type="text"
+							class="form-control" placeholder="자기소개서 제목을 입력해주세요">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">내용</label>
+						<textarea class="form-control" rows="8"
+							placeholder="자기소개 내용을 입력해주세요"></textarea>
+					</div>
 				</div>
 
-				<!-- 저장 버튼 -->
-				<div class="text-center">
-					<button class="btn btn-primary btn-lg">
-						<i class="fas fa-save me-2"></i>저장하기
-					</button>
-				</div>
+				<button class="save-btn">이력서 저장하기</button>
 			</div>
 		</div>
-
-		<script>
-        function selectJob(element) {
-            // 모든 job-option에서 selected 클래스 제거
-            document.querySelectorAll('.job-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // 클릭된 요소에 selected 클래스 추가
-            element.classList.add('selected');
-        }
-
-        // 기술스택 입력 시 태그 생성 (예시)
-        document.addEventListener('DOMContentLoaded', function() {
-            const skillInput = document.querySelector('input[placeholder*="기술스택"]');
-            const skillTags = document.querySelector('.skill-tags');
-            
-            skillInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const skill = this.value.trim();
-                    if (skill) {
-                        const tag = document.createElement('span');
-                        tag.className = 'skill-tag';
-                        tag.textContent = skill;
-                        skillTags.appendChild(tag);
-                        this.value = '';
-                    }
-                }
-            });
-        });
-    </script>
 	</main>
+
 	<footer>
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</footer>
+
 </body>
 </html>
