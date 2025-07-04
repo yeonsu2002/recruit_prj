@@ -1,13 +1,29 @@
 package kr.co.sist.login;
 
+import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.util.CipherUtil;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+//@RequiredArgsConstructor -> 생성자주입방식 생성자 코드 대신 어노테이션
 @Controller
 public class LoginController {
- 
+
+	private final loginJoinService ljs; 
+	
+	//생성자주입방식
+	public LoginController(loginJoinService ljs) {
+		this.ljs = ljs;
+	}
+	
   /**
    * 기업회원 로그인 페이지로 이동
    * @return
@@ -21,7 +37,7 @@ public class LoginController {
    * 일반회원 로그인 처리
    * @return
    */
-  @PostMapping("user/login")
+  @PostMapping("user/loginProcess")
   public String memberLoginProcess() {
     System.out.println("개인회원 로그인 처리");
     return "redirect:/user/main";
@@ -40,8 +56,8 @@ public class LoginController {
    * 기업회원 로그인 처리
    * @return
    */
-  @PostMapping("corp/login")
-  public String corpLoginProcess() {
+  @PostMapping("corp/loginProcess")
+  public String corpLoginProcess(String email, String password) {
     System.out.println("기업회원 로그인 처리");
     return "redirect:/corp/main";
   }
@@ -77,8 +93,11 @@ public class LoginController {
    * 일반회원 가입 프로세스
    */
   @PostMapping("/user/joinProcess")
-	public String userJoinProcess(/* @ModelAttribute UserDTO userDTO */) {
-		/* loginJoinService.registerUser(userDTO); */
+	public String userJoinProcess(@ModelAttribute UserDTO uDTO, HttpServletRequest request, Model model, RedirectAttributes redirectAttr) {
+		// loginJoinService.registerUser(userDTO);
+  	// uDTO.setIP(request.getRemoteAddr());
+  	
+  	// redirectAttr.addFlashAttribute("msg", "회원가입이 완료되었습니다. 로그인 해주세요.");
   	
   	return "redirect:/user/login";
   }
@@ -97,4 +116,7 @@ public class LoginController {
   /**
    * 이메일 중복 체크
    */
+  
+  
+  
 }

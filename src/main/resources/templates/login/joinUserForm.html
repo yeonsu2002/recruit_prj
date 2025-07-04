@@ -42,9 +42,9 @@ $(function(){
 	    //예외처리 검사 함수 호출
 	    if(validateForm()){
 		    alert('회원가입 양식이 정상적으로 전송되었습니다!');
-		    //this.submit();
+		    this.submit();
 	    } else {
-	    	alert('뭔가가 잘못되었어..');
+	    	console.log('뭔가가 잘못되었어..');
 	    }
 	    
 	});
@@ -106,9 +106,26 @@ $(function(){
 			return false;
 		}
 		
-		//성별-----------------?
+		//성별
+		/* 	document.querySelectorAll('.form-check-input')로 성별 라디오 버튼들을 가져옴.
+				some()을 사용해서 하나라도 체크된 항목이 있는지 확인. */
+		const isGenderChecked = Array.from(document.querySelectorAll('.form-check-input')).some(checkbox => checkbox.checked);
+		if(!isGenderChecked){ //하나도 체크된게 없다면~
+			alert("성별을 선택해 주세요.");
+			isEverythingOk = false;
+			return false;
+		}
 		
-		//주소-----------------?
+		//주소
+		/* 	.some() → 하나라도 채워져 있으면 true → 이건 전체 채움 체크에 부적절
+				.every() → 모두 조건을 만족해야 true → 하나라도 비면 false → 이게 적절! */
+		const isAddrfilled = Array.from(document.querySelectorAll('.form-input.addr')).every(input => input.value);
+		if(!isAddrfilled){
+			alert("주소를 입력해 주세요.");
+			isEverythingOk = false;
+			return false;
+		}
+		
 		
 		//약관 - 필수 항목 체크 여부 확인
 		let termFlag = true;
@@ -246,13 +263,17 @@ function startTimer(duration, display) {
             $("#verification-error").show();
             $("#verification-error").text("인증 시간이 만료되었습니다. 다시 시도해주세요.");
             
+            document.getElementById('confirmBtn').disabled = true; //만료됐으니까 확인버튼 막아
+
             // 만료됐으므로 세션의 인증코드 번호 삭제 
             $.ajax({
                 url : "",
-                type : "POST"
+                type : "POST",
+                error : function(){
+            			console.error("인증코드 삭제 요청 실패"); //->이거 에러 발생중
+                }
             });
             
-            document.getElementById('confirmBtn').disabled = true; //만료됐으니까 확인버튼 막아
         }
     }, 1000);
 }
@@ -333,24 +354,24 @@ function openKakaoMap(){
             <div class="form-group">
               <label class="form-label">성별</label>
               <div class="form_input">
-              	<label>
-              		<input type="radio" name="gender" value="M">남성
+              	<label class="form-check-label">
+              		<input type="radio" class="form-check-input" name="gender" value="M">남성
               	</label>
-              	<label style="margin-left: 15px;">
-              		<input type="radio" name="gender" value="F">여성
+              	<label class="form-check-label" style="margin-left: 15px;">
+              		<input type="radio" class="form-check-input" name="gender" value="F">여성
               	</label>
               </div>
             </div>
             
             <div class="form-group">
-              <label class="form-label">회사주소</label>
+              <label class="form-label">주소</label>
               <!-- 주소찾기input 클릭시 다음주소API호출 -->
               <div class="zipcode-box" style="margin-bottom: 10px;">
-               <input type="text" id="zipcode" name="zipcode" class="form-input" placeholder="우편번호" readonly>
+               <input type="text" id="zipcode" name="zipcode" class="form-input addr" placeholder="우편번호" readonly>
                <input type="button" id="openKakaoMap" class="btn btn-secondary" value="우편번호 찾기" >
               </div>
-              <input type="text" id="roadAddress" name="roadAddress" class="form-input" placeholder="주소" style="margin-bottom: 10px;" readonly>
-              <input type="text" id="detailAddress" name="detailAddress" class="form-input" placeholder="상세주소">
+              <input type="text" id="roadAddress" name="roadAddress" class="form-input addr" placeholder="주소" style="margin-bottom: 10px;" readonly>
+              <input type="text" id="detailAddress" name="detailAddress" class="form-input addr" placeholder="상세주소">
             </div>
 
             <div class="form-group">
