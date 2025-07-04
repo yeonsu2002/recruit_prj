@@ -40,6 +40,8 @@ public class loginJoinService {
 		String formattedNow = now.format(fmt);
 		ue.setRegDt(formattedNow);
 		
+		
+		
 		//이어서
 		ur.save(uDTO);
 		
