@@ -1,5 +1,8 @@
 package kr.co.sist.login;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +24,17 @@ public class loginJoinService {
 	}
 	
 	public String saveUser(UserDTO uDTO) {
+		//이메일, 이름, 전화번호, 주소 => cipher
 		UserEntity ue = new UserEntity();
 		ue.setEmail(uDTO.getEmail());
 		ue.setCorpEntity(null);
 		ue.setPassword( cu.hashText(uDTO.getPassword()));
+		ue.setName(cu.cipherText(uDTO.getName()));
+		ue.setRole(uDTO.getRole());
+		ue.setPhone(cu.cipherText(uDTO.getPhone()));
+		
+		ue.setRegDt(uDTO.getRegDt());
+		
 		//이어서
 		ur.save(uDTO);
 		
