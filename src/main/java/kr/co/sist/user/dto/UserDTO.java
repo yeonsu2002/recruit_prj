@@ -24,12 +24,12 @@ public class UserDTO {
 	private Date pwChangeDt;
 	private Date lastLoginDt;
 	private String lastLoginIp;
-	private Integer zipcode;
+	private String zipcode;
 	private String roadAddress;
 	private String detailAddress;
 	private Date birth;
 	private String gender;
-	private String pwResetRequired;
+	private Integer pwResetRequired;
 	private String profileImage;
-	private String activeStatus;
+	private Integer activeStatus;
 }

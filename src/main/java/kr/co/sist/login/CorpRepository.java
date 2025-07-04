@@ -10,9 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
+import org.springframework.stereotype.Repository;
 
 import kr.co.sist.corp.dto.CorpDTO;
 
+@Repository
 public class CorpRepository implements JpaRepository<CorpDTO, Integer> {
 
 	@Override

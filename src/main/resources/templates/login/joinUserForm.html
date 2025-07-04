@@ -99,7 +99,8 @@ $(function(){
 		
 		//생년월일
 		const birth = document.getElementById("birth").value.trim();
-		const birthPattern = /^(19[0-9]{2}|20[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
+		//const birthPattern = /^(19[0-9]{2}|20[0-9]{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/;
+		const birthPattern = /^(19\d{2}|20\d{2})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 		if(!birthPattern.test(birth)){
 			alert("옳바른 생년월일 값을 입력해주세요.");
 			isEverythingOk = false;
@@ -304,7 +305,7 @@ function openKakaoMap(){
     <div class="container">
         <h1 class="form-title">민기인력 개인회원 가입</h1>
         
-        <form id="frm" action="@{/user/joinProcess}" method="post">
+        <form id="frm" th:action="@{/user/joinProcess}" method="post">
             <!-- 
             <div class="form-group">
               <label class="form-label">아이디</label>
@@ -348,7 +349,7 @@ function openKakaoMap(){
 
             <div class="form-group">
                 <label class="form-label">생년월일</label>
-                <input type="birth" id="birth" name="birth" class="form-input" placeholder="YYYYMMDD" maxlength="8">
+                <input type="birth" id="birth" name="birth" class="form-input" placeholder="yyyy-MM-dd" maxlength="10">
             </div>
             
             <div class="form-group">

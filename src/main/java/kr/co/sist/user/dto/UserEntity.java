@@ -39,28 +39,28 @@ public class UserEntity {
 	@Column(name="is_locked")
 	private Integer isLocked;
 	@Column(name="lock_end_dt")
-	private Date lockEndDt;
+	private String lockEndDt;
 	@Column(name="pw_change_dt")
-	private Date pwChangeDt;
+	private String pwChangeDt;
 	@Column(name="last_login_dt")
-	private Date lastLoginDt;
+	private String lastLoginDt;
 	@Column(name="last_login_ip")
 	private String lastLoginIp;
 	@Column(name="zipcode")
-	private Integer zipcode;
+	private String zipcode;
 	@Column(name="road_address")
 	private String roadAddress;
 	@Column(name="detail_address")
 	private String detailAddress;
 	@Column(name="birth")
-	private Date birth;
+	private String birth;
 	@Column(name="gender")
 	private String gender;
 	@Column(name="pw_reset_required")
-	private String pwResetRequired;
+	private Integer pwResetRequired;
 	@Column(name="profile_image")
 	private String profileImage;
 	@Column(name="active_status")
-	private String activeStatus;
+	private Integer activeStatus;
 	
 }

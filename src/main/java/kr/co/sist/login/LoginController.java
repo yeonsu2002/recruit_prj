@@ -1,6 +1,7 @@
 package kr.co.sist.login;
 
 import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.dto.UserEntity;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ public class LoginController {
 	}
 	
   /**
-   * 기업회원 로그인 페이지로 이동
+   * 회원 로그인 페이지로 이동
    * @return
    */
   @GetMapping("/login")
@@ -94,12 +95,16 @@ public class LoginController {
    */
   @PostMapping("/user/joinProcess")
 	public String userJoinProcess(@ModelAttribute UserDTO uDTO, HttpServletRequest request, Model model, RedirectAttributes redirectAttr) {
-		// loginJoinService.registerUser(userDTO);
-  	// uDTO.setIP(request.getRemoteAddr());
+    // model에 Entity를 담는건 아니야. DTO를 담아. Entity는 보안문제도 있고 민감한 객체야. 
+    //UserEntity savedUser = ljs.registerUser(uDTO);
+    ljs.registerUser(uDTO);
+    //redirect:로 리다이렉트되면 Model에 담긴 값은 유지되지 않아
+    //대신 RedirectAttributes.addFlashAttribute()를 써야 유지됨. -> 이건 세션에 잠깐 값을 저장했다가, 리다이렉트 이후 자동으로 한 번만 Model에 옮겨주는 기능. 리다이렉트 전용 Model!
+    //model.addAttribute("user", savedUser);
+    
+  	redirectAttr.addFlashAttribute("msg", "회원가입이 완료되었습니다. 로그인 해주세요.");
   	
-  	// redirectAttr.addFlashAttribute("msg", "회원가입이 완료되었습니다. 로그인 해주세요.");
-  	
-  	return "redirect:/user/login";
+  	return "redirect:/login";
   }
   
   /**

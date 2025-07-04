@@ -10,6 +10,7 @@ body {
 	justify-content: center; /* 가로 중앙 정렬 */
 	align-items: center; /* 세로 중앙 정렬 */
 	min-height: 100vh; /* 화면 전체 높이 사용 */
+	flex-direction: column;
 }
 
 /* 로그인 폼을 감싸는 컨테이너 */

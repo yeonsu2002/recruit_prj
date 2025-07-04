@@ -1,6 +1,10 @@
 package kr.co.sist.util;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,17 +13,17 @@ public class CipherUtil {
 	// 	prj.key=sist0123456789
 	//	prj.salt=a1b2c3d4a1b2c3d4
 	// 	입력!
-	//@Value("${prj.key}")
+	@Value("${prj.key}")
 	private String key;
-	//@Value("${prj.salt}")
+	@Value("${prj.salt}")
 	private String salt; //16진수로 변환가능한 8byte문자 대입 
 	
 	public String hashText(String plainText) {
 		String hashedValue = "";
 		
 		//1.단방향 해시 객체 생성
-		//PasswordEncoder pe = new BCryptPasswordEncoder();
-		//hashedValue = pe.encode(plainText);
+		PasswordEncoder pe = new BCryptPasswordEncoder();
+		hashedValue = pe.encode(plainText);
 		
 		return hashedValue;
 	}
@@ -27,8 +31,8 @@ public class CipherUtil {
 	public boolean hashMatches(String plainText, String bcryptText) {
 		boolean flag = false;
 		
-		//PasswordEncoder pe = new BCryptPasswordEncoder();
-		//flag =pe.matches(plainText, bcryptText);
+		PasswordEncoder pe = new BCryptPasswordEncoder();
+		flag =pe.matches(plainText, bcryptText);
 		
 		return flag;
 	}
@@ -37,8 +41,8 @@ public class CipherUtil {
 	public String cipherText(String plainText) {
 		String cipherText = "";
 		System.out.println("디버깅 cipherText() 키와 솔트 = " + key + " / " + salt);
-		//TextEncryptor te = Encryptors.text(key, salt);
-		//cipherText = te.encrypt(plainText);
+		TextEncryptor te = Encryptors.text(key, salt);
+		cipherText = te.encrypt(plainText);
 
 		return cipherText; //암호화 된 텍스트 return
 	}
@@ -46,8 +50,8 @@ public class CipherUtil {
 	
 	public String plainText(String plainText) {
 		String cipherText = "";
-		//TextEncryptor te = Encryptors.text(key, salt);
-		//cipherText = te.decrypt(plainText);
+		TextEncryptor te = Encryptors.text(key, salt);
+		cipherText = te.decrypt(plainText);
 		
 		return cipherText;
 	}
