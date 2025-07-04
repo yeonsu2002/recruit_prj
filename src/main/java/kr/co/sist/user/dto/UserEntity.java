@@ -33,7 +33,7 @@ public class UserEntity {
 	@Column(name="phone")
 	private String phone;
 	@Column(name="reg_dt")
-	private Date regDt;
+	private String regDt;
 	@Column(name="login_fail_cnt")
 	private Integer loginFailCnt;
 	@Column(name="is_locked")

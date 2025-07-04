@@ -2,6 +2,8 @@ package kr.co.sist.login;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +34,11 @@ public class loginJoinService {
 		ue.setName(cu.cipherText(uDTO.getName()));
 		ue.setRole(uDTO.getRole());
 		ue.setPhone(cu.cipherText(uDTO.getPhone()));
-		
-		ue.setRegDt(uDTO.getRegDt());
+		//uDTO에 없는 값들은 수동으로 해야
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String formattedNow = now.format(fmt);
+		ue.setRegDt(formattedNow);
 		
 		//이어서
 		ur.save(uDTO);
