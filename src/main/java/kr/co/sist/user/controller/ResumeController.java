@@ -1,12 +1,9 @@
 package kr.co.sist.user.controller;
 
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.service.ResumeService;
 
 @Controller
@@ -29,7 +26,7 @@ public class ResumeController {
 	@GetMapping("/user/resume/resume_form")
 	public String resumePage(Model model) {
 		
-		model.addAttribute("pcList", rs.searchAllPositionCode());
+		model.addAttribute("positionList", rs.searchAllPositionCode());
 		
 		return "/user/resume/resume_form";
 	}
