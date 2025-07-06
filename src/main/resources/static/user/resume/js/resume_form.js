@@ -272,14 +272,43 @@ $(function() {
 		$(this).parent().remove();
 	});
 
-	//입력 형식이 날짜면 YYYY.MM으로 고정
 	document.addEventListener('input', function(e) {
+		// 날짜 형식 (YYYY.MM)
 		if (e.target.placeholder === 'YYYY.MM') {
 			let value = e.target.value.replace(/\D/g, '');
-			if (value.length >= 4) {
-				value = value.substring(0, 4) + '.' + value.substring(4, 6);
+			e.target.value = value.length >= 4 ? value.substring(0, 4) + '.' + value.substring(4, 6) : value;
+		}
+
+		// 학점 형식 (한 자리 정수 + 소수점 두 자리)
+		if (e.target.name === 'grade') {
+			let value = e.target.value.replace(/[^\d.]/g, '');
+			let parts = value.split('.');
+
+			// 소수점 중복 제거 및 자릿수 제한
+			if (parts.length > 2) parts = [parts[0], parts[1]];
+			parts[0] = parts[0].substring(0, 1);
+			if (parts[1]) parts[1] = parts[1].substring(0, 2);
+
+			// 정수 1개 입력시 자동으로 소수점 추가
+			if (parts[0].length === 1 && parts.length === 1) {
+				e.target.value = parts[0] + '.';
+			} else {
+				e.target.value = parts[1] !== undefined ? parts[0] + '.' + parts[1] : parts[0];
 			}
-			e.target.value = value;
+		}
+	});
+
+	// 백스페이스로 소수점 지우기 처리
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Backspace') {
+			if (e.target.name === 'grade' && e.target.value.endsWith('.') && e.target.value.length === 2) {
+				e.target.value = e.target.value.substring(0, 1);
+				e.preventDefault();
+			}
+			if (e.target.placeholder === 'YYYY.MM' && e.target.value.endsWith('.') && e.target.value.length === 5) {
+				e.target.value = e.target.value.substring(0, 4);
+				e.preventDefault();
+			}
 		}
 	});
 
@@ -420,8 +449,8 @@ $(function() {
 
 		// 나머지 데이터는 JSON으로 변환해서 추가
 		formData.append('resumeData', JSON.stringify(resumeData));
-		
-		
+
+
 
 		/*// 저장 버튼 비활성화
 		$('.save-btn').prop('disabled', true).text('저장 중...');*/

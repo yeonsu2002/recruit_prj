@@ -2,6 +2,7 @@ package kr.co.sist.user.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,11 +10,15 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.ResumeDataDTO;
+import kr.co.sist.user.entity.CareerEntity;
+import kr.co.sist.user.entity.EducationHistoryEntity;
 import kr.co.sist.user.entity.LinkEntity;
 import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.mapper.ResumeMapper;
+import kr.co.sist.user.repository.CareerRepository;
+import kr.co.sist.user.repository.EducationHistoryRepository;
 import kr.co.sist.user.repository.LinkRepository;
 import kr.co.sist.user.repository.ResumePositionCodeRepository;
 import kr.co.sist.user.repository.ResumeRepository;
@@ -30,6 +35,8 @@ public class ResumeService {
 	private final ResumePositionCodeRepository rpcr;
 	private final ResumeTechStackRepository rtsr;
 	private final LinkRepository lr;
+	private final EducationHistoryRepository ehr;
+	private final CareerRepository cr;
 	
 	private final PositionCodeService pcs;
 	
@@ -81,6 +88,24 @@ public class ResumeService {
 		lr.save(le); 
 		
 		//학력 레코드 생성
+		List<EducationHistoryEntity> educations = rdd.getEducations();
+		educations.sort(Comparator.comparing(EducationHistoryEntity::getAdmissionDate)); //입학날짜를 기준으로 정렬
+		int indexNum = 1; //순번용 인덱스
+		for(EducationHistoryEntity education : educations) {
+			education.setResumeSeq(resumeSeq);
+			education.setIndexNum(indexNum++);
+			ehr.save(education);
+		}
+		
+		//경력 레코드 생성
+		List<CareerEntity> careers = rdd.getCareers();
+		careers.sort(Comparator.comparing(CareerEntity::getStartDate)); //입사날짜를 기준으로 정렬
+		indexNum = 1;
+		for(CareerEntity career : careers) {
+			career.setResumeSeq(resumeSeq);
+			career.setIndexNum(indexNum++);
+			cr.save(career);
+		}
 		
 		
 		return resumeSeq;
