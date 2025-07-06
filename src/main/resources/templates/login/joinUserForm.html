@@ -268,12 +268,14 @@ function startTimer(duration, display) {
 
             // 만료됐으므로 세션의 인증코드 번호 삭제 
             $.ajax({
-                url : "",
-                type : "POST",
-                error : function(){
-            			console.error("인증코드 삭제 요청 실패"); //->이거 에러 발생중
-                }
+              url : "",
+              type : "POST",
+              error : function(){
+          			console.error("인증코드 삭제 요청 실패"); //->이거 에러 발생중
+              }
             });
+            
+            
             
         }
     }, 1000);

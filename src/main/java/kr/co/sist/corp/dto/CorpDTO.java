@@ -26,6 +26,8 @@ public class CorpDTO {
 	private String industry;
 	private String companySize;
 	
+	private String uploadedFileName; // 저장된 파일 이름
+	
 	private List<TagDTO> tagList; 
 	
 }

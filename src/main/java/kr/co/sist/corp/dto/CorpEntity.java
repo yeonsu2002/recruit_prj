@@ -31,7 +31,7 @@ public class CorpEntity {
 	@Column(name="corp_avg_sal")
 	private Integer corpAvgSal;
 	@Column(name="corp_annual_revenue")
-	private Integer corpAnnualRevenue;
+	private Long corpAnnualRevenue;
 	@Column(name="corp_created_at")
 	private String corpCreatedAt;
 	@Column(name="corp_emp_cnt")
@@ -44,6 +44,7 @@ public class CorpEntity {
 	private String industry;
 	@Column(name="company_size")
 	private String companySize;
-	
+	@Column(name="corp_ceo")
+	private String corpCeo;
 	
 }
