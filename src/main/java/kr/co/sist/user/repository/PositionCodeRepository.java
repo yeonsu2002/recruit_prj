@@ -1,8 +1,8 @@
-package kr.co.sist.user.mapper;
+package kr.co.sist.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import kr.co.sist.user.dto.PositionCodeEntity;
+import kr.co.sist.user.entity.PositionCodeEntity;
 
 public interface PositionCodeRepository extends JpaRepository<PositionCodeEntity, Integer> {
 

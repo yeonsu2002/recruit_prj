@@ -43,10 +43,6 @@ $(function() {
 		resetPhotoUploadBox();
 	});
 
-
-	//직무 저장해놓는 배열
-	let positionSelected = [];
-
 	//직무 클릭시 리스트 열기
 	$("#positionSelect").on("click", function() {
 		$("#optionsList").toggle();
@@ -65,7 +61,7 @@ $(function() {
 		});
 
 		$('#positions').append(
-			`<span class="tag">${text}
+			`<span class="tag" data-value="${position}">${text}
              <button type="button" class="remove-tag">×</button>
           	 </span>`
 		);
@@ -105,7 +101,7 @@ $(function() {
 					}
 				});
 			},
-			error: function(xhr, status, error) {
+			error: function(error) {
 				console.error('오류:', error);
 				alert('검색 중 오류 발생');
 			}
@@ -113,12 +109,13 @@ $(function() {
 
 	});
 
+	//검색된 기술 스택 클릭시
 	$('#skillsList').on('click', 'li', function() {
-		let position = $(this).data("value");
+		let skill = $(this).data("value");
 		let text = $(this).text();
 
 		$('#skills').append(
-			`<span class="tag">${text}
+			`<span class="tag" data-value="${skill}">${text}
 	            <button type="button" class="remove-tag">×</button>
 	         </span>`
 		);
@@ -126,9 +123,64 @@ $(function() {
 
 	//외부 클릭시 기술 스택 리스트 닫기
 	$(document).on("click", function(e) {
-		if (!$(e.target).closest("#positionSelect").length) {
+		if (!$(e.target).closest("#skillsSelect").length) {
 			$("#skillsList").hide();
 		}
+	});
+
+	//프로젝트 기술스택 입력 처리
+	$(document).on("keyup", ".project-input", function() {
+		const keyword = $(this).val();
+		const $projectItem = $(this).closest(".project-item");
+		const $list = $projectItem.find(".project-list");
+
+		if (keyword === "") {
+			$list.empty().hide();
+			return;
+		}
+
+		$.ajax({
+			url: "/techStack/search",
+			type: 'GET',
+			data: { keyword: keyword },
+			success: function(response) {
+				$list.empty();
+				if (response.length > 0) {
+					response.forEach(item => {
+						$list.append(`<li data-value="${item.techStackSeq}">${item.stackName}</li>`);
+					});
+					$list.show();
+				} else {
+					$list.hide();
+				}
+			},
+			error: function(error) {
+				console.error('오류:', error);
+				alert('검색 중 오류 발생');
+			}
+		});
+	});
+
+
+	//검색된 기술 스택 클릭시
+	$(document).on('click', '.project-list li', function() {
+		const $projectItem = $(this).closest(".project-item");
+		const text = $(this).text();
+
+		$projectItem.find('.project-skills').append(
+			`<span class="tag">${text}
+	       <button type="button" class="remove-tag">×</button>
+	     </span>`
+		);
+	});
+
+	//외부 클릭시 기술 스택 리스트 닫기
+	$(document).on("click", function(e) {
+		$(".project-select").each(function() {
+			if (!$(e.target).closest(this).length) {
+				$(this).find(".project-list").hide();
+			}
+		});
 	});
 
 
@@ -153,90 +205,65 @@ $(function() {
 	<div class="item-box">
 	  <button type="button" class="item-remove-btn">×</button>
 	  <div class="row g-3">
-	    <div class="col-md-2">
-	      <label class="form-label">입학 날짜</label>
-	      <input type="text" class="form-control" placeholder="YYYY.MM">
-	    </div>
-	    <div class="col-md-2">
-	      <label class="form-label">졸업날짜(예정)</label>
-	      <input type="text" class="form-control" placeholder="YYYY.MM">
-	    </div>
-	    <div class="col-md-4">
-	      <label class="form-label">학교명</label>
-	      <input type="text" class="form-control" placeholder="○○대학교">
-	    </div>
-	    <div class="col-md-4">
-	      <label class="form-label">학과</label>
-	      <input type="text" class="form-control" placeholder="컴퓨터공학과">
-	    </div>
-	    <div class="col-md-2">
-	      <label class="form-label">학력구분</label>
-	      <select class="form-select">
-	        <option selected disabled>선택해주세요</option><option>고등학교</option><option>대학(2,3년)</option><option>대학(4년)</option><option>대학원(석사)</option><option>대학원(박사)</option>
-	      </select>
-	    </div>
-	    <div class="col-md-2">
-	      <label class="form-label">학점</label>
-	      <input type="text" class="form-control" placeholder="예: 3.5">
-	    </div>
-	    <div class="col-md-2">
-	      <label class="form-label">기준학점</label>
-	      <select class="form-select">
-	        <option selected disabled>선택해주세요</option><option>4.5</option><option>4.3</option><option>4.0</option><option>5.0</option><option>7.0</option><option>100</option>
-	      </select>
-	    </div>
+	    <div class="col-md-2"><label class="form-label">입학 날짜</label><input type="text" class="form-control" name="admissionDate" placeholder="YYYY.MM"></div>
+	    <div class="col-md-2"><label class="form-label">졸업날짜(예정)</label><input type="text" class="form-control" name="graduateDate" placeholder="YYYY.MM"></div>
+	    <div class="col-md-4"><label class="form-label">학교명</label><input type="text" class="form-control" name="schoolName" placeholder="○○대학교"></div>
+	    <div class="col-md-4"><label class="form-label">학과</label><input type="text" class="form-control" name="department" placeholder="컴퓨터공학과"></div>
+	    <div class="col-md-2"><label class="form-label">학력구분</label><select class="form-select" name="educationType"><option selected disabled>선택해주세요</option><option>고등학교</option><option>대학(2,3년)</option><option>대학(4년)</option><option>대학원(석사)</option><option>대학원(박사)</option></select></div>
+	    <div class="col-md-2"><label class="form-label">학점</label><input type="text" class="form-control" name="grade" placeholder="예: 3.5"></div>
+	    <div class="col-md-2"><label class="form-label">기준학점</label><select class="form-select" name="standardGrade"><option selected disabled>선택해주세요</option><option>4.5</option><option>4.3</option><option>4.0</option><option>5.0</option><option>7.0</option><option>100</option></select></div>
 	  </div>
 	</div>
 	`;
-
 
 	const expHtml = () => `
     <div class="item-box">
       <button type="button" class="item-remove-btn">×</button>
       <div class="row g-3">
-        <div class="col-md-2"><label class="form-label">입사년월</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
-        <div class="col-md-2"><label class="form-label">퇴사년월</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
-        <div class="col-md-4"><label class="form-label">회사명</label><input type="text" class="form-control" placeholder="(주)○○회사"></div>
-        <div class="col-md-4"><label class="form-label">직책/직무</label><input type="text" class="form-control" placeholder="주임/백엔드 개발자"></div>
-        <div class="col-12"><label class="form-label">담당업무 및 성과</label><textarea class="form-control" rows="3" placeholder="담당했던 업무와 성과를 구체적으로 입력해주세요"></textarea></div>
+        <div class="col-md-2"><label class="form-label">입사년월</label><input type="text" class="form-control" name="startDate" placeholder="YYYY.MM"></div>
+        <div class="col-md-2"><label class="form-label">퇴사년월</label><input type="text" class="form-control" name="endDate" placeholder="YYYY.MM"></div>
+        <div class="col-md-4"><label class="form-label">회사명</label><input type="text" class="form-control" name="companyName" placeholder="(주)○○회사"></div>
+        <div class="col-md-4"><label class="form-label">직책/직무</label><input type="text" class="form-control" name="position" placeholder="주임/백엔드 개발자"></div>
+        <div class="col-12"><label class="form-label">담당업무 및 성과</label><textarea class="form-control" rows="3" name="carrerDescription"placeholder="담당했던 업무와 성과를 구체적으로 입력해주세요"></textarea></div>
       </div>
-    </div>`;
+      </div>`;
 
 	const projHtml = () => `
-    <div class="item-box">
-      <button type="button" class="item-remove-btn">×</button>
-      <div class="row g-3">
-        <div class="col-md-6"><label class="form-label">프로젝트 기간</label><input type="text" class="form-control" placeholder="2023.05 ~ 2023.08"></div>
-        <div class="col-md-6"><label class="form-label">프로젝트명</label><input type="text" class="form-control" placeholder="쇼핑몰 웹사이트 개발"></div>
-        <div class="col-12"><label class="form-label">사용 기술</label><input type="text" class="form-control" placeholder="React, Node.js, MongoDB, AWS"></div>
-        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="4" placeholder="프로젝트에서 담당한 역할과 구현한 기능을 상세히 설명해주세요"></textarea></div>
-        <div class="col-md-6"><div class="form-check mt-3"><input class="form-check-input" type="checkbox"><label class="form-check-label">배포/출시 완료</label></div></div>
-        <div class="col-md-6"><label class="form-label">저장소 링크</label><input type="url" class="form-control" placeholder="https://github.com/username/project"></div>
-      </div>
-    </div>`;
+	    <div class="item-box project-item">
+	      <button type="button" class="item-remove-btn">×</button>
+	      <div class="row g-3">
+	        <div class="col-md-2"><label class="form-label">시작일</label><input type="text" class="form-control" name="startDate" placeholder="YYYY.MM"></div>
+	        <div class="col-md-2"><label class="form-label">종료일</label><input type="text" class="form-control" name="endDate" placeholder="YYYY.MM"></div>
+	        <div class="col-md-6"><label class="form-label">프로젝트명</label><input type="text" class="form-control" name="projectName" placeholder="쇼핑몰 웹사이트 개발"></div>
+	        <div class="project-skills mt-3"></div>
+	        <div class="custom-select project-select">
+	          <input type="text" class="form-control project-input" placeholder="프로젝트에서 사용한 기술스택을 입력해주세요.">
+	          <ul class="custom-options project-list"></ul>
+	        </div>
+	        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="4" name="projectContent" placeholder="프로젝트에서 담당한 역할과 구현한 기능을 상세히 설명해주세요"></textarea></div>
+	        <div class="col-md-6"><div class="form-check mt-3"><input class="form-check-input" name="releaseStatus" type="checkbox"><label class="form-check-label">배포/출시 완료</label></div></div>
+	        <div class="col-md-6"><label class="form-label">저장소 링크</label><input type="url" class="form-control" name="repositoryLink" placeholder="https://github.com/username/project"></div>
+	      </div>
+	    </div>
+	  `;
 
 	const etcHtml = () => `
     <div class="item-box">
       <button type="button" class="item-remove-btn">×</button>
       <div class="row g-3">
-        <div class="col-md-2"><label class="form-label">취득일/종료일</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
-        <div class="col-md-4"><label class="form-label">활동명/자격증명</label><input type="text" class="form-control" placeholder="정보처리기사"></div>
-        <div class="col-md-2"><label class="form-label">이력 구분</label><select class="form-select"><option selected disabled>선택해주세요</option><option>자격증</option><option>수상이럭</option><option>대외활동</option><option>어학</option></select></div>
-        <div class="col-md-4"><label class="form-label">관련 기관</label><input type="text" class="form-control" placeholder="한국산업인력공단"></div>
-        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="3" placeholder="자세한 내용이나 성과를 입력해주세요"></textarea></div>
+        <div class="col-md-2"><label class="form-label">취득일/종료일</label><input type="text" class="form-control" name="endDate" placeholder="YYYY.MM"></div>
+        <div class="col-md-4"><label class="form-label">활동명/자격증명</label><input type="text" class="form-control" name="activityName" placeholder="정보처리기사"></div>
+        <div class="col-md-2"><label class="form-label">이력 구분</label><select class="form-select" name="recordType"><option selected disabled>선택해주세요</option><option>자격증</option><option>수상이럭</option><option>대외활동</option><option>어학</option></select></div>
+        <div class="col-md-4"><label class="form-label">관련 기관</label><input type="text" class="form-control" name="relatedAgency" placeholder="한국산업인력공단"></div>
+        <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="3" name="detailContent" placeholder="자세한 내용이나 성과를 입력해주세요"></textarea></div>
       </div>
     </div>`;
 
 	const introHtml = () => `
 	<div class="item-box">
 	<button type="button" class="item-remove-btn">×</button>
-	<div class="mb-3">
-	<label class="form-label">제목</label> <input type="text"class="form-control" placeholder="자기소개서 제목을 입력해주세요">
-	</div>
-	<div class="mb-3">
-	<label class="form-label">내용</label>
-	<textarea class="form-control" rows="8" placeholder="자기소개 내용을 입력해주세요"></textarea>
-	</div>
+	<div class="mb-3"><label class="form-label">제목</label> <input type="text"class="form-control" name="title" placeholder="자기소개서 제목을 입력해주세요"></div>
+	<div class="mb-3"><label class="form-label">내용</label><textarea class="form-control" rows="8" name="content" placeholder="자기소개 내용을 입력해주세요"></textarea></div>
 	</div>
 	`
 
@@ -245,6 +272,7 @@ $(function() {
 		$(this).parent().remove();
 	});
 
+	//입력 형식이 날짜면 YYYY.MM으로 고정
 	document.addEventListener('input', function(e) {
 		if (e.target.placeholder === 'YYYY.MM') {
 			let value = e.target.value.replace(/\D/g, '');
@@ -254,4 +282,239 @@ $(function() {
 			e.target.value = value;
 		}
 	});
+
+	// ===============================
+	// 이력서 데이터 수집 및 전송 함수들
+	// ===============================
+
+	// 이력서 데이터 수집 함수
+	function collectResumeData() {
+		//데이턱 저장하는 곳
+		const resumeData = {
+			basicInfo: {
+				isPublic: $('.privacy-toggle input[type="checkbox"]').is(':checked')
+			},
+			links: {
+				githubUrl: $('.links-section .fa-github').parent().next('input').val(),
+				notionUrl: $('.links-section .fa-file-alt').parent().next('input').val(),
+				blogUrl: $('.links-section .fa-blog').parent().next('input').val()
+			},
+			positions: [], skills: [], educations: [], careers: [], projects: [], etc: [], introductions: []
+		};
+
+		// 희망 직무 수집
+		$('#positions .tag').each(function() {
+			const positionName = $(this).data('value');
+			if (positionName) {
+				resumeData.positions.push(positionName);
+			}
+		});
+
+		// 기술스택 수집
+		$('#skills .tag').each(function() {
+			const skillName = $(this).data('value');
+			if (skillName) {
+				resumeData.skills.push(skillName);
+			}
+		});
+
+		// 학력 수집
+		$('.edu-list .item-box').each(function() {
+			const education = {
+				admissionDate: $(this).find('input[name="admissionDate"]').val(),
+				graduateDate: $(this).find('input[name="graduateDate"]').val(),
+				schoolName: $(this).find('input[name="schoolName"]').val(),
+				department: $(this).find('input[name="department"]').val(),
+				educationType: $(this).find('select[name="educationType"]').val(),
+				grade: $(this).find('input[placeholder="예: 3.5"]').val(),
+				standardGrade: $(this).find('select[name="standardGrade"]').val()
+			};
+
+			// 빈 값이 아닌 경우만 추가
+			if (education.schoolName || education.department) {
+				resumeData.educations.push(education);
+			}
+		});
+
+		// 경력 수집
+		$('.exp-list .item-box').each(function() {
+			const career = {
+				startDate: $(this).find('input[name="startDate"]').val(),
+				endDate: $(this).find('input[name="endDate"]').val(),
+				companyName: $(this).find('input[name="companyName"]').val(),
+				position: $(this).find('input[name="position"]').val(),
+				companyDescription: $(this).find('textarea').val()
+			};
+
+			if (career.companyName || career.position) {
+				resumeData.careers.push(career);
+			}
+		});
+
+		// 프로젝트 수집
+		$('.proj-list .item-box').each(function() {
+			const projectSkills = [];
+			$(this).find('.project-skills .tag').each(function() {
+				const skillName = $(this).text().replace('×', '').trim();
+				if (skillName) {
+					projectSkills.push(skillName);
+				}
+			});
+
+			const project = {
+				startDate: $(this).find('input[name="startDate"]').val(),
+				endDate: $(this).find('input[name="endDate"]').val(),
+				projectName: $(this).find('input[name="projectName"]').val(),
+				skills: projectSkills,
+				projectContent: $(this).find('textarea').val(),
+				releaseStatus: $(this).find('.form-check-input').is(':checked'),
+				repositoryUrl: $(this).find('input[type="url"]').val()
+			};
+
+			if (project.projectName) {
+				resumeData.projects.push(project);
+			}
+		});
+
+		// 기타사항 수집
+		$('.etc-list .item-box').each(function() {
+			const etcItem = {
+				endDate: $(this).find('input[name="endDate"]').val(),
+				activityName: $(this).find('input[name="activityName"]').val(),
+				recordType: $(this).find('select').val(),
+				relatedAgency: $(this).find('input[name="relatedAgency"]').val(),
+				detailContent: $(this).find('textarea').val()
+			};
+
+			if (etcItem.activityName) {
+				resumeData.etc.push(etcItem);
+			}
+		});
+
+		// 자기소개서 수집
+		$('.intro-list .item-box').each(function() {
+			const introduction = {
+				title: $(this).find('input[name="title"]').val(),
+				content: $(this).find('textarea').val()
+			};
+
+			if (introduction.title || introduction.content) {
+				resumeData.introductions.push(introduction);
+			}
+		});
+
+		return resumeData;
+	}
+
+	// 이력서 저장 함수
+	function saveResume() {
+		const resumeData = collectResumeData();
+		// FormData 생성 (파일 업로드를 위해)
+		const formData = new FormData();
+
+		// 프로필 이미지가 있는 경우 추가
+		const profileImageFile = $('#photo-input')[0].files[0];
+		if (profileImageFile) {
+			formData.append('profileImage', profileImageFile);
+		}
+
+		// 나머지 데이터는 JSON으로 변환해서 추가
+		formData.append('resumeData', JSON.stringify(resumeData));
+		
+		
+
+		/*// 저장 버튼 비활성화
+		$('.save-btn').prop('disabled', true).text('저장 중...');*/
+
+		// AJAX 요청
+		$.ajax({
+			url: '/user/resume/resumeSubmit',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(response) {
+				if (response.result === 'success') {
+					alert('이력서가 성공적으로 저장되었습니다.');
+				} else {
+					alert('저장에 실패했습니다. 다시 시도해주세요.');
+				}
+				console.log('Success:', response);
+
+			},
+			error: function(error) {
+				alert('저장 중 오류가 발생했습니다.');
+				console.error('Error:', error);
+			},
+		});
+	}
+
+	/*// 미리보기 함수
+	function previewResume() {
+		const resumeData = collectResumeData();
+
+		// 미리보기 데이터를 세션 스토리지에 저장 (또는 서버로 전송)
+		sessionStorage.setItem('previewData', JSON.stringify(resumeData));
+
+		// 미리보기 창 열기
+		window.open('/resume/preview', 'resumePreview', 'width=800,height=1000,scrollbars=yes');
+	}
+
+	// 다운로드 함수
+	function downloadResume() {
+		const resumeData = collectResumeData();
+
+		if (!resumeData.basicInfo.name) {
+			alert('이름을 입력해주세요.');
+			return;
+		}
+
+		$('.download-btn').prop('disabled', true);
+
+		$.ajax({
+			url: '/resume/download',
+			type: 'POST',
+			data: JSON.stringify(resumeData),
+			contentType: 'application/json',
+			success: function(response) {
+				if (response.success) {
+					// PDF 다운로드
+					window.location.href = '/resume/download/' + response.fileId;
+				} else {
+					alert('다운로드 준비 중 오류가 발생했습니다.');
+				}
+			},
+			error: function(xhr, status, error) {
+				alert('다운로드 중 오류가 발생했습니다.');
+				console.error('Error:', error);
+			},
+			complete: function() {
+				$('.download-btn').prop('disabled', false);
+			}
+		});
+	}*/
+
+	// 버튼 이벤트 연결
+	$('.save-btn').on('click', function() {
+		saveResume();
+	});
+
+	$('.preview-btn').on('click', function() {
+		previewResume();
+	});
+
+	$('.download-btn').on('click', function() {
+		downloadResume();
+	});
+
+	/*// 폼 자동 저장 기능 (선택사항)
+	let autoSaveTimer;
+	$(document).on('input', 'input, textarea, select', function() {
+		clearTimeout(autoSaveTimer);
+		autoSaveTimer = setTimeout(function() {
+			// 자동 저장 로직 (필요시)
+			console.log('자동 저장 실행');
+		}, 30000); // 30초 후 자동 저장
+	});*/
+
 });

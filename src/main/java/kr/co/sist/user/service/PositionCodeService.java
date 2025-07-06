@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import kr.co.sist.user.dto.PositionCodeEntity;
-import kr.co.sist.user.mapper.PositionCodeRepository;
+import kr.co.sist.user.entity.PositionCodeEntity;
+import kr.co.sist.user.repository.PositionCodeRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
