@@ -20,8 +20,8 @@ public class ResumeDataDTO {
 	
 	private ResumeEntity basicInfo;
 	private LinkEntity links;
-	private List<String> positions;
-	private List<String> skills;
+	private List<Integer> positions;
+	private List<Integer> skills;
 	private List<EducationHistoryEntity> educations;
 	private List<CareerEntity> careers;
 	private List<ProjectEntity> projects;

@@ -1,6 +1,5 @@
 package kr.co.sist.user.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,14 +14,12 @@ import lombok.ToString;
 @ToString
 
 @Entity
-@Table(name = "EDUCATION_HISTORY")
-public class EducationHistoryEntity {
+@Table(name = "RESUME_TECH_STACK")
+public class ResumeTechStackEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int educationHistorySeq;
+	private int resumeTechStackSeq;
 	
-	private int resumeSeq, indexNum;
-	private String schoolName, department, educationType, admissionDate, graduateDate;
-	private double grade, standardGrade;
+	private int techStackSeq, resumeSeq;
 }

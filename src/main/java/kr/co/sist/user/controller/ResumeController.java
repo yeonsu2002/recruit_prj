@@ -52,7 +52,7 @@ public class ResumeController {
 		
 		try {
 			ResumeDataDTO rdd = objMapper.readValue(resumeDataJson, ResumeDataDTO.class);
-			int resumeSeq = rs.addModifyResume(rdd);
+			rs.addModifyResume(rdd);
 			
 			result.put("result", "success");
 			
