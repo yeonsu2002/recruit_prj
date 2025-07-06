@@ -1,0 +1,21 @@
+package kr.co.sist.user.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.co.sist.user.dto.PositionCodeEntity;
+import kr.co.sist.user.mapper.PositionCodeRepository;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor  
+public class PositionCodeService {
+
+	private final PositionCodeRepository pcr;
+	
+	public List<PositionCodeEntity> searchAllPositionCode(){
+		return pcr.findAll();
+	}
+	
+}

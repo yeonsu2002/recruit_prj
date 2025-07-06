@@ -146,26 +146,56 @@ $(function() {
 	$('#add-exp').on('click', () => addItem('.exp-list', expHtml()));
 	$('#add-proj').on('click', () => addItem('.proj-list', projHtml()));
 	$('#add-etc').on('click', () => addItem('.etc-list', etcHtml()));
+	$('#add-intro').on('click', () => addItem('.intro-list', introHtml()));
 
 	// 각 항목별 HTML 템플릿 함수 (필요한 항목 추가 시 유지보수 용이)
 	const eduHtml = () => `
 	<div class="item-box">
 	  <button type="button" class="item-remove-btn">×</button>
 	  <div class="row g-3">
-	    <div class="col-md-6"><label class="form-label">졸업날짜(예정)</label><input type="text" class="form-control" placeholder="2024.02"></div>
-	    <div class="col-md-6"><label class="form-label">학력구분</label><select class="form-select"><option selected disabled>선택해주세요</option><option>고등학교</option><option>대학(2,3년)</option><option>대학(4년)</option><option>대학원(석사)</option><option>대학원(박사)</option></select></div>
-	    <div class="col-md-6"><label class="form-label">학교명</label><input type="text" class="form-control" placeholder="○○대학교"></div>
-	    <div class="col-md-6"><label class="form-label">학과</label><input type="text" class="form-control" placeholder="컴퓨터공학과"></div>
-	    <div class="col-md-6"><label class="form-label">학점</label><input type="text" class="form-control" placeholder="예: 3.5"></div>
-	    <div class="col-md-6"><label class="form-label">기준학점</label><input type="text" class="form-control" placeholder="예: 4.5"></div>
+	    <div class="col-md-2">
+	      <label class="form-label">입학 날짜</label>
+	      <input type="text" class="form-control" placeholder="YYYY.MM">
+	    </div>
+	    <div class="col-md-2">
+	      <label class="form-label">졸업날짜(예정)</label>
+	      <input type="text" class="form-control" placeholder="YYYY.MM">
+	    </div>
+	    <div class="col-md-4">
+	      <label class="form-label">학교명</label>
+	      <input type="text" class="form-control" placeholder="○○대학교">
+	    </div>
+	    <div class="col-md-4">
+	      <label class="form-label">학과</label>
+	      <input type="text" class="form-control" placeholder="컴퓨터공학과">
+	    </div>
+	    <div class="col-md-2">
+	      <label class="form-label">학력구분</label>
+	      <select class="form-select">
+	        <option selected disabled>선택해주세요</option><option>고등학교</option><option>대학(2,3년)</option><option>대학(4년)</option><option>대학원(석사)</option><option>대학원(박사)</option>
+	      </select>
+	    </div>
+	    <div class="col-md-2">
+	      <label class="form-label">학점</label>
+	      <input type="text" class="form-control" placeholder="예: 3.5">
+	    </div>
+	    <div class="col-md-2">
+	      <label class="form-label">기준학점</label>
+	      <select class="form-select">
+	        <option selected disabled>선택해주세요</option><option>4.5</option><option>4.3</option><option>4.0</option><option>5.0</option><option>7.0</option><option>100</option>
+	      </select>
+	    </div>
 	  </div>
-	</div>`;
+	</div>
+	`;
+
 
 	const expHtml = () => `
     <div class="item-box">
       <button type="button" class="item-remove-btn">×</button>
       <div class="row g-3">
-        <div class="col-md-4"><label class="form-label">재직기간</label><input type="text" class="form-control" placeholder="2022.01 ~ 2024.01"></div>
+        <div class="col-md-2"><label class="form-label">입사년월</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
+        <div class="col-md-2"><label class="form-label">퇴사년월</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
         <div class="col-md-4"><label class="form-label">회사명</label><input type="text" class="form-control" placeholder="(주)○○회사"></div>
         <div class="col-md-4"><label class="form-label">직책/직무</label><input type="text" class="form-control" placeholder="주임/백엔드 개발자"></div>
         <div class="col-12"><label class="form-label">담당업무 및 성과</label><textarea class="form-control" rows="3" placeholder="담당했던 업무와 성과를 구체적으로 입력해주세요"></textarea></div>
@@ -178,7 +208,6 @@ $(function() {
       <div class="row g-3">
         <div class="col-md-6"><label class="form-label">프로젝트 기간</label><input type="text" class="form-control" placeholder="2023.05 ~ 2023.08"></div>
         <div class="col-md-6"><label class="form-label">프로젝트명</label><input type="text" class="form-control" placeholder="쇼핑몰 웹사이트 개발"></div>
-        <div class="col-12"><label class="form-label">프로젝트 설명</label><input type="text" class="form-control" placeholder="프로젝트에 대한 간단한 설명"></div>
         <div class="col-12"><label class="form-label">사용 기술</label><input type="text" class="form-control" placeholder="React, Node.js, MongoDB, AWS"></div>
         <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="4" placeholder="프로젝트에서 담당한 역할과 구현한 기능을 상세히 설명해주세요"></textarea></div>
         <div class="col-md-6"><div class="form-check mt-3"><input class="form-check-input" type="checkbox"><label class="form-check-label">배포/출시 완료</label></div></div>
@@ -190,12 +219,26 @@ $(function() {
     <div class="item-box">
       <button type="button" class="item-remove-btn">×</button>
       <div class="row g-3">
-        <div class="col-md-4"><label class="form-label">취득일/활동기간</label><input type="text" class="form-control" placeholder="2023.05 또는 2023.03~2023.12"></div>
+        <div class="col-md-2"><label class="form-label">취득일/종료일</label><input type="text" class="form-control" placeholder="YYYY.MM"></div>
         <div class="col-md-4"><label class="form-label">활동명/자격증명</label><input type="text" class="form-control" placeholder="정보처리기사"></div>
-        <div class="col-md-4"><label class="form-label">분류</label><select class="form-select"><option selected disabled>선택해주세요</option><option>자격증</option><option>수상</option><option>대외활동</option><option>봉사활동</option><option>교육/강의</option><option>기타</option></select></div>
+        <div class="col-md-2"><label class="form-label">이력 구분</label><select class="form-select"><option selected disabled>선택해주세요</option><option>자격증</option><option>수상이럭</option><option>대외활동</option><option>어학</option></select></div>
+        <div class="col-md-4"><label class="form-label">관련 기관</label><input type="text" class="form-control" placeholder="한국산업인력공단"></div>
         <div class="col-12"><label class="form-label">상세 내용</label><textarea class="form-control" rows="3" placeholder="자세한 내용이나 성과를 입력해주세요"></textarea></div>
       </div>
     </div>`;
+
+	const introHtml = () => `
+	<div class="item-box">
+	<button type="button" class="item-remove-btn">×</button>
+	<div class="mb-3">
+	<label class="form-label">제목</label> <input type="text"class="form-control" placeholder="자기소개서 제목을 입력해주세요">
+	</div>
+	<div class="mb-3">
+	<label class="form-label">내용</label>
+	<textarea class="form-control" rows="8" placeholder="자기소개 내용을 입력해주세요"></textarea>
+	</div>
+	</div>
+	`
 
 	// 공통 삭제 버튼 처리 (이벤트 위임)
 	$(document).on('click', '.item-remove-btn', function() {
