@@ -18,7 +18,8 @@ $(function(){
     });
 	});
 	
-	// 폼 제출 처리
+	// 폼 제출 처리 ( -> ajax로 처리중 )
+	/*
 	document.querySelector('form').addEventListener('submit', function(e) {
 	  e.preventDefault(); // 기본 제출 동작 방지
 		if($(".user-type").hasClass("active")){
@@ -32,13 +33,21 @@ $(function(){
 			document.getElementById("frm").action = "/corp/login";
 			document.getElementById("frm").submit();
 	  }
-	  
-	  
 	});
+	*/
+	
+	//login ajax(loginProcess()) 버튼에 연결 
+	document.getElementById('loginBtn').addEventListener('click', function(){
+		let email = document.getElementById('email').value;
+		let password = document.getElementById('password').value;
+		loginProcess(email, password);
+	});
+
+	
 	
 });
 
-/* 일반유저, 기업유저 회원가입 페이지 이동 */
+/* 일반유저, 기업유저 회원가입 페이지 URL동적 설정 */
 function joinPageForm(){
 	let url = '/user/join';
 	if($(".corp-type").hasClass("active")){
@@ -49,9 +58,45 @@ function joinPageForm(){
 
 
 
+//로그인 Ajax
+//@ResponseBody를 걸면, return값이 ViewResolver, html이 필요없고 그 값이 바로 클라쪽으로 응답된다.
+//JSON 응답이 한글인데 깨지면, @RequestMapping() 안에 produces = "applicatioin/json;charset=UTF-8" 입력 
+function loginProcess(email, password){
+	let corpType = document.queurySelector(".corp-type");
+	let url = '/user/loginProcess';
+	if(!corpType.hassClass("active")){
+		url = '/corp/loginProcess';
+	}
+	console.log(url + " / " + email + " / " + password);
+/* 
+	$.ajax({
+		url:"/user/loginProcess",
+		type:"post",
+		dataType:"json",
+		data: {
+			email : email,
+			password : password
+		},
+		success:function(JsonObject){
+			
+		},
+		error:function(){
+			
+		}
+	});
+	 */
+	
+}
+
 </script>
 </head>
 <body>
+	
+	<!-- 가입으로 redirect왔을 때 Flash사용 -->
+	<div th:if="${msg}" class="alert alert-success" role="alert">
+		<p th:text=${msg}></p>
+	</div>
+
 	<div class="login-container">
 		<!-- 탭 메뉴 -->
 		<div class="tab-container">
@@ -65,12 +110,10 @@ function joinPageForm(){
 		<form th:action="@{/void}" method="post" id="frm">
 			<table class="login-table">
 				<tr>
-					<td><input type="text" class="input-field" placeholder="아이디"
-						required></td>
+					<td><input type="email" id="email" name="email" class="input-field" placeholder="이메일" required></td>
 				</tr>
 				<tr>
-					<td><input type="password" class="input-field"
-						placeholder="비밀번호" required></td>
+					<td><input type="password" id="password" name="password" class="input-field" placeholder="비밀번호" required></td>
 				</tr>
 				<tr>
 					<td>
@@ -88,7 +131,7 @@ function joinPageForm(){
 				</tr>
 				<tr>
 					<td>
-						<button type="submit" class="login-button">로그인</button>
+						<button type="button" id="loginBtn" class="login-button">로그인</button>
 					</td>
 				</tr>
 			</table>
