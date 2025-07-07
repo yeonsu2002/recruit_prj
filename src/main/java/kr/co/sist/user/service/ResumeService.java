@@ -9,8 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
+import kr.co.sist.user.dto.AdditionalInfoDTO;
+import kr.co.sist.user.dto.EducationHistoryDTO;
+import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
+import kr.co.sist.user.dto.ProjectDTO;
 import kr.co.sist.user.dto.ResumeDataDTO;
+import kr.co.sist.user.dto.ResumeTechStackDTO;
+import kr.co.sist.user.dto.SelfIntroductionDTO;
+import kr.co.sist.user.dto.careerDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
 import kr.co.sist.user.entity.CareerEntity;
 import kr.co.sist.user.entity.EducationHistoryEntity;
@@ -50,14 +57,6 @@ public class ResumeService {
 	//Service 생성자주입
 	private final PositionCodeService pcServ;
 	private final ProjectService pServ;
-	
-	/**
-	 * 모든 포지션 코드 반환
-	 * @return
-	 */
-	public List<PositionCodeDTO> searchAllPositionCode(){
-		return rMapper.selectAllPositionCode();
-	}
 	
 	/**
 	 * 이력서 생성
@@ -166,7 +165,16 @@ public class ResumeService {
 
 		ResumeDataDTO rdDTO = new ResumeDataDTO();
 		
-		LinkEntity links = lRepos.findBy
+		List<PositionCodeDTO> pcDTO = rMapper.selectPositionByResume(resumeSeq);
+		LinkDTO lDTO = rMapper.selectLinkByResume(resumeSeq);
+		List<ResumeTechStackDTO> rtsDTO = rMapper.selectStackByResume(resumeSeq);
+		List<EducationHistoryDTO> ehDTO = rMapper.selectEduByResume(resumeSeq);
+		List<careerDTO> cDTO = rMapper.selectCareerByResume(resumeSeq);
+		List<ProjectDTO> pDTO = rMapper.selectProjectByResume(resumeSeq);
+		List<AdditionalInfoDTO> aiDTO = rMapper.selectEtcByResume(resumeSeq);
+		List<SelfIntroductionDTO> siDTO = rMapper.selectIntroByResume(resumeSeq);
+		
+		
 		
 		return rdDTO;
 	}
