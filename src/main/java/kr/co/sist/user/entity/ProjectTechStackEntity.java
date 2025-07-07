@@ -14,14 +14,12 @@ import lombok.ToString;
 @ToString
 
 @Entity
-@Table(name = "SELF_INTRODUCTION")
-public class SelfIntroductionEntity {
+@Table(name = "PROJECT_TECH_STACK")
+public class ProjectTechStackEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int selfIntroductionSeq;
+	private int projectTechStackSeq;
 	
-	private int resumeSeq;
-	private String title;
-	private String content;
+	private int projectSeq, techStackSeq;
 }

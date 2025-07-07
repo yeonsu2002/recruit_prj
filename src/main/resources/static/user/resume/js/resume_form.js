@@ -165,10 +165,11 @@ $(function() {
 	//검색된 기술 스택 클릭시
 	$(document).on('click', '.project-list li', function() {
 		const $projectItem = $(this).closest(".project-item");
+		const skill = $(this).data("value");
 		const text = $(this).text();
 
 		$projectItem.find('.project-skills').append(
-			`<span class="tag">${text}
+			`<span class="tag" data-value="${skill}">${text}
 	       <button type="button" class="remove-tag">×</button>
 	     </span>`
 		);
@@ -321,6 +322,8 @@ $(function() {
 		//데이턱 저장하는 곳
 		const resumeData = {
 			basicInfo: {
+				title: $('input[name="title"]').val(),
+				introduction: $('textarea[name="introduction"]').val(),
 				isPublic: $('.privacy-toggle input[type="checkbox"]').is(':checked')
 			},
 			links: {
@@ -328,7 +331,7 @@ $(function() {
 				notionUrl: $('.links-section .fa-file-alt').parent().next('input').val(),
 				blogUrl: $('.links-section .fa-blog').parent().next('input').val()
 			},
-			positions: [], skills: [], educations: [], careers: [], projects: [], etc: [], introductions: []
+			positions: [], skills: [], educations: [], careers: [], projects: [], projectSkills: [], etc: [], introductions: []
 		};
 
 		// 희망 직무 수집
@@ -372,7 +375,7 @@ $(function() {
 				endDate: $(this).find('input[name="endDate"]').val(),
 				companyName: $(this).find('input[name="companyName"]').val(),
 				position: $(this).find('input[name="position"]').val(),
-				companyDescription: $(this).find('textarea').val()
+				careerDescription: $(this).find('textarea').val()
 			};
 
 			if (career.companyName || career.position) {
@@ -384,7 +387,7 @@ $(function() {
 		$('.proj-list .item-box').each(function() {
 			const projectSkills = [];
 			$(this).find('.project-skills .tag').each(function() {
-				const skillName = $(this).text().replace('×', '').trim();
+				const skillName = $(this).data('value');
 				if (skillName) {
 					projectSkills.push(skillName);
 				}
@@ -394,14 +397,16 @@ $(function() {
 				startDate: $(this).find('input[name="startDate"]').val(),
 				endDate: $(this).find('input[name="endDate"]').val(),
 				projectName: $(this).find('input[name="projectName"]').val(),
-				skills: projectSkills,
 				projectContent: $(this).find('textarea').val(),
 				releaseStatus: $(this).find('.form-check-input').is(':checked'),
-				repositoryUrl: $(this).find('input[type="url"]').val()
+				repositoryLink: $(this).find('input[type="url"]').val()
 			};
 
-			if (project.projectName) {
+			if (project.projectName && projectSkills.length > 0) {
 				resumeData.projects.push(project);
+				resumeData.projectSkills.push(projectSkills);
+			} else {
+				alert('프로젝트명과 기술스택을 모두 입력해야 저장됩니다.');
 			}
 		});
 
