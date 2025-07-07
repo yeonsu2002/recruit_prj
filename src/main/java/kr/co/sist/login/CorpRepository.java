@@ -16,7 +16,8 @@ import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.CorpEntity;
 
 @Repository
-public interface CorpRepository extends JpaRepository<CorpEntity, Integer> {
+public interface CorpRepository extends JpaRepository<CorpEntity, Long> {
+
 
 
 }

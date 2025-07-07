@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserCorpDTO {
 
-  private Integer corpNo;
-  private String upfile;
+  private Long corpNo;
+  private String upfileName;
   private String corpNm;
   private String corpCeo;
   private String zipcode;
@@ -20,7 +20,7 @@ public class UserCorpDTO {
   private String detailAddress;
   private String industry;
   private Long corpAnnualRevenue;
-  private Integer corpAvgSal;
+  private Long corpAvgSal;
   private String corpCreatedAt;
   private Integer corpEmpCnt;
   private String email;

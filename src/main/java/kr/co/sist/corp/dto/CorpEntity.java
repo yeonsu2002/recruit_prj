@@ -16,7 +16,7 @@ public class CorpEntity {
 	
 	@Id
 	@Column(name="corp_no")
-	private Integer corpNo;
+	private Long corpNo;
 	
 	@Column(name="corp_nm")
 	private String corpNm;
@@ -29,7 +29,7 @@ public class CorpEntity {
 	@Column(name="corp_img")
 	private String corpImg;
 	@Column(name="corp_avg_sal")
-	private Integer corpAvgSal;
+	private Long corpAvgSal;
 	@Column(name="corp_annual_revenue")
 	private Long corpAnnualRevenue;
 	@Column(name="corp_created_at")

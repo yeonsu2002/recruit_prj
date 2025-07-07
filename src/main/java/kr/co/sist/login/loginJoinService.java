@@ -155,13 +155,14 @@ public class loginJoinService {
         ce.setCorpNm(ucDTO.getCorpNm()); //회사이름
         ce.setCorpCeo(ucDTO.getCorpCeo()); //대표이름
         ce.setIndustry(ucDTO.getIndustry()); //업종
-        ce.setCorpAnnualRevenue(ucDTO.getCorpAnnualRevenue()); //연매출
-        ce.setCorpAvgSal(ucDTO.getCorpAvgSal()); //연봉
-        ce.setCorpEmpCnt(ucDTO.getCorpEmpCnt()); //사원수
+        //ce.setCorpAnnualRevenue(ucDTO.getCorpAnnualRevenue()); //연매출
+        //ce.setCorpAvgSal(ucDTO.getCorpAvgSal()); //연봉
+        //ce.setCorpEmpCnt(ucDTO.getCorpEmpCnt()); //사원수
         ce.setBizCert(bizCertName); //사업자등록증명원 파일 이름
         ce.setCorpAiActive("N"); //AI기능 지원 여부인데, 나중에 결제시스템 도입하면 유의미해짐
         
         //매출액으로만 기업규모 계산
+/*
         String companySize = "";
         Long corpAnnualRevenue = ucDTO.getCorpAnnualRevenue();
         if(corpAnnualRevenue < 30_000_000_000L) { //300억 미만
@@ -177,30 +178,35 @@ public class loginJoinService {
             companySize = "대기업";
         }
         ce.setCompanySize(companySize);
-        
+*/        
         //나머지 요소는 기업정보 수정페이지에서 입력하기
         
         // 저장 전 검증
-        System.out.println("저장 전 CorpEntity: " + ce);
+        System.out.print("저장 전 CorpEntity: ");
+        System.out.println(ce);
         System.out.println("CorpRepository 존재 여부: " + (cr != null));
         
         // DB 저장 - try-catch 제거
         cr.save(ce);
-        System.out.println("ce 저장 완료!");
+        System.out.println("corpEntity 저장 완료!");
         
         // 기본정보 기입
         UserEntity ue = new UserEntity();
         
         ue.setEmail(ucDTO.getEmail());
+        ue.setEmail(bizCertName);
         
         //corpNo로 기업객체 찾기
         CorpEntity corp = cr.findById(ucDTO.getCorpNo()).orElseThrow(() -> new IllegalArgumentException("기업이 존재하지 않습니다."));
         ue.setCorpEntity(corp);
         
+        //디버깅
+        System.out.println(ue.getCorpEntity());
+        
         ue.setPassword(cu.hashText(ucDTO.getPassword()));
-        ue.setName(cu.cipherText(ucDTO.getName()));
+        //ue.setName(cu.cipherText(ucDTO.getName()));
         ue.setRole("ROLE_CORP");
-        ue.setPhone(cu.cipherText(ucDTO.getPhone()));
+        //ue.setPhone(cu.cipherText(ucDTO.getPhone()));
         
         // 현재 시간 설정
         LocalDateTime now = LocalDateTime.now();
@@ -235,8 +241,8 @@ public class loginJoinService {
         ue.setLastLoginIp(null);
         
         // 주소 정보 설정
-        ue.setZipcode(ucDTO.getZipcode());
-        ue.setRoadAddress(ucDTO.getRoadAddress());
+        ue.setZipcode(ucDTO.getRoadAddress().split(", ")[0]);
+        ue.setRoadAddress(ucDTO.getRoadAddress().split(", ")[1]);
         ue.setDetailAddress(ucDTO.getDetailAddress());
         
         // 기타 정보 설정

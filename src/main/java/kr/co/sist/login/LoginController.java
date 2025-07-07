@@ -9,6 +9,7 @@ import lombok.Value;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 //@RequiredArgsConstructor -> 생성자주입방식 생성자 코드 대신 어노테이션
 @Controller
@@ -119,19 +121,22 @@ public class LoginController {
   }
   
   /**
-   * 기업회원 가입 프로세스
+   * 기업회원 가입 프로세스 (파일저장은 개발시 임시로 프로젝트 내에 저장하지만, 배포시에는 C:/upload/... 같은 외부 폴더 사용할 것!)
    */
   @PostMapping("/corp/joinProcess")
 	public String corpJoinProcess(@ModelAttribute UserCorpDTO ucDTO, @RequestParam("upfile") MultipartFile file, RedirectAttributes redirectAttr) {
-    int corpNo = ucDTO.getCorpNo();
-    String uploadDir = env.getProperty("upload.certification.path");
+    
+    Long corpNo = ucDTO.getCorpNo();
+    
+    String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
+    String resourcePath = projectPath + "/src/main/resources/static/corp/biz_cert";
     
     // 디렉토리가 없으면 생성
-    File dir = new File(uploadDir);
-    if (!dir.exists()) {
-        dir.mkdirs();
+    File folder = new File(resourcePath);
+    if (!folder.exists()) {
+        folder.mkdirs();
     }
-    
+
     String newFileName = null;
     File saveFile = null;
     
@@ -141,11 +146,11 @@ public class LoginController {
       newFileName = "cert_" + corpNo + "_" + originFileName;
       
       // 최종 경로
-      saveFile = new File(uploadDir + File.separator + newFileName);
+      saveFile = new File(resourcePath + File.separator + newFileName);
       
       try {
         file.transferTo(saveFile); //실제 저장
-        ucDTO.setUpfile(originFileName); //파일명저장 
+        ucDTO.setUpfileName(originFileName); //파일명저장 
         
       } catch (IOException e) {
         e.printStackTrace();
@@ -158,7 +163,7 @@ public class LoginController {
     try {
       ljs.registerCorp(ucDTO, newFileName);
       redirectAttr.addFlashAttribute("msg", "회원가입이 완료되었습니다.");
-      return "redirect:/user/login";
+      return "redirect:/login";
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -205,6 +210,9 @@ public class LoginController {
    * 이메일 중복 체크
    */
   
-  
+  @GetMapping("/corp/testForm")
+  public String testForm() {
+    return "login/joinCorpFormOnlyHTML";
+  }
   
 }

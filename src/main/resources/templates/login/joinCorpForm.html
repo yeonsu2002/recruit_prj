@@ -13,6 +13,9 @@
 <script type="text/javascript">
 $(function(){
 	
+	//주소 input창 누르면 kakaomap오픈 
+	openFindAddr();
+	
 	//금액 input창 ,표시
 	modifyAmountInput();
 
@@ -53,7 +56,6 @@ $(function(){
 		    alert('회원가입 양식이 제출되었습니다!');
 		    this.submit();
 	    }
-	    
 	});
 
 	//폼 예외처리 검사
@@ -72,19 +74,18 @@ $(function(){
 		const file = fileInput.files[0];
 		if(!file){
 			alert("기업인증을 진행해주세요.");
-			isEverythingOk = false;
-			return false;
+			//isEverythingOk = false;
+			//return false;
 		}
-		
     // 파일 크기 재검증
-    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
     if(file.size > maxFileSize){
-        alert("업로드된 파일 크기가 너무 큽니다. (최대 5MB)");
+        alert("업로드된 파일 크기가 너무 큽니다. (최대 10MB)");
+        isEverythingOk = false;
         return false;
     }
-	    
-
-		//form-input amount 클래스 검증 (평균매출, 평균연봉, 사원수)
+    
+		//form-input amount 검증 (평균매출, 평균연봉, 사원수)
 		const amountInputs = document.querySelectorAll('.form-input.amount');
 		for (let input of amountInputs) {
 			const numberAmount = input.value.replace(/,/g, "");
@@ -122,7 +123,7 @@ $(function(){
       isEverythingOk = false;
       return false;
     }
-		
+/* 		
 		//휴대폰
 		const phone = document.getElementById("phone").value;
    	const phonePattern = /^010-\d{4}-\d{4}$/;
@@ -140,7 +141,7 @@ $(function(){
 	  	isEverythingOk = false;
 	 	 	return false;
 		}
-		
+		 */
 		//주소
 		const addressInputs = document.querySelectorAll('.form-input.addr');
 		for (let addr of addressInputs) {
@@ -198,6 +199,7 @@ $(function(){
 		});
 		
     // 인증메일 전송 AJAX - 수정된 부분
+    /**
     $.ajax({
         url: "/mail/sendVfCode",
         type: "post",
@@ -217,6 +219,7 @@ $(function(){
             alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
         }
     });
+    */
 		/*  
 		        const email = emailInput.value.trim();
         
@@ -525,10 +528,9 @@ function upFileClear(){
 function openKakaoMap(){
 	new daum.Postcode({
 	    oncomplete: function(data) {
-	    	//console.log(data.zonecode);
-	    	//console.log(data.roadAddress);
-	    	document.getElementById("zipcode").value = data.zonecode;
-	    	document.getElementById("roadAddress").value = data.roadAddress;
+	    	const zipcode = data.zonecode;
+	    	const roadAddress = data.roadAddress;
+	    	document.getElementById("roadAddress").value = zipcode + ", " +  roadAddress;
 	    }
 	}).open();
 }
@@ -569,7 +571,7 @@ function modifyAmountInput(){
     <div class="container">
         <h1 class="form-title">민기인력 기업회원 가입</h1>
         
-        <form id="frm" action="@{/corp/joinProcess}" method="post" enctype="multipart/form-data">
+        <form id="frm" th:action="@{/corp/joinProcess}" method="post" enctype="multipart/form-data">
             <div class="form-group-corpNo">
               <label class="form-label" style="font-weight: bold;">사업자등록번호</label>
               <input type="text" id="corpNo" name="corpNo" class="form-input" placeholder="사업자 등록번호 입력(숫자 10자리)" maxlength="10">
@@ -582,7 +584,7 @@ function modifyAmountInput(){
             <div class="form-group">
             	<div class="form-label" style="font-weight: bold; margin-top: 25px;">기업인증</div>
                 <div class="upload-file-container">
-	                <input type="file" id="upfile" name="upfile" style="display: none">
+	                <input type="file" id="upfile" name="upfile" accept=".jpg,.jpeg,.png,.pdf" style="display: none" >
 	                <div class="upload-img-box" id="upload-img-box" style="display: none">
 		                <div class="upload-img-box-svg">
 			                <svg xmlns="http://www.w3.org/2000/svg" width="150px" height="250px" fill="currentColor" class="bi bi-file-earmark-check" viewBox="0 0 16 16">
@@ -610,12 +612,19 @@ function modifyAmountInput(){
                 <label class="form-label">회사주소</label>
                 <!-- 주소찾기input 클릭시 다음주소API호출 -->
                 <div class="zipcode-box" style="margin-bottom: 10px;">
-	                <input type="text" id="zipcode" name="zipcode" class="form-input addr" placeholder="우편번호" readonly>
-	                <input type="button" id="openKakaoMap" class="btn btn-secondary" value="우편번호 찾기" >
+	                <!-- <input type="text" id="zipcode" name="zipcode" class="form-input addr" placeholder="우편번호" readonly> -->
+	                <input type="button" id="openKakaoMap" class="btn btn-secondary" value="우편번호 찾기" style="display: none" >
                 </div>
-                <input type="text" id="roadAddress" name="roadAddress" class="form-input addr" placeholder="주소" style="margin-bottom: 10px;" readonly>
+                <input type="text" id="roadAddress" name="roadAddress" class="form-input addr" placeholder="주소" style="margin-bottom: 10px;" readonly onclick="openFindAddr()">
                 <input type="text" id="detailAddress" name="detailAddress" class="form-input addr" placeholder="상세주소">
             </div>
+            <script type="text/javascript">
+            	function openFindAddr(){
+            		document.getElementById('roadAddress').addEventListener('click', function(){
+            			document.getElementById('openKakaoMap').click();
+            		});
+            	}
+            </script>
             
             <div class="form-group">
 	            <label class="form-label">업종</label>
@@ -638,7 +647,7 @@ function modifyAmountInput(){
 							  <option value="internationalOrgs">국제 및 외국기관</option>
 							</select>
             </div>
-            
+<!--             
             <div class="form-group">
                 <label class="form-label">평균매출</label>
                 <input type="text" id="corpAnnualRevenue" name="corpAnnualRevenue" class="form-input amount" placeholder="평균매출 입력">
@@ -647,19 +656,21 @@ function modifyAmountInput(){
                 <label class="form-label">평균연봉</label>
                 <input type="text" id="corpAvgSal" name="corpAvgSal" class="form-input amount" placeholder="평균연봉 입력">
             </div>
-            <div class="form-group">
-                <label class="form-label">설립년도</label>
-                <input type="text" id="corpCreatedAt" name="corpCreatedAt" class="form-input" placeholder="설립년도 입력(YYYYMMDD)">
-            </div>
+             
             <div class="form-group">
                 <label class="form-label">사원수</label>
                 <input type="text" id="corpEmpCnt" name="corpEmpCnt" class="form-input amount" placeholder="사원수 입력">
+            </div>
+-->           
+            <div class="form-group">
+                <label class="form-label">개업일</label>
+                <input type="text" id="corpCreatedAt" name="corpCreatedAt" class="form-input" placeholder="개업일 입력(YYYYMMDD)">
             </div>
             
             <div class="form-group">
                 <label class="form-label">관리자 이메일</label>
                 <div class="email-container">
-	                <input type="email" id="email" class="form-input" placeholder="name@mingihire.co.kr">
+	                <input type="email" id="email" name="email" class="form-input" placeholder="name@mingihire.co.kr">
 	                <button type="button" id="codeBtn" class="btn btn-primary btn-sm" >인증요청</button>
                 </div>
                 <div id="confirmNumberFrm" class="email-container" style="margin-top: 5px; display: none; gap: 8px;">
@@ -679,7 +690,7 @@ function modifyAmountInput(){
                 <label class="form-label">비밀번호</label>
                 <input type="password" id="password" name="password" class="form-input" placeholder="8~16자(영문 대소문자/숫자/특수문자, 모두 조합)" maxlength="16">
             </div>
-            
+<!--             
             <div class="form-group">
             	<label class="form-label">관리자 휴대폰</label>
             	<input type="text" name="phone" id="phone" class="form-input" placeholder="ex) 010-1234-5678" maxlength="13">
@@ -689,7 +700,7 @@ function modifyAmountInput(){
                 <label class="form-label">관리자 이름</label>
                 <input id="name" type="text" name="name" class="form-input" placeholder="이름입력">
             </div>
-
+-->
             <div class="form-group">
                 <label class="form-label">약관</label>
                 <div class="terms-section">

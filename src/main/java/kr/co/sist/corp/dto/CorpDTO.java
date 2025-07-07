@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CorpDTO {
 
-	private Integer corpNo;
+	private Long corpNo;
 	private String corpNm;
 	private String corpInfo;
 	private String corpUrl;
 	private String corpLogo;
 	private String corpImg;
-	private Integer corpAvgSal;
-	private Integer corpAnnualRevenue;
+	private Long corpAvgSal;
+	private Long corpAnnualRevenue;
 	private String corpCreatedAt;
 	private Integer corpEmpCnt;
 	private String bizCert;

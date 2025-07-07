@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
 
 	private String email;
-	private Integer corpNo;
+	private Long corpNo;
 	private String password;
 	private String name;
 	private String role;
