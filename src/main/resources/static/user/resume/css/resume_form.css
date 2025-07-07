@@ -148,17 +148,21 @@ body {
 	padding: 20px;
 	margin-top: 16px;
 	border-radius: 6px;
+	position: relative;
 }
 
 .tag {
 	display: inline-block;
-	background: var(--primary-color);
+	background: #30364D;
 	color: white;
-	padding: 4px 8px;
-	border-radius: 12px;
-	margin: 3px 3px 0 0;
-	font-size: 0.8rem;
+	padding: 8px 16px;
+	border-radius: 24px;
+	margin: 4px 6px 4px 0;
+	font-size: 0.85rem;
 	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	box-shadow: 0 2px 4px rgba(48, 54, 77, 0.1);
 }
 
 .remove-tag {
@@ -186,21 +190,59 @@ body {
 	border-color: var(--primary-color);
 }
 
-.save-btn {
-	background: var(--primary-color);
-	color: white;
-	border: none;
-	padding: 12px 24px;
-	border-radius: 4px;
-	font-size: 1rem;
-	font-weight: 500;
-	width: 100%;
+/* 새로운 버튼 스타일 */
+.button-group {
+	display: flex;
+	gap: 12px;
 	margin-top: 20px;
+}
+
+.action-btn {
+	flex: 1;
+	padding: 12px 24px;
+	border: 1px solid var(--border-color);
+	border-radius: 6px;
+	font-size: 0.95rem;
+	font-weight: 500;
 	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.download-btn {
+	background: var(--white);
+	color: var(--text-primary);
+	border-color: var(--border-color);
+}
+
+.download-btn:hover {
+	background: var(--hover-color);
+	border-color: var(--primary-color);
+}
+
+.preview-btn {
+	background: var(--white);
+	color: var(--text-primary);
+	border-color: var(--border-color);
+}
+
+.preview-btn:hover {
+	background: var(--hover-color);
+	border-color: var(--primary-color);
+}
+
+.save-btn {
+	background: #00d4aa;
+	color: white;
+	border-color: #00d4aa;
 }
 
 .save-btn:hover {
-	background: #0056b3;
+	background: #00b89a;
+	border-color: #00b89a;
 }
 
 .skill-input-help {
@@ -291,37 +333,144 @@ body {
 	flex: 1;
 }
 
+/* Contact Info Section - 업데이트된 스타일 */
 .contact-info {
-	background: #f8f9fa;
-	border: 1px solid #e9ecef;
+	background: var(--white);
+	border: 1px solid var(--border-color);
 	border-radius: 6px;
-	padding: 16px;
+	padding: 24px;
 }
 
-@media ( max-width : 768px) {
-	.main-container {
-		margin: 10px;
-		border-radius: 6px;
-	}
-	.content-section {
-		padding: 20px;
-	}
-	.section-card {
-		padding: 16px;
-	}
-	.header-section {
-		padding: 20px;
-	}
-	.photo-upload-section {
-		flex-direction: column;
-		align-items: center;
-	}
-	.photo-upload-container {
-		min-width: auto;
-	}
-	.contact-info-section {
-		width: 100%;
-	}
+.contact-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.contact-header h2 {
+	font-size: 1.3rem;
+	font-weight: 600;
+	margin: 0;
+	color: var(--text-primary);
+}
+
+.contact-header i {
+	color: var(--primary-color);
+	font-size: 1.1rem;
+}
+
+.contact-details {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.contact-row {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.contact-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 0;
+	flex: 1;
+	flex: 0 1 auto;
+}
+
+.contact-item i {
+	width: 20px;
+	color: var(--text-secondary);
+	font-size: 0.9rem;
+	text-align: center;
+	flex-shrink: 0;
+}
+
+.contact-item-content {
+	flex: 1;
+}
+
+.contact-item-value {
+	font-weight: 500;
+	color: var(--text-primary);
+}
+
+.contact-item-label {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	margin-top: 2px;
+}
+
+.privacy-toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+	margin-left: auto;
+}
+
+.toggle-switch {
+	position: relative;
+	display: inline-block;
+	width: 44px;
+	height: 24px;
+}
+
+.toggle-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggle-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: 0.4s;
+	border-radius: 24px;
+}
+
+.toggle-slider:before {
+	position: absolute;
+	content: "";
+	height: 18px;
+	width: 18px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: 0.4s;
+	border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+	background-color: var(--primary-color);
+}
+
+input:checked+.toggle-slider:before {
+	transform: translateX(20px);
+}
+
+.privacy-text {
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+	white-space: nowrap;
+}
+
+.privacy-help {
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+	margin-top: 4px;
+	line-height: 1.4;
 }
 
 .job-selection {
@@ -350,12 +499,100 @@ body {
 	padding: 4px;
 }
 
-.item-box {
-	position: relative;
-}
-
 .section-help-text {
 	font-size: 0.85rem;
 	color: var(--text-secondary);
 	margin-bottom: 16px;
+}
+
+.custom-select {
+	margin-top: 4px;
+	position: relative;
+	width: 100%;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 8px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.custom-options {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	max-height: 200px;
+	overflow-y: auto;
+	border: 1px solid #ccc;
+	border-top: none;
+	background: #fff;
+	z-index: 10;
+}
+
+.custom-options li {
+	padding: 8px;
+	list-style: none;
+}
+
+.custom-options li:hover {
+	background: #f0f0f0;
+}
+
+.selected-item {
+	display: inline-block;
+	margin-right: 8px;
+	background: #e0f7e0;
+	padding: 4px 6px;
+	border-radius: 4px;
+}
+
+/* 반응형 디자인 */
+@media ( max-width : 768px) {
+	.main-container {
+		margin: 10px;
+		border-radius: 6px;
+	}
+	.content-section {
+		padding: 20px;
+	}
+	.section-card {
+		padding: 16px;
+	}
+	.header-section {
+		padding: 20px;
+	}
+	.photo-upload-section {
+		flex-direction: column;
+		align-items: center;
+	}
+	.photo-upload-container {
+		min-width: auto;
+	}
+	.contact-info-section {
+		width: 100%;
+	}
+	.button-group {
+		flex-direction: column;
+	}
+	.contact-row {
+		flex-direction: column;
+		gap: 12px;
+		align-items: stretch;
+	}
+	.contact-item {
+		min-width: auto;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+	.contact-item i {
+		width: auto;
+	}
+	.privacy-toggle {
+		margin-left: 0;
+		justify-content: flex-start;
+		padding-top: 12px;
+		border-top: 1px solid var(--border-color);
+	}
 }

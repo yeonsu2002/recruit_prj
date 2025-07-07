@@ -11,4 +11,5 @@ select position_seq, position_name
 from position_code
 </select>
 
+
 </mapper>
