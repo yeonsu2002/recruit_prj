@@ -22,7 +22,7 @@
 	
 	<!-- corp-header.jsp -->
 	<!-- 전체 헤더 영역 -->
-	<div id="corp-header">
+	<div id="corp-header" >
 	
 	  <!-- 상단 로고 및 로그인 영역 -->
 	  <div id="corp-top-bar">
@@ -64,7 +64,7 @@
 	        </td>
 	        <td>
 	          <div class="corp-submenu-item">
-	            <span class="corp-submenu-link">새로운 공고 등록</span><br>
+	            <a th:href="@{/corp/jobPostingForm}"><span class="corp-submenu-link">새로운 공고 등록</span></a> <br>
 	            <span class="corp-submenu-link">구인 공고 목록</span><br>
 	          </div>
 	        </td>

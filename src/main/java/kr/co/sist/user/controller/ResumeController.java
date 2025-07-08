@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.sist.user.dto.ResumeDataDTO;
+import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,8 @@ public class ResumeController {
 		return "/user/resume/resume_form";
 	}
 
-	// 이력서 저장하기
-	@PostMapping("user/resume/resumeSubmit")
+	// 이력서 새로 저장하기
+	@PostMapping("/user/resume/resumeSubmit")
 	@ResponseBody
 	public Map<String, String> resumeSubmit(@RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
 			@RequestParam("resumeData") String resumeDataJson) {
@@ -52,7 +53,7 @@ public class ResumeController {
 		
 		try {
 			ResumeDataDTO rdd = objMapper.readValue(resumeDataJson, ResumeDataDTO.class);
-			rs.addModifyResume(rdd);
+			rs.addModifyResume(rdd, profileImage);
 			
 			result.put("result", "success");
 			
@@ -62,5 +63,21 @@ public class ResumeController {
 		}
 		
 		return result;
+	}
+	
+	//이력서 수정하기
+	@GetMapping("/user/resume/edit")
+	public String resumeEdit(@RequestParam int seq, Model model) {
+
+		ResumeEntity resumeData = rs.searchOneResume(seq); //해당 이력서 찾기
+		
+		//해당 이력서가 있으면 세부 정보들 가져오기
+		if(resumeData != null) {
+			ResumeDataDTO rdDTO = rs.searchOneDetailResume(seq);
+		}
+		
+		model.addAttribute("resumeData", resumeData);
+		
+		return "/user/resume/resume_form";
 	}
 }

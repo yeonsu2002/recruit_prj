@@ -5,6 +5,7 @@
 	max-width: 1200px;
 	margin: 0 auto;
 	position: relative; /* 서브메뉴 absolute 포지셔닝을 위해 추가 */
+	
 }
 
 .corp-main-menu {

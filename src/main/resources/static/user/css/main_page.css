@@ -448,26 +448,22 @@
   word-break: break-all; /* 이메일 줄바꿈 방지 */
 }
 
-.user-buttons {
-  display: flex;
-  gap: 8px;
-}
 
-.user-buttons button {
-  flex: 1;
-  padding: 6px 0;
-  font-size: 12px;
-  color: #333;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
 
-.user-buttons button:hover {
-  background-color: #f0f0f8; /* 연보라 빛 도는 흰색 */
-  border-color: #b5b5e0;    /* 좀 더 진한 연보라 */
-}
 
+/* 버튼 스타일 */
+.button-link,
+.button-style {
+  background-color: #1DD45A; /* 버튼 색상 */
+  color: white; /* 글자 색상 */
+  border: none; /* 테두리 제거 */
+  border-radius: 5px; /* 모서리 둥글게 */
+  padding: 10px 20px; /* 여백 */
+  font-size: 16px; /* 글자 크기 */
+  cursor: pointer; /* 마우스를 올리면 포인터로 변경 */
+  text-decoration: none; /* 링크의 밑줄 제거 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  display: inline-block; /* 링크와 버튼이 인라인으로 배치되도록 */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
+    width: 130px;
+}

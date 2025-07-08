@@ -1,5 +1,53 @@
+/* ======================
+   Reset & 기본 설정
+====================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
 
+/* ======================
+   필터 버튼 & 컨테이너
+====================== */
+.filter-container {
+  position: relative;
+  margin: 0 10px 20px 0;
+  display: inline-block;
+}
+
+.filter-btn {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  min-width: 100px;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.filter-btn.active {
+  background-color: #00c471;
+  border-color: #00c471;
+  color: white;
+}
+
+/* ======================
+   기술스택: 상단 직무 버튼
+====================== */
 .stack span {
   display: inline-block;
   margin: 6px 8px 6px 0;
@@ -8,215 +56,449 @@
   background-color: #f0f0f0;
   font-size: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
+
 .stack span:hover {
   background-color: #ddd;
 }
+
 .stack span.active {
   background-color: #00c471;
   color: #fff;
   font-weight: bold;
 }
 
-/* announcement-list는 한 번만 사용 */
-.announcement-list {
+
+
+.stack span.selected {
+  background-color: #28a745; /* 초록색 */
+  color: white; /* 텍스트 색을 흰색으로 */
+}
+
+/* ======================
+   기술스택 드롭다운 메뉴
+====================== */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 15px;
+  min-width: 300px;
+  display: none;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+}
+
+.form-control:focus {
+  border-color: #00c471;
+  background-color: white;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.tech-item:hover {
+  border-color: #00c471;
+  background-color: #f8f9fa;
+}
+
+.tech-item.selected {
+  border-color: #00c471;
+  background-color: #e8f5e8;
+}
+
+.tech-icon {
+  margin-right: 6px;
+  font-size: 16px;
+}
+
+.tech-name {
+  font-size: 12px;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* 선택된 스킬 태그 */
+.skills {
+  margin-top: 10px;
+}
+
+.skill-tag {
+  display: inline-block;
+  background: #e8f5e8;
+  color: #00c471;
+  padding: 6px 12px;
+  margin: 4px 4px 0 0;
+  border-radius: 20px;
+  font-size: 12px;
+  border: 1px solid #00c471;
+}
+
+.skill-tag .remove {
+  margin-left: 6px;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+/* ======================
+   경력 드롭다운
+====================== */
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  position: relative;
+}
+
+.radio-item:hover {
+  border-color: #00c471;
+  background-color: #f8f9fa;
+}
+
+.radio-item input[type="radio"] {
+  display: none;
+}
+
+.radio-item input[type="radio"]:checked + label {
+  color: #00c471;
+  font-weight: 600;
+}
+
+.radio-item input[type="radio"]:checked ~ .radio-item,
+.radio-item:has(input[type="radio"]:checked) {
+  border-color: #00c471;
+  background-color: #e8f5e8;
+}
+
+.radio-item input[type="radio"]:checked ~ .radio-item::after,
+.radio-item:has(input[type="radio"]:checked)::after {
+  content: "✓";
+  position: absolute;
+  right: 14px;
+  color: #00c471;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.radio-item label {
+  flex: 1;
+  font-size: 14px;
+  color: #495057;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
+}
+
+.reset-btn {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6c757d;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background-color: #e9ecef;
+  color: #495057;
+  text-decoration: none;
+}
+
+/* ======================
+   지역 드롭다운
+====================== */
+.area-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 320px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.area-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.region-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 140px;  /* 기존 너비로 유지 */
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  overflow-y: auto;
+  padding: 10px; /* 내부 여백을 추가하여 버튼과 보더 사이에 공간을 만듦 */
+}
+
+.sub-region-popup {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 8px;
+  align-content: flex-start;
+  background: white;
 }
 
-.announcement-card {
- flex: 1 1 calc(25% - 20px); /* 4개씩 나오게 */
-  background-color: white;
-  border: 1px solid #ddd;
-  padding: 16px;
-  width: 265px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  box-sizing: border-box;
-  height: 100%; /* 카드 높이 균등하게 */
-  transition: box-shadow 0.3s;
-}
-
-.image-wrapper {
+.region-reset {
   width: 100%;
-  height: 180px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-
-.image-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.company-name {
+  padding: 12px 0;
+  border: none;
+  border-top: 1px solid #e9ecef;
+  background-color: #f1f3f4;
+  color: #5f6368;
   font-size: 14px;
-  color: #333;
-  margin-bottom: 4px;
-}
-
-.announcement-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 6px;
-}
-
-.stack-name {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.company-info {
-  font-size: 12px;
-  color: #999;
-}
-
-.filter-container {
-  position: relative;
-  display: inline-block;
-}
-
-.filter-btn {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  background-color: #fff;
+  font-weight: 500;
+  text-align: center;
   cursor: pointer;
-  font-size: 14px;
+  transition: all 0.2s ease;
+  border-radius: 0 0 12px 12px;
+  user-select: none;
 }
 
-.dropdown {
-  display: none; /* 초기 숨김 */
-  position: absolute;
-  top: 110%; /* 버튼 바로 아래 */
-  left: 0;
-  min-width: 250px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 12px;
-  z-index: 10;
+.region-reset:hover {
+  background-color: #e8eaed;
+  color: #3c4043;
 }
-
-.dropdown span {
-  display: inline-block;
-  padding: 6px 10px;
-  margin: 4px;
-  background-color: #f0f0f0;
-  border-radius: 14px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.dropdown span:hover {
-  background-color: #ddd;
+/* ======================
+   공고 카드
+====================== */
+.announcement-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 10px;
 }
 
 .announcement-card-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  box-sizing: border-box;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
-#dynamicTechStack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 20px;
-    padding: 20px;
+.announcement-card {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    transition: transform 0.2s;
+    width: 100%;
+    height: 100%;
 }
 
-/* 애니메이션 효과 */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.announcement-card:hover {
+    transform: translateY(-5px);
 }
 
-/* 각 기술스택 태그 */
-#dynamicTechStack span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #e8f5e8;
-    color: #333333;
-    border: 1px solid #c8e6c8;
-    border-radius: 20px;
-    padding: 8px 14px;
+.image-wrapper {
+    width: 100%;
+    height: 180px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.company-name {
     font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: #888;
+    margin-bottom: 5px;
+    font-weight: normal;
 }
 
-/* 호버 효과 */
-#dynamicTechStack span:hover {
-    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
-    color: white;
-    border-color: #00c471;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 196, 113, 0.3);
+.announcement-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    color: #333;
 }
 
-/* 클릭 효과 */
-#dynamicTechStack span:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 196, 113, 0.2);
+.stack-name {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: normal;
 }
 
-/* 선택된 상태 */
-#dynamicTechStack span.selected {
-    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
-    color: white;
-    border-color: #00c471;
-    box-shadow: 0 4px 16px rgba(0, 196, 113, 0.25);
+.company-info {
+    font-size: 13px;
+    color: #888;
+    font-weight: normal;
 }
 
-/* 반응형 디자인 */
+.announcement-card {
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #F8F9FA;
+    width: 100%;
+    min-width: 300px; /* 최소 너비 설정 */
+}
+
+
+
+.image-wrapper {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.company-name {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.announcement-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.stack-name {
+    font-size: 12px;
+    color: #007bff;
+    margin-bottom: 8px;
+}
+
+.company-info {
+    font-size: 12px;
+    color: #888;
+}
+
+/* 반응형 처리 */
+@media (max-width: 1200px) {
+    .announcement-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
-    #dynamicTechStack {
+    .announcement-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
         padding: 15px;
-        gap: 8px;
-    }
-    
-    #dynamicTechStack span {
-        padding: 8px 14px;
-        font-size: 13px;
     }
 }
 
-
-.stack span.job-selected {
-    background: linear-gradient(135deg, #00c471 0%, #00a85e 100%);
-    color: white;
-    transform: scale(1.05);
-    box-shadow: 0 4px 16px rgba(0, 196, 113, 0.3);
+@media (max-width: 480px) {
+    .announcement-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 12px;
+    }
 }
 
+ .d-day {
+      color: #ff5722;
+      font-weight: bold;
+    }
 
 
+/* 드롭다운 스타일 */
+.dropdown {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 100%;
+}
 
+.custom-options {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
+.custom-options li {
+  padding: 8px;
+  cursor: pointer;
+}
 
+.custom-options li:hover {
+  background-color: #f0f0f0;
+}
 
+.tag {
+  background-color: #e0e0e0;
+  padding: 5px;
+  margin: 2px;
+  display: inline-block;
+  border-radius: 4px;
+}
 
-
-
-
-
-
+.remove-tag {
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 5px;
+}
