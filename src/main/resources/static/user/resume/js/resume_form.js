@@ -336,17 +336,17 @@ $(function() {
 
 		// 희망 직무 수집
 		$('#positions .tag').each(function() {
-			const positionName = $(this).data('value');
-			if (positionName) {
-				resumeData.positions.push(positionName);
-			}
+		  const positionSeq = $(this).data('value');
+		  if (positionSeq) {
+		    resumeData.positions.push({ positionSeq: positionSeq });
+		  }
 		});
 
 		// 기술스택 수집
 		$('#skills .tag').each(function() {
-			const skillName = $(this).data('value');
-			if (skillName) {
-				resumeData.skills.push(skillName);
+			const techStackSeq = $(this).data('value');
+			if (techStackSeq) {
+				resumeData.skills.push({techStackSeq : techStackSeq});
 			}
 		});
 
@@ -445,15 +445,20 @@ $(function() {
 		const resumeData = collectResumeData();
 		// FormData 생성 (파일 업로드를 위해)
 		const formData = new FormData();
-
 		// 프로필 이미지가 있는 경우 추가
 		const profileImageFile = $('#photo-input')[0].files[0];
 		if (profileImageFile) {
 			formData.append('profileImage', profileImageFile);
 		}
+		
+		// resumeSeq 값 가져오기
+		const resumeSeq = $('#resumeSeq').val();
 
 		// 나머지 데이터는 JSON으로 변환해서 추가
 		formData.append('resumeData', JSON.stringify(resumeData));
+		
+		//이력서 seq 넘기기
+		formData.append('resumeSeq', resumeSeq)
 
 		// AJAX 요청
 		$.ajax({

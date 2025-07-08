@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class careerDTO {
+public class CareerDTO {
 
 	private int careerSeq;
 	private int resumeSeq, indexNum;

@@ -6,14 +6,15 @@
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
 <mapper namespace="kr.co.sist.user.mapper.ResumeMapper">
 
-<!-- 해당 이력서의 포지션 코드 가져오기 -->
+<!-- JOIN 후 해당 이력서의 포지션 코드 가져오기 -->
 <select id="selectPositionByResume" parameterType="int" resultType="userResumePositionCodeDTO">
-SELECT resume_position_seq, resume_seq, position_seq
-FROM resume_position_code
+SELECT resume_position_seq, resume_seq, p.position_seq, position_name
+FROM position_code p
+JOIN resume_position_code r ON r.position_seq = p.position_seq
 WHERE resume_seq = #{resumeSeq}
 </select>
 
-<!-- 해당 이력서의 기술 스택 가져오기 -->
+<!-- JOIN 후 해당 이력서의 기술 스택 가져오기 -->
 <select id="selectStackByResume" parameterType="int" resultType="userResumeTechStackDTO">
 SELECT RESUME_TECH_STACK_SEQ, TECH_STACK_SEQ, RESUME_SEQ
 FROM resume_tech_stack

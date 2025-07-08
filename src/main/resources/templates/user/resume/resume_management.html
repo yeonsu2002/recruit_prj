@@ -284,13 +284,13 @@ main {
 $(document).ready(function() {
     // 이력서 추가 버튼 클릭 시 새 페이지로 이동
     $('#addResumeBtn').on('click', function() {
-        window.location.href = '/user/resume/resume_form'; // 이력서 작성 페이지로 이동
+        window.location.href = '/user/resume/resume_create'; // 이력서 신규 작성
     });
 
     // 수정 버튼 클릭 이벤트
     $(document).on('click', '.edit-btn', function() {
     var resumeseq = $(this).data('resumeseq');
-    window.location.href = '/user/resume/edit?seq=' + resumeseq;
+    window.location.href = '/user/resume/resume_form?seq=' + resumeseq;
 	});
 
     // 삭제 버튼 클릭 이벤트
@@ -379,7 +379,7 @@ $(document).ready(function() {
 					<br>
 					<br>
 					<div class="card-actions">
-						<button class="action-btn edit edit-btn" data-resumeseq="2">이력서
+						<button class="action-btn edit edit-btn" data-resumeseq="20">이력서
 							수정</button>
 						<button class="action-btn delete delete-btn">이력서 삭제</button>
 						<button class="action-btn download download-btn">다운로드</button>
