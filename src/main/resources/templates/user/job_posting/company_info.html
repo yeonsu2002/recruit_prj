@@ -8,22 +8,47 @@
   <link rel="stylesheet" th:href="@{/user/css/footer.css}" />
   <link rel="stylesheet" th:href="@{/user/css/main_page.css}"/>
   <style type="text/css">
-    .company_info {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-    }
+  
+  h4 {
+    font-size: 16px; /* 제목 폰트 크기 수정 */
+} 
+   .company_info {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border: 1px solid #ddd; /* 연한 회색 보더 */
+    border-radius: 8px; /* 둥근 모서리 */
+    background-color: #f9f9f9; /* 연한 회색 배경 */
+    padding: 16px; /* 내부 여백 추가 */
+    justify-content: space-around;
+  }
 
-    .company_info img {
-      width: 80px;
-      height: auto;
-      border-radius: 4px;
-    }
+ .company_info img {
+    width: 300px; /* 원하는 가로 크기로 설정 */
+    height: auto; /* 비율 유지하면서 세로 크기 자동 조정 */
+    border-radius: 4px;
+    margin-top: 32px;
+}
+        
+  .info_box p {
+    margin: 8px 0; /* 항목 간의 여백을 좀 더 넓게 설정 */
+    font-size: 18px;
+    line-height: 1.6; /* 줄 간격을 늘려서 텍스트를 더 여유롭게 보이게 설정 */
+  }
+  
+  .company_info .info_box p {
+    display: flex;
+    justify-content: space-between; /* 항목과 값 사이를 양쪽 끝으로 배치 */
+    margin: 8px 0;
+    font-size: 18px;
+    line-height: 1.6;
+}
 
-    .info_box p {
-      margin: 4px 0;
-      font-size: 18px;
-    }
+.company_info .info_box p .gap {
+    margin-left: 60px; /* 왼쪽 간격 조정 */
+}
+    
+ 
 
     .stack span {
       display: inline-block;
@@ -199,21 +224,124 @@
   font-weight: bold; /* 더 굵게 설정 */
 }
 
-.heart {
-  cursor: pointer;
-  font-size: 28px;
-  margin-left: 10px;
-  color: #555; /* 기본 색상 */
-  transition: color 0.3s ease; /* 색상 변화에 부드러운 전환 효과 추가 */
+/* 하트가 빨간색으로 변경되었을 때 */
+.icon.liked {
+  color: red;
 }
 
-.heart.liked {
-  color: red; /* 하트를 클릭했을 때 빨간색으로 변경 */
-}
+       /* 버튼 컨테이너 - 오른쪽으로 배치 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-left: auto; /* 오른쪽으로 밀어내기 */
+        }
+
+        /* floating-action-btn 스타일 (기존 코드와 호환) */
+        .floating-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+            position: relative;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
 
+        /* 하트 버튼 상태 */
+        .floating-action-btn .icon {
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .floating-action-btn .icon.liked {
+            color: red;
+        }
+
+        /* 하트 애니메이션 */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-action-btn.animate .icon {
+            animation: heartPulse 0.6s ease-in-out;
+        }
+
+        /* 공유 메뉴 */
+        .share-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 8px 0;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .share-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .share-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #495057;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+     
+        .share-menu-item .icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
 
   </style>
+  
+  <script type="text/javascript">
+  
+  document.addEventListener('DOMContentLoaded', function() {
+  
+  
+  const scrapBtn = document.getElementById('scrapBtn');
+  const heartIcon = document.getElementById('heartIcon');
+
+  // 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
+  scrapBtn.addEventListener('click', function() {
+    // 빈 하트 ↔ 빨간 하트 상태 변경
+    if (heartIcon.textContent === '🤍') {
+      heartIcon.textContent = '❤️';  // 빨간 하트로 변경
+      heartIcon.classList.add('liked');  // 빨간색 적용
+      alert('관심 기업에 추가되었습니다!', 'success');
+    } else {
+      heartIcon.textContent = '🤍';  // 빈 하트로 변경
+      heartIcon.classList.remove('liked');  // 빨간색 제거
+      alert('관심 기업에서 제거되었습니다.', 'success');
+    }
+  });
+ });
+  
+  
+  </script>
 </head>
 <body>
   <header>
@@ -224,23 +352,33 @@
       <div class="row">
         <!-- 왼쪽 콘텐츠 영역 -->
         <div class="col-8">
-          <div class="company-header">
-			  <h2 class="company-name">패션앤스타일컴퍼니</h2>
-			  <span id="heartIcon" class="heart">&#10084;</span> <!-- 하트 아이콘 추가 -->
-			</div>
+           <div class="company-header">
+            <h2 class="company-name">패션앤스타일컴퍼니</h2>
+            <div class="action-buttons">
+                <button class="floating-action-btn" id="scrapBtn">
+                    <span class="icon" id="heartIcon">🤍</span>
+                </button>
+                <div style="position: relative;">
+                    <button class="floating-action-btn" id="shareBtn">
+                        <span class="icon">📃</span>
+                    </button>
+                  
+                    </div>
+                </div>
+            </div>
           <br><br>
 
           <div data-bs-spy="scroll" data-bs-target="#simple-list-example" data-bs-offset="0" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
             <h4 id="simple-list-item-1">기업정보</h4>
             <div class="company_info">
-              <img alt="기업 로고" src="/images/samsung.jpg" style="width:100px" height="auto"/>
+              <img alt="기업 로고" src="/images/samsung.jpg" style="width:250px" height="auto"/>
               <div class="info_box">
-                <p>업종: 응용 소프트웨어 개발 및 공급업</p>
-                <p>대표자명: 안종오</p>
-                <p>업력: 9년차 (2017년 7월 설립)</p>
-                <p>대표주소: 서울 강남구 학동로25길 37</p>
-                <p>사업내용: 모바일 어플리케이션 개발, 공급</p>
-                <p>홈페이지: <a href="http://www.dear-u.co/" target="_blank">www.dear-u.co</a></p>
+               <p>업력:<span class="gap">5년차</span></p>
+               <p>대표자명:<span class="gap">안종오</span></p>
+				<p>업력:<span class="gap">9년차 (2017년 7월 설립)</span></p>
+				<p>대표주소:<span class="gap">서울 강남구 학동로25길 37</span></p>
+				<p>사업내용:<span class="gap">모바일 어플리케이션 개발, 공급</span></p>
+				<p>홈페이지:<span class="gap"><a href="http://www.dear-u.co/" target="_blank">www.dear-u.co</a></span></p>
               </div>
             </div>
             <br><br>
@@ -249,7 +387,7 @@
             <p>삼성전자는 사람과 사회를 생각하는 글로벌 일류기업을 추구합니다. …</p>
             <br><br>
 
-            <h4 id="simple-list-item-3" style="font-size: 20px">기술스택</h4>
+            <h4 id="simple-list-item-3" style="font-size: 16px">기술스택</h4>
             <div class="stack">
               <span>Java</span>
               <span>C++</span>
@@ -285,7 +423,7 @@
             <br><br>
 
 			<div class="review-header">
-            <h4 id="simple-list-item-7" style="font-size: 20px">기업 후기</h4>
+            <h4 id="simple-list-item-7" style="font-size: 16px">기업 후기</h4>
 			  <a href="/user/job_posting/review" type="button" class="write-review-btn">자세히 보기</a>
 			</div>
           </div>

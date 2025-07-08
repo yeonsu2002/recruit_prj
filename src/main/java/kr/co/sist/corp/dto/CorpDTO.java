@@ -1,5 +1,5 @@
 package kr.co.sist.corp.dto;
-
+ 
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CorpDTO {
 
-	private Long corpNo;
+	private long corpNo; 
 	private String corpNm;
 	private String corpInfo;
 	private String corpUrl;
 	private String corpLogo;
 	private String corpImg;
-	private Long corpAvgSal;
-	private Long corpAnnualRevenue;
+	private long corpAvgSal;
+	private long corpAnnualRevenue;
 	private String corpCreatedAt;
-	private Integer corpEmpCnt;
+	private int corpEmpCnt;
 	private String bizCert;
 	private String corpAiActive;
 	private String industry;

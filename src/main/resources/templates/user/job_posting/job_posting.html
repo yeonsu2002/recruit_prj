@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -231,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <br><br>
 
  <!-- 기술 스택 필터 바 -->
+	<div id="skills" class="skills-container"></div><br>
 <div class="filter-container">
   <!-- 드롭다운 버튼 -->
   <button class="filter-btn" id="techStackBtn">기술스택 ▾</button>
@@ -246,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	    <span th:text="${techStack.stackName}"></span> <!-- 기술 스택 이름 표시 -->
 	  </li>
 	</ul>
-	<div id="skills" class="skills-container"></div>
   </div>
 </div>
   <!-- -------------------------경력-------------------------------- -->
@@ -343,71 +344,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!--  공고( 인기순 ) -->
-	<div class="announcement-section">
-  <div class="announcement-list">
-     <a href="/user/job_posting/job_posting_detail" class="announcement-card-link">
-    <div class="announcement-card">
-    
-      <div class="image-wrapper">
-        <img src="/images/samsung.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">삼성전자</div>
-      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
-      </a>
-    </div>
-    
-    <!-- 두번째 공고 -->
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/Lg.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">삼성전자</div>
-      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
-    </div>
-
-
-
-    <!-- 세번째 공고 -->
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/naver.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">네이버</div>
-      <div class="announcement-title"><strong>백엔드 개발자 채용</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
-    </div>
-    
+	<!-- 공고 목록을 반복해서 보여주는 부분 -->
+<div class="announcement-section">
+    <div class="announcement-list">
+        <!-- 이 div를 제거하고 th:each를 바로 announcement-card-link에 적용 -->
+        <a th:if="${jobPostingList != null and jobPostingList.size() > 0}" 
+           th:each="job : ${jobPostingList}"
+           th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${job.jobPostingSeq})}" 
+           class="announcement-card-link">
+            <div class="announcement-card">
+                <div class="image-wrapper">
+                	 <p class="d-day">D-4</p>
+                    <img th:src="@{'/images/' + ${job.corpNm} + '.jpg'}" alt="기업 이미지">
+                    
+                </div>
+                <div class="company-name" th:text="${job.corpNm}">회사명</div>
+                <div class="announcement-title"><strong th:text="${job.postingTitle}">공고 제목</strong></div>
+                <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
+                <div class="company-info">
+                  <span th:text="${#strings.substring(job.roadAddress, 0, 7)}">지역</span>|
+                    <span th:text="${job.expLevel}">경력</span>
+                </div>
+            </div>
+        </a>
         
-    <!-- 네번째 공고 -->
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/kakao.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">카카오</div>
-      <div class="announcement-title"><strong>모바일 앱 개발자</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
+        <div th:if="${jobPostingList == null or jobPostingList.size() == 0}">
+            <p>등록된 공고가 없습니다.</p>
+        </div>
     </div>
-    </div>
-    </div>
-
+</div>
 
 </div>
 </div>

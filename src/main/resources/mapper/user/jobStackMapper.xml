@@ -6,13 +6,11 @@
     
 <mapper namespace="kr.co.sist.user.mapper.JobStackMapper">
 
-<select id="selectJobPostingsByTechStack" parameterType="string" resultType="kr.co.sist.user.dto.TechStackDTO">
- 	    SELECT tech_stack_seq, stack_name
-        FROM tech_stack
-        WHERE UPPER(stack_name) LIKE CONCAT('%', UPPER(#{keyword}), '%')
-
-</select>
-
+    <select id="selectJobPostingsByTechStack" parameterType="string" resultType="kr.co.sist.user.dto.TechStackDTO">
+    SELECT tech_stack_seq, stack_name
+    FROM tech_stack
+    WHERE UPPER(stack_name) LIKE CONCAT('%', UPPER(#{stackName}), '%')
+	</select>
 
 </mapper>
     
