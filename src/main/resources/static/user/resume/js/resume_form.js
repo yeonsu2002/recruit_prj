@@ -455,11 +455,6 @@ $(function() {
 		// 나머지 데이터는 JSON으로 변환해서 추가
 		formData.append('resumeData', JSON.stringify(resumeData));
 
-
-
-		/*// 저장 버튼 비활성화
-		$('.save-btn').prop('disabled', true).text('저장 중...');*/
-
 		// AJAX 요청
 		$.ajax({
 			url: '/user/resume/resumeSubmit',
@@ -483,51 +478,6 @@ $(function() {
 		});
 	}
 
-	/*// 미리보기 함수
-	function previewResume() {
-		const resumeData = collectResumeData();
-
-		// 미리보기 데이터를 세션 스토리지에 저장 (또는 서버로 전송)
-		sessionStorage.setItem('previewData', JSON.stringify(resumeData));
-
-		// 미리보기 창 열기
-		window.open('/resume/preview', 'resumePreview', 'width=800,height=1000,scrollbars=yes');
-	}
-
-	// 다운로드 함수
-	function downloadResume() {
-		const resumeData = collectResumeData();
-
-		if (!resumeData.basicInfo.name) {
-			alert('이름을 입력해주세요.');
-			return;
-		}
-
-		$('.download-btn').prop('disabled', true);
-
-		$.ajax({
-			url: '/resume/download',
-			type: 'POST',
-			data: JSON.stringify(resumeData),
-			contentType: 'application/json',
-			success: function(response) {
-				if (response.success) {
-					// PDF 다운로드
-					window.location.href = '/resume/download/' + response.fileId;
-				} else {
-					alert('다운로드 준비 중 오류가 발생했습니다.');
-				}
-			},
-			error: function(xhr, status, error) {
-				alert('다운로드 중 오류가 발생했습니다.');
-				console.error('Error:', error);
-			},
-			complete: function() {
-				$('.download-btn').prop('disabled', false);
-			}
-		});
-	}*/
-
 	// 버튼 이벤트 연결
 	$('.save-btn').on('click', function() {
 		saveResume();
@@ -540,15 +490,5 @@ $(function() {
 	$('.download-btn').on('click', function() {
 		downloadResume();
 	});
-
-	/*// 폼 자동 저장 기능 (선택사항)
-	let autoSaveTimer;
-	$(document).on('input', 'input, textarea, select', function() {
-		clearTimeout(autoSaveTimer);
-		autoSaveTimer = setTimeout(function() {
-			// 자동 저장 로직 (필요시)
-			console.log('자동 저장 실행');
-		}, 30000); // 30초 후 자동 저장
-	});*/
 
 });

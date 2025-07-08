@@ -43,7 +43,7 @@ WHERE resume_seq=#{resumeSeq}
 
 <!-- 해당 이력서의 프로젝트 가져오기 -->
 <select id="selectProjectByResume" parameterType="int" resultType="userProjectDTO">
-SELECT PROJECT_SEQ, ESUME_SEQ, PROJECT_NAME, PROJECT_CONTENT, START_DATE, END_DATE, RELEASE_STATUS, REPOSITORY_LINK
+SELECT PROJECT_SEQ, RESUME_SEQ, PROJECT_NAME, PROJECT_CONTENT, START_DATE, END_DATE, RELEASE_STATUS, REPOSITORY_LINK
 FROM PROJECT 
 WHERE resume_seq=#{resumeSeq}
 </select>
