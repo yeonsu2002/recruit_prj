@@ -5,14 +5,13 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import kr.co.sist.user.dto.AdditionalInfoDTO;
+import kr.co.sist.user.dto.CareerDTO;
 import kr.co.sist.user.dto.EducationHistoryDTO;
 import kr.co.sist.user.dto.LinkDTO;
-import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.ProjectDTO;
 import kr.co.sist.user.dto.ResumePositionCodeDTO;
 import kr.co.sist.user.dto.ResumeTechStackDTO;
 import kr.co.sist.user.dto.SelfIntroductionDTO;
-import kr.co.sist.user.dto.CareerDTO;
 
 @Mapper
 public interface ResumeMapper {
