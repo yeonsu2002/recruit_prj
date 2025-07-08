@@ -8,7 +8,6 @@ import kr.co.sist.user.dto.AdditionalInfoDTO;
 import kr.co.sist.user.dto.CareerDTO;
 import kr.co.sist.user.dto.EducationHistoryDTO;
 import kr.co.sist.user.dto.LinkDTO;
-import kr.co.sist.user.dto.ProjectDTO;
 import kr.co.sist.user.dto.ResumePositionCodeDTO;
 import kr.co.sist.user.dto.ResumeTechStackDTO;
 import kr.co.sist.user.dto.SelfIntroductionDTO;
@@ -22,7 +21,6 @@ public interface ResumeMapper {
 	public LinkDTO selectLinkByResume(int resumeSeq);
 	public List<EducationHistoryDTO> selectEduByResume(int resumeSeq);
 	public List<CareerDTO> selectCareerByResume(int resumeSeq);
-	public List<ProjectDTO> selectProjectByResume(int resumeSeq);
 	public List<AdditionalInfoDTO> selectEtcByResume(int resumeSeq);
 	public List<SelfIntroductionDTO> selectIntroByResume(int resumeSeq);
 }

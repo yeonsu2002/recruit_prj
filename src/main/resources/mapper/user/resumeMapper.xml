@@ -16,9 +16,10 @@ WHERE resume_seq = #{resumeSeq}
 
 <!-- JOIN 후 해당 이력서의 기술 스택 가져오기 -->
 <select id="selectStackByResume" parameterType="int" resultType="userResumeTechStackDTO">
-SELECT RESUME_TECH_STACK_SEQ, TECH_STACK_SEQ, RESUME_SEQ
-FROM resume_tech_stack
-WHERE resume_seq=#{resumeSeq}
+SELECT RESUME_TECH_STACK_SEQ, r.TECH_STACK_SEQ, RESUME_SEQ, STACK_NAME
+FROM resume_tech_stack r
+JOIN tech_stack t ON r.tech_stack_seq = t.tech_stack_seq
+WHERE resume_seq = #{resumeSeq}
 </select>
 
 <!-- 해당 이력서의 링크 가져오기 -->
@@ -39,13 +40,6 @@ WHERE resume_seq=#{resumeSeq}
 <select id="selectCareerByResume" parameterType="int" resultType="userCareerDTO">
 SELECT CAREER_SEQ, RESUME_SEQ, INDEX_NUM, COMPANY_NAME, POSITION, CAREER_DESCRIPTION, START_DATE, END_DATE
 FROM CAREER
-WHERE resume_seq=#{resumeSeq}
-</select>
-
-<!-- 해당 이력서의 프로젝트 가져오기 -->
-<select id="selectProjectByResume" parameterType="int" resultType="userProjectDTO">
-SELECT PROJECT_SEQ, RESUME_SEQ, PROJECT_NAME, PROJECT_CONTENT, START_DATE, END_DATE, RELEASE_STATUS, REPOSITORY_LINK
-FROM PROJECT 
 WHERE resume_seq=#{resumeSeq}
 </select>
 

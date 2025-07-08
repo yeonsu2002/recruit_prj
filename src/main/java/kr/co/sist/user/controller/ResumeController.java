@@ -58,7 +58,7 @@ public class ResumeController {
 		model.addAttribute("educations", resumeData.getEducations());
 		model.addAttribute("careers", resumeData.getCareers());
 		model.addAttribute("projects", resumeData.getProjects());
-		model.addAttribute("projectSkills", resumeData.getProjectSkills());
+//		model.addAttribute("projectSkills", resumeData.getProjectSkills());
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 

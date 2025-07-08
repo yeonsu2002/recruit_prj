@@ -126,8 +126,9 @@
 
 					<div class="job-selection">
 						<div id="positions" class="mt-3">
-							<th:block th:each="position : ${positions}">
-								<span class="tag" th:text="${position.positionName}">
+							<th:block th:each="pos : ${positions}">
+								<span class="tag" th:attr="data-value=${pos.positionSeq}"> 
+									<span th:text="${pos.positionName}"></span>
 									<button type="button" class="remove-tag">×</button>
 								</span>
 							</th:block>
@@ -149,7 +150,14 @@
 						<i class="fas fa-code"></i> 기술스택
 					</div>
 					<div class="mb-3">
-						<div id="skills" class="mt-3"></div>
+						<div id="skills" class="mt-3">
+						<th:block th:each="skill : ${skills}">
+							<span class="tag" th:attr="data-value=${skill.techStackSeq}"> 
+								<span th:text="${skill.stackName}"></span>
+								<button type="button" class="remove-tag">×</button>
+							</span>
+						</th:block>
+						</div>
 						<div class="custom-select" id="skillsSelect">
 							<input type="text" class="form-control" id="skill-input"
 								placeholder="예: JavaScript, React, Node.js">
@@ -275,7 +283,14 @@
 	       			 <div class="col-md-2"><label class="form-label">시작일</label><input type="text" th:value="${project.startDate}" class="form-control" name="startDate" placeholder="YYYY.MM"></div>
 	       			 <div class="col-md-2"><label class="form-label">종료일</label><input type="text" th:value="${project.endDate}" class="form-control" name="endDate" placeholder="YYYY.MM"></div>
 	       			 <div class="col-md-6"><label class="form-label">프로젝트명</label><input type="text" th:value="${project.projectName}" class="form-control" name="projectName" placeholder="쇼핑몰 웹사이트 개발"></div>
-	      			 <div class="project-skills mt-3"></div>
+	      			 <div class="project-skills mt-3">
+	      			 <th:block th:each="pSkill : ${project.projectSkills}">
+						<span class="tag" th:attr="data-value=${pSkill.techStackSeq}"> 
+							<span th:text="${pSkill.stackName}"></span>
+							<button type="button" class="remove-tag">×</button>
+						</span>
+					</th:block>
+	      			 </div>
 	       			 <div class="custom-select project-select">
 	        		 <input type="text" class="form-control project-input" placeholder="프로젝트에서 사용한 기술스택을 입력해주세요.">
 	       			 <ul class="custom-options project-list"></ul>

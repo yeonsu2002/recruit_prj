@@ -9,7 +9,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.transaction.Transactional;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
@@ -20,6 +19,7 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
+import kr.co.sist.user.mapper.ProjectMapper;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -192,7 +192,10 @@ public class ResumeService {
 		rrDTO.setSkills(rMapper.selectStackByResume(resumeSeq));
 		rrDTO.setEducations(rMapper.selectEduByResume(resumeSeq));
 		rrDTO.setCareers(rMapper.selectCareerByResume(resumeSeq));
-		rrDTO.setProjects(rMapper.selectProjectByResume(resumeSeq));
+		
+		rrDTO.setProjects(pServ.searchProjectByResume(resumeSeq));
+//		rrDTO.setProjectSkills(pServ.searchProjectStackList(resumeSeq));
+		
 		rrDTO.setAdditionals(rMapper.selectEtcByResume(resumeSeq));
 		rrDTO.setIntroductions(rMapper.selectIntroByResume(resumeSeq));
 

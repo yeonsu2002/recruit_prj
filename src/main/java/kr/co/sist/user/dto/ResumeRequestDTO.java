@@ -7,6 +7,7 @@ import kr.co.sist.user.entity.CareerEntity;
 import kr.co.sist.user.entity.EducationHistoryEntity;
 import kr.co.sist.user.entity.LinkEntity;
 import kr.co.sist.user.entity.ProjectEntity;
+import kr.co.sist.user.entity.ProjectTechStackEntity;
 import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
@@ -27,7 +28,7 @@ public class ResumeRequestDTO {
 	private List<EducationHistoryEntity> educations;
 	private List<CareerEntity> careers;
 	private List<ProjectEntity> projects;
-	private List<List<Integer>> projectSkills;
+	private List<List<ProjectTechStackEntity>> projectSkills;
 	private List<AdditionalInfoEntity> etc;
 	private List<SelfIntroductionEntity> introductions;
 }
