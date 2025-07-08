@@ -1,23 +1,20 @@
 package kr.co.sist.login;
-import kr.co.sist.admin.controller.AdminController;
-import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.dto.UserEntity;
-import kr.co.sist.util.CipherUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -28,17 +25,15 @@ import jakarta.servlet.http.Part;
 @Controller
 public class LoginController {
 
-    private final AdminController adminController;
 
 	private final loginJoinService ljs; 
 	
 	private final Environment env;
 	
 	//생성자주입방식
-	public LoginController(loginJoinService ljs, Environment env, AdminController adminController) {
+	public LoginController(loginJoinService ljs, Environment env) {
 		this.ljs = ljs;
 		this.env = env;
-		this.adminController = adminController;
 	}
 	
   /**
@@ -172,22 +167,22 @@ public class LoginController {
       if (saveFile != null && saveFile.exists()) {
         boolean deleted = saveFile.delete();
         if (deleted) {
-          System.out.println("업로드된 파일 삭제 완료: " + newFileName);
+          System.out.println("디버깅) 업로드된 파일 삭제 완료: " + newFileName);
         } else {
-          System.out.println("업로드된 파일 삭제 실패: " + newFileName);
+          System.out.println("디버깅) 업로드된 파일 삭제 실패: " + newFileName);
         }
       }
 
-      // 구체적인 에러 메시지 설정
-      String errorMsg = "회원가입 처리 중 오류가 발생했습니다.";
-      if (e instanceof IllegalArgumentException) {
-        errorMsg = e.getMessage(); // 예: "기업이 존재하지 않습니다."
-      } else if (e.getMessage() != null && e.getMessage().contains("Duplicate")) {
-        errorMsg = "이미 존재하는 사업자번호 또는 이메일입니다.";
-      }
-
-      redirectAttr.addFlashAttribute("msg", errorMsg);
-      return "redirect:/corp/join"; // 회원가입 페이지로 다시 이동
+			/*
+			 * // 구체적인 에러 메시지 설정 String errorMsg = "회원가입 처리 중 오류가 발생했습니다."; if (e instanceof
+			 * IllegalArgumentException) { errorMsg = e.getMessage(); // 예: "기업이 존재하지 않습니다."
+			 * } else if (e.getMessage() != null && e.getMessage().contains("Duplicate")) {
+			 * errorMsg = "이미 존재하는 사업자번호 또는 이메일입니다."; }
+			 * redirectAttr.addFlashAttribute("msg", errorMsg);
+			 */      
+//      return "redirect:/corp/join"; // 회원가입 페이지로 다시 이동\
+      
+      throw e; //이거 안던져주면 GlobalExceptionHandler의 @ControllerAdvice까지 못가고 증발해
     }
 }
   /** 이메일 구현시 추가할거
@@ -209,6 +204,15 @@ public class LoginController {
   /**
    * 이메일 중복 체크
    */
+  @GetMapping("/ckEmailDupl")
+  @ResponseBody
+  public ResponseEntity<Map<String, Object>> chEmailDupl(@RequestParam("email") String email) {
+  	boolean isDuple = ljs.chkEmailDupl(email);
+  	Map<String, Object> reponse = new HashMap<String, Object>();
+  	reponse.put("duplicate", isDuple);
+  	reponse.put("message", isDuple ? "이미 사용 중입니다." : "");
+  	return ResponseEntity.ok(reponse);
+  }
   
   @GetMapping("/corp/testForm")
   public String testForm() {

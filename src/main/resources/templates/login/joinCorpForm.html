@@ -13,6 +13,9 @@
 <script type="text/javascript">
 $(function(){
 	
+	//이메일 중복 ajax 함수
+	ckEmailDupl();
+	
 	//주소 input창 누르면 kakaomap오픈 
 	openFindAddr();
 	
@@ -553,12 +556,52 @@ function modifyAmountInput(){
 	});
 }
 
+function ckEmailDupl(){
+	document.getElementById("email").addEventListener("input",function(){
+		const isEmailDupl ="이미 등록된 이메일입니다.";
+		let emailText = document.getElementById("email").value;
+		
+		$.ajax({
+			url : "/ckEmailDupl",
+			type : "GET",
+			dataType: "json",
+			//type : "POST",  									-> 컨트롤러에서 @RequestBody EmailDTO dto로 받아야함
+			//contentType: "application/json", 	-> 컨트롤러에서 @RequestBody EmailDTO dto로 받아야함
+			//data: JSON.stringfy(jsonObj), -> POST, PUT, PATCH 같은 본문을 사용하는 요청에서 쓰기 
+			data : {
+				email : emailText
+			},
+			success : function(reponse){
+				if(reponse.duplicate){ //중복됨
+					document.getElementById("emailDuple").textContent=reponse.message;
+					document.getElementById("emailDuple").style.display="block";
+					document.getElementById("codeBtn").disabled=true;
+				} else { //중복안됨
+					document.getElementById("emailDuple").textContent=reponse.message;
+					document.getElementById("emailDuple").style.display="none";
+					document.getElementById("codeBtn").disabled=false;
+				}
+			},
+			error : function(xhr, status, error){
+				console.error("이메일 중복 체크 실패:");
+				console.error("status: ", status);
+				console.error("HTTP 상태코드: ", xhr.status);
+				console.error("에러 메시지: ", error);
+				console.error("응답 본문: ", xhr.responseText);
+
+				alert("서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+			}
+		});
+		
+		
+		
+	});
+}
 </script>
 </head>
 <body>
-	<!-- 파일업로드 실패로 redirect왔을 때 Flash사용 -->
-	<div th:if="${msg}" class="alert alert-success" role="alert">
-		<p th:text=${msg}></p>
+	<div th:if="${errorMessage}" class="alert alert-success" role="alert">
+		<p th:text="${errorMessage}"></p>
 	</div>
 
  	<div class="header">
@@ -684,6 +727,7 @@ function modifyAmountInput(){
                 <!-- <div id="timer" style="margin-top: 5px; color: red; font-weight: bold;"></div> -->
                 <div id="verification-error" style="margin-top: 5px; color: red; font-weight: bold;"></div>
                 <div id="verification-success" style="margin-top: 5px; color: green; font-weight: bold; display: none; font-size: 12px;">인증에 성공하셨습니다.</div>
+                <div id="emailDuple" style="margin-top: 5px; color: red; font-weight: bold;"></div>
             </div>
 
             <div class="form-group">
