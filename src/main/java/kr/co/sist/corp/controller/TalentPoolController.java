@@ -7,10 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class TalentPoolController {
 
-	  @GetMapping("/corp/all_candidate")
-	    public String allCandidate(Model model) {
-
-	        return "corp/all_candidate";
+	  @GetMapping("/corp/talentPool/resume_detail")
+	    public String interviewOfferPage() {
+	        return "corp/talentPool/resume_detail";
+	   }
+	  
+	  @GetMapping("/corp/talentPool/interviewOffer")
+	  public String interviewOfferFragment() {
+	      return "fragments/interviewOffer:: modalContent";
 	  }
-	
+
+	  
 }
