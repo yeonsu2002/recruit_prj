@@ -25,6 +25,7 @@ public class ResumeDataDTO {
 	private List<EducationHistoryEntity> educations;
 	private List<CareerEntity> careers;
 	private List<ProjectEntity> projects;
+	private List<List<Integer>> projectSkills;
 	private List<AdditionalInfoEntity> etc;
 	private List<SelfIntroductionEntity> introductions;
 }

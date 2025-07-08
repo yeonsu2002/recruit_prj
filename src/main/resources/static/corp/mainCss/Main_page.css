@@ -4,6 +4,7 @@
     margin: 0 auto;
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative; 
 }
 
 /* 대시보드 헤더 */

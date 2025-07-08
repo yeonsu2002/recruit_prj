@@ -19,7 +19,7 @@ public class SelfIntroductionEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int selcIntroductionSeq;
+	private int selfIntroductionSeq;
 	
 	private int resumeSeq;
 	private String title;
