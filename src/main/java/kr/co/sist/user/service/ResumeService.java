@@ -174,6 +174,7 @@ public class ResumeService {
 		List<AdditionalInfoDTO> aiDTO = rMapper.selectEtcByResume(resumeSeq);
 		List<SelfIntroductionDTO> siDTO = rMapper.selectIntroByResume(resumeSeq);
 		
+		//추후 구현
 		
 		
 		return rdDTO;
