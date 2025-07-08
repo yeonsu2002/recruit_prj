@@ -19,7 +19,6 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
-import kr.co.sist.user.mapper.ProjectMapper;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -49,7 +48,6 @@ public class ResumeService {
 	private final SelfIntroductionRepository siRepos;
 	
 	//Service 생성자주입
-	private final PositionCodeService pcServ;
 	private final ProjectService pServ;
 	
 	/**
@@ -194,7 +192,6 @@ public class ResumeService {
 		rrDTO.setCareers(rMapper.selectCareerByResume(resumeSeq));
 		
 		rrDTO.setProjects(pServ.searchProjectByResume(resumeSeq));
-//		rrDTO.setProjectSkills(pServ.searchProjectStackList(resumeSeq));
 		
 		rrDTO.setAdditionals(rMapper.selectEtcByResume(resumeSeq));
 		rrDTO.setIntroductions(rMapper.selectIntroByResume(resumeSeq));
@@ -202,5 +199,19 @@ public class ResumeService {
 		return rrDTO;
 		
 	}//searchOneDetailResume
+	
+	/**
+	 * 이력서 수정하기 위해 이력서 요소들 일괄 삭제
+	 * @param resumeSeq
+	 */
+	public void removeForUpdateResume(int resumeSeq) {
+		rMapper.deleteCareerByResume(resumeSeq);
+		rMapper.deleteEducationByResume(resumeSeq);
+		rMapper.deleteIntroByResume(resumeSeq);
+		rMapper.deleteLinkByResume(resumeSeq);
+		rMapper.deletePositionByResume(resumeSeq);
+		rMapper.deleteProjectByResume(resumeSeq);
+		rMapper.deleteStackByResume(resumeSeq);
+	}
 
 }//class

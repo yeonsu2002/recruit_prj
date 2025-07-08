@@ -57,4 +57,35 @@ FROM SELF_INTRODUCTION
 WHERE resume_seq=#{resumeSeq}
 </select>
 
+<!-- 해당 이력서의 요소들 삭제 -->
+<delete id="deletePositionByResume" parameterType="int">
+delete from resume_position_code
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteStackByResume" parameterType="int">
+delete from resume_tech_stack
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteLinkByResume" parameterType="int">
+delete from link
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteEducationByResume" parameterType="int">
+delete from education_history
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteCareerByResume" parameterType="int">
+delete from career
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteProjectByResume" parameterType="int">
+delete from project
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteIntroByResume" parameterType="int">
+delete from self_introduction
+where resume_seq = #{resumeSeq}
+</delete>
+
+
 </mapper>

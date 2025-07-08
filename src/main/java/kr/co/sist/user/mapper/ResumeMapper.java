@@ -23,4 +23,13 @@ public interface ResumeMapper {
 	public List<CareerDTO> selectCareerByResume(int resumeSeq);
 	public List<AdditionalInfoDTO> selectEtcByResume(int resumeSeq);
 	public List<SelfIntroductionDTO> selectIntroByResume(int resumeSeq);
+	
+	//이력서 번호로 데이터 삭제
+	public void deletePositionByResume(int resumeSeq);
+	public void deleteStackByResume(int resumeSeq);
+	public void deleteLinkByResume(int resumeSeq);
+	public void deleteEducationByResume(int resumeSeq);
+	public void deleteCareerByResume(int resumeSeq);
+	public void deleteProjectByResume(int resumeSeq);
+	public void deleteIntroByResume(int resumeSeq);
 }

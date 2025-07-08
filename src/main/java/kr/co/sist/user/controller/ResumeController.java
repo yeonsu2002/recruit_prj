@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kr.co.sist.user.dto.EducationHistoryDTO;
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
@@ -58,7 +57,6 @@ public class ResumeController {
 		model.addAttribute("educations", resumeData.getEducations());
 		model.addAttribute("careers", resumeData.getCareers());
 		model.addAttribute("projects", resumeData.getProjects());
-//		model.addAttribute("projectSkills", resumeData.getProjectSkills());
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
