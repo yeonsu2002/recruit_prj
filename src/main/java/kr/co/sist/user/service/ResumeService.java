@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.transaction.Transactional;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
@@ -83,6 +84,7 @@ public class ResumeService {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
+	@Transactional
 	public boolean modifyResume(ResumeRequestDTO rdd, MultipartFile profileImage, int resumeSeq) throws IllegalArgumentException {
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); //현재 날짜 초 까지만 저장
 		
@@ -100,6 +102,9 @@ public class ResumeService {
 		re.setUpdatedAt(now.toString());
 		
 		rRepos.save(re); //이력서 레코드 수정
+		
+		//저장하기 전 기존 데이터들 일괄 삭제
+		removeForUpdateResume(resumeSeq);
 		
 		//이력서-포지션코드 레코드 생성 및 수정
 		List<ResumePositionCodeEntity> positions = rdd.getPositions();
@@ -204,14 +209,16 @@ public class ResumeService {
 	 * 이력서 수정하기 위해 이력서 요소들 일괄 삭제
 	 * @param resumeSeq
 	 */
+	@Transactional
 	public void removeForUpdateResume(int resumeSeq) {
 		rMapper.deleteCareerByResume(resumeSeq);
 		rMapper.deleteEducationByResume(resumeSeq);
 		rMapper.deleteIntroByResume(resumeSeq);
 		rMapper.deleteLinkByResume(resumeSeq);
 		rMapper.deletePositionByResume(resumeSeq);
-		rMapper.deleteProjectByResume(resumeSeq);
 		rMapper.deleteStackByResume(resumeSeq);
+		
+		rMapper.deleteProjectByResume(resumeSeq);
 	}
 
 }//class
