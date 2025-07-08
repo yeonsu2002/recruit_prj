@@ -10,5 +10,9 @@ public class CorpMainController {
   public String goCorpTemplate() {
     return "/corp/corp_template";
   }
-  
+  @GetMapping("/corp/talentPool/talent_pool")
+  public String talentPoolPage() {
+      return "corp/talentPool/talent_pool";
+  }
+
 }
