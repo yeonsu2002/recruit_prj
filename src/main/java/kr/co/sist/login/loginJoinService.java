@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -13,6 +16,7 @@ import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.dto.UserEntity;
 import kr.co.sist.util.CipherUtil;
+import kr.co.sist.util.JWTUtil;
 
 @Service
 public class loginJoinService {
@@ -20,12 +24,60 @@ public class loginJoinService {
     private final UserRepository ur;
     private final CorpRepository cr;
     private final CipherUtil cu;
+    
+    private final JWTUtil jwtUtil;
+    
+    @Autowired
+    private final BCryptPasswordEncoder passwordEncoder; 
 
-    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu) {
+    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, JWTUtil jwtUtil, BCryptPasswordEncoder passwordEncoder) {
         this.ur = ur;
         this.cr = cr;
         this.cu = cu;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
+    
+    public String loginUser(String mail, String password) {
+    	//이메일 조회
+    	UserEntity ue = ur.findById(mail).orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+    	
+    	//비번조회
+    	if(!passwordEncoder.matches(password, ue.getPassword())) {
+    		throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    	}
+    	
+    	//일반유저 JWT생성 
+    	Long expiredMs = 1000L * 60 * 60; //1시간
+    	String token = jwtUtil.createJwt(ue.getEmail(), ue.getName(), ue.getRole(), ue.getCorpEntity().getCorpNo(), expiredMs, "mingiRecruit");
+
+    	return token;
+    }
+    
+    public String loginCorp(String mail, String password) {
+    	//이메일 조회
+    	UserEntity ue = ur.findById(mail).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 없음"));
+    	//사업자등록번호 조회
+    	// 1. 둘중하나 
+    	CorpEntity ce = ue.getCorpEntity();
+    	// 2. 둘중하나
+    	Long corpNo = ue.getCorpEntity().getCorpNo();
+    	CorpEntity ce2 = cr.findById(corpNo).orElseThrow(() -> new IllegalArgumentException("기업정보가 존재하지 않음"));
+    	
+    	//비번조회 (입력한 비번 : DB 비번)
+    	if(!passwordEncoder.matches(password, ue.getPassword())) {
+    		//비밀번호 부일치
+    		throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    	}
+    	
+    	//기업유저 JWT생성 
+    	Long expiredMs = 1000L * 60 * 60; //1시간
+    	String name = ue.getName() != null ? ue.getName() : null;
+    	String token = jwtUtil.createJwt(ue.getEmail(), name, ue.getRole(), ue.getCorpEntity().getCorpNo(), expiredMs, "mingiRecruit");
+    	
+    	return token;
+    }
+    
 
     @Transactional
     public UserEntity registerUser(UserDTO uDTO) {

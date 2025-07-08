@@ -13,6 +13,12 @@ public class GlobalExceptionHandler {
     return "redirect:/corp/join"; 
 	}
 	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public String handleIllegalArgument(IllegalArgumentException ex, RedirectAttributes rttr) {
+		rttr.addFlashAttribute("errorMessage", ex.getMessage());
+		return "";
+	}
+	
 	
 	
 }

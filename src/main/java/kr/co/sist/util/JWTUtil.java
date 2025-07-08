@@ -17,15 +17,11 @@ import kr.co.sist.user.dto.UserEntity;
 @Component
 public class JWTUtil {
 	
-	private final UserEntity ue;
-	
 	private final SecretKey secretKey;
 	
 	//application.properties에서 시크릿 키를 주입받아
-	public JWTUtil(@Value("${spring.jwt.mysecret}") String secret, UserEntity ue) {
+	public JWTUtil(@Value("${spring.jwt.mysecret}") String secret) {
 	   
-		this.ue = ue;
-		
 	  // 문자열 형태의 시크릿 키를 바이트 배열로 변환하고,
 	  // HMAC SHA-256 알고리즘을 사용하는 SecretKey 객체로 생성
 	  secretKey = new SecretKeySpec(
@@ -124,30 +120,16 @@ public class JWTUtil {
   		throw new IllegalArgumentException("Invalid JWT token", e);
   	}
   }
-    
-  public String getCategory(String token) { //토큰에서 카테고리 뽑기.. 왠 카테고리??
-  	try {
-  		return Jwts.parser()
-  				.verifyWith(secretKey)
-  				.build()
-  				.parseSignedClaims(token)
-  				.getPayload()
-  				.get("category", String.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException("Invalid JWT token", e);
-		}
-  }
   
 	// JWT생성: 더 많은 정보를 담고싶다면 매개변수에 포함.
-	public String createJwt(String email, String name, String role, int corpNo, Long expiredMs, String iss) {
+	public String createJwt(String email, String name, String role, Long corpNo, Long expiredMs, String iss) {
 
 		System.out.println("createJwt() 실행~ ");
 
 		try {
 			return Jwts.builder() // 빌더를 통해 JWT의 클레임(Claims), 헤더(Header), 서명(Signature)을 구성
 					.claim("email", email)	// JWT의 Custom Claim(사용자 정의 클레임)을 추가 (키 : 값) -> // Payload 에 저장
-					.claim("corpNo", ue.getCorpEntity() != null ? ue.getCorpEntity() : null) 
+					.claim("corpNo", corpNo) 
 					.claim("name", name) 
 					.claim("role", role)
 					.claim("iss", iss)

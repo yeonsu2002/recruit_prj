@@ -50,8 +50,9 @@ public class LoginController {
    * @return
    */
   @PostMapping("user/loginProcess")
-  public String memberLoginProcess() {
-    System.out.println("개인회원 로그인 처리");
+  public String memberLoginProcess(String email, String password) {
+  	ljs.loginUser(email, password);
+  	
     return "redirect:/user/main";
   }
   
