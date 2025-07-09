@@ -13,10 +13,17 @@ public class GlobalExceptionHandler {
     return "redirect:/corp/join"; 
 	}
 	
-	@ExceptionHandler(IllegalArgumentException.class)
+	//@ExceptionHandler(IllegalArgumentException.class)
 	public String handleIllegalArgument(IllegalArgumentException ex, RedirectAttributes rttr) {
 		rttr.addFlashAttribute("errorMessage", ex.getMessage());
-		return "";
+		return "redirect:/login";
+	}
+	
+	//로그인 커스텀 예외처리 
+	@ExceptionHandler(LoginException.class)
+	public String handleLoginException(LoginException le, RedirectAttributes rttr) {
+		rttr.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 일치하지 않습니다.");
+		return "redirect:/login";
 	}
 	
 	

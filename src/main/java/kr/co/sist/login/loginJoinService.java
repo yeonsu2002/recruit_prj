@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 
 import kr.co.sist.admin.controller.AdminController;
 import kr.co.sist.corp.dto.CorpEntity;
+import kr.co.sist.error.LoginException;
+import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.dto.UserEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
-import kr.co.sist.util.JWTUtil;
 
 @Service
 public class loginJoinService {
@@ -38,47 +39,24 @@ public class loginJoinService {
         this.passwordEncoder = passwordEncoder;
     }
     
-    public String loginUser(String mail, String password) {
-    	//이메일 조회
-    	UserEntity ue = ur.findById(mail).orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-    	
-    	//비번조회
-    	if(!passwordEncoder.matches(password, ue.getPassword())) {
-    		throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    /**
+     * 유저인증 (이메일, 비밀번호)
+     */
+    public UserDTO authenticate(String mail, String password) {
+    	UserEntity user = ur.findById(mail).orElseThrow(() -> new LoginException("사용자가 존재하지 않음"));
+    	if(!passwordEncoder.matches(password, user.getPassword())) {
+    		throw new LoginException("비밀번호가 일치하지 않습니다. 어디로 가야하죠~ 아저씨 우는 손님이 처음인 가요~~");
     	}
     	
-    	//일반유저 JWT생성 
-    	Long expiredMs = 1000L * 60 * 60; //1시간
-    	String token = jwtUtil.createJwt(ue.getEmail(), ue.getName(), ue.getRole(), ue.getCorpEntity().getCorpNo(), expiredMs, "mingiRecruit");
-
-    	return token;
+    	UserDTO uDTO = UserDTO.from(user); //Entity는 보안문제상 DTO로 변환하여 반환
+    	return uDTO;
     }
-    
-    public String loginCorp(String mail, String password) {
-    	//이메일 조회
-    	UserEntity ue = ur.findById(mail).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 없음"));
-    	//사업자등록번호 조회
-    	// 1. 둘중하나 
-    	CorpEntity ce = ue.getCorpEntity();
-    	// 2. 둘중하나
-    	Long corpNo = ue.getCorpEntity().getCorpNo();
-    	CorpEntity ce2 = cr.findById(corpNo).orElseThrow(() -> new IllegalArgumentException("기업정보가 존재하지 않음"));
-    	
-    	//비번조회 (입력한 비번 : DB 비번)
-    	if(!passwordEncoder.matches(password, ue.getPassword())) {
-    		//비밀번호 부일치
-    		throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-    	}
-    	
-    	//기업유저 JWT생성 
-    	Long expiredMs = 1000L * 60 * 60; //1시간
-    	String name = ue.getName() != null ? ue.getName() : null;
-    	String token = jwtUtil.createJwt(ue.getEmail(), name, ue.getRole(), ue.getCorpEntity().getCorpNo(), expiredMs, "mingiRecruit");
-    	
-    	return token;
-    }
-    
 
+    /**
+     * 유저 회원가입
+     * @param uDTO
+     * @return
+     */
     @Transactional
     public UserEntity registerUser(UserDTO uDTO) {
         UserEntity ue = new UserEntity();
@@ -189,6 +167,7 @@ public class loginJoinService {
     }
     
     /**
+     * 기업회원 회원가입
      * 예외가 발생했을 때 메서드 밖으로 던져져야 Spring이 트랜잭션을 롤백할 수 있다. try catch 안 돼!
      * IOException, SQLException, Exception 같은 예외는 @Transactional이 자동 롤백하지 않음.
      * @param ucDTO

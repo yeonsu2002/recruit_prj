@@ -1,4 +1,4 @@
-package kr.co.sist.util;
+package kr.co.sist.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import kr.co.sist.user.dto.UserEntity;
+import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.entity.UserEntity;
 
 @Component
 public class JWTUtil {
@@ -122,19 +123,20 @@ public class JWTUtil {
   }
   
 	// JWT생성: 더 많은 정보를 담고싶다면 매개변수에 포함.
-	public String createJwt(String email, String name, String role, Long corpNo, Long expiredMs, String iss) {
+	//public String createJwt(String email, String name, String role, Long corpNo, Long expiredMs, String iss) {
+	public String createJwt(UserDTO user ,Long expiredMs) {
 
 		System.out.println("createJwt() 실행~ ");
 
 		try {
 			return Jwts.builder() // 빌더를 통해 JWT의 클레임(Claims), 헤더(Header), 서명(Signature)을 구성
-					.claim("email", email)	// JWT의 Custom Claim(사용자 정의 클레임)을 추가 (키 : 값) -> // Payload 에 저장
-					.claim("corpNo", corpNo) 
-					.claim("name", name) 
-					.claim("role", role)
-					.claim("iss", iss)
-					.issuedAt(new Date(System.currentTimeMillis())) // 토큰의 발급 시간(iat, issued at) 설정
-					.expiration(new Date(System.currentTimeMillis() + expiredMs)) // JWT의 만료 시간(exp, expiration) 설정
+					.claim("email", user.getEmail())	// JWT의 Custom Claim(사용자 정의 클레임)을 추가 (키 : 값) -> // Payload 에 저장
+					.claim("corpNo", user.getCorpNo())
+					.claim("name", user.getName()) 
+					.claim("role", user.getRole())
+					.claim("iss", "mingiRecruit") //발급자 검증 
+					.issuedAt(new Date(System.currentTimeMillis())) // 토큰의 발급 시간 설정
+					.expiration(new Date(System.currentTimeMillis() + expiredMs)) // JWT의 만료 시간 설정
 					.signWith(secretKey) // 입력된 암호화 키(secretKey)를 사용해 JWT의 서명을 생성
 					.compact(); // 최종적으로 JWT를 문자열로 압축하여 반환
 		} catch (Exception e) {

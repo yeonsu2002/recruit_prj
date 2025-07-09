@@ -1,4 +1,4 @@
-package kr.co.sist.user.dto;
+package kr.co.sist.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

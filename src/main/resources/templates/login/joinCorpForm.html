@@ -613,6 +613,10 @@ function ckEmailDupl(){
 
     <div class="container">
         <h1 class="form-title">민기인력 기업회원 가입</h1>
+        <!-- 	방법1. form 필드요소를 10개 이하로 만들거나.. 
+        			방법2. 사진등록만 ajax로 폴더에 저장하고, 저장된 파일 명을 input hidden에 넣고 form submit(). 
+        			이때 enctype은 "multipart/form-data"하면 안됨 
+        -->
         
         <form id="frm" th:action="@{/corp/joinProcess}" method="post" enctype="multipart/form-data">
             <div class="form-group-corpNo">
