@@ -16,13 +16,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sist.login.LoginController;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.util.CipherUtil;
 
 @Component
 public class JWTUtil {
-	
+
 	private final SecretKey secretKey;
 	
 	private final CipherUtil cipherUtil;
@@ -178,20 +180,43 @@ public class JWTUtil {
 	}
 	
 	/**
-	 * 토큰 검증?? 만료시간?
+	 * 토큰 검증?? 만료시간? 등등
 	 */
-	public boolean validateToken(String token) {
-		String secretKey  = environment.getProperty("${spring.jwt.mysecret}"); //properties의 키값 가져오기 
+	public UserDTO validateToken(String token) {
+		String secretKey  = environment.getProperty("spring.jwt.mysecret"); //properties의 키값 가져오기 
 		try {
 			SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
 			Claims claims = Jwts.parser()
 					.verifyWith(key)
 					.build()
-					.parseSignedClaims(token)
-					//.getPayload() //payload 부분을 Base64 디코딩하지 않고 그대로 문자열로 반환
-					.getBody(); //payload(중간 부분)를 파싱해서 Map 형태의 key-value 쌍으로 반환
+					.parseSignedClaims(token) //서명된 JWT를 파싱하고 서명이 유효한지 검증, Payload는 문자열로 반환
+					.getPayload();
+			
+			//토큰 유효한지만 확인 = return true
+			//토큰에서 사용자 정보 추출 = return claims.getSubject(); //사용자명 반환
+			//토큰에서 특정 클레임 값 추출 = return claims.get(claimName, String.class);
+			//토큰의 모든 클레임 정보 추출 = return claims;
+			
+			//토큰에서 사용자 정보를 담은 객체를 반환
+			UserDTO uDTO = new UserDTO();
+			uDTO.setEmail(claims.get("email", String.class));
+			uDTO.setCorpNo(claims.get("corpNo", Long.class));
+			uDTO.setRole(claims.get("role", String.class));
+			
+			//유효성 검증
+	    String issuer = claims.getIssuer(); //= claims.get("iss", String.class)
+	    Date expiration = claims.getExpiration(); //= claims.get("exp", Date.class)
+			
+	    if("mingiRecruit".equals(issuer) && expiration.after(new Date())) {
+	      return uDTO;
+	    } else {
+	      //만료됐거나 다른 토큰 발급자
+	      return null;
+	    }
+			  
 		} catch (Exception e) {
-			// TODO: handle exception
+		  e.printStackTrace();
+		  return null;
 		}
 		
 	}

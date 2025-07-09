@@ -5,16 +5,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
-import kr.co.sist.admin.controller.AdminController;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.error.LoginException;
-import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
@@ -26,16 +23,13 @@ public class loginJoinService {
     private final CorpRepository cr;
     private final CipherUtil cu;
     
-    private final JWTUtil jwtUtil;
-    
     @Autowired
     private final BCryptPasswordEncoder passwordEncoder; 
 
-    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, JWTUtil jwtUtil, BCryptPasswordEncoder passwordEncoder) {
+    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, BCryptPasswordEncoder passwordEncoder) {
         this.ur = ur;
         this.cr = cr;
         this.cu = cu;
-        this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
     

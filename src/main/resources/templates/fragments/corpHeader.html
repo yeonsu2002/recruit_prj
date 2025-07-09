@@ -28,9 +28,16 @@
 	  <div id="corp-top-bar">
 	    <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo"></a> 
 	    <div class="corp-top-menu">
-	      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
-	      <a th:href="@{/void}" class="corp-header-link">회원가입</a> |
-	      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+	    	<div th:if="${user}">
+		      <a th:text="${user.email}" class="corp-header-link" style="color: #1abc9c" ></a> |
+		      <a th:href="@{/void}" class="corp-header-link">마이페이지</a> |
+		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+	    	</div>
+	    	<div th:unless="${user}">
+		      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
+		      <a th:href="@{/void}" class="corp-header-link">회원가입</a> |
+		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+	    	</div>
 	    </div>
 	    <!-- 모바일 햄버거 버튼 -->
 	    <div id="corp-hamburger" onclick="toggleCorpMobileMenu()">☰</div>

@@ -1,10 +1,12 @@
 package kr.co.sist.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.jwt.JWTUtil;
+import kr.co.sist.user.dto.UserDTO;
 
 @Controller
 public class MainController {
@@ -16,20 +18,24 @@ public class MainController {
 	}
 	
 	@GetMapping("/")
-	public String mainPage(HttpServletRequest request) {
+	public String mainPage(HttpServletRequest request, Model model) {
 		
 		String token = jwtUtil.resolveToken(request);
+		UserDTO uDTO = jwtUtil.validateToken(token);
 		
-		System.out.print("토큰이오!!! = ");
-		System.out.println(token);
-		
-		//if(token != null && )
+		model.addAttribute("user", uDTO);
 		
 		return "user/main_page";
 	}
 	
 	@GetMapping("/corp/main")
-	public String corpMainPage() {
+	public String corpMainPage(HttpServletRequest request, Model model) {
+	  
+	  String token = jwtUtil.resolveToken(request);
+    UserDTO uDTO = jwtUtil.validateToken(token);
+    
+    model.addAttribute("user", uDTO);
+    
 		return "corp/main_page";
 	}
 }
