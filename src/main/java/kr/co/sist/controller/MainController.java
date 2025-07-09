@@ -10,4 +10,9 @@ public class MainController {
 	public String mainPage() {
 		return "user/main_page";
 	}
+	
+	@GetMapping("/corp/main")
+	public String corpMainPage() {
+		return "corp/main_page";
+	}
 }

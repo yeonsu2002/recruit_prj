@@ -18,7 +18,6 @@ $(function(){
     });
 	});
 	
-	
 	//아이디창 누르면 alert사라짐
 	document.getElementById('email').addEventListener("click", function(){
 		document.querySelector('.alert.alert-success').style.display="none";
@@ -32,6 +31,15 @@ $(function(){
 	}
 	
 });//ready
+
+function joinPageForm(){
+	let href = "/user/join";
+	if(document.querySelector('.corp-type').classList.contains('active')){
+		href = "/corp/join";
+	}
+	document.getElementById('joinPageLink').href = href;
+}
+
 
 </script>
 </head>
@@ -89,7 +97,7 @@ $(function(){
 			<span>|</span> 
 			<a href="#" onclick="alert('비밀번호 찾기 기능')">비밀번호 찾기</a>
 			<span>|</span> 
-			<a href="#" onclick="joinPageForm()">회원가입</a>
+			<a th:href="@{/#}" id="joinPageLink" onclick="joinPageForm()">회원가입</a>
 		</div>
 
 		<div class="social-login">
