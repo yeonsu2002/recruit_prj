@@ -56,7 +56,7 @@ public class LoginController {
    * @return
    */
   @PostMapping("/loginProcess")
-  public String memberLoginProcess(String email, String password, HttpServletResponse response) {
+  public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
   	
   	//1. 사용자 인증
   	UserDTO uDTO = ljs.authenticate(email, password);
@@ -78,6 +78,9 @@ public class LoginController {
   	
     //addAttribute는 URL에 붙여서 전달 → 브라우저 주소창에 노출됨
     //addFlashAttribute는 세션에 임시 저장 → 노출 안 됨, 리다이렉트 후 한 번만 사용 가능
+    if(uDTO.getRole().equals("ROLE_CORP")) {
+    	return "redirect:/corp/main"; //기업회원은 로그인 후 기업메인페이지로 이동
+    }
     
     return "redirect:/"; //로그인 후 메인페이지로 이동
   }

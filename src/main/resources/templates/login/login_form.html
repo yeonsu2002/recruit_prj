@@ -51,6 +51,10 @@ function joinPageForm(){
 			</div> 
 -->										<!-- 근데 밑에꺼나 input hidden이나 ..  -->
 	<div id="alertBox" th:if=${errorMessage} th:attr="data-error=${errorMessage}"></div>
+	<div th:if="${msg}" class="alert alert-success" role="alert" >
+		<p th:text="${msg}" ></p>
+	</div> 
+
 
 	<div class="login-container">
 		<!-- 탭 메뉴 -->

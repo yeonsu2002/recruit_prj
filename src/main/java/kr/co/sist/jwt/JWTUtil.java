@@ -7,21 +7,30 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.util.CipherUtil;
 
 @Component
 public class JWTUtil {
 	
 	private final SecretKey secretKey;
 	
+	private final CipherUtil cipherUtil;
+	
+	private final Environment environment;
+	
 	//application.properties에서 시크릿 키를 주입받아
-	public JWTUtil(@Value("${spring.jwt.mysecret}") String secret) {
+	public JWTUtil(@Value("${spring.jwt.mysecret}") String secret, CipherUtil cipherUtil, Environment environment) {
 	   
 	  // 문자열 형태의 시크릿 키를 바이트 배열로 변환하고,
 	  // HMAC SHA-256 알고리즘을 사용하는 SecretKey 객체로 생성
@@ -29,6 +38,11 @@ public class JWTUtil {
        secret.getBytes(StandardCharsets.UTF_8),
        Jwts.SIG.HS256.key().build().getAlgorithm()
 	  );
+	  
+	  this.cipherUtil = cipherUtil;
+	  this.environment = environment;
+	  
+	  
 	}
 	
 	public String getEmail(String token) { 					//JWT(token) 에서 이메일뽑기 메서드임(헤더, payload, 서명), 여기서는 아이디역할 
@@ -145,6 +159,42 @@ public class JWTUtil {
 			throw new RuntimeException("JWT 생성 실패", e); // 예외 발생 시 RuntimeException 던짐
 		}
 	}
+	
+	
+	/**
+	 * 요청에서 쿠키 꺼내기
+	 */
+	public String resolveToken(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				if(cookie.getName().equals("token")) {
+					return cookie.getValue(); //쿠키 이름이 token인거의 값 반환
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 토큰 검증?? 만료시간?
+	 */
+	public boolean validateToken(String token) {
+		String secretKey  = environment.getProperty("${spring.jwt.mysecret}"); //properties의 키값 가져오기 
+		try {
+			SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
+			Claims claims = Jwts.parser()
+					.verifyWith(key)
+					.build()
+					.parseSignedClaims(token)
+					.get
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+	}
+	
 }
 /**
  * 
