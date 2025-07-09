@@ -188,7 +188,8 @@ public class JWTUtil {
 					.verifyWith(key)
 					.build()
 					.parseSignedClaims(token)
-					.get
+					//.getPayload() //payload 부분을 Base64 디코딩하지 않고 그대로 문자열로 반환
+					.getBody(); //payload(중간 부분)를 파싱해서 Map 형태의 key-value 쌍으로 반환
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
