@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
+import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
@@ -52,6 +53,16 @@ public class ResumeService {
 	private final ProjectService pServ;
 	
 	/**
+	 * 특정 유저의 모든 이력서 가져오기
+	 * @param email
+	 * @return
+	 */
+	public List<ResumeDTO> searchAllResumeByUser(String email){
+		
+		return rMapper.selectAllResumeByUser(email);
+	}
+	
+	/**
 	 * 이력서 생성
 	 * @return
 	 * @throws IllegalArgumentException
@@ -62,7 +73,7 @@ public class ResumeService {
 		ResumeEntity re = new ResumeEntity();
 
 		//여기에 추후에 members에서 가져올 기본 정보 넣기
-		re.setEmail("wngustjr1306");
+		re.setEmail("juhyunsuk@naver.com");
 		re.setCreatedAt(now.toString());
 		
 		// 날짜 형식 "yyMMdd" 만들기
@@ -77,6 +88,14 @@ public class ResumeService {
 		
 		return resumeSeq;
 	}//addResume
+	
+	/**
+	 * 해당 이력서 삭제
+	 * @param resumeSeq
+	 */
+	public void removeResume(int resumeSeq) {
+		rMapper.deleteResume(resumeSeq);
+	}
 	
 	/**
 	 * 이력서 수정
@@ -99,6 +118,7 @@ public class ResumeService {
 		re.setIsPublic(Boolean.parseBoolean(rEntity.getIsPublic()) ? "Y" : "N"); //이력서 공개 여부 처리
 		re.setCareerType((rdd.getCareers() != null && !rdd.getCareers().isEmpty()) ? "E" : "N"); //경력 여부 처리
 		re.setIntroduction(rEntity.getIntroduction());
+		re.setTitle(rEntity.getTitle());
 		re.setUpdatedAt(now.toString());
 		
 		rRepos.save(re); //이력서 레코드 수정

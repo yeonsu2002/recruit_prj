@@ -2,7 +2,7 @@ package kr.co.sist.login;
 import kr.co.sist.admin.controller.AdminController;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.dto.UserEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

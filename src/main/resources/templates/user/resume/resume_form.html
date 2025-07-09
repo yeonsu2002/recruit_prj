@@ -59,7 +59,7 @@
 							<div class="contact-info">
 								<div class="contact-header">
 									<i class="fas fa-user"></i>
-									<h2>주현석</h2>
+									<h2 th:text="${user.name}"></h2>
 								</div>
 
 								<div class="contact-details">
@@ -67,7 +67,7 @@
 									<div class="contact-item">
 										<i class="fas fa-envelope"></i>
 										<div class="contact-item-content">
-											<div class="contact-item-value">wngustjr1306@naver.com</div>
+											<div class="contact-item-value" th:text="${user.email}"></div>
 										</div>
 									</div>
 
@@ -76,14 +76,14 @@
 										<div class="contact-item">
 											<i class="fas fa-calendar-alt"></i>
 											<div class="contact-item-content">
-												<div class="contact-item-value">1999년생</div>
+												<div class="contact-item-value" th:text="|${user.birth}년생|">1999년생</div>
 											</div>
 										</div>
 
 										<div class="contact-item">
 											<i class="fas fa-phone"></i>
 											<div class="contact-item-content">
-												<div class="contact-item-value">010-9120-5456</div>
+												<div class="contact-item-value" th:text="${user.phone}"></div>
 											</div>
 										</div>
 

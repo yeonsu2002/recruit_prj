@@ -1,4 +1,4 @@
-package kr.co.sist.user.dto;
+package kr.co.sist.user.entity;
 
 import java.sql.Date;
 

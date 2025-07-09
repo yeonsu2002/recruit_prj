@@ -11,7 +11,7 @@ import kr.co.sist.admin.controller.AdminController;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.dto.UserEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
 
 @Service
