@@ -1,11 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이력서 상세보기</title>
+        <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+        <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
     <style>
         * {
             margin: 0;
@@ -254,23 +254,22 @@
     </style>
 </head>
 <body>
+    <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
     <div class="container">
         <!-- 왼쪽: 이력서 내용 영역 -->
         <div class="resume-section">
             <div class="resume-placeholder">
-                📄<br><br>
-                <strong>이력서 내용이 여기에 표시됩니다</strong><br><br>
-                다른 개발자가 이력서 컴포넌트를<br>
-                이 영역에 삽입할 예정입니다.
+                📄<br>
+                <strong>이력서 내용</strong><br>
             </div>
         </div>
 
         <!-- 오른쪽: 고정 사이드바 -->
         <div class="sidebar">
             <div class="sidebar-buttons">
-                <button class="sidebar-btn position-btn" onclick="handlePositionOffer()">
+                <button class="sidebar-btn position-btn openInterviewModalBtn">
                     <span class="btn-icon">💼</span>
-                    <span class="btn-text">포지션 제안</span>
+                    <span class="btn-text">면접 제안</span>
                 </button>
                 
                 <button class="sidebar-btn bookmark-btn" onclick="handleBookmark()">
@@ -285,9 +284,43 @@
             </div>
         </div>
     </div>
+   			<div class="modal" id="interviewModal" style="display:none;">
+			  <div th:replace="~{fragments/interviewOffer.html :: modalContent }"></div> <!-- ✅ 안전 -->
+			</div>
 
     <script>
-        // 포지션 제안 버튼 클릭
+    document.querySelector('.openInterviewModalBtn').addEventListener('click', openModal);
+
+    document.querySelectorAll('.interview-btn').forEach(button => {
+    	  button.addEventListener('click', () => {
+    	    openModal();
+    	  });
+    	});
+    function openModal() {
+        document.getElementById('interviewModal').style.display = 'block';
+        document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+    }
+
+    function closeModal() {
+        document.getElementById('interviewModal').style.display = 'none';
+        document.body.style.overflow = 'auto'; // 배경 스크롤 복원
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('interviewModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+/*         // 포지션 제안 버튼 클릭
         function handlePositionOffer() {
             const btn = document.querySelector('.position-btn');
             const originalContent = btn.innerHTML;
@@ -304,7 +337,7 @@
                 // 성공 효과
                 alert('포지션 제안을 보냈습니다!');
             }, 1500);
-        }
+        } */
 
         // 스크랩 버튼 클릭
 		function handleBookmark() {
@@ -340,21 +373,13 @@
 		}
 
         // 목록으로 돌아가기
-        function handleGoBack() {
-            const btn = document.querySelector('.list-btn');
-            
-            if (confirm('목록 페이지로 돌아가시겠습니까?')) {
-                // 실제로는 history.back() 또는 라우터 이동
-                btn.style.transform = 'scale(0.95)';
-                
-                setTimeout(() => {
-                    // window.history.back();
-                    // 또는 router.push('/list');
-                    alert('목록 페이지로 이동합니다.');
-                    btn.style.transform = 'scale(1)';
-                }, 200);
-            }
-        }
+		function handleGoBack() {
+		    const btn = document.querySelector('.list-btn');
+		
+		    // 브라우저 히스토리 뒤로 가기
+		    window.history.back();
+		}
+
 
         // 토스트 메시지 표시
         function showToast(message) {
@@ -425,5 +450,6 @@
             document.body.style.opacity = '1';
         });
     </script>
+    	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </body>
 </html>

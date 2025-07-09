@@ -11,7 +11,66 @@
 <style type="text/css">
 </style>     
 <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const applyBtn = document.getElementById('applyBtn');
+    const modal = document.getElementById('applyModal');
+    const closeBtn = document.getElementById('closeBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
 
+    // 모달 열기
+    applyBtn.addEventListener('click', () => {
+        modal.classList.add('show');
+    });
+
+    // 모달 닫기
+    function closeModal() {
+        modal.classList.remove('show');
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // 모달 외부 클릭 시 닫기
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // 지원 확인
+    confirmBtn.addEventListener('click', () => {
+        alert('지원이 완료되었습니다!');
+        closeModal();
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+    
+    
+    
+    
+    const scrapBtn = document.getElementById('scrapBtn');
+    const heartIcon = document.getElementById('heartIcon');
+
+    // 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
+    scrapBtn.addEventListener('click', function() {
+      // 빈 하트 ↔ 빨간 하트 상태 변경
+      if (heartIcon.textContent === '🤍') {
+        heartIcon.textContent = '❤️';  // 빨간 하트로 변경
+        heartIcon.classList.add('liked');  // 빨간색 적용
+      } else {
+        heartIcon.textContent = '🤍';  // 빈 하트로 변경
+        heartIcon.classList.remove('liked');  // 빨간색 제거
+      }
+    });
+    
+    
+	});
 
 </script>
 </head>
@@ -125,16 +184,59 @@
       </div>
     </div>
     
-    <button class="floating-apply-btn">지원하기</button>
+  <!-- 지원하기 버튼만 여기에 -->
+    <button class="floating-apply-btn" id="applyBtn">지원하기</button>
     
     <div class="floating-actions">
-      <button class="floating-action-btn">
-        <span class="icon">📋</span>
-        <span class="text">스크랩</span>
-      </button>
-    
+     <button class="floating-action-btn" id="scrapBtn">
+	  <span class="icon" id="heartIcon">🤍</span> <!-- 빈 하트 초기 상태 -->
+	  <span class="text">스크랩</span>
+	</button>
     </div>
   </div>
+</div>
+
+<!-- 모달은 플로팅 사이드바 밖으로 이동 (main 태그 안, 하지만 사이드바 밖) -->
+<div id="applyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>입사지원</h2>
+            <span class="close-btn" id="closeBtn">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="job-info">
+                <div class="job-title">서버 백엔드 개발[신입]</div>
+                <div class="job-company">패션센스타일컴퍼니</div>
+                
+                <div class="info-row">
+                    <span class="info-label">이름</span>
+                    <span class="info-value">유연수</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">이메일</span>
+                    <span class="info-value">yeonsu0108@naver.com</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">연락처</span>
+                    <span class="info-value">010-2912-9954</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">출생년도</span>
+                    <span class="info-value">2002</span>
+                </div>
+            </div>
+            
+            <div class="confirmation-text">
+                <p>위 정보로 지원하시겠습니까?</p>
+                <small>지원 후에는 취소할 수 없으며, 채용 담당자에게 정보가 전달됩니다.</small>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-cancel-btn" id="cancelBtn">취소</button>
+                <button class="modal-apply-btn" id="confirmBtn">지원하기</button>
+            </div>
+        </div>
+    </div>
 </div>
 </main>
 <footer>

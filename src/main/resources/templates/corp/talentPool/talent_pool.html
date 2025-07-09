@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>구인 정보</title>
     <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
-    <link rel="stylesheet" href="/corp/all_candidate/all_candidate.css" />
+    <link rel="stylesheet" th:href="@{/corp/talentPool/talent_pool.css}" />
+    <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
+  <style>
+
+</style>
 </head>
 <body>
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
@@ -76,31 +80,31 @@
                 <div class="filter-tags" id="filterTags"></div>
             </div>
         </div>
-
-        <div class="results-header">
-            <div class="results-count">
-                전체 <span><!-- th:text="${totalCount}" --></span>건
-            </div>
-            <div class="sort-options">
-                <span>최신순</span>
-                <span>경력순</span>
-                <select class="sort-select" name="sort">
-                    <option>20명씩</option>
-                    <option>50명씩</option>
-                    <option>100명씩</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="candidate-list">
+        
+		<div class="search-toolbar">
+		    <div class="list-totalcount">
+		        전체 <span><!-- th:text="${totalCount}" --></span>건
+		    </div>
+		    <div class="sort-controls">
+		        <span>최신순</span>
+		        <span>경력순</span>
+		        <select class="sort-select" name="sort">
+		            <option>20명씩</option>
+		            <option>50명씩</option>
+		            <option>100명씩</option>
+		        </select>
+		    </div>
+		</div>
+	
+        <div class="talent-list">
             <!-- 반복 제거 -->
-            <div class="candidate-item">
-                <div class="candidate-left">
-                    <div class="candidate-profile">김○○</div>
-                    <div class="candidate-info">남 · 만 28세</div>
+            <div class="talent-item">
+                <div class="talent-left">
+                    <div class="talent-profile">김○○</div>
+                    <div class="talent-info">남 · 만 28세</div>
                 </div>
 
-                <div class="candidate-right">
+                <div class="talent-right">
                     <div class="spec-grid">
                         <div class="spec-title">최종학력</div>
                         <div>대학교 졸업</div>
@@ -117,16 +121,31 @@
                     </div>
                 </div>
 
-                <div class="candidate-actions">
+                <div class="talent-actions">
                     <button class="action-btn bookmark-btn">
                         <span class="bookmark-star">☆</span> 스크랩
                     </button>
-                    <button class="action-btn resume-btn">이력서 확인</button>
-                    <button class="action-btn interview-btn">면접 제안</button>
+                    <a th:href="@{/corp/talentPool/resume_detail}">
+                    <button class="action-btn resume-btn">이력서 확인</button></a>
+                    <button class="action-btn interview-btn openInterviewModalBtn">
+                    면접 제안</button>
                 </div>
             </div>
+            
         </div>
-        
+		<div class="modal" id="interviewModal" style="display:none;"></div>
+			
+        <div class="pagination">
+		    <a href="#" class="page-btn">이전</a>
+		
+		    <a href="#" class="page-btn active">1</a>
+		    <a href="#" class="page-btn">2</a>
+		    <a href="#" class="page-btn">3</a>
+		    <span>...</span>
+		    <a href="#" class="page-btn">10</a>
+		
+		    <a href="#" class="page-btn">다음</a>
+		</div>
 <!--         페이지네이션
         <div class="pagination">
             <a href="#" class="page-btn" th:href="@{/jobs(page=${currentPage - 1})}" 
@@ -339,11 +358,43 @@
             window.location.href = url.toString();
         });
         
-        document.getElementById('interviewBtn').addEventListener('click', function () {
-            document.getElementById('interviewModal').style.display = 'block'; // 또는 Bootstrap 모달 등
-        });
-        
+        //모달
+        document.querySelectorAll('.openInterviewModalBtn').forEach(btn => {
+        	  btn.addEventListener('click', () => {
+        	    fetch('/corp/talentPool/interviewOffer')
+        	      .then(response => response.text())
+        	      .then(html => {
+        	        const modal = document.getElementById('interviewModal');
+        	        modal.innerHTML = html;
+        	        modal.style.display = 'block';
+        	        document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+        	      });
+        	  });
+        	});
+
+        	function closeModal() {
+        	  const modal = document.getElementById('interviewModal');
+        	  modal.style.display = 'none';
+        	  document.body.style.overflow = 'auto';
+        	}
+
+        	// 모달 외부 클릭 시 닫기
+        	window.onclick = function(event) {
+        	  const modal = document.getElementById('interviewModal');
+        	  if (event.target === modal) {
+        	    closeModal();
+        	  }
+        	}
+
+        	// ESC 키로 모달 닫기
+        	document.addEventListener('keydown', function(event) {
+        	  if (event.key === 'Escape') {
+        	    closeModal();
+        	  }
+        	});
+
     </script>
+    
 	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </body>
 </html>

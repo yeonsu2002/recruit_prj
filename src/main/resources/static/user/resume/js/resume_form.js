@@ -165,10 +165,11 @@ $(function() {
 	//검색된 기술 스택 클릭시
 	$(document).on('click', '.project-list li', function() {
 		const $projectItem = $(this).closest(".project-item");
+		const skill = $(this).data("value");
 		const text = $(this).text();
 
 		$projectItem.find('.project-skills').append(
-			`<span class="tag">${text}
+			`<span class="tag" data-value="${skill}">${text}
 	       <button type="button" class="remove-tag">×</button>
 	     </span>`
 		);
@@ -321,6 +322,8 @@ $(function() {
 		//데이턱 저장하는 곳
 		const resumeData = {
 			basicInfo: {
+				title: $('input[name="title"]').val(),
+				introduction: $('textarea[name="introduction"]').val(),
 				isPublic: $('.privacy-toggle input[type="checkbox"]').is(':checked')
 			},
 			links: {
@@ -328,22 +331,22 @@ $(function() {
 				notionUrl: $('.links-section .fa-file-alt').parent().next('input').val(),
 				blogUrl: $('.links-section .fa-blog').parent().next('input').val()
 			},
-			positions: [], skills: [], educations: [], careers: [], projects: [], etc: [], introductions: []
+			positions: [], skills: [], educations: [], careers: [], projects: [], projectSkills: [], etc: [], introductions: []
 		};
 
 		// 희망 직무 수집
 		$('#positions .tag').each(function() {
-			const positionName = $(this).data('value');
-			if (positionName) {
-				resumeData.positions.push(positionName);
-			}
+		  const positionSeq = $(this).data('value');
+		  if (positionSeq) {
+		    resumeData.positions.push({ positionSeq: positionSeq });
+		  }
 		});
 
 		// 기술스택 수집
 		$('#skills .tag').each(function() {
-			const skillName = $(this).data('value');
-			if (skillName) {
-				resumeData.skills.push(skillName);
+			const techStackSeq = $(this).data('value');
+			if (techStackSeq) {
+				resumeData.skills.push({techStackSeq : techStackSeq});
 			}
 		});
 
@@ -372,7 +375,7 @@ $(function() {
 				endDate: $(this).find('input[name="endDate"]').val(),
 				companyName: $(this).find('input[name="companyName"]').val(),
 				position: $(this).find('input[name="position"]').val(),
-				companyDescription: $(this).find('textarea').val()
+				careerDescription: $(this).find('textarea').val()
 			};
 
 			if (career.companyName || career.position) {
@@ -384,7 +387,7 @@ $(function() {
 		$('.proj-list .item-box').each(function() {
 			const projectSkills = [];
 			$(this).find('.project-skills .tag').each(function() {
-				const skillName = $(this).text().replace('×', '').trim();
+				const skillName = $(this).data('value');
 				if (skillName) {
 					projectSkills.push(skillName);
 				}
@@ -394,14 +397,16 @@ $(function() {
 				startDate: $(this).find('input[name="startDate"]').val(),
 				endDate: $(this).find('input[name="endDate"]').val(),
 				projectName: $(this).find('input[name="projectName"]').val(),
-				skills: projectSkills,
 				projectContent: $(this).find('textarea').val(),
 				releaseStatus: $(this).find('.form-check-input').is(':checked'),
-				repositoryUrl: $(this).find('input[type="url"]').val()
+				repositoryLink: $(this).find('input[type="url"]').val()
 			};
 
-			if (project.projectName) {
+			if (project.projectName && projectSkills.length > 0) {
 				resumeData.projects.push(project);
+				resumeData.projectSkills.push(projectSkills);
+			} else {
+				alert('프로젝트명과 기술스택을 모두 입력해야 저장됩니다.');
 			}
 		});
 
@@ -440,20 +445,20 @@ $(function() {
 		const resumeData = collectResumeData();
 		// FormData 생성 (파일 업로드를 위해)
 		const formData = new FormData();
-
 		// 프로필 이미지가 있는 경우 추가
 		const profileImageFile = $('#photo-input')[0].files[0];
 		if (profileImageFile) {
 			formData.append('profileImage', profileImageFile);
 		}
+		
+		// resumeSeq 값 가져오기
+		const resumeSeq = $('#resumeSeq').val();
 
 		// 나머지 데이터는 JSON으로 변환해서 추가
 		formData.append('resumeData', JSON.stringify(resumeData));
-
-
-
-		/*// 저장 버튼 비활성화
-		$('.save-btn').prop('disabled', true).text('저장 중...');*/
+		
+		//이력서 seq 넘기기
+		formData.append('resumeSeq', resumeSeq)
 
 		// AJAX 요청
 		$.ajax({
@@ -478,51 +483,6 @@ $(function() {
 		});
 	}
 
-	/*// 미리보기 함수
-	function previewResume() {
-		const resumeData = collectResumeData();
-
-		// 미리보기 데이터를 세션 스토리지에 저장 (또는 서버로 전송)
-		sessionStorage.setItem('previewData', JSON.stringify(resumeData));
-
-		// 미리보기 창 열기
-		window.open('/resume/preview', 'resumePreview', 'width=800,height=1000,scrollbars=yes');
-	}
-
-	// 다운로드 함수
-	function downloadResume() {
-		const resumeData = collectResumeData();
-
-		if (!resumeData.basicInfo.name) {
-			alert('이름을 입력해주세요.');
-			return;
-		}
-
-		$('.download-btn').prop('disabled', true);
-
-		$.ajax({
-			url: '/resume/download',
-			type: 'POST',
-			data: JSON.stringify(resumeData),
-			contentType: 'application/json',
-			success: function(response) {
-				if (response.success) {
-					// PDF 다운로드
-					window.location.href = '/resume/download/' + response.fileId;
-				} else {
-					alert('다운로드 준비 중 오류가 발생했습니다.');
-				}
-			},
-			error: function(xhr, status, error) {
-				alert('다운로드 중 오류가 발생했습니다.');
-				console.error('Error:', error);
-			},
-			complete: function() {
-				$('.download-btn').prop('disabled', false);
-			}
-		});
-	}*/
-
 	// 버튼 이벤트 연결
 	$('.save-btn').on('click', function() {
 		saveResume();
@@ -535,15 +495,5 @@ $(function() {
 	$('.download-btn').on('click', function() {
 		downloadResume();
 	});
-
-	/*// 폼 자동 저장 기능 (선택사항)
-	let autoSaveTimer;
-	$(document).on('input', 'input, textarea, select', function() {
-		clearTimeout(autoSaveTimer);
-		autoSaveTimer = setTimeout(function() {
-			// 자동 저장 로직 (필요시)
-			console.log('자동 저장 실행');
-		}, 30000); // 30초 후 자동 저장
-	});*/
 
 });
