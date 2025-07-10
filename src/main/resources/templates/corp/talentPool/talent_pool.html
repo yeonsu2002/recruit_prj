@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구인 정보</title>
+    <title>인재 관리</title>
     <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
     <link rel="stylesheet" th:href="@{/corp/talentPool/talent_pool.css}" />
     <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
@@ -97,30 +97,29 @@
 		</div>
 	
         <div class="talent-list">
-            <!-- 반복 제거 -->
-            <div class="talent-item">
+            <div class="talent-item" th:each="talent : ${ talentPool }">
                 <div class="talent-left">
-                    <div class="talent-profile">김○○</div>
-                    <div class="talent-info">남 · 만 28세</div>
-                </div>
-
+                    <div class="talent-profile" th:text="${ talent.name }"></div>
+                    <div class="talent-info" ></div>
+                </div> 
+                
                 <div class="talent-right">
                     <div class="spec-grid">
                         <div class="spec-title">최종학력</div>
-                        <div>대학교 졸업</div>
+                        <div >대학교 졸업</div>
                         <div class="spec-title">경력</div>
-                        <div>경력 4년차</div>
+                        <div >경력 4년차</div>
                         <div class="spec-title">거주지</div>
-                        <div>서울</div>
+                        <div >서울</div>
                         <div class="spec-title">자격증</div>
-                        <div>정보처리기사</div>
+                        <div >정보처리기사</div>
                         <div class="spec-title">기술 스택</div>
                         <div class="skill-tags">
                             <span class="skill-tag">Docker</span>
                         </div>
                     </div>
                 </div>
-
+        
                 <div class="talent-actions">
                     <button class="action-btn bookmark-btn">
                         <span class="bookmark-star">☆</span> 스크랩
@@ -133,6 +132,7 @@
             </div>
             
         </div>
+        
 		<div class="modal" id="interviewModal" style="display:none;"></div>
 			
         <div class="pagination">

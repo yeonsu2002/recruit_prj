@@ -1,4 +1,4 @@
-package kr.co.sist.corp.Mapper;
+package kr.co.sist.corp.mapper;
 
 public interface LoginMapper {
 
