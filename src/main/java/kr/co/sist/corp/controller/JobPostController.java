@@ -1,13 +1,10 @@
 package kr.co.sist.corp.controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.jwt.JWTUtil;
@@ -24,18 +21,24 @@ public class JobPostController {
 
   //새로우 공고등록 페이지 이동
   @GetMapping("/corp/jobPostingForm")
-  public String getJobPostingForm(Model model, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+  public String getJobPostingForm(Model model, HttpServletRequest request) {
   	
   	String token = jwtUtil.resolveToken(request);
   	UserDTO userDTO = jwtUtil.validateToken(token);
   	
   	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
-  		 return "redirect:/accessDenied"; //아직 안만들었어 
+  		 return "redirect:/accessDenied"; //아
   	}
   	
   	model.addAttribute("user", userDTO);
   	
 	 return "corp/jobPosting/jobPostingForm";
+  }
+  
+  @PostMapping("/corp/uplaodJobPosting")
+  public String uploadJobPosting() {
+  	
+  	return "";
   }
   
   

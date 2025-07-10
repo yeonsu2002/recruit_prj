@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
 <meta charset="UTF-8">
@@ -10,20 +9,10 @@
 <style type="text/css">
 
 </style>
-<!-- <script th:inline="javascript">
-document.addEventListener('DOMContentLoaded', () => {
-  var jsonData = /*[[${user}]]*/ {};
-	if(jsonData.role != 'ROLE_CORP'){
-		alert("접근권한이 없습니다.");
-		history.back();
-		//컨트롤러 진입 자체를 막는게 더 안전하다.
-	} 
-	
-});
-</script> -->
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
-	
+	const userInfo = `[[${user}]]`;
+	console.log(userInfo);
 	
 });
 </script>
@@ -38,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <div class="job-posting-main">
+	    <form id="frm" th:action="@{/corp/uplaodJobPosting}" method="post" enctype="application/x-www-form-urlencoded">
         <div class="job-posting-form">
             <!-- 기본 정보 섹션 -->
             <div class="job-posting-section">
@@ -101,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         </div>
+       </form>
 
         <div class="job-posting-sidebar">
             <div class="sidebar-card">
