@@ -1,135 +1,399 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>주현석 이력서</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 40px;
-      background-color: #f9f9f9;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이력서</title>
+<style>
+body {
+	font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #f5f5f5;
+	line-height: 1.6;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background-color: #fff;
-      padding: 40px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+.container {
+	background-color: white;
+	padding: 40px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 5px;
-    }
+.section {
+	margin-bottom: 40px;
+}
 
-    .contact {
-      margin-bottom: 30px;
-    }
+.section-title {
+	font-size: 18px;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 20px;
+	border-bottom: 2px solid #333;
+	padding-bottom: 8px;
+}
 
-    .contact p {
-      margin: 3px 0;
-    }
+.basic-info {
+	display: flex;
+	align-items: flex-start;
+	gap: 30px;
+}
 
-    .section {
-      margin-bottom: 30px;
-    }
+.profile-image {
+	width: 120px;
+	height: 120px;
+	border: 3px solid #333;
+	border-radius: 15px;
+	background-color: #f8f8f8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
 
-    .section-title {
-      font-size: 20px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #000;
-      padding-bottom: 5px;
-    }
+.profile-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
 
-    .item {
-      margin-bottom: 10px;
-    }
+.dice-dots {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
 
-    .bold {
-      font-weight: bold;
-    }
+.dot {
+	width: 12px;
+	height: 12px;
+	background-color: #333;
+	border-radius: 50%;
+	position: absolute;
+}
 
-    a {
-      color: #0366d6;
-      text-decoration: none;
-    }
-  </style>
+.dot:nth-child(1) {
+	top: 20px;
+	left: 20px;
+}
+
+.dot:nth-child(2) {
+	bottom: 20px;
+	right: 20px;
+}
+
+.info-details {
+	flex: 1;
+}
+
+.name {
+	font-size: 32px;
+	font-weight: bold;
+	color: #333;
+}
+
+.contact-info {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 20px;
+}
+
+.contact-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #666;
+}
+
+.contact-item::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+	background-color: #666;
+	display: inline-block;
+}
+
+.contact-item:first-child::before {
+	content: "✉";
+	background: none;
+	font-size: 14px;
+}
+
+.phone-birth {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #666;
+}
+
+.phone-birth::before {
+	content: "📞";
+	background: none;
+	font-size: 14px;
+}
+
+.intro-question {
+	font-size: 16px;
+	color: #333;
+	margin-bottom: 15px;
+}
+
+.skills-interests {
+	display: flex;
+	gap: 40px;
+}
+
+.skill-item, .interest-item {
+	flex: 1;
+}
+
+.skill-item h4, .interest-item h4 {
+	margin: 0 0 8px 0;
+	color: #333;
+	font-size: 14px;
+}
+
+.skill-item p, .interest-item p {
+	margin: 0;
+	color: #666;
+	font-size: 14px;
+}
+
+.timeline-item {
+	margin-bottom: 30px;
+	display: flex;
+	gap: 20px;
+}
+
+.timeline-date {
+	min-width: 120px;
+	font-size: 14px;
+	color: #666;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.timeline-date::before {
+	content: "○";
+	color: #333;
+	font-weight: bold;
+}
+
+.timeline-content {
+	flex: 1;
+}
+
+.timeline-content h4 {
+	margin: 0 0 5px 0;
+	font-size: 16px;
+	color: #333;
+}
+
+.timeline-content p {
+	margin: 0 0 3px 0;
+	color: #666;
+	font-size: 14px;
+}
+
+.timeline-content .sub-info {
+	color: #999;
+	font-size: 12px;
+}
+
+.career-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.career-period {
+	color: #666;
+	font-size: 14px;
+}
+
+.project-details {
+	margin-left: 20px;
+}
+
+.project-details h5 {
+	margin: 10px 0 5px 0;
+	color: #333;
+	font-size: 14px;
+}
+
+.project-details p {
+	margin: 0 0 5px 0;
+	color: #666;
+	font-size: 14px;
+}
+
+.project-details .project-link {
+	color: #0066cc;
+	text-decoration: none;
+	font-size: 14px;
+}
+
+.project-details .project-link:hover {
+	text-decoration: underline;
+}
+
+.red-dot {
+	color: red;
+	font-size: 20px;
+	margin-left: 5px;
+}
+
+.links-section .timeline-content p {
+	margin-bottom: 8px;
+}
+
+.links-section .timeline-content p:last-child {
+	margin-bottom: 0;
+}
+
+.tag {
+	display: inline-block;
+	padding: 6px 14px;
+	border-radius: 24px;
+	margin: 4px 6px 4px 0;
+	font-size: 14px;
+	font-weight: 500;
+	color: #333;
+	background-color: #fff;
+	border: 1px solid #ccc; /* 얇고 연한 회색 테두리 */
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>주현석</h1>
-    <div class="contact">
-      <p>이메일: wngustjr1306@naver.com</p>
-      <p>연락처: 010-9120-5456</p>
-    </div>
+	<div class="container">
+		<div class="section">
+			<div class="section-title">기본정보</div>
+			<div class="basic-info">
+				<div class="profile-image">
+					<img src="" alt="프로필 사진" style="display: none;">
+					<div class="dice-dots">
+						<div class="dot"></div>
+						<div class="dot"></div>
+					</div>
+				</div>
+				<div class="info-details">
+					<div class="name">주현석</div>
+					<div class="contact-info">
+						<div class="contact-item">wngustjr1306@naver.com</div>
+						<div class="phone-birth">
+							01091205456<span>📅 1999년생</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div>
+				<div class="intro-question">안녕하세요?</div>
+				<div class="skills-interests">
+					<div class="skill-item">
+						<h4>개발 직무</h4>
+						<span class="tag">프론트엔드 개발자</span>
+					</div>
+				</div>
+				<br>
+				<div class="skills-interests">
+					<div class="skill-item">
+						<h4>기술 스택</h4>
+						<span class="tag">C++</span>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">희망 직무</div>
-      <p>프론트엔드 개발자 / 백엔드 개발자</p>
-    </div>
+		<div class="section">
+			<div class="section-title">학력</div>
+			<div class="timeline-item">
+				<div class="timeline-date">2022.10 졸업</div>
+				<div class="timeline-content">
+					<h4>서울대</h4>
+					<p>
+						<span>대학원(석사)</span> | <span>법학과</span>
+					</p>
+					<p class="sub-info">3.3 / 4.5</p>
+				</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">기술 스택</div>
-      <p>C++</p>
-    </div>
+		<div class="section">
+			<div class="section-title">경력(업무경험)</div>
+			<div class="timeline-item">
+				<div class="timeline-date">
+					2012.12 - 2023.12<br>11년 1개월
+				</div>
+				<div class="timeline-content">
+					<h4>구글</h4>
+					<p>개발자</p>
+					<p>구글을 개발했음</p>
+				</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">개인 정보</div>
-      <p>생년월일: 1999년생</p>
-    </div>
+		<div class="section">
+			<div class="section-title">프로젝트</div>
+			<div class="timeline-item">
+				<div class="timeline-date">2022.12 - 2023.12</div>
+				<div class="timeline-content">
+					<h4>영화예매</h4>
+					<div class="project-details">
+						<p>
+							<span class="tag">C++</span>
+						</p>
+						<h5>상세내용</h5>
+						<p>재밌는 프로젝트였습니다.</p>
+						<h5>저장소 링크</h5>
+						<p>https://abcd</p>
+						<h5>배포 완료</h5>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">학력</div>
-      <div class="item">
-        <p><span class="bold">2022.10 졸업</span> - 서울대학교 법학과</p>
-        <p>학점: 3.3 / 4.5</p>
-      </div>
-    </div>
+		<div class="section">
+			<div class="section-title">기타사항</div>
+			<div class="timeline-item">
+				<div class="timeline-date">2000.12 - 2001.12</div>
+				<div class="timeline-content">
+					<h4>토익스피킹</h4>
+					<p>
+						<span>이력</span> | <span>관련기관</span>
+					</p>
+					<h4>상세 내용</h4>
+					<p>토익스피킹</p>
+				</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">경력</div>
-      <div class="item">
-        <p><span class="bold">구글</span> - 개발자</p>
-        <p>2012.12 ~ 2023.12 (11년 1개월)</p>
-        <p>구글을 개발했음</p>
-      </div>
-    </div>
+		<div class="section">
+			<div class="section-title">자기소개서</div>
+			<div class="timeline-item">
+				<div class="timeline-date">안녕하세요</div><br>
+				<div>내 이름은 주현석</div>
+			</div>
+		</div>
 
-    <div class="section">
-      <div class="section-title">프로젝트</div>
-      <div class="item">
-        <p><span class="bold">영화예매</span> - C / C++</p>
-        <p>설명: 몰라</p>
-      </div>
-      <div class="item">
-        <p><span class="bold">웹 마켓 스토어</span></p>
-        <p>2022.12 ~ 2023.12</p>
-        <p>저장소 링크: <a href="https://abcd/">https://abcd/</a></p>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">기타사항</div>
-      <p>토익스피킹 - 2000.12 ~ 2001.12</p>
-      <p>기관: 어학 관련기관</p>
-    </div>
-
-    <div class="section">
-      <div class="section-title">자기소개서</div>
-      <p>안녕하세요</p>
-      <p>내 이름은 주현석</p>
-    </div>
-
-    <div class="section">
-      <div class="section-title">링크</div>
-      <ul>
-        <li>Github: <a href="https://abcd/">https://abcd/</a></li>
-        <li>Notion: <a href="https://abcd/">https://abcd/</a></li>
-        <li>Blog: <a href="https://abcd/">https://abcd/</a></li>
-      </ul>
-    </div>
-  </div>
+		<div class="section">
+			<div class="section-title">링크</div>
+			<div class="links-section">
+				<div style="margin-bottom: 20px;">
+					<strong>Github</strong> <span style="margin-left: 50px;">https://abcd</span>
+				</div>
+				<div style="margin-bottom: 20px;">
+					<strong>Notion</strong> <span style="margin-left: 50px;">https://abcd</span>
+				</div>
+				<div>
+					<strong>BLOG</strong> <span style="margin-left: 60px;">https://abcd</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
+import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
@@ -21,6 +22,7 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -30,6 +32,7 @@ import kr.co.sist.user.repository.ResumePositionCodeRepository;
 import kr.co.sist.user.repository.ResumeRepository;
 import kr.co.sist.user.repository.ResumeTechStackRepository;
 import kr.co.sist.user.repository.SelfIntroductionRepository;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,6 +43,7 @@ public class ResumeService {
 	private final ResumeMapper rMapper;
 	
 	//Repository 생성자주입
+	private final UserRepository uRepos;
 	private final ResumeRepository rRepos;
 	private final ResumePositionCodeRepository rpcRepos;
 	private final ResumeTechStackRepository rtsRepos;
@@ -51,6 +55,8 @@ public class ResumeService {
 	
 	//Service 생성자주입
 	private final ProjectService pServ;
+	
+	private final CipherUtil cu;
 	
 	/**
 	 * 특정 유저의 모든 이력서 가져오기
@@ -73,14 +79,16 @@ public class ResumeService {
 		ResumeEntity re = new ResumeEntity();
 
 		//여기에 추후에 members에서 가져올 기본 정보 넣기
-		re.setEmail("juhyunsuk@naver.com");
+		UserEntity uEntity = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		
+		re.setEmail(uEntity.getEmail());
 		re.setCreatedAt(now.toString());
 		
 		// 날짜 형식 "yyMMdd" 만들기
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 	    String date = now.format(dtf);
 	    // 예: "주현석_250708" 이런 형식으로 title 생성
-	    re.setTitle("주현석_" + date);
+	    re.setTitle(cu.plainText(uEntity.getName())+ "_" + date);
 	    re.setIsPublic("Y");
 	    
 		int resumeSeq = rRepos.save(re).getResumeSeq();
