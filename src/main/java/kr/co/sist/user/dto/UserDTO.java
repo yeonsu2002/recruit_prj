@@ -2,7 +2,9 @@ package kr.co.sist.user.dto;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
+import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,9 +40,11 @@ public class UserDTO {
 	//userEntity를 DTO로 변환해주는 메서드 
   public UserDTO(UserEntity userEntity) {
   	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
+  	SimpleDateFormat sdfBirth = new SimpleDateFormat("yyyy-mm-dd");
   	
     this.email = userEntity.getEmail();
-    this.corpNo = userEntity.getCorpEntity().getCorpNo() != null ? userEntity.getCorpEntity().getCorpNo() : null ;
+    //this.corpNo = userEntity.getCorpEntity().getCorpNo() != null ? userEntity.getCorpEntity().getCorpNo() : null ;
+    this.corpNo = Optional.ofNullable(userEntity.getCorpEntity()).map(CorpEntity :: getCorpNo).orElse(null);
     this.password = userEntity.getPassword();
     this.name = userEntity.getName();
     this.role = userEntity.getRole();
@@ -90,7 +94,7 @@ public class UserDTO {
     this.detailAddress = userEntity.getDetailAddress();
     if(userEntity.getBirth() != null && !userEntity.getBirth().isBlank()) {
     	try {
-    		this.birth = new java.sql.Date(sdf.parse(userEntity.getBirth()).getTime());
+    		this.birth = new java.sql.Date(sdfBirth.parse(userEntity.getBirth()).getTime());
     	} catch (Exception e) {
     		e.printStackTrace(); // 필요에 따라 예외 처리
     		this.birth = null;

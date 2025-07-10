@@ -31,7 +31,9 @@ function hideSubmenu() {
         </div>
         <div class="corp-dashboard-subtitle">
             효율적인 채용 관리로 최고의 인재를 찾아보세요
-            <a th:href="@{/corp/template}">템플릿</a>
+            <div th:if="${user}">
+	            <div th:text="${user}"></div>
+            </div>
         </div>
     </div>
 

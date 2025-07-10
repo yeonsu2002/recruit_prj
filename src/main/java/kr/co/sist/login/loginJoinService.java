@@ -103,7 +103,7 @@ public class loginJoinService {
             
             // 생년월일 변환
             if (uDTO.getBirth() != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String birthStr = sdf.format(uDTO.getBirth());
                 ue.setBirth(birthStr);
             } else {
