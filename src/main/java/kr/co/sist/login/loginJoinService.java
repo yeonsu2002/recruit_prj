@@ -3,33 +3,54 @@ package kr.co.sist.login;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import kr.co.sist.admin.controller.AdminController;
-import kr.co.sist.corp.dto.CorpDTO;
+import org.springframework.web.bind.annotation.RequestAttribute;
+
 import kr.co.sist.corp.dto.CorpEntity;
+import kr.co.sist.error.LoginException;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.dto.UserEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
 
 @Service
 public class loginJoinService {
 
-    private final AdminController adminController;
-
     private final UserRepository ur;
     private final CorpRepository cr;
     private final CipherUtil cu;
+    
+    @Autowired
+    private final BCryptPasswordEncoder passwordEncoder; 
 
-    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, AdminController adminController) {
+    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, BCryptPasswordEncoder passwordEncoder) {
         this.ur = ur;
         this.cr = cr;
         this.cu = cu;
-        this.adminController = adminController;
+        this.passwordEncoder = passwordEncoder;
+    }
+    
+    /**
+     * 유저인증 (이메일, 비밀번호)
+     */
+    public UserDTO authenticate(String mail, String password) {
+    	UserEntity user = ur.findById(mail).orElseThrow(() -> new LoginException("사용자가 존재하지 않음"));
+    	if(!passwordEncoder.matches(password, user.getPassword())) {
+    		throw new LoginException("비밀번호가 일치하지 않습니다. 어디로 가야하죠~ 아저씨 우는 손님이 처음인 가요~~");
+    	}
+    	
+    	UserDTO uDTO = UserDTO.from(user); //Entity는 보안문제상 DTO로 변환하여 반환
+    	return uDTO;
     }
 
+    /**
+     * 유저 회원가입
+     * @param uDTO
+     * @return
+     */
     @Transactional
     public UserEntity registerUser(UserDTO uDTO) {
         UserEntity ue = new UserEntity();
@@ -134,27 +155,35 @@ public class loginJoinService {
                     System.err.println("NULL 값 오류 가능성이 있습니다.");
                 }
             }
-            
+            //runtime오류를 내야 트랜잭션이 롤백된다.
             throw new RuntimeException("회원 저장 실패: " + e.getMessage(), e);
         }
     }
     
-    
     /**
+     * 기업회원 회원가입
      * 예외가 발생했을 때 메서드 밖으로 던져져야 Spring이 트랜잭션을 롤백할 수 있다. try catch 안 돼!
+     * IOException, SQLException, Exception 같은 예외는 @Transactional이 자동 롤백하지 않음.
      * @param ucDTO
      * @param bizCertName
      * @return
      */
     @Transactional
-    public CorpEntity registerCorp(UserCorpDTO ucDTO, String bizCertName) {
+    public CorpEntity registerCorp(@RequestAttribute UserCorpDTO ucDTO, String bizCertName) {
 
+    	//사업자등록번호 중복 조회
+    	if(cr.existsById(ucDTO.getCorpNo())){
+    		//가입 내역이 이미 존재한다.
+    		throw new IllegalStateException("이미 등록된 사업자 등록번호입니다.");
+    	}
+    	
         // 기업정보 기입
         CorpEntity ce = new CorpEntity();
         ce.setCorpNo(ucDTO.getCorpNo()); //사업자번호
         ce.setCorpNm(ucDTO.getCorpNm()); //회사이름
         ce.setCorpCeo(ucDTO.getCorpCeo()); //대표이름
         ce.setIndustry(ucDTO.getIndustry()); //업종
+        ce.setCorpCreatedAt(ucDTO.getCorpCreatedAt());
         //ce.setCorpAnnualRevenue(ucDTO.getCorpAnnualRevenue()); //연매출
         //ce.setCorpAvgSal(ucDTO.getCorpAvgSal()); //연봉
         //ce.setCorpEmpCnt(ucDTO.getCorpEmpCnt()); //사원수
@@ -193,8 +222,11 @@ public class loginJoinService {
         // 기본정보 기입
         UserEntity ue = new UserEntity();
         
+        if(ur.existsById(ucDTO.getEmail())) {
+        	throw new IllegalStateException("이미 등록된 이메일입니다.");
+        }
+        
         ue.setEmail(ucDTO.getEmail());
-        ue.setEmail(bizCertName);
         
         //corpNo로 기업객체 찾기
         CorpEntity corp = cr.findById(ucDTO.getCorpNo()).orElseThrow(() -> new IllegalArgumentException("기업이 존재하지 않습니다."));
@@ -260,5 +292,10 @@ public class loginJoinService {
         return ce;
     }
     
+    
+    //이메일 중복 체크
+    public boolean chkEmailDupl(String email) {
+    	return ur.existsById(email);
+    }
     
 }

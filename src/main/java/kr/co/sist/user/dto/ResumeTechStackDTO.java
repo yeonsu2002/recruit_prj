@@ -14,4 +14,5 @@ public class ResumeTechStackDTO {
 
 	private int resumeTechStackSeq;
 	private int techStackSeq, resumeSeq;
+	private String stackName;
 }

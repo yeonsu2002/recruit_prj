@@ -1,6 +1,7 @@
 package kr.co.sist.user.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -8,16 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.transaction.Transactional;
-import kr.co.sist.user.dto.AdditionalInfoDTO;
-import kr.co.sist.user.dto.EducationHistoryDTO;
-import kr.co.sist.user.dto.LinkDTO;
-import kr.co.sist.user.dto.PositionCodeDTO;
-import kr.co.sist.user.dto.ProjectDTO;
-import kr.co.sist.user.dto.ResumeDataDTO;
-import kr.co.sist.user.dto.ResumeTechStackDTO;
-import kr.co.sist.user.dto.SelfIntroductionDTO;
-import kr.co.sist.user.dto.careerDTO;
+import kr.co.sist.user.dto.ResumeRequestDTO;
+import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
 import kr.co.sist.user.entity.CareerEntity;
 import kr.co.sist.user.entity.EducationHistoryEntity;
@@ -26,6 +19,7 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
+import kr.co.sist.user.mapper.ProjectMapper;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -60,51 +54,79 @@ public class ResumeService {
 	
 	/**
 	 * 이력서 생성
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public int addResume() throws IllegalArgumentException {
+		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+		
+		ResumeEntity re = new ResumeEntity();
+
+		//여기에 추후에 members에서 가져올 기본 정보 넣기
+		re.setEmail("wngustjr1306");
+		re.setCreatedAt(now.toString());
+		
+		// 날짜 형식 "yyMMdd" 만들기
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
+	    String date = now.format(dtf);
+	    // 예: "주현석_250708" 이런 형식으로 title 생성
+	    re.setTitle("주현석_" + date);
+	    re.setIsPublic("Y");
+	    
+		int resumeSeq = rRepos.save(re).getResumeSeq();
+		
+		
+		return resumeSeq;
+	}//addResume
+	
+	/**
+	 * 이력서 수정
 	 * @param rdd
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	@Transactional
-	public boolean addModifyResume(ResumeDataDTO rdd, MultipartFile profileImage) throws IllegalArgumentException {
+	public boolean modifyResume(ResumeRequestDTO rdd, MultipartFile profileImage, int resumeSeq) throws IllegalArgumentException {
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); //현재 날짜 초 까지만 저장
 		
-		//이력서 레코드 생성
-		ResumeEntity re = rdd.getBasicInfo();
+		//이력서 레코드 수정
+		ResumeEntity re = searchOneResume(resumeSeq); //기존 이력서 레코드 가져오기
+		ResumeEntity rEntity = rdd.getBasicInfo();
 		
-		re.setCreatedAt(now.toString());
-		re.setEmail("wngustjr1306");
+		
 		if (profileImage != null && !profileImage.isEmpty()) {
 			re.setImage(profileImage.getOriginalFilename());//일단 파일명만 저장. 추후에 다시 수정 예정
 		} 
-		re.setIsPublic(Boolean.parseBoolean(re.getIsPublic()) ? "Y" : "N"); //이력서 공개 여부 처리
+		re.setIsPublic(Boolean.parseBoolean(rEntity.getIsPublic()) ? "Y" : "N"); //이력서 공개 여부 처리
 		re.setCareerType((rdd.getCareers() != null && !rdd.getCareers().isEmpty()) ? "E" : "N"); //경력 여부 처리
+		re.setIntroduction(rEntity.getIntroduction());
+		re.setUpdatedAt(now.toString());
 		
-		int resumeSeq = rRepos.save(re).getResumeSeq(); //이력서 레코드 생성 후, pk 반환
+		rRepos.save(re); //이력서 레코드 수정
 		
-		//이력서-포지션코드 레코드 생성
-		List<Integer> positions = rdd.getPositions();
-		for(int position : positions) {
+		//이력서-포지션코드 레코드 생성 및 수정
+		List<ResumePositionCodeEntity> positions = rdd.getPositions();
+		for(ResumePositionCodeEntity position : positions) {
 			ResumePositionCodeEntity rpce = new ResumePositionCodeEntity();
 			rpce.setResumeSeq(resumeSeq);
-			rpce.setPositionSeq(position);
+			rpce.setPositionSeq(position.getPositionSeq());
 			rpcRepos.save(rpce);
 		}
 		
-		//이력서-기술스택 레코드 생성
-		List<Integer> skills = rdd.getSkills();
-		for(int skill : skills) {
+		//이력서-기술스택 레코드 생성 및 수정
+		List<ResumeTechStackEntity> skills = rdd.getSkills();
+		for(ResumeTechStackEntity skill : skills) {
 			ResumeTechStackEntity rtse = new ResumeTechStackEntity();
 			rtse.setResumeSeq(resumeSeq);
-			rtse.setTechStackSeq(skill);
+			rtse.setTechStackSeq(skill.getTechStackSeq());
 			rtsRepos.save(rtse);
 		}
 		
-		//링크 레코드 생성
+		//링크 레코드 생성 및 수정
 		LinkEntity le = rdd.getLinks();
 		le.setResumeSeq(resumeSeq);
 		lRepos.save(le); 
 		
-		//학력 레코드 생성
+		//학력 레코드 생성 및 수정
 		List<EducationHistoryEntity> educations = rdd.getEducations();
 		educations.sort(Comparator.comparing(EducationHistoryEntity::getAdmissionDate)); //입학날짜를 기준으로 정렬
 		int indexNum = 1; //순번용 인덱스
@@ -114,7 +136,7 @@ public class ResumeService {
 			ehRepos.save(education);
 		}
 		
-		//경력 레코드 생성
+		//경력 레코드 생성 및 수정
 		List<CareerEntity> careers = rdd.getCareers();
 		careers.sort(Comparator.comparing(CareerEntity::getStartDate)); //입사날짜를 기준으로 정렬
 		indexNum = 1;
@@ -124,17 +146,17 @@ public class ResumeService {
 			cRepos.save(career);
 		}
 		
-		//프로젝트 및 프로젝스-기술스택 레코드 생성
+		//프로젝트 및 프로젝스-기술스택 레코드 생성 및 수정
 		pServ.addProjectAndSkills(resumeSeq, rdd.getProjects(), rdd.getProjectSkills());
 		
-		//기타사항 레코드 생성
+		//기타사항 레코드 생성 및 수정
 		List<AdditionalInfoEntity> etcs = rdd.getEtc();
 		for(AdditionalInfoEntity etc : etcs ) {
 			etc.setResumeSeq(resumeSeq);
 			aiRepos.save(etc);
 		}
 		
-		//자기소개서 레코드 생성
+		//자기소개서 레코드 생성 및 수정
 		List<SelfIntroductionEntity> intros = rdd.getIntroductions();
 		for(SelfIntroductionEntity intro : intros) {
 			intro.setResumeSeq(resumeSeq);
@@ -142,7 +164,7 @@ public class ResumeService {
 		}
 		
 		return true;
-	}
+	}//addModifyResume
 	
 	/**
 	 * seq로 이력서 하나 가져오기
@@ -154,29 +176,31 @@ public class ResumeService {
 		ResumeEntity re = rRepos.findById(resumeSeq).orElse(null);
 		
 		return re;
-	}
+	}//searchOneResume
 	
 	/**
 	 * seq로 해당 이력서와 연결된 테이블들의 데이터 모두 가져오기
 	 * @param resumeSeq
 	 * @return
 	 */
-	public ResumeDataDTO searchOneDetailResume(int resumeSeq) {
+	public ResumeResponseDTO searchOneDetailResume(int resumeSeq) {
+		ResumeResponseDTO rrDTO = new ResumeResponseDTO();
 
-		ResumeDataDTO rdDTO = new ResumeDataDTO();
+		rrDTO.setResume(searchOneResume(resumeSeq));
+		rrDTO.setPositions(rMapper.selectPositionByResume(resumeSeq));
+		rrDTO.setLinks(rMapper.selectLinkByResume(resumeSeq));
+		rrDTO.setSkills(rMapper.selectStackByResume(resumeSeq));
+		rrDTO.setEducations(rMapper.selectEduByResume(resumeSeq));
+		rrDTO.setCareers(rMapper.selectCareerByResume(resumeSeq));
 		
-		List<PositionCodeDTO> pcDTO = rMapper.selectPositionByResume(resumeSeq);
-		LinkDTO lDTO = rMapper.selectLinkByResume(resumeSeq);
-		List<ResumeTechStackDTO> rtsDTO = rMapper.selectStackByResume(resumeSeq);
-		List<EducationHistoryDTO> ehDTO = rMapper.selectEduByResume(resumeSeq);
-		List<careerDTO> cDTO = rMapper.selectCareerByResume(resumeSeq);
-		List<ProjectDTO> pDTO = rMapper.selectProjectByResume(resumeSeq);
-		List<AdditionalInfoDTO> aiDTO = rMapper.selectEtcByResume(resumeSeq);
-		List<SelfIntroductionDTO> siDTO = rMapper.selectIntroByResume(resumeSeq);
+		rrDTO.setProjects(pServ.searchProjectByResume(resumeSeq));
+//		rrDTO.setProjectSkills(pServ.searchProjectStackList(resumeSeq));
 		
-		//추후 구현
+		rrDTO.setAdditionals(rMapper.selectEtcByResume(resumeSeq));
+		rrDTO.setIntroductions(rMapper.selectIntroByResume(resumeSeq));
+
+		return rrDTO;
 		
-		
-		return rdDTO;
-	}
-}
+	}//searchOneDetailResume
+
+}//class

@@ -14,4 +14,5 @@ public class ResumePositionCodeDTO {
 
 	private int resumePositionSeq;
 	private int resumeSeq, positionSeq;
+	private String positionName;
 }

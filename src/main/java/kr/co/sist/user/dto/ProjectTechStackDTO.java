@@ -14,4 +14,5 @@ public class ProjectTechStackDTO {
 
 	private int projectTechStackSeq;
 	private int projectSeq, techStackSeq;
+	private String stackName;
 }
