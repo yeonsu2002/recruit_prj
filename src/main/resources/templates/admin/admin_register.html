@@ -74,9 +74,17 @@
           setSuccess('id_success', '');
           return;
         }
-
+		
+        
+        
+        
+        
         const fullEmail = getFullEmail();
-
+		
+        
+       
+        
+        
         // 실제 서버 요청 대신 임의 중복 체크
         const isDuplicate = Math.random() < 0.3;
 
@@ -89,13 +97,30 @@
           setSuccess('id_success', '사용 가능한 이메일입니다.');
           isIdChecked = true;
         }
+        
+        
+        $.ajax({
+        	url:"/sendEmail",
+        	type:"POST",
+        	contentType:"application/json",
+        	data: JSON.stringify({email:fullEmail}),
+        	dataType: "json",
+        	success: function(response){
+        		console.log(response.msg);
+        		console.log(response.code);
+        		
+        	}
+        })
       });
+      
+     
 
       // 아이디나 도메인 입력 시 중복확인 초기화
       $('#admin_id, #email_domain').on('input change', function() {
         setError('id_error', '');
         setSuccess('id_success', '');
         isIdChecked = false;
+        
       });
 
       $('#signupForm').submit(function(e) {
@@ -208,14 +233,23 @@
         setError('verify_code_error', '');
         alert("인증번호가 확인되었습니다.");
       });
+      
+      
+      
+      
+      
+      
+      function signup(){
+    		 var jsonParam={admin_id:admin_id,password:password,password_confirm:password_confirm,
+    				 name:name,dept:dept,phone:phone,verify_code:verify_code,job:job
+    		 }
+    	 }
+      
+      
     });
- function signup(){
-	 var jsonParam={admin_id:admin_id,password:password,password_confirm:password_confirm,
-			 name:name,dept:dept,phone:phone,verify_code:verify_code,job:job
-	 }
-	 
-	 
- }
+ 
+ 
+
   </script>
 </head>
 <body>
@@ -238,7 +272,7 @@
             <option value="hotmail.com">hotmail.com</option>
             <option value="outlook.com">outlook.com</option>
           </select>
-          <button type="button" class="check-btn" id="checkIdBtn">중복확인</button>
+          <button type="button" class="check-btn" id="checkIdBtn">이메일 인증받기</button>
         </div>
         <small class="input-help">아이디를 입력하고 도메인을 선택해주세요.</small>
         <small class="error-msg" id="id_error"></small>
