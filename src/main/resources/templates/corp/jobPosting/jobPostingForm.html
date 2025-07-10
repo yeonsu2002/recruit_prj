@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
 <meta charset="UTF-8">
@@ -9,6 +10,23 @@
 <style type="text/css">
 
 </style>
+<!-- <script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  var jsonData = /*[[${user}]]*/ {};
+	if(jsonData.role != 'ROLE_CORP'){
+		alert("접근권한이 없습니다.");
+		history.back();
+		//컨트롤러 진입 자체를 막는게 더 안전하다.
+	} 
+	
+});
+</script> -->
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+	
+	
+});
+</script>
 </head>
 <body>
 <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>

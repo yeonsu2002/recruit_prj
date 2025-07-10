@@ -28,12 +28,12 @@
 	  <div id="corp-top-bar">
 	    <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo"></a> 
 	    <div class="corp-top-menu">
-	    	<div th:if="${user}">
-		      <a th:text="${user.email}" class="corp-header-link" style="color: #1abc9c" ></a> |
-		      <a th:href="@{/void}" class="corp-header-link">마이페이지</a> |
+	    	<div id="userInfo" th:if="${user != null and user.role eq 'ROLE_CORP'}" data-user="${user}" >
+		      <a th:href="@{/void}" th:text="${user.email}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
+		      <a th:href="@{/void}" class="corp-header-link">로그아웃</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
 	    	</div>
-	    	<div th:unless="${user}">
+	    	<div th:unless="${user != null and user.role eq 'ROLE_CORP'}" >
 		      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
 		      <a th:href="@{/void}" class="corp-header-link">회원가입</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
@@ -93,7 +93,7 @@
 	        </td>
 	        <td>
 	          <div class="corp-submenu-item">
-	            <span class="corp-submenu-link">기업 정보 수정</span><br>
+	            <a th:href="@{/corp/corp_info_edit}"><span class="corp-submenu-link">기업 정보 수정</span></a><br>
 	            <span class="corp-submenu-link">이미지 등록</span><br>
 	            <span class="corp-submenu-link">비밀번호 변경</span>
 	          </div>
