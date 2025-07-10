@@ -1,0 +1,36 @@
+<!-- 위치 예: templates/fragments/sidebar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+	const myPage = document.getElementById("mypage");
+	
+	myPage.addEventListener("click", function(){
+		location.href = "/user/mypage";
+	});
+});
+</script>
+</head>
+<body>
+<div th:fragment="sidebar">
+    <div class="sidebar">
+        <h1 id="mypage">MY페이지</h1>
+        <ul>
+        <li><a href="#" class="menu-item active">입사지원 현황</a></li>
+        <li><a href="#" class="menu-item">포지션 제안</a></li>
+        <li><a href="#" class="menu-item">관심 기업</a></li>
+        <li><a href="#" class="menu-item">최근 본 공고</a></li>
+        <li><a href="#" class="menu-item">스크랩 공고</a></li>
+        <li><a href="#" class="menu-item">기업 후기</a></li>
+        <li><a href="#" class="menu-item">알림 목록</a></li>
+        <li><a href="#" class="menu-item">메일목록</a></li>
+        <li><a href="#" class="menu-item">회원 탈퇴</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+<script>
+
+</script>
+</html>

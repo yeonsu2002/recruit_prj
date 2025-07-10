@@ -6,6 +6,20 @@
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
 <mapper namespace="kr.co.sist.user.mapper.ResumeMapper">
 
+<!-- 해당 유저의 모든 이력서 가져오기 -->
+<select id="selectAllResumeByUser" parameterType="String" resultType="userResumeDTO">
+SELECT RESUME_SEQ, EMAIL, TITLE, IMAGE, INTRODUCTION, CREATED_AT, UPDATED_AT, CAREER_TYPE, IS_PUBLIC
+FROM resume
+WHERE email = #{email}
+ORDER BY created_at desc 
+</select>
+
+<!-- 해당 이력서 삭제 -->
+<delete id="deleteResume" parameterType="int">
+delete from resume
+where resume_seq = #{resumeSeq}
+</delete>
+
 <!-- JOIN 후 해당 이력서의 포지션 코드 가져오기 -->
 <select id="selectPositionByResume" parameterType="int" resultType="userResumePositionCodeDTO">
 SELECT resume_position_seq, resume_seq, p.position_seq, position_name
@@ -56,5 +70,36 @@ SELECT SELF_INTRODUCTION_SEQ, RESUME_SEQ, TITLE, CONTENT
 FROM SELF_INTRODUCTION
 WHERE resume_seq=#{resumeSeq}
 </select>
+
+<!-- 해당 이력서의 요소들 삭제 -->
+<delete id="deletePositionByResume" parameterType="int">
+delete from resume_position_code
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteStackByResume" parameterType="int">
+delete from resume_tech_stack
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteLinkByResume" parameterType="int">
+delete from link
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteEducationByResume" parameterType="int">
+delete from education_history
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteCareerByResume" parameterType="int">
+delete from career
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteProjectByResume" parameterType="int">
+delete from project
+where resume_seq = #{resumeSeq}
+</delete>
+<delete id="deleteIntroByResume" parameterType="int">
+delete from self_introduction
+where resume_seq = #{resumeSeq}
+</delete>
+
 
 </mapper>

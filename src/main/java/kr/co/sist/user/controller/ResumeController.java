@@ -1,11 +1,13 @@
 package kr.co.sist.user.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,24 +15,41 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kr.co.sist.user.dto.EducationHistoryDTO;
+import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.LinkDTO;
+import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
 public class ResumeController {
 
-	private final ResumeService rs;
+	private final ResumeService rServ;
 	private final PositionCodeService pcs;
+	
+	private final UserRepository uRepos; //임시
+	private final CipherUtil cu;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
-	public String resumeManagementPage() {
+	public String resumeManagementPage(Model model) {
+		
+		//임시로 유저 등록
+		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
+		
+		for(ResumeDTO resume : resumes) {
+			resume.setCreatedAt(resume.getCreatedAt().substring(0,10)); //날짜 포맷팅
+		}
+		
+		model.addAttribute("user", user);
+		model.addAttribute("resumes", resumes);
 
 		return "/user/resume/resume_management";
 	}
@@ -39,17 +58,25 @@ public class ResumeController {
 	@GetMapping("/user/resume/resume_create")
 	public String resumeCreate(Model model) {
 
-		int resumeSeq = rs.addResume();
+		int resumeSeq = rServ.addResume();
 
-		return "redirect:/user/resume/resume_form?seq=" + resumeSeq;
+		return "redirect:/user/resume/resume_form/" + resumeSeq;
 	}
 
 	// 이력서 폼으로 넘어가기(신규 작성 후 or 기존 이력서 클릭)
-	@GetMapping("/user/resume/resume_form")
-	public String resumeForm(@RequestParam int seq, Model model) {
+	@GetMapping("/user/resume/resume_form/{resumeSeq}")
+	public String resumeForm(@PathVariable int resumeSeq, Model model) {
 
+		//임시로 유저 등록
+		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		user.setName(cu.plainText(user.getName()));
+		user.setPhone(cu.plainText(user.getPhone()));
+		user.setBirth(user.getBirth().substring(0,4));
+		model.addAttribute("user", user);
+		//---------------
+		
 		model.addAttribute("positionList", pcs.searchAllPositionCode());
-		ResumeResponseDTO resumeData = rs.searchOneDetailResume(seq);
+		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
 		model.addAttribute("resumeData", resumeData);
 		model.addAttribute("resume", resumeData.getResume());
 		model.addAttribute("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
@@ -58,7 +85,6 @@ public class ResumeController {
 		model.addAttribute("educations", resumeData.getEducations());
 		model.addAttribute("careers", resumeData.getCareers());
 		model.addAttribute("projects", resumeData.getProjects());
-//		model.addAttribute("projectSkills", resumeData.getProjectSkills());
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
@@ -69,7 +95,7 @@ public class ResumeController {
 	@PostMapping("/user/resume/resumeSubmit")
 	@ResponseBody
 	public Map<String, String> resumeSubmit(
-			@RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+			@RequestParam(required = false) MultipartFile profileImage,
 			@RequestParam("resumeData") String resumeDataJson, int resumeSeq) {
 
 		Map<String, String> result = new HashMap<>();
@@ -77,7 +103,7 @@ public class ResumeController {
 
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
-			rs.modifyResume(rdd, profileImage, resumeSeq);
+			rServ.modifyResume(rdd, profileImage, resumeSeq);
 
 			result.put("result", "success");
 
@@ -89,4 +115,14 @@ public class ResumeController {
 		return result;
 	}// resumeSubmit
 
+	//이력서 삭제하기
+	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")
+	@ResponseBody
+	public String resumeRemove(@PathVariable int resumeSeq) {
+		
+		rServ.removeResume(resumeSeq);
+		
+		return "success";
+	}
+	
 }

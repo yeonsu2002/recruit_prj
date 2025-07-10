@@ -9,6 +9,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.transaction.Transactional;
+import kr.co.sist.login.UserRepository;
+import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
@@ -19,7 +22,7 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
-import kr.co.sist.user.mapper.ProjectMapper;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -29,6 +32,7 @@ import kr.co.sist.user.repository.ResumePositionCodeRepository;
 import kr.co.sist.user.repository.ResumeRepository;
 import kr.co.sist.user.repository.ResumeTechStackRepository;
 import kr.co.sist.user.repository.SelfIntroductionRepository;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -39,6 +43,7 @@ public class ResumeService {
 	private final ResumeMapper rMapper;
 	
 	//Repository 생성자주입
+	private final UserRepository uRepos;
 	private final ResumeRepository rRepos;
 	private final ResumePositionCodeRepository rpcRepos;
 	private final ResumeTechStackRepository rtsRepos;
@@ -49,8 +54,19 @@ public class ResumeService {
 	private final SelfIntroductionRepository siRepos;
 	
 	//Service 생성자주입
-	private final PositionCodeService pcServ;
 	private final ProjectService pServ;
+	
+	private final CipherUtil cu;
+	
+	/**
+	 * 특정 유저의 모든 이력서 가져오기
+	 * @param email
+	 * @return
+	 */
+	public List<ResumeDTO> searchAllResumeByUser(String email){
+		
+		return rMapper.selectAllResumeByUser(email);
+	}
 	
 	/**
 	 * 이력서 생성
@@ -63,14 +79,16 @@ public class ResumeService {
 		ResumeEntity re = new ResumeEntity();
 
 		//여기에 추후에 members에서 가져올 기본 정보 넣기
-		re.setEmail("wngustjr1306");
+		UserEntity uEntity = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		
+		re.setEmail(uEntity.getEmail());
 		re.setCreatedAt(now.toString());
 		
 		// 날짜 형식 "yyMMdd" 만들기
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 	    String date = now.format(dtf);
 	    // 예: "주현석_250708" 이런 형식으로 title 생성
-	    re.setTitle("주현석_" + date);
+	    re.setTitle(cu.plainText(uEntity.getName())+ "_" + date);
 	    re.setIsPublic("Y");
 	    
 		int resumeSeq = rRepos.save(re).getResumeSeq();
@@ -80,11 +98,20 @@ public class ResumeService {
 	}//addResume
 	
 	/**
+	 * 해당 이력서 삭제
+	 * @param resumeSeq
+	 */
+	public void removeResume(int resumeSeq) {
+		rMapper.deleteResume(resumeSeq);
+	}
+	
+	/**
 	 * 이력서 수정
 	 * @param rdd
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
+	@Transactional
 	public boolean modifyResume(ResumeRequestDTO rdd, MultipartFile profileImage, int resumeSeq) throws IllegalArgumentException {
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS); //현재 날짜 초 까지만 저장
 		
@@ -99,9 +126,13 @@ public class ResumeService {
 		re.setIsPublic(Boolean.parseBoolean(rEntity.getIsPublic()) ? "Y" : "N"); //이력서 공개 여부 처리
 		re.setCareerType((rdd.getCareers() != null && !rdd.getCareers().isEmpty()) ? "E" : "N"); //경력 여부 처리
 		re.setIntroduction(rEntity.getIntroduction());
+		re.setTitle(rEntity.getTitle());
 		re.setUpdatedAt(now.toString());
 		
 		rRepos.save(re); //이력서 레코드 수정
+		
+		//저장하기 전 기존 데이터들 일괄 삭제
+		removeForUpdateResume(resumeSeq);
 		
 		//이력서-포지션코드 레코드 생성 및 수정
 		List<ResumePositionCodeEntity> positions = rdd.getPositions();
@@ -194,7 +225,6 @@ public class ResumeService {
 		rrDTO.setCareers(rMapper.selectCareerByResume(resumeSeq));
 		
 		rrDTO.setProjects(pServ.searchProjectByResume(resumeSeq));
-//		rrDTO.setProjectSkills(pServ.searchProjectStackList(resumeSeq));
 		
 		rrDTO.setAdditionals(rMapper.selectEtcByResume(resumeSeq));
 		rrDTO.setIntroductions(rMapper.selectIntroByResume(resumeSeq));
@@ -202,5 +232,21 @@ public class ResumeService {
 		return rrDTO;
 		
 	}//searchOneDetailResume
+	
+	/**
+	 * 이력서 수정하기 위해 이력서 요소들 일괄 삭제
+	 * @param resumeSeq
+	 */
+	@Transactional
+	public void removeForUpdateResume(int resumeSeq) {
+		rMapper.deleteCareerByResume(resumeSeq);
+		rMapper.deleteEducationByResume(resumeSeq);
+		rMapper.deleteIntroByResume(resumeSeq);
+		rMapper.deleteLinkByResume(resumeSeq);
+		rMapper.deletePositionByResume(resumeSeq);
+		rMapper.deleteStackByResume(resumeSeq);
+		
+		rMapper.deleteProjectByResume(resumeSeq);
+	}
 
 }//class
