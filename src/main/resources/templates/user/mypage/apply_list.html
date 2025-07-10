@@ -10,9 +10,6 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" th:href="@{/user/mypage/css/sidebar.css}">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<style>
-
-</style>
 </head>
 <body>
 <header>
@@ -21,10 +18,9 @@
 <main>
 	<div class="container">
 	<div th:replace="~{user/mypage/sidebar :: sidebar}"></div>
-	<!-- 메인 콘텐츠 -->
 	<div class="main-content">
 	<div id="content-area">
-		<div class="page-title">MY페이지</div>
+		<div class="page-title">입사지원 현황</div>
 		<table class="stats-table">
 		<thead>
 			<tr>
@@ -42,30 +38,7 @@
 			<td>0</td>
 			</tr>
 		</tbody>
-		</table>
-		<!-- 기본정보 섹션 -->
-		<div class="info-section">
-			<div class="info-title">기본정보</div>
-			<div class="info-table">
-				<div class="info-row">
-					<div class="info-label">이름:</div>
-					<div class="info-value">유연수</div>
-				</div>
-				<div class="info-row">
-					<div class="info-label">생년월일:</div>
-					<div class="info-value">2002.01.08</div>
-				</div>
-				<div class="info-row">
-					<div class="info-label">연락처:</div>
-					<div class="info-value">010-2222-1111</div>
-				</div>
-				<div class="info-row">
-					<div class="info-label">이메일:</div>
-					<div class="info-value">test@test.com</div>
-					<button class="edit-btn">수정</button>
-				</div>
-			</div>
-		</div>
+		</table>	
 	</div>
 	</div>
 	</div>

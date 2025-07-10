@@ -322,6 +322,7 @@ $(function() {
 		//데이턱 저장하는 곳
 		const resumeData = {
 			basicInfo: {
+				resumeSeq: $('#resumeSeq').val(),
 				title: $('input[name="title"]').val(),
 				introduction: $('textarea[name="introduction"]').val(),
 				isPublic: $('.privacy-toggle input[type="checkbox"]').is(':checked')
@@ -336,17 +337,17 @@ $(function() {
 
 		// 희망 직무 수집
 		$('#positions .tag').each(function() {
-		  const positionSeq = $(this).data('value');
-		  if (positionSeq) {
-		    resumeData.positions.push({ positionSeq: positionSeq });
-		  }
+			const positionSeq = $(this).data('value');
+			if (positionSeq) {
+				resumeData.positions.push({ positionSeq: positionSeq });
+			}
 		});
 
 		// 기술스택 수집
 		$('#skills .tag').each(function() {
 			const techStackSeq = $(this).data('value');
 			if (techStackSeq) {
-				resumeData.skills.push({techStackSeq : techStackSeq});
+				resumeData.skills.push({ techStackSeq: techStackSeq });
 			}
 		});
 
@@ -389,7 +390,7 @@ $(function() {
 			$(this).find('.project-skills .tag').each(function() {
 				const techStackSeq = $(this).data('value');
 				if (techStackSeq) {
-					projectSkills.push({techStackSeq : techStackSeq});
+					projectSkills.push({ techStackSeq: techStackSeq });
 				}
 			});
 
@@ -450,17 +451,17 @@ $(function() {
 		if (profileImageFile) {
 			formData.append('profileImage', profileImageFile);
 		}
-		
-		// resumeSeq 값 가져오기
-		const resumeSeq = $('#resumeSeq').val();
 
 		// 나머지 데이터는 JSON으로 변환해서 추가
 		formData.append('resumeData', JSON.stringify(resumeData));
-		
-		//이력서 seq 넘기기
-		formData.append('resumeSeq', resumeSeq)
 
-		// AJAX 요청
+		return formData;
+	}
+
+	// 버튼 이벤트 연결
+	$('.save-btn').on('click', function() {
+		const formData = saveResume();
+
 		$.ajax({
 			url: '/user/resume/resumeSubmit',
 			type: 'POST',
@@ -473,24 +474,37 @@ $(function() {
 				} else {
 					alert('저장에 실패했습니다. 다시 시도해주세요.');
 				}
-				console.log('Success:', response);
-
 			},
 			error: function(error) {
 				alert('저장 중 오류가 발생했습니다.');
 				console.error('Error:', error);
 			},
 		});
-	}
-
-	// 버튼 이벤트 연결
-	$('.save-btn').on('click', function() {
-		saveResume();
 	});
 
 	$('.preview-btn').on('click', function() {
-		previewResume();
+	    const formData = saveResume(); 
+
+	    $.ajax({
+	        url: '/user/resume/resumePreview',
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function(response) {
+	            if (response.result === 'success') {
+	                window.open(response.previewUrl, '_blank', 'width=900,height=1100,scrollbars=yes,resizable=yes');
+	            } else {
+	                alert('이력서 불러오기에 실패했습니다. 다시 시도해주세요.');
+	            }
+	        },
+	        error: function(error) {
+	            alert('이력서 불러오는 중 오류가 발생했습니다.');
+	            console.error('Error:', error);
+	        }
+	    });
 	});
+
 
 	$('.download-btn').on('click', function() {
 		downloadResume();
