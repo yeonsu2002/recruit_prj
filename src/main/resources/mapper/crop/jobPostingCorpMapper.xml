@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
+<mapper namespace="kr.co.sist.corp.mapper.JobPostingMapper">    
+
+<!-- 새로운 공고 등록 -->
+<insert id="insertJobPost" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
+	<selectKey keyProperty="jobPostingSeq" resultType="int" order="BEFORE">
+		SELECT JOB_POSTING_SEQ.NEXTVAL FROM DUAL	
+	</selectKey>
+
+INSERT INTO job_posting (JOB_POSTING_SEQ, CORP_NO, POSITION_SEQ, POSTING_TITLE, POSTING_DETAIL, EXP_LEVEL,
+    POSTING_END_DT, POSTING_START_DT, RECRUIT_CNT, EMPLOY_TYPE, WORKDAY, WORK_START_TIME, WORK_END_TIME,
+    SALARY, CONT_START_DT, CONT_END_DT, EDU_LEVEL, VIEW_CNT, ZIPCODE, ROAD_ADDRESS, DETAIL_ADDRESS)
+VALUES ( #{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingDetail}, #{expLevel},
+    #{postingEndDt}, #{postingStartDt}, #{recruitCnt}, #{employType}, #{workday}, #{workStartTime}, #{workEndTime},
+    #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress} )
+</insert>
+
+
+
+<!-- 특정 공고 가져오기 : selectJobPost -->
+
+
+
+<!-- 공고 수정 : modifyJobPost-->
+
+
+
+<!-- 공고 삭제 : deleteJobPost-->
+
+</mapper>
