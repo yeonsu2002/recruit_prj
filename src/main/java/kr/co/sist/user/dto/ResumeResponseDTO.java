@@ -19,7 +19,6 @@ public class ResumeResponseDTO {
 	private List<EducationHistoryDTO> educations;
 	private List<CareerDTO> careers;
 	private List<ProjectDTO> projects;
-	private List<List<ProjectTechStackDTO>> projectSkills;
 	private List<AdditionalInfoDTO> additionals;
 	private List<SelfIntroductionDTO> introductions;
 

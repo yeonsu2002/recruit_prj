@@ -387,9 +387,9 @@ $(function() {
 		$('.proj-list .item-box').each(function() {
 			const projectSkills = [];
 			$(this).find('.project-skills .tag').each(function() {
-				const skillName = $(this).data('value');
-				if (skillName) {
-					projectSkills.push(skillName);
+				const techStackSeq = $(this).data('value');
+				if (techStackSeq) {
+					projectSkills.push({techStackSeq : techStackSeq});
 				}
 			});
 
