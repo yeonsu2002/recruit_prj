@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>민기인력 - 기업정보 수정</title>
+    <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+    <link rel="stylesheet" th:href="@{/corp/mainCss/main_page.css}" />
+    <link rel="stylesheet" th:href="@{/corp/info/corp_info_edit.css}" />
+</head>
+<body>
+    <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
+
+    <div class="container">
+        <div class="header">
+            <h1>기업정보 수정</h1>
+            <p>정확한 기업정보를 입력해주세요</p>
+        </div>
+
+        <div class="form-container">
+            <div class="section-title">기본 정보</div>
+
+            <div class="form-group">
+                <label for="company-name" class="required">회사명</label>
+                <input type="text" id="company-name" placeholder="회사명을 입력하세요">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="business-number" class="required">사업자등록번호</label>
+                    <input type="text" id="business-number" placeholder="000-00-00000">
+                </div>
+                <div class="form-group">
+                    <label for="ceo-name" class="required">대표자명</label>
+                    <input type="text" id="ceo-name" placeholder="대표자명을 입력하세요">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="establishment-date">설립일</label>
+                    <input type="date" id="establishment-date">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="address" class="required">주소</label>
+                <input type="text" id="address" placeholder="회사 주소를 입력하세요">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">전화번호</label>
+                    <input type="tel" id="phone" placeholder="02-0000-0000">
+                </div>
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" placeholder="company@example.com">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="website">웹사이트 URL</label>
+                <input type="url" id="website" placeholder="https://www.company.com">
+            </div>
+        </div>
+
+       
+
+        <div class="form-container">
+            <div class="section-title">추가 정보</div>
+
+            <div class="form-group">
+                <label for="logo">회사 로고</label>
+                <div class="file-upload">
+                    <input type="file" id="logo" accept="image/*">
+                    <div class="file-upload-icon">📁</div>
+                    <div>클릭하여 로고를 업로드하세요</div>
+                    <div class="help-text">PNG, JPG 파일만 가능 (최대 5MB)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary">취소</button>
+            <button type="button" class="btn btn-primary">수정완료</button>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script>
+        $(function(){
+            // 태그 추가 기능
+            $('#tags').on('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const text = $(this).val().trim();
+                    if (text) {
+                        const tag = $(`
+                            <div class="tag">
+                                ${text} <span class="remove">×</span>
+                            </div>`);
+                        tag.find('.remove').on('click', function() {
+                            tag.remove();
+                        });
+                        $('.tag-container').append(tag);
+                        $(this).val('');
+                    }
+                }
+            });
+
+            // 기존 태그 제거
+            $('.tag .remove').on('click', function() {
+                $(this).parent().remove();
+            });
+
+            // 파일 업로드
+            $('.file-upload').on('click', function() {
+                $('#logo').click();
+            });
+
+            $('#logo').on('change', function() {
+                if (this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    $(this).siblings().last().text(`선택된 파일: ${fileName}`);
+                }
+            });
+
+            // 버튼 클릭
+            $('.btn').on('click', function() {
+                if ($(this).text().trim() === '수정완료') {
+                    alert('기업정보가 수정되었습니다!');
+                } else if ($(this).text().trim() === '취소') {
+                    if (confirm('수정을 취소하시겠습니까?')) {
+                        alert('수정이 취소되었습니다.');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
