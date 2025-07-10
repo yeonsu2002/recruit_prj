@@ -71,12 +71,6 @@ body {
 }
 
 
-
-.stack span.selected {
-  background-color: #28a745; /* 초록색 */
-  color: white; /* 텍스트 색을 흰색으로 */
-}
-
 /* ======================
    기술스택 드롭다운 메뉴
 ====================== */
@@ -526,3 +520,5 @@ body {
   cursor: pointer;
   margin-left: 5px;
 }
+
+

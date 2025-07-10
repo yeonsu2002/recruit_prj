@@ -23,6 +23,7 @@
     <result property="corpNm" column="corpNm"/>
     <result property="corpInfo" column="corpInfo"/>
     <result property="corpUrl" column="corpUrl"/>
+    <result property="positionName" column="positionName"/> 
   </resultMap>
 
   <!-- 전체 공고 조회 -->
@@ -45,9 +46,12 @@
       jp.detail_address AS detailAddress, 
       c.corp_nm AS corpNm, 
       c.corp_info AS corpInfo, 
-      c.corp_url AS corpUrl
+      c.corp_url AS corpUrl,
+      pc.position_name AS positionName
     FROM JOB_POSTING jp 
     JOIN COMPANY c ON jp.corp_no = c.corp_no
+    JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq 
+   
   </select>
 
   <!-- 특정 jobPostingSeq에 해당하는 공고 조회 -->
