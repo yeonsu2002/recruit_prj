@@ -18,84 +18,43 @@ $(function(){
     });
 	});
 	
-	// 폼 제출 처리 ( -> ajax로 처리중 )
-	/*
-	document.querySelector('form').addEventListener('submit', function(e) {
-	  e.preventDefault(); // 기본 제출 동작 방지
-		if($(".user-type").hasClass("active")){
-			alert("개인회원 폼 전송");
-			document.getElementById("frm").action = "/user/login";
-			document.getElementById("frm").submit();
-			
-		}
-	  if($(".corp-type").hasClass("active")){
-		  alert("기업회원 폼 전송");
-			document.getElementById("frm").action = "/corp/login";
-			document.getElementById("frm").submit();
-	  }
+	//아이디창 누르면 alert사라짐
+	document.getElementById('email').addEventListener("click", function(){
+		document.querySelector('.alert.alert-success').style.display="none";
 	});
-	*/
 	
-	//login ajax(loginProcess()) 버튼에 연결 
-	document.getElementById('loginBtn').addEventListener('click', function(){
-		let email = document.getElementById('email').value;
-		let password = document.getElementById('password').value;
-		loginProcess(email, password);
-	});
+	//html에 온 에러메시지를 자바스크립트로 하기 
+	const alertBox = document.getElementById('alertBox');
+	if(alertBox){
+		const errorMessage = alertBox.dataset.error; //attr 값 활용하기 
+		alert(errorMessage);
+	}
+	
+});//ready
 
-	
-	
-});
-
-/* 일반유저, 기업유저 회원가입 페이지 URL동적 설정 */
 function joinPageForm(){
-	let url = '/user/join';
-	if($(".corp-type").hasClass("active")){
-		url = '/corp/join';
+	let href = "/user/join";
+	if(document.querySelector('.corp-type').classList.contains('active')){
+		href = "/corp/join";
 	}
-	location.href=url;
+	document.getElementById('joinPageLink').href = href;
 }
 
-
-
-//로그인 Ajax
-//@ResponseBody를 걸면, return값이 ViewResolver, html이 필요없고 그 값이 바로 클라쪽으로 응답된다.
-//JSON 응답이 한글인데 깨지면, @RequestMapping() 안에 produces = "applicatioin/json;charset=UTF-8" 입력 
-function loginProcess(email, password){
-	let corpType = document.queurySelector(".corp-type");
-	let url = '/user/loginProcess';
-	if(!corpType.hassClass("active")){
-		url = '/corp/loginProcess';
-	}
-	console.log(url + " / " + email + " / " + password);
-/* 
-	$.ajax({
-		url:"/user/loginProcess",
-		type:"post",
-		dataType:"json",
-		data: {
-			email : email,
-			password : password
-		},
-		success:function(JsonObject){
-			
-		},
-		error:function(){
-			
-		}
-	});
-	 */
-	
-}
 
 </script>
 </head>
 <body>
 	
 	<!-- 가입으로 redirect왔을 때 Flash사용 -->
-	<div th:if="${msg}" class="alert alert-success" role="alert">
-		<p th:text=${msg}></p>
-	</div>
+<!-- 	<div id="alertBox" th:if="${errorMessage}" class="alert alert-success" role="alert" th:attr="data-error=${errorMessage}">
+				<p th:text="${errorMessage}" ></p>
+			</div> 
+-->										<!-- 근데 밑에꺼나 input hidden이나 ..  -->
+	<div id="alertBox" th:if=${errorMessage} th:attr="data-error=${errorMessage}"></div>
+	<div th:if="${msg}" class="alert alert-success" role="alert" >
+		<p th:text="${msg}" ></p>
+	</div> 
+
 
 	<div class="login-container">
 		<!-- 탭 메뉴 -->
@@ -107,7 +66,7 @@ function loginProcess(email, password){
 		</div>
 
 		<!-- 로그인 폼을 테이블로 구성 -->
-		<form th:action="@{/void}" method="post" id="frm">
+		<form th:action="@{/loginProcess}" method="post" id="frm">
 			<table class="login-table">
 				<tr>
 					<td><input type="email" id="email" name="email" class="input-field" placeholder="이메일" required></td>
@@ -131,7 +90,7 @@ function loginProcess(email, password){
 				</tr>
 				<tr>
 					<td>
-						<button type="button" id="loginBtn" class="login-button">로그인</button>
+						<button type="submit" id="loginBtn" class="login-button">로그인</button>
 					</td>
 				</tr>
 			</table>
@@ -142,7 +101,7 @@ function loginProcess(email, password){
 			<span>|</span> 
 			<a href="#" onclick="alert('비밀번호 찾기 기능')">비밀번호 찾기</a>
 			<span>|</span> 
-			<a href="#" onclick="joinPageForm()">회원가입</a>
+			<a th:href="@{/#}" id="joinPageLink" onclick="joinPageForm()">회원가입</a>
 		</div>
 
 		<div class="social-login">

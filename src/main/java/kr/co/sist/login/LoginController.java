@@ -1,44 +1,45 @@
 package kr.co.sist.login;
-import kr.co.sist.admin.controller.AdminController;
-import kr.co.sist.corp.dto.CorpDTO;
+import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
-import kr.co.sist.util.CipherUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 //@RequiredArgsConstructor -> 생성자주입방식 생성자 코드 대신 어노테이션
 @Controller
 public class LoginController {
 
-    private final AdminController adminController;
 
 	private final loginJoinService ljs; 
-	
+	private final JWTUtil jwtUtil;
 	private final Environment env;
 	
 	//생성자주입방식
-	public LoginController(loginJoinService ljs, Environment env, AdminController adminController) {
+	public LoginController(loginJoinService ljs, Environment env, JWTUtil jwtUtil) {
 		this.ljs = ljs;
 		this.env = env;
-		this.adminController = adminController;
+		this.jwtUtil = jwtUtil;
 	}
 	
   /**
@@ -51,41 +52,37 @@ public class LoginController {
   }
     
   /**
-   * 일반회원 로그인 처리
+   * 통합(일반, 기업) 로그인 처리
    * @return
    */
-  @PostMapping("user/loginProcess")
-  public String memberLoginProcess() {
-    System.out.println("개인회원 로그인 처리");
-    return "redirect:/user/main";
-  }
-  
-  /**
-   * 로그인 처리 후 유저 메인페이지 이동
-   * @return
-   */
-  @GetMapping("user/main")
-  public String goUserMainPage() {
-    return "user/main_page";
-  }
-  
-  /**
-   * 기업회원 로그인 처리
-   * @return
-   */
-  @PostMapping("corp/loginProcess")
-  public String corpLoginProcess(String email, String password) {
-    System.out.println("기업회원 로그인 처리");
-    return "redirect:/corp/main";
-  }
-  
-  /**
-   * 기업회원 로그인 처리후 기업메인페이지 이동
-   * @return
-   */
-  @GetMapping("corp/main")
-  public String goCorpMainPage() {
-    return "corp/main_page";
+  @PostMapping("/loginProcess")
+  public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
+  	
+  	//1. 사용자 인증
+  	UserDTO uDTO = ljs.authenticate(email, password);
+  	
+  	//2. JWT 생성
+  	Long expiredMs = 1000L * 60 * 60; //1시간
+  	String userJwt = jwtUtil.createJwt(uDTO, expiredMs);
+  	
+  	//3. 쿠키 생성
+    ResponseCookie cookie = ResponseCookie.from("token", userJwt)
+	    .httpOnly(true)// JS 접근 불가
+	    .secure(false) // HTTPS 환경에서만 동작 (개발시에는 false)
+	    .sameSite("Strict") // CSRF 방지
+	    .path("/") // 전체 경로에 대해 쿠키 전송
+	    .maxAge(Duration.ofHours(1))// 쿠키 1시간 유지(JWT가 1시간이다)
+	    .build();
+    
+    response.addHeader("Set-Cookie", cookie.toString()); //사용자 쿠키에 JWT 첨부
+  	
+    //addAttribute는 URL에 붙여서 전달 → 브라우저 주소창에 노출됨
+    //addFlashAttribute는 세션에 임시 저장 → 노출 안 됨, 리다이렉트 후 한 번만 사용 가능
+    if(uDTO.getRole().equals("ROLE_CORP")) {
+    	return "redirect:/corp/main"; //기업회원은 로그인 후 기업메인페이지로 이동
+    }
+    
+    return "redirect:/"; //로그인 후 메인페이지로 이동
   }
   
   /**
@@ -172,22 +169,22 @@ public class LoginController {
       if (saveFile != null && saveFile.exists()) {
         boolean deleted = saveFile.delete();
         if (deleted) {
-          System.out.println("업로드된 파일 삭제 완료: " + newFileName);
+          System.out.println("디버깅) 업로드된 파일 삭제 완료: " + newFileName);
         } else {
-          System.out.println("업로드된 파일 삭제 실패: " + newFileName);
+          System.out.println("디버깅) 업로드된 파일 삭제 실패: " + newFileName);
         }
       }
 
-      // 구체적인 에러 메시지 설정
-      String errorMsg = "회원가입 처리 중 오류가 발생했습니다.";
-      if (e instanceof IllegalArgumentException) {
-        errorMsg = e.getMessage(); // 예: "기업이 존재하지 않습니다."
-      } else if (e.getMessage() != null && e.getMessage().contains("Duplicate")) {
-        errorMsg = "이미 존재하는 사업자번호 또는 이메일입니다.";
-      }
-
-      redirectAttr.addFlashAttribute("msg", errorMsg);
-      return "redirect:/corp/join"; // 회원가입 페이지로 다시 이동
+			/*
+			 * // 구체적인 에러 메시지 설정 String errorMsg = "회원가입 처리 중 오류가 발생했습니다."; if (e instanceof
+			 * IllegalArgumentException) { errorMsg = e.getMessage(); // 예: "기업이 존재하지 않습니다."
+			 * } else if (e.getMessage() != null && e.getMessage().contains("Duplicate")) {
+			 * errorMsg = "이미 존재하는 사업자번호 또는 이메일입니다."; }
+			 * redirectAttr.addFlashAttribute("msg", errorMsg);
+			 */      
+//      return "redirect:/corp/join"; // 회원가입 페이지로 다시 이동\
+      
+      throw e; //이거 안던져주면 GlobalExceptionHandler의 @ControllerAdvice까지 못가고 증발해
     }
 }
   /** 이메일 구현시 추가할거
@@ -209,6 +206,15 @@ public class LoginController {
   /**
    * 이메일 중복 체크
    */
+  @GetMapping("/ckEmailDupl")
+  @ResponseBody
+  public ResponseEntity<Map<String, Object>> chEmailDupl(@RequestParam("email") String email) {
+  	boolean isDuple = ljs.chkEmailDupl(email);
+  	Map<String, Object> reponse = new HashMap<String, Object>();
+  	reponse.put("duplicate", isDuple);
+  	reponse.put("message", isDuple ? "이미 사용 중입니다." : "");
+  	return ResponseEntity.ok(reponse);
+  }
   
   @GetMapping("/corp/testForm")
   public String testForm() {
