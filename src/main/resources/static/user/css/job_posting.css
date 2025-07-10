@@ -71,12 +71,6 @@ body {
 }
 
 
-
-.stack span.selected {
-  background-color: #28a745; /* 초록색 */
-  color: white; /* 텍스트 색을 흰색으로 */
-}
-
 /* ======================
    기술스택 드롭다운 메뉴
 ====================== */
@@ -170,6 +164,8 @@ body {
   color: #dc3545;
 }
 
+
+
 /* ======================
    경력 드롭다운
 ====================== */
@@ -252,65 +248,103 @@ body {
 /* ======================
    지역 드롭다운
 ====================== */
-.area-dropdown {
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-  height: 320px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+ .area-dropdown {
+    width: 400px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .area-content {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
+    display: flex;
+    gap: 20px;
 }
 
 .region-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 140px;  /* 기존 너비로 유지 */
-  background: #f8f9fa;
-  border-right: 1px solid #e9ecef;
-  overflow-y: auto;
-  padding: 10px; /* 내부 여백을 추가하여 버튼과 보더 사이에 공간을 만듦 */
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.region-item {
+    padding: 8px 12px;
+    margin: 2px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.region-item:hover {
+    background-color: #f0f8ff;
+}
+
+.region-item.selected {
+    background-color: #00d084;
+    color: white;
 }
 
 .sub-region-popup {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-content: flex-start;
-  background: white;
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+    border-left: 1px solid #eee;
+    padding-left: 20px;
+}
+
+.sub-region-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.sub-region-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.sub-region-item label {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.selected-tags {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.region-tag {
+    display: inline-block;
+    background-color: #00d084;
+    color: black;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+.region-tag .remove-tag {
+    background: none;
+    border: none;
+    color: red;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .region-reset {
-  width: 100%;
-  padding: 12px 0;
-  border: none;
-  border-top: 1px solid #e9ecef;
-  background-color: #f1f3f4;
-  color: #5f6368;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 0 0 12px 12px;
-  user-select: none;
+    background: none;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 .region-reset:hover {
-  background-color: #e8eaed;
-  color: #3c4043;
+    background-color: #f8f9fa;
 }
 /* ======================
    공고 카드
@@ -344,17 +378,17 @@ body {
 }
 
 .image-wrapper {
-    width: 100%;
-    height: 180px;
+    width: 100%; /* 너비를 부모에 맞추어 설정 */
+    height: 180px; /* 원하는 높이 설정 */
     margin-bottom: 15px;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 12px; /* 둥근 모서리 설정 */
 }
 
 .image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* 이미지가 부모 영역을 덮도록 설정 */
 }
 
 .company-name {
@@ -391,22 +425,6 @@ body {
     background-color: #F8F9FA;
     width: 100%;
     min-width: 300px; /* 최소 너비 설정 */
-}
-
-
-
-.image-wrapper {
-    width: 100%;
-    height: 120px;
-    margin-bottom: 12px;
-    overflow: hidden;
-    border-radius: 4px;
-}
-
-.image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
 }
 
 .company-name {
@@ -502,3 +520,5 @@ body {
   cursor: pointer;
   margin-left: 5px;
 }
+
+

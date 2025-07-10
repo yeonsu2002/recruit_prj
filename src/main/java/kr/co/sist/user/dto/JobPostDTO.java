@@ -30,9 +30,13 @@ public class JobPostDTO {
     private String zipcode;
     private String roadAddress;
     private String detailAddress;
+    private String positionName;  
+    private String stackName;
     
     
     private String corpNm;           // corp_nm
     private String corpInfo;         // corp_info
     private String corpUrl;       
+    
+    private String techStack;        // techStack 필드 추가
 }
