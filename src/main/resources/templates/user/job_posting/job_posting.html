@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    const jobItems = document.querySelectorAll('.announcement-card-link');  // 공고들
 	  careerRadios.forEach(radio => {
 	    radio.addEventListener('change', function() {
-	      selectedCareer = this.value;//
+	      selectedCareer = this.value;//  
 	      historyBtn.textContent = this.value + ' ▾';  
 	      historyDropdown.style.display = 'none';
 	      console.log("선택된 경력:", selectedCareer);
