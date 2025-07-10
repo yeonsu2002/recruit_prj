@@ -34,23 +34,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="section-title">기본 정보</h2>
                 
                 <div class="form-group">
-                    <label class="form-label required">직무</label>
-                    <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
-                    <div class="form-help">한 공고에 하나의 직무만 선택 가능합니다. 2개 이상의 직무 등록을 원하시면 포지션을 추가로 등록해주세요.</div>
+                    <label class="form-label required">공고 제목</label>
+                    <input type="text" class="form-input" placeholder="예: S/W개발 경력 채용">
+                    <div class="form-help"></div>
                 </div>
 
+                <button type="button" class="tag-select-btn" id="tag-select-btn">태그 선택</button>
+
+                <div class="form-group">
+                    <label class="form-label required">포지션</label>
+                    <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
+                    <div class="form-help">한 공고에 하나의 포지션만 선택 가능합니다. 2개 이상의 포지션 등록을 원하시면 공고를 추가로 등록해주세요.</div>
+                    <div class="selected-tags" id="selected-tags"></div>
+                </div>
                 <div class="form-group">
                     <label class="form-label required">기술스택</label>
                     <input type="text" class="form-input" placeholder="예: React, Node.js, MongoDB" id="tech-stack-input">
-                    <button type="button" class="tag-select-btn" id="tag-select-btn">기술스택 선택</button>
                     <div class="selected-tags" id="selected-tags"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">태그</label>
+                    <input type="text" class="form-input" placeholder="예: React, Node.js, MongoDB" id="tech-stack-input">
+                    <div class="selected-tags" id="selected-tags"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">근무지</label>
+                    <div>
+	                    <input type="text" class="form-input">
+	                    <input type="button" value="우편번호 찾기" class="btn btn-secondary btn-lg" >
+                    </div>
+                    <input type="text" class="form-input">
+                    <input type="text" class="form-input">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label required">포지션 제목</label>
-                    <input type="text" class="form-input" placeholder="[민기인력] 빅데이터 플랫폼 백엔드 개발자">
-                    <div class="form-help">포지션명이 정확히 기재되어 있지 않으면, 포지션 등록이 거절될 수 있습니다.<br>
-                        <strong>예시:</strong> [점핏] 프론트엔드 개발자, [민기인력 LAB] 빅데이터 플랫폼 백엔드 개발자</div>
+                    <label class="form-label required">경력</label>
+                    <select class="form-select" aria-label="Default select example">
+                    	<option class="form-input" selected value="entire">전체</option>
+                    	<option class="form-input" value="newbie">신입</option>
+                    	<option class="form-input" value="1">1년</option>
+                    	<option class="form-input" value="2">2년</option>
+                    	<option class="form-input" value="3">3년</option>
+                    	<option class="form-input" value="4">4년</option>
+                    	<option class="form-input" value="5">5년</option>
+                    	<option class="form-input" value="6">6년</option>
+                    	<option class="form-input" value="7">7년</option>
+                    	<option class="form-input" value="8">8년</option>
+                    	<option class="form-input" value="9">9년</option>
+                    	<option class="form-input" value="10">10년</option>
+                    </select>
                 </div>
             </div>
 
