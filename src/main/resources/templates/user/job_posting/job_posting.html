@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	  careerRadios.forEach(radio => {
 	    radio.addEventListener('change', function() {
 	      selectedCareer = this.value;//
-	      historyBtn.textContent = this.value + ' ▾';
+	      historyBtn.textContent = this.value + ' ▾';  
 	      historyDropdown.style.display = 'none';
 	      console.log("선택된 경력:", selectedCareer);
 	      filterJobsByCareer();
