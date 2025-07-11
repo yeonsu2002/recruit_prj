@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	  function filterJobsByCareer() {
 		    jobItems.forEach(job => {
 		      const jobCareer = job.dataset.expLevel;  // ← data-exp-level 값 읽기
-		      console.log("공고의 경력 레벨:", jobCareer);
 		      if (selectedCareer === '전체' || selectedCareer === jobCareer) {
 		        job.style.display = 'block';
 		      } else {
