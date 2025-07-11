@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.sist.login.UserRepository;
@@ -32,22 +34,24 @@ public class ResumeController {
 
 	private final ResumeService rServ;
 	private final PositionCodeService pcs;
-	
-	private final UserRepository uRepos; //임시
+
+	private final UserRepository uRepos; // 임시
 	private final CipherUtil cu;
+
+	private final ObjectMapper objMapper;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
 	public String resumeManagementPage(Model model) {
-		
-		//임시로 유저 등록
+
+		// 임시로 유저 등록
 		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
 		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
-		
-		for(ResumeDTO resume : resumes) {
-			resume.setCreatedAt(resume.getCreatedAt().substring(0,10)); //날짜 포맷팅
+
+		for (ResumeDTO resume : resumes) {
+			resume.setCreatedAt(resume.getCreatedAt().substring(0, 10)); // 날짜 포맷팅
 		}
-		
+
 		model.addAttribute("user", user);
 		model.addAttribute("resumes", resumes);
 
@@ -67,14 +71,13 @@ public class ResumeController {
 	@GetMapping("/user/resume/resume_form/{resumeSeq}")
 	public String resumeForm(@PathVariable int resumeSeq, Model model) {
 
-		//임시로 유저 등록
+		// 임시로 유저 등록
 		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
 		user.setName(cu.plainText(user.getName()));
 		user.setPhone(cu.plainText(user.getPhone()));
-		user.setBirth(user.getBirth().substring(0,4));
+		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);
-		//---------------
-		
+
 		model.addAttribute("positionList", pcs.searchAllPositionCode());
 		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
 		model.addAttribute("resumeData", resumeData);
@@ -94,16 +97,14 @@ public class ResumeController {
 	// 이력서 저장(수정)하기
 	@PostMapping("/user/resume/resumeSubmit")
 	@ResponseBody
-	public Map<String, String> resumeSubmit(
-			@RequestParam(required = false) MultipartFile profileImage,
-			@RequestParam("resumeData") String resumeDataJson, int resumeSeq) {
+	public Map<String, String> resumeSubmit(@RequestParam(required = false) MultipartFile profileImage,
+			@RequestParam("resumeData") String resumeDataJson) {
 
 		Map<String, String> result = new HashMap<>();
-		ObjectMapper objMapper = new ObjectMapper();
 
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
-			rServ.modifyResume(rdd, profileImage, resumeSeq);
+			rServ.modifyResume(rdd, profileImage, rdd.getBasicInfo().getResumeSeq());
 
 			result.put("result", "success");
 
@@ -115,14 +116,62 @@ public class ResumeController {
 		return result;
 	}// resumeSubmit
 
-	//이력서 삭제하기
+	// 이력서 미리보기
+	@PostMapping("/user/resume/resumePreview")
+	@ResponseBody
+	public Map<String, Object> resumePreview(@RequestParam(required = false) MultipartFile profileImg,
+			@RequestParam("resumeData") String resumeDataJson) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
+			rServ.modifyResume(rdd, profileImg, rdd.getBasicInfo().getResumeSeq());
+
+			String previewUrl = "/user/resume/preview/" + rdd.getBasicInfo().getResumeSeq();
+
+			result.put("result", "success");
+			result.put("previewUrl", previewUrl);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", "error");
+		}
+		return result;
+	}
+
+	// 이력서 미리보기 창 띄우기
+	@GetMapping("/user/resume/preview/{resumeSeq}")
+	public String resumePreviewPage(@PathVariable int resumeSeq, Model model) {
+
+		// 임시로 유저 등록
+		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		user.setName(cu.plainText(user.getName()));
+		user.setPhone(cu.plainText(user.getPhone()));
+		user.setBirth(user.getBirth().substring(0, 4));
+		model.addAttribute("user", user);
+
+		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
+		
+		model.addAttribute("resumeData", resumeData);
+		model.addAttribute("resume", resumeData.getResume());
+		model.addAttribute("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
+		model.addAttribute("positions", resumeData.getPositions());
+		model.addAttribute("skills", resumeData.getSkills());
+		model.addAttribute("educations", resumeData.getEducations());
+		model.addAttribute("careers", resumeData.getCareers());
+		model.addAttribute("projects", resumeData.getProjects());
+		model.addAttribute("additionals", resumeData.getAdditionals());
+		model.addAttribute("introductions", resumeData.getIntroductions());
+
+		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
+	}
+
+	// 이력서 삭제하기
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")
 	@ResponseBody
 	public String resumeRemove(@PathVariable int resumeSeq) {
-		
+
 		rServ.removeResume(resumeSeq);
-		
+
 		return "success";
 	}
-	
+
 }

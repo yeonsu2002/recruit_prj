@@ -100,6 +100,10 @@ where resume_seq = #{resumeSeq}
 delete from self_introduction
 where resume_seq = #{resumeSeq}
 </delete>
+<delete id="deleteAdditionalByResume" parameterType="int">
+delete from additional_info
+where resume_seq = #{resumeSeq}
+</delete>
 
 
 </mapper>
