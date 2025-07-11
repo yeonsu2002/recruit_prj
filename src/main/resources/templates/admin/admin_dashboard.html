@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+/* 공통 차트 컨테이너 */
+.chart-wrapper {
+  display: flex;
+  position: fixed;
+  left: 240px; /* 사이드바 너비 */
+  top: 20px; /* 헤더 높이 감안 */
+  width: calc(100% - 240px);
+  height: 1000px;
+  background-color: #f5f5f5;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 20px;
+}
+
+/* 개별 차트 박스 */
+.chart-box {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* canvas 크기 */
+.chart-box canvas {
+  width: 100% !important;
+  height: 400px;
+}
+</style>
+
+</head>
+<body>
+<th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
+
+<div class="chart-wrapper">
+  <div class="chart-box">
+    <canvas id="myChart"></canvas>
+  </div>
+  <div class="chart-box">
+    <canvas id="corpChart"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const userCount = /*[[${userCount}]]*/ [];
+  console.log(userCount);
+
+  const labels = userCount.map(item => item.REGDATE?.split(' ')[0]); // 날짜만 추출
+  const counts = userCount.map(item => parseInt(item.COUNT));
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+  backgroundColor: [
+	  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+	  '#9966FF', '#FF9F40', '#C9CBCF'
+	]
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '일별 회원 가입 수',
+        data: counts,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+/*]]>*/
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const corpCount = /*[[${corpCount}]]*/ [];
+  // industry와 cnt 값이 있는 데이터만 필터링
+  const filteredData = corpCount.filter(item => item.INDUSTRY && item.CNT);
+
+  // labels와 counts 생성
+  const labels2 = filteredData.map(item => item.INDUSTRY);
+  const counts2 = filteredData.map(item => parseInt(item.CNT));
+
+  const corpCtx = document.getElementById('corpChart').getContext('2d');
+
+  // 색상 배열 (데이터 수보다 적으면 순환해서 사용 가능)
+  const backgroundColors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+    '#9966FF', '#FF9F40', '#C9CBCF'
+  ];
+
+  // 색상이 데이터 개수보다 적을 경우 반복하여 채우기 (선택사항)
+  const bgColors = labels2.map((_, i) => backgroundColors[i % backgroundColors.length]);
+
+  console.log('labels2:', labels2);
+  console.log('counts2:', counts2);
+  console.log('backgroundColors length:', backgroundColors.length);
+
+  new Chart(corpCtx, {
+	  type: 'doughnut',
+	  data: {
+	    labels: labels2,
+	    datasets: [{
+	      data: counts2,
+	      backgroundColor: bgColors,
+	      borderWidth: 1
+	    }]
+	  },
+	  options: {
+	    responsive: true,
+	    plugins: {
+	      legend: {
+	        position: 'right'
+	      },
+	      title: {
+	        display: false
+	      },
+	      datalabels: {
+	        color: '#000',
+	        font: {
+	          weight: 'bold'
+	        },
+	        formatter: function(value, context) {
+	          const label = context.chart.data.labels[context.dataIndex];
+	          return `${label}: ${value}`;
+	        }
+	      }
+	    }
+	  },
+	  plugins: [ChartDataLabels] // 플러그인 활성화!
+	});
+/*]]>*/
+</script>
+
+
+
+<!-- jquery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+
+});
+
+</script>
+</body>
+</html>
