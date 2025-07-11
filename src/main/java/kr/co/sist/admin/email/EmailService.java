@@ -1,4 +1,4 @@
-package kr.co.sist.admin;
+package kr.co.sist.admin.email;
 
 import lombok.RequiredArgsConstructor;
 
