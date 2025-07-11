@@ -39,4 +39,5 @@ public interface ResumeMapper {
 	public void deleteCareerByResume(int resumeSeq);
 	public void deleteProjectByResume(int resumeSeq);
 	public void deleteIntroByResume(int resumeSeq);
+	public void deleteAdditionalByResume(int resumeSeq);
 }

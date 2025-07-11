@@ -245,8 +245,9 @@ public class ResumeService {
 		rMapper.deleteLinkByResume(resumeSeq);
 		rMapper.deletePositionByResume(resumeSeq);
 		rMapper.deleteStackByResume(resumeSeq);
-		
+		rMapper.deleteAdditionalByResume(resumeSeq);
 		rMapper.deleteProjectByResume(resumeSeq);
 	}
+	
 
 }//class
