@@ -11,13 +11,13 @@
 <link rel="stylesheet" th:href="@{/user/mypage/css/sidebar.css}">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
+
 .announcement-list {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    
+    margin-left: -15px;
 }
 
 .announcement-card-link {
@@ -42,17 +42,17 @@
 }
 
 .image-wrapper {
-    width: 100%;
-    height: 180px;
+    width: 100%; /* 너비를 부모에 맞추어 설정 */
+    height: 180px; /* 원하는 높이 설정 */
     margin-bottom: 15px;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 12px; /* 둥근 모서리 설정 */
 }
 
 .image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* 이미지가 부모 영역을 덮도록 설정 */
 }
 
 .company-name {
@@ -91,22 +91,6 @@
     min-width: 300px; /* 최소 너비 설정 */
 }
 
-
-
-.image-wrapper {
-    width: 100%;
-    height: 120px;
-    margin-bottom: 12px;
-    overflow: hidden;
-    border-radius: 4px;
-}
-
-.image-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .company-name {
     font-size: 14px;
     color: #666;
@@ -129,7 +113,6 @@
     font-size: 12px;
     color: #888;
 }
-
  .d-day {
       color: #ff5722;
       font-weight: bold;
@@ -146,65 +129,79 @@
 	<div class="main-content">
 	<div id="content-area">
 		 <div class="page-title">스크랩 공고(18)</div>
-		 <div class="announcement-section">
+	<div class="announcement-section">
     <div class="announcement-list">
-        <!-- 공고 카드 1 -->
+
+        <!-- 하드코딩된 예시 공고 카드 -->
             <div class="announcement-card">
+
                 <div class="image-wrapper">
-                    <p class="d-day">D-4</p>
-                    <img src="/images/삼성전자.jpg" alt="기업 이미지">
+                    <!-- 기업 이미지 -->
+                    <img src="/images/Ssangyong.jpg" alt="기업 이미지">
                 </div>
-                <div class="company-name">삼성전자</div>
-                <div class="announcement-title"><strong>백엔드 개발자 모집</strong></div>
-                <div class="stack-name">Java | Spring | MySQL</div>
+                <!-- 기업 이름 -->
+                <div class="company-name">쌍용</div>
+                <!-- 공고 제목 -->
+                <div class="announcement-title"><strong>백엔드 개발자 채용</strong></div>
+                <!-- 기술 스택 -->
+                <div class="stack-name">Java, Spring, MyBatis</div>
                 <div class="company-info">
-                    <span>서울시</span> | <span>신입</span>
+                    <!-- 지역 -->
+                    <span>서울 강남</span> |
+                    <!-- 경력 여부 -->
+                    <span>경력</span>
                 </div>
+                <!-- 직무 -->
+                <div class="position-name">백엔드 개발</div>
             </div>
 
-        <!-- 공고 카드 2 -->
+        <!-- 다른 예시 카드 추가 -->
             <div class="announcement-card">
+
                 <div class="image-wrapper">
-                    <p class="d-day">D-10</p>
-                    <img src="/images/네이버.jpg" alt="기업 이미지">
+                    <img src="/images/Kakao.jpg" alt="기업 이미지">
                 </div>
-                <div class="company-name">네이버</div>
-                <div class="announcement-title"><strong>프론트엔드 개발자 채용</strong></div>
-                <div class="stack-name">JavaScript | Vue.js | HTML/CSS</div>
+                <div class="company-name">카카오</div>
+                <div class="announcement-title"><strong>프론트엔드 신입 모집</strong></div>
+                <div class="stack-name">JavaScript, Vue, HTML/CSS</div>
                 <div class="company-info">
-                    <span>경기도</span> | <span>경력</span>
+                    <span>경기 성남</span> |
+                    <span>신입</span>
                 </div>
+                <div class="position-name">프론트엔드</div>
+            </div>
+            <div class="announcement-card">
+
+                <div class="image-wrapper">
+                    <img src="/images/Kakao.jpg" alt="기업 이미지">
+                </div>
+                <div class="company-name">카카오</div>
+                <div class="announcement-title"><strong>프론트엔드 신입 모집</strong></div>
+                <div class="stack-name">JavaScript, Vue, HTML/CSS</div>
+                <div class="company-info">
+                    <span>경기 성남</span> |
+                    <span>신입</span>
+                </div>
+                <div class="position-name">프론트엔드</div>
+            </div>
+            <div class="announcement-card">
+
+                <div class="image-wrapper">
+                    <img src="/images/Kakao.jpg" alt="기업 이미지">
+                </div>
+                <div class="company-name">카카오</div>
+                <div class="announcement-title"><strong>프론트엔드 신입 모집</strong></div>
+                <div class="stack-name">JavaScript, Vue, HTML/CSS</div>
+                <div class="company-info">
+                    <span>경기 성남</span> |
+                    <span>신입</span>
+                </div>
+                <div class="position-name">프론트엔드</div>
             </div>
 
-        <!-- 공고 카드 3 -->
-            <div class="announcement-card">
-                <div class="image-wrapper">
-                    <p class="d-day">D-2</p>
-                    <img src="/images/카카오.jpg" alt="기업 이미지">
-                </div>
-                <div class="company-name">카카오</div>
-                <div class="announcement-title"><strong>AI 엔지니어 모집</strong></div>
-                <div class="stack-name">Python | TensorFlow | PyTorch</div>
-                <div class="company-info">
-                    <span>성남시</span> | <span>무관</span>
-                </div>
-            </div>
-            <div class="announcement-card">
-                <div class="image-wrapper">
-                    <p class="d-day">D-2</p>
-                    <img src="/images/카카오.jpg" alt="기업 이미지">
-                </div>
-                <div class="company-name">카카오</div>
-                <div class="announcement-title"><strong>AI 엔지니어 모집</strong></div>
-                <div class="stack-name">Python | TensorFlow | PyTorch</div>
-                <div class="company-info">
-                    <span>성남시</span> | <span>무관</span>
-                </div>
-            </div>
     </div>
 </div>
-		 
-</div>
+	</div>
 </div>
 </div>
 </main>
