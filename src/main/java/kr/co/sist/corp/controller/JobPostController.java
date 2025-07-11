@@ -1,5 +1,8 @@
 package kr.co.sist.corp.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,12 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.service.JobPostingCorpService;
 import kr.co.sist.jwt.JWTUtil;
+import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.UserDTO;
 
 @Controller
@@ -26,7 +32,7 @@ public class JobPostController {
 		this.jwtUtil = jwtUtil;
 	}
 
-  //새로우 공고등록 페이지 이동
+  //새로운 공고등록 form으로 이동
   @GetMapping("/corp/jobPostingForm")
   public String getJobPostingForm(Model model, HttpServletRequest request) {
   	
@@ -34,7 +40,7 @@ public class JobPostController {
   	UserDTO userDTO = jwtUtil.validateToken(token);
   	
   	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
-  		 return "redirect:/accessDenied"; //아
+  		 return "redirect:/accessDenied"; //로그인 안되어있거나, 기업회원이 아니면 거절 
   	}
   	
   	model.addAttribute("user", userDTO);
@@ -42,22 +48,45 @@ public class JobPostController {
 	 return "corp/jobPosting/jobPostingForm";
   }
   
-  //새로운 공고 등록
-  @PostMapping("/corp/uplaodJobPosting")
-  public String uploadJobPosting( JobPostingDTO jpDTO) {
-  	
-    jpcService.uploadJobPost(jpDTO);
-    
-  	return "";
-  }
-  //2 새로운 공고 등록
+  // 새로운 공고 등록 (JSON)
   @PostMapping("/corp/uplaodJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {
-    jpcService.uploadJobPost(jpDTO);
-    return ResponseEntity.ok().build();
+  	
+  	//form 2차 검증(if)
+  	
+  	
+  	
+  	
+  	try {
+  		//corpNo으로 회사정보 가져와서 jpDTO에 넣어주고
+  		CorpDTO cDTO = jpcService.getCorpDTO(jpDTO.getCorpNo());
+  		jpDTO.setCorpDTO(cDTO);
+  		
+  		//공고 등록 호출
+  		jpcService.uploadJobPost(jpDTO);
+  		return ResponseEntity.ok("공고 등록 성공");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 등록 실패: " + e.getMessage());
+		}
+    
   }
   
   //예외처리 어떻게 하지? https://chatgpt.com/s/t_686fe64224988191838976d9bfa9aea0
+  /**
+   * 컨트롤러에서 catch 안 하면, 예외는 스프링 기본 예외 처리기에 의해 처리됨
+			→ 콘솔에 에러 로그만 출력되고, 브라우저에 500 Internal Server Error + 흰 화면 or HTML 에러 페이지 나올 수 있음
+   */
+  
+  /**
+   * 공고form 페이지에서 포지션 검색 ajax 수신 
+   */
+  @GetMapping("/corp/searchPositionByKeyword") //Get은 @Requestbody를 가질수 없음
+  public ResponseEntity<?> searchPositionByKeyword(@RequestParam String keyword){
+  	System.out.println("받은 키워드: " + keyword); // 로그 찍기
+  	List<PositionCodeDTO> resultList = jpcService.pDTOList(keyword);
+  	
+  	return ResponseEntity.ok(resultList); // → JSON 배열로 자동 직렬화됨
+  }
   
   
   

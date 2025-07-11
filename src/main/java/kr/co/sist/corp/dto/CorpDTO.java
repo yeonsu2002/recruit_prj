@@ -25,9 +25,33 @@ public class CorpDTO {
 	private String corpAiActive;
 	private String industry;
 	private String companySize;
+	private String corpCeo; 
 	
 	private String uploadedFileName; // 저장된 파일 이름
 	
 	private List<TagDTO> tagList; 
+	
+	//CorpEntity를 DTO로 변환해주는 메서드
+	public CorpDTO(CorpEntity ce) {
+		this.corpNo = ce.getCorpNo();
+		this.corpNm = ce.getCorpNm();
+		this.corpInfo =ce.getCorpInfo();
+		this.corpUrl = ce.getCorpUrl();
+		this.corpLogo = ce.getCorpLogo();
+		this.corpImg = ce.getCorpImg();
+		this.corpAvgSal =ce.getCorpAvgSal();
+		this.corpAnnualRevenue = ce.getCorpAnnualRevenue();
+		this.corpCreatedAt = ce.getCorpCreatedAt();
+		this.corpEmpCnt = ce.getCorpEmpCnt();
+		this.bizCert =ce.getBizCert();
+		this.corpAiActive = ce.getCorpAiActive();
+		this.industry = ce.getIndustry();
+		this.companySize = ce.getCompanySize();
+		this.corpCeo = ce.getCorpCeo();
+	}
+	
+	public static CorpDTO from(CorpEntity entity) {
+		return new CorpDTO(entity);
+	}
 	
 }

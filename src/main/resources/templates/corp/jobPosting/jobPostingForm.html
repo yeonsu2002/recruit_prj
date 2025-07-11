@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	//카카오맵 주소 찾기
 	document.getElementById("openKakaoMap").addEventListener("click", openKakaoMap);
 	
+	//포지션 비동기 검색 조회
+	getPositionList();
 	
 	
 });
@@ -35,16 +37,57 @@ function openKakaoMap(){
 
 
 //포지션 ajax로 가져오기
-function getPositionList(){
-	document.getElementById('positionSeq').addEventListener('input', function(){
-		const keyword = document.getElementById('positionSeq').value.trim();
-		if(keyword === ''){
-			resultBox.style.display = 'none';
-			return;
-		}
-		
-	});
+function getPositionList() {
+  document.getElementById('positionName').addEventListener('input', function () {
+    const keyword = document.getElementById('positionName').value.trim();
+    const resultBox = document.querySelector('#resultBox');
+
+    if (keyword === '') {
+      resultBox.style.display = 'none';
+      return;
+    }
+
+    if (keyword.length >= 1) {
+      fetch(`/corp/searchPositionByKeyword?keyword=${encodeURIComponent(keyword)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("서버 오류 발생");
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.length > 0) {
+            resultBox.innerHTML = ''; // 기존 내용 비우기
+            resultBox.style.display = 'block';
+
+            data.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.positionName;
+              li.classList.add('position-li');
+              li.setAttribute('data-position-seq', item.positionSeq);
+
+              li.addEventListener('click', function () { //클릭했을 때
+                document.getElementById('positionName').value = item.positionName;
+                document.getElementById('positionSeq').value = item.positionSeq;
+                resultBox.style.display = 'none';
+              });
+
+              resultBox.appendChild(li);
+            });
+          } else {
+        	  document.getElementById('positionSeq').value = '';
+            resultBox.innerHTML = '<li>검색 결과 없음</li>';
+            resultBox.style.display = 'block';
+          }
+        })
+        .catch(error => {
+          console.error("에러 발생:", error);
+        });
+    }
+  });
 }
+
+		
 </script>
 </head>
 <body>
@@ -72,10 +115,11 @@ function getPositionList(){
 
                     <div class="form-group">
                         <label class="form-label required">포지션</label>
-                        <input type="text" id="positionSeq" name="positionSeq" class="form-input" placeholder="포지션 검색" autocomplete="off">
-                        <ul id="resultBox" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></ul>
+                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" autocomplete="off">
+                        <ul id="resultBox" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
+                        <input type="text" id="positionSeq">
                     </div>
-
+                    
                     <div class="form-group">
                         <label class="form-label">주요 기술스택</label>
                         <input type="text" name="techStack" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">

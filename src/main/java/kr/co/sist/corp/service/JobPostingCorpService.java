@@ -1,19 +1,34 @@
 package kr.co.sist.corp.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 
+import kr.co.sist.corp.dto.CorpDTO;
+import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.corp.dto.JobPostingDTO;
-import kr.co.sist.corp.mapper.JobPostingMapper;
+import kr.co.sist.corp.mapper.JobPostingCorpMapper;
+import kr.co.sist.corp.mapper.JobPostingTechStackMapper;
+import kr.co.sist.error.LoginException;
+import kr.co.sist.error.NotFoundException;
+import kr.co.sist.login.CorpRepository;
+import kr.co.sist.user.dto.PositionCodeDTO;
+import kr.co.sist.user.entity.UserEntity;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor //final 생성자주입 자동
 public class JobPostingCorpService {
 
-  private final JobPostingMapper jpm;
-  
-  public JobPostingCorpService(JobPostingMapper jpm) {
-    this.jpm = jpm;
-  }
+  private final JobPostingCorpMapper jpm;
+  private final JobPostingTechStackMapper jptm;
+  private final CorpRepository cRepository;
   
   /**
    * 연속적인 insert는 항상 서비스단에서 묶어서 처리하고, @Transactional을 걸어야 안전빵
@@ -22,22 +37,65 @@ public class JobPostingCorpService {
    */
   @Transactional 
   public void uploadJobPost(JobPostingDTO jpDTO) {
-    //1. 공고등록
-    int result = jpm.insertJobPost(jpDTO);
-    
-    /**
-     * jpDTO.getJobPostingSeq() 왜 돼?
-     * jpDTO는 참조변수
-     * mapper내부에서 setter(.setJobPostingSeq(123)) 이런 setter를 호출했꼬, 
-     *  (keyProperty="jobPostingSeq" => DTO의 해당 필드에 자동 주입)
-     * 나는 그 참조변수를다시 가져와서 보는 것이니 매개변수때와 그 값이 다르다. 
-     */
-    int jobPostingSeq = jpDTO.getJobPostingSeq();
-    
-    //2. 기술 스택등록(중간테이블)
-    for(Integer skillSeq : jpDTO.getTechStackSeqList()) {
-      // 무슨mapper.insertjobPostingTechStack(jobPostingSeq, skillSeq);
-    }
+  	
+  	try {
+  		//1. 공고등록
+      jpm.insertJobPost(jpDTO);
+      
+      /**
+       * jpDTO.getJobPostingSeq() 왜 돼?
+       * jpDTO는 참조변수
+       * mapper내부에서 setter(.setJobPostingSeq(123)) 이런 setter를 호출했꼬, 
+       *  (keyProperty="jobPostingSeq" => DTO의 해당 필드에 자동 주입)
+       * 나는 그 참조변수를다시 가져와서 보는 것이니 매개변수때와 그 값이 다르다. 
+       */
+      int jobPostingSeq = jpDTO.getJobPostingSeq();
+  		
+      //2. 기술 스택등록(중간테이블)
+      for(Integer techStackSeq : jpDTO.getTechStackSeqList()) {
+      	jptm.insertjobPostingTechStack(jobPostingSeq, techStackSeq);
+      }
+      
+		} catch (Exception e) {
+			//로그출력 
+			e.printStackTrace();
+			//트랜잭션 롤백 유도 : RuntimeException 안던지면 롤백안됨 
+			throw new RuntimeException("공고등록 중 예외 발생", e); 
+		}
+  } //end uploadJobPost()
+  
+  
+  /**
+   * 사업자등록번호로 회사정보 가져오기 
+   * @param corpNo
+   * @return
+   */
+  public CorpDTO getCorpDTO(long corpNo) {
+  	//@ControllerAdvice 로 NotFoundException을 제어중
+  	CorpEntity cEntity = cRepository.findById(corpNo).orElseThrow(() -> new NotFoundException("해당 사용자가 존재하지 않습니다."));
+  	
+  	//Entity -> DTO 변환
+  	CorpDTO cDTO = CorpDTO.from(cEntity);
+  	//태그랑 사업자번호 안담았어. 태그는 필요하긴한데, 그건 조회할때 편하려고 하는건데 연수가 잘 할거니까 생략함
+  	return cDTO;
+  } //end getCorpDTO()
+  
+
+  /**
+   * 키워드로 포지션 리스트 조회
+   */
+  public List<PositionCodeDTO> pDTOList(String keyword){
+  	if(keyword == null || keyword.trim().isEmpty()) {
+  		return Collections.emptyList(); //빈 리스트 반환, 이게 뭐지?
+  	}
+  	
+  	List<PositionCodeDTO> pDTOList = new ArrayList<PositionCodeDTO>();
+  	
+  	pDTOList = jpm.selectPostionList(keyword);
+  	
+  	return pDTOList;
   }
+  
+  
   
 }

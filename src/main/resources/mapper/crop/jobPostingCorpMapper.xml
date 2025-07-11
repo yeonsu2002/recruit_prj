@@ -4,7 +4,7 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
     
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
-<mapper namespace="kr.co.sist.corp.mapper.JobPostingMapper">    
+<mapper namespace="kr.co.sist.corp.mapper.JobPostingCorpMapper">    
 
 <!-- 새로운 공고 등록 -->
 <insert id="insertJobPost" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
@@ -31,5 +31,14 @@ VALUES ( #{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{posting
 
 
 <!-- 공고 삭제 : deleteJobPost-->
+
+
+<!-- 공고안에서 포지션리스트 키워드로 조회 -->
+<select id="selectPostionList" parameterType="string" resultType="kr.co.sist.user.dto.PositionCodeDTO">
+SELECT position_seq, position_name FROM POSITION_CODE 
+WHERE position_name LIKE '%' || #{keyword} || '%'
+</select>
+
+
 
 </mapper>

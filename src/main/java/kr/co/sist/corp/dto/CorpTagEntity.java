@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name="company_tag")
-public class CompanyTagEntity {
+public class CorpTagEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

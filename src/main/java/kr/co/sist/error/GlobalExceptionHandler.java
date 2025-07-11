@@ -1,5 +1,11 @@
 package kr.co.sist.error;
 
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -26,6 +32,17 @@ public class GlobalExceptionHandler {
 		return "redirect:/login";
 	}
 	
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<?> handleNotFoundException(NotFoundException ex) {
+      Map<String, Object> errorBody = new LinkedHashMap<>();
+      errorBody.put("timestamp", LocalDateTime.now());
+      errorBody.put("status", HttpStatus.NOT_FOUND.value());
+      errorBody.put("error", "Not Found");
+      errorBody.put("message", ex.getMessage());
+
+      //이거 아직 사용자쪽에 뿌리는거 안만들었어.
+      return new ResponseEntity<>(errorBody, HttpStatus.NOT_FOUND);
+  }	
 	
 	
 }
