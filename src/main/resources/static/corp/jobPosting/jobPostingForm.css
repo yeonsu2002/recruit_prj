@@ -317,3 +317,15 @@
 	list-style: none;
   padding-left: 0; /* 점 없어도 들여쓰기 남는 경우 제거 */
 }
+
+#resultBox {
+	background-color: #FAFDF4;
+	border-color: black;
+	width: 100%;
+	
+}
+
+#resultBox li{
+	cursor: pointer;
+}
+
