@@ -227,6 +227,7 @@ body {
 	width: 60%;
 	display: flex;
 	gap: 8px;
+	margin-bottom: 10px;
 }
 
 .zipcode-box > input:first-of-type {

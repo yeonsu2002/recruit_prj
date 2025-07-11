@@ -1,31 +1,93 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
 <meta charset="UTF-8">
 <title>민기인력 - 기업 메인</title>
+<!-- 카카오지도 -->
 <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <link rel="stylesheet" th:href="@{/corp/mainCss/main_page.css}"/>
 <link rel="stylesheet" th:href="@{/corp/jobPosting/jobPostingForm.css}">
-<style type="text/css">
+<style>
 
 </style>
-<!-- <script th:inline="javascript">
-document.addEventListener('DOMContentLoaded', () => {
-  var jsonData = /*[[${user}]]*/ {};
-	if(jsonData.role != 'ROLE_CORP'){
-		alert("접근권한이 없습니다.");
-		history.back();
-		//컨트롤러 진입 자체를 막는게 더 안전하다.
-	} 
-	
-});
-</script> -->
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
+	const userInfo = `[[${user}]]`;
+	console.log(userInfo);
+	
+	//카카오맵 주소 찾기
+	document.getElementById("openKakaoMap").addEventListener("click", openKakaoMap);
+	
+	//포지션 비동기 검색 조회
+	getPositionList();
 	
 	
 });
+
+//카카오 주소찾기
+function openKakaoMap(){
+	new daum.Postcode({
+	    oncomplete: function(data) {
+	    	document.getElementById("zipcode").value = data.zonecode;
+	    	document.getElementById("roadAddress").value = data.roadAddress;
+	    }
+	}).open();
+}
+
+
+//포지션 ajax로 가져오기
+function getPositionList() {
+  document.getElementById('positionName').addEventListener('input', function () {
+    const keyword = document.getElementById('positionName').value.trim();
+    const resultBox = document.querySelector('#resultBox');
+
+    if (keyword === '') {
+      resultBox.style.display = 'none';
+      return;
+    }
+
+    if (keyword.length >= 1) {
+      fetch(`/corp/searchPositionByKeyword?keyword=${encodeURIComponent(keyword)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("서버 오류 발생");
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.length > 0) {
+            resultBox.innerHTML = ''; // 기존 내용 비우기
+            resultBox.style.display = 'block';
+
+            data.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item.positionName;
+              li.classList.add('position-li');
+              li.setAttribute('data-position-seq', item.positionSeq);
+
+              li.addEventListener('click', function () { //클릭했을 때
+                document.getElementById('positionName').value = item.positionName;
+                document.getElementById('positionSeq').value = item.positionSeq;
+                resultBox.style.display = 'none';
+              });
+
+              resultBox.appendChild(li);
+            });
+          } else {
+        	  document.getElementById('positionSeq').value = '';
+            resultBox.innerHTML = '<li>검색 결과 없음</li>';
+            resultBox.style.display = 'block';
+          }
+        })
+        .catch(error => {
+          console.error("에러 발생:", error);
+        });
+    }
+  });
+}
+
+		
 </script>
 </head>
 <body>
@@ -33,422 +95,303 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <div class="job-posting-container">
     <div class="job-posting-header">
-        <h1 class="job-posting-title">채용공고 작성</h1>
-        <p class="job-posting-subtitle">개발자들이 지원하고 싶은 매력적인 채용공고를 작성해보세요</p>
+        <h1 class="job-posting-title">채용공고 등록</h1>
+        <p class="job-posting-subtitle">우수한 인재를 찾아보세요. 정확하고 상세한 정보로 더 많은 지원자를 만나보세요.</p>
     </div>
 
     <div class="job-posting-main">
         <div class="job-posting-form">
-            <!-- 기본 정보 섹션 -->
-            <div class="job-posting-section">
-                <h2 class="section-title">기본 정보</h2>
+            <form id="frm" th:action="@{/corp/uplaodJobPosting}" method="post" enctype="application/x-www-form-urlencoded">
                 
-                <div class="form-group">
-                    <label class="form-label required">직무</label>
-                    <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
-                    <div class="form-help">한 공고에 하나의 직무만 선택 가능합니다. 2개 이상의 직무 등록을 원하시면 포지션을 추가로 등록해주세요.</div>
+                <!-- 기본 정보 섹션 -->
+                <div class="job-posting-section">
+                    <h2 class="section-title">📋 기본 정보</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">공고 제목</label>
+                        <input type="text" name="postingTitle" class="form-input" placeholder="예: [신입/경력] 백엔드 개발자 모집" required>
+                        <div class="form-help">지원자들이 가장 먼저 보게 되는 제목입니다. 명확하고 매력적으로 작성해주세요.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">포지션</label>
+                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" autocomplete="off">
+                        <ul id="resultBox" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
+                        <input type="text" id="positionSeq">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">주요 기술스택</label>
+                        <input type="text" name="techStack" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">
+                        <div class="techStack-list"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">경력 요구사항</label>
+                        <select name="expLevel" class="form-select" required>
+                            <option value="">경력 수준을 선택하세요</option>
+                            <option value="전체">전체 (신입/경력 무관)</option>
+                            <option value="신입">신입 (경력 없음)</option>
+                            <option value="1년">1년 이상</option>
+                            <option value="2년">2년 이상</option>
+                            <option value="3년">3년 이상</option>
+                            <option value="4년">4년 이상</option>
+                            <option value="5년">5년 이상</option>
+                            <option value="6년">6년 이상</option>
+                            <option value="7년">7년 이상</option>
+                            <option value="8년">8년 이상</option>
+                            <option value="9년">9년 이상</option>
+                            <option value="10년">10년 이상</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">학력 조건</label>
+                        <select name="eduLevel" class="form-select" required>
+                            <option value="">학력 조건을 선택하세요</option>
+                            <option value="무관">학력 무관</option>
+                            <option value="고졸이상">고등학교 졸업 이상</option>
+                            <option value="초대졸">전문대학 졸업 이상</option>
+                            <option value="대졸">대학교 졸업 이상</option>
+                            <option value="석사">석사 이상</option>
+                            <option value="박사">박사 이상</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label required">기술스택</label>
-                    <input type="text" class="form-input" placeholder="예: React, Node.js, MongoDB" id="tech-stack-input">
-                    <button type="button" class="tag-select-btn" id="tag-select-btn">기술스택 선택</button>
-                    <div class="selected-tags" id="selected-tags"></div>
+                <!-- 근무 조건 섹션 -->
+                <div class="job-posting-section">
+                    <h2 class="section-title">💼 근무 조건</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">고용 형태</label>
+                        <select name="employType" class="form-select" required>
+                            <option value="">고용 형태를 선택하세요</option>
+                            <option value="정규">정규직</option>
+                            <option value="계약">계약직</option>
+                            <option value="인턴">인턴</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">모집 인원</label>
+                        <input type="number" name="recruitCnt" class="form-input" placeholder="모집 인원 수" min="1" required>
+                        <div class="form-help">채용 예정 인원 수를 입력해주세요.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">연봉</label>
+                        <input type="number" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 만원)" min="0">
+                        <div class="salary-info">
+                            <span>💰 연봉 정보는 더 많은 지원자를 유치하는 데 도움이 됩니다.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">근무 요일</label>
+                        <input type="text" name="workday" class="form-input" placeholder="예: 월~금, 주 5일">
+                        <div class="form-help">근무하는 요일을 입력해주세요.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">근무 시간</label>
+                        <div class="time-range">
+                            <input type="time" name="workStartTime" class="form-input">
+                            <span>~</span>
+                            <input type="time" name="workEndTime" class="form-input">
+                        </div>
+                        <div class="form-help">근무 시작 시간과 종료 시간을 설정해주세요.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">계약 기간 (계약직인 경우)</label>
+                        <div class="date-range">
+                            <input type="date" name="contStartDt" class="form-input">
+                            <span>~</span>
+                            <input type="date" name="contEndDt" class="form-input">
+                        </div>
+                        <div class="form-help">계약직인 경우에만 입력해주세요.</div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label required">포지션 제목</label>
-                    <input type="text" class="form-input" placeholder="[민기인력] 빅데이터 플랫폼 백엔드 개발자">
-                    <div class="form-help">포지션명이 정확히 기재되어 있지 않으면, 포지션 등록이 거절될 수 있습니다.<br>
-                        <strong>예시:</strong> [점핏] 프론트엔드 개발자, [민기인력 LAB] 빅데이터 플랫폼 백엔드 개발자</div>
-                </div>
-            </div>
-
-            <!-- 상세 정보 섹션 -->
-            <div class="job-posting-section">
-                <h2 class="section-title">상세 정보</h2>
-                
-                <div class="form-help important">
-                    <strong>작성 가이드</strong><br>
-                    주요 업무, 자격요건을 자세하게 작성해주세요. 지원자의 업무에 가장 중요한 정보입니다.<br>
-                    복지 및 혜택을 상세하게 작성하여 기업을 소개해주세요.<br>
-                    채용절차 혹은 지원 시 유의해야 할 사항이 있다면 작성해주세요.
+                <!-- 근무지 정보 섹션 -->
+                <div class="job-posting-section">
+                    <h2 class="section-title">📍 근무지 정보</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">근무지 주소</label>
+                        <div class="zipcode-box">
+                            <input type="text" id="zipcode" name="zipcode" class="form-input" placeholder="우편번호" readonly>
+                            <button type="button" id="openKakaoMap" class="btn btn-secondary">우편번호 찾기</button>
+                        </div>
+                        <input type="text" id="roadAddress" name="roadAddress" class="form-input" placeholder="도로명 주소" readonly style="margin-bottom: 10px;">
+                        <input type="text" id="detailAddress" name="detailAddress" class="form-input" placeholder="상세 주소 (건물명, 층수 등)">
+                        <div class="form-help">정확한 근무지 정보는 지원자들의 지원 결정에 중요한 요소입니다.</div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label required">주요업무</label>
-                    <textarea class="form-textarea" placeholder="담당하게 될 주요 업무를 구체적으로 작성해주세요.&#10;예:&#10;- 웹 애플리케이션 백엔드 API 개발&#10;- 데이터베이스 설계 및 최적화&#10;- 서버 인프라 구축 및 운영"></textarea>
-                </div>
+                <!-- 상세 정보 섹션 -->
+                <div class="job-posting-section">
+                    <h2 class="section-title">📝 상세 정보</h2>
+                    
+                    <div class="form-help important">
+                        <strong>✨ 작성 가이드</strong><br>
+                        • 주요 업무와 책임을 구체적으로 명시해주세요<br>
+                        • 필요한 기술과 경험을 명확히 작성해주세요<br>
+                        • 회사 문화와 복지 혜택을 상세히 소개해주세요<br>
+                        • 성장 기회와 교육 지원에 대해 언급해주세요
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">채용공고 상세 내용</label>
+                        <textarea name="postingDetail" class="form-textarea" rows="12" placeholder="📌 주요 업무
+- 담당하게 될 구체적인 업무 내용을 작성해주세요
+- 프로젝트 성격, 사용 기술, 협업 방식 등을 포함해주세요
 
-                <div class="form-group">
-                    <label class="form-label required">자격요건</label>
-                    <textarea class="form-textarea" placeholder="필수 자격요건을 명시해주세요.&#10;예:&#10;- 컴퓨터공학 전공 또는 관련 경력 3년 이상&#10;- Java, Spring Framework 활용 경험&#10;- RDBMS 설계 및 튜닝 경험"></textarea>
-                </div>
+🎯 자격 요건
+- 필수 요구사항을 명확히 작성해주세요
+- 우대사항도 함께 작성하시면 좋습니다
 
-                <div class="form-group">
-                    <label class="form-label">우대사항</label>
-                    <textarea class="form-textarea" placeholder="우대사항을 작성해주세요.&#10;예:&#10;- 대용량 트래픽 처리 경험&#10;- 클라우드 환경(AWS, GCP) 경험&#10;- 오픈소스 프로젝트 기여 경험"></textarea>
-                </div>
+🎁 복지 및 혜택
+- 급여 외 복리후생을 상세히 작성해주세요
+- 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요
 
-                <div class="form-group">
-                    <label class="form-label required">복지 및 혜택</label>
-                    <textarea class="form-textarea" placeholder="회사의 복지 및 혜택을 상세히 작성해주세요.&#10;예:&#10;- 4대보험 + 퇴직연금&#10;- 연봉 협상 가능&#10;- 재택근무 및 유연근무제&#10;- 교육비 지원 및 도서 구입비&#10;- 건강검진 및 의료비 지원"></textarea>
-                </div>
+📋 채용 절차
+- 서류 전형부터 최종 면접까지의 과정을 안내해주세요" required></textarea>
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label">채용절차 및 기타 지원 유의사항</label>
-                    <textarea class="form-textarea" placeholder="채용절차/지원방법/지원 시 주의사항/사전질문/근무조건 등 채용에 관련된 정보를 상세하게 작성해주세요.&#10;&#10;예:&#10;1차: 서류전형&#10;2차: 기술면접&#10;3차: 임원면접&#10;&#10;※ 포트폴리오 필수 제출&#10;※ 병역필 또는 면제자에 한함"></textarea>
+                    <div class="form-group">
+                        <label class="form-label required">공고 마감일</label>
+                        <div class="date-range">
+                            <div style="flex: 1;">
+                                <input type="date" name="postingEndDt" class="form-input" required>
+                            </div>
+                        </div>
+                        <div class="form-help">공고가 게시될 기간을 설정해주세요.</div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div class="job-posting-sidebar">
             <div class="sidebar-card">
-                <h3 class="sidebar-title">공고 등록</h3>
+                <h3 class="sidebar-title">🚀 공고 등록</h3>
                 
                 <div class="progress-indicator">
                     <div class="progress-bar">
                         <div class="progress-fill"></div>
                     </div>
-                    <div class="progress-text">75% 완료</div>
+                    <div class="progress-text">0% 완료</div>
                 </div>
 
-                <button type="button" class="submit-btn">승인 요청</button>
+                <button type="submit" form="frm" class="submit-btn">채용공고 등록하기</button>
                 
                 <div class="preview-section">
                     <button type="button" class="preview-btn">미리보기</button>
                 </div>
+            </div>
 
-                <div class="tips-section">
-                    <h4 class="tips-title">작성 팁</h4>
-                    <ul class="tips-list">
-                        <li>구체적인 업무 내용을 포함하세요</li>
-                        <li>기술스택을 명확히 명시하세요</li>
-                        <li>복지혜택을 상세히 작성하세요</li>
-                        <li>채용절차를 투명하게 공개하세요</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 태그 선택 모달 -->
-<div class="modal-overlay" id="tag-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">태그 선택</h2>
-            <button class="modal-close" id="modal-close">×</button>
-        </div>
-        
-        <div class="modal-body">
-            <div class="modal-tabs">
-                <button class="modal-tab active" data-tab="experience">경력</button>
-                <button class="modal-tab" data-tab="skills">기술스택</button>
-                <button class="modal-tab" data-tab="position">근무·휴가</button>
-            </div>
-            
-            <div class="tab-content" id="experience-tab">
-                <div class="tag-category">
-                    <h3 class="category-title">경력</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="신입">신입</div>
-                        <div class="tag-item" data-tag="경력무관">경력무관</div>
-                        <div class="tag-item" data-tag="신입/경력">신입/경력</div>
-                        <div class="tag-item" data-tag="경력1년이상">경력1년이상</div>
-                        <div class="tag-item" data-tag="경력2년이상">경력2년이상</div>
-                        <div class="tag-item" data-tag="경력3년이상">경력3년이상</div>
-                        <div class="tag-item" data-tag="경력5년이상">경력5년이상</div>
-                        <div class="tag-item" data-tag="경력10년이상">경력10년이상</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">학력</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="학력무관">학력무관</div>
-                        <div class="tag-item" data-tag="고졸이상">고졸이상</div>
-                        <div class="tag-item" data-tag="초대졸이상">초대졸이상</div>
-                        <div class="tag-item" data-tag="대졸이상">대졸이상</div>
-                        <div class="tag-item" data-tag="석사이상">석사이상</div>
-                        <div class="tag-item" data-tag="박사이상">박사이상</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="skills-tab" style="display: none;">
-                <div class="tag-category">
-                    <h3 class="category-title">프론트엔드</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="React">React</div>
-                        <div class="tag-item" data-tag="Vue.js">Vue.js</div>
-                        <div class="tag-item" data-tag="Angular">Angular</div>
-                        <div class="tag-item" data-tag="JavaScript">JavaScript</div>
-                        <div class="tag-item" data-tag="TypeScript">TypeScript</div>
-                        <div class="tag-item" data-tag="HTML/CSS">HTML/CSS</div>
-                        <div class="tag-item" data-tag="Sass">Sass</div>
-                        <div class="tag-item" data-tag="Webpack">Webpack</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">백엔드</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="Java">Java</div>
-                        <div class="tag-item" data-tag="Spring">Spring</div>
-                        <div class="tag-item" data-tag="Node.js">Node.js</div>
-                        <div class="tag-item" data-tag="Python">Python</div>
-                        <div class="tag-item" data-tag="Django">Django</div>
-                        <div class="tag-item" data-tag="Flask">Flask</div>
-                        <div class="tag-item" data-tag="PHP">PHP</div>
-                        <div class="tag-item" data-tag="Laravel">Laravel</div>
-                        <div class="tag-item" data-tag="C#">C#</div>
-                        <div class="tag-item" data-tag=".NET">.NET</div>
-                        <div class="tag-item" data-tag="Go">Go</div>
-                        <div class="tag-item" data-tag="Ruby">Ruby</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">데이터베이스</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="MySQL">MySQL</div>
-                        <div class="tag-item" data-tag="PostgreSQL">PostgreSQL</div>
-                        <div class="tag-item" data-tag="MongoDB">MongoDB</div>
-                        <div class="tag-item" data-tag="Redis">Redis</div>
-                        <div class="tag-item" data-tag="Oracle">Oracle</div>
-                        <div class="tag-item" data-tag="SQL Server">SQL Server</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">모바일</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="Android">Android</div>
-                        <div class="tag-item" data-tag="iOS">iOS</div>
-                        <div class="tag-item" data-tag="React Native">React Native</div>
-                        <div class="tag-item" data-tag="Flutter">Flutter</div>
-                        <div class="tag-item" data-tag="Swift">Swift</div>
-                        <div class="tag-item" data-tag="Kotlin">Kotlin</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tab-content" id="position-tab" style="display: none;">
-                <div class="tag-category">
-                    <h3 class="category-title">근무형태</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="정규직">정규직</div>
-                        <div class="tag-item" data-tag="계약직">계약직</div>
-                        <div class="tag-item" data-tag="인턴">인턴</div>
-                        <div class="tag-item" data-tag="프리랜서">프리랜서</div>
-                        <div class="tag-item" data-tag="파트타임">파트타임</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">근무방식</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="재택근무">재택근무</div>
-                        <div class="tag-item" data-tag="하이브리드">하이브리드</div>
-                        <div class="tag-item" data-tag="사무실근무">사무실근무</div>
-                        <div class="tag-item" data-tag="유연근무">유연근무</div>
-                    </div>
-                </div>
-                
-                <div class="tag-category">
-                    <h3 class="category-title">복지</h3>
-                    <div class="tag-grid">
-                        <div class="tag-item" data-tag="4대보험">4대보험</div>
-                        <div class="tag-item" data-tag="퇴직연금">퇴직연금</div>
-                        <div class="tag-item" data-tag="건강검진">건강검진</div>
-                        <div class="tag-item" data-tag="교육지원">교육지원</div>
-                        <div class="tag-item" data-tag="도서구입비">도서구입비</div>
-                        <div class="tag-item" data-tag="식비지원">식비지원</div>
-                        <div class="tag-item" data-tag="야근식비">야근식비</div>
-                        <div class="tag-item" data-tag="커피무료">커피무료</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <div class="selected-count">
-                <span id="selected-count">0</span>개 선택됨
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="modal-reset">초기화</button>
-                <button class="modal-btn modal-btn-primary" id="modal-apply">적용하기</button>
+            <div class="sidebar-card tips-section">
+                <h4 class="tips-title">💡 작성 팁</h4>
+                <ul class="tips-list">
+                    <li>구체적이고 명확한 업무 내용 작성</li>
+                    <li>필요한 기술스택과 경험 명시</li>
+                    <li>회사 문화와 복지 혜택 상세 기재</li>
+                    <li>성장 기회와 교육 지원 내용 포함</li>
+                    <li>투명한 채용 절차 안내</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// 간단한 인터랙션 추가
 document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.form-input, .form-textarea');
+    const inputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
     const progressFill = document.querySelector('.progress-fill');
     const progressText = document.querySelector('.progress-text');
     
-    // 태그 모달 관련 요소들
-    const tagModal = document.getElementById('tag-modal');
-    const tagSelectBtn = document.getElementById('tag-select-btn');
-    const modalClose = document.getElementById('modal-close');
-    const modalTabs = document.querySelectorAll('.modal-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const tagItems = document.querySelectorAll('.tag-item');
-    const selectedCount = document.getElementById('selected-count');
-    const modalReset = document.getElementById('modal-reset');
-    const modalApply = document.getElementById('modal-apply');
-    const selectedTagsContainer = document.getElementById('selected-tags');
-    const techStackInput = document.getElementById('tech-stack-input');
-    
-    let selectedTags = [];
-    
     function updateProgress() {
-        const totalFields = inputs.length;
-        const filledFields = Array.from(inputs).filter(input => input.value.trim() !== '').length;
-        const progress = Math.round((filledFields / totalFields) * 100);
+        const requiredFields = document.querySelectorAll('[required]');
+        const filledFields = Array.from(requiredFields).filter(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                return input.checked;
+            }
+            return input.value.trim() !== '';
+        }).length;
+        
+        const progress = Math.round((filledFields / requiredFields.length) * 100);
         
         progressFill.style.width = progress + '%';
         progressText.textContent = progress + '% 완료';
-    }
-    
-    function updateSelectedCount() {
-        selectedCount.textContent = selectedTags.length;
-    }
-    
-    function renderSelectedTags() {
-        selectedTagsContainer.innerHTML = '';
-        selectedTags.forEach(tag => {
-            const tagElement = document.createElement('div');
-            tagElement.className = 'selected-tag';
-            tagElement.innerHTML = `
-                ${tag}
-                <button class="remove-tag" data-tag="${tag}">×</button>
-            `;
-            selectedTagsContainer.appendChild(tagElement);
-        });
         
-        // 입력 필드 업데이트
-        techStackInput.value = selectedTags.join(', ');
-        
-        // 태그 삭제 버튼 이벤트
-        selectedTagsContainer.querySelectorAll('.remove-tag').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tagToRemove = this.getAttribute('data-tag');
-                selectedTags = selectedTags.filter(tag => tag !== tagToRemove);
-                renderSelectedTags();
-                updateSelectedCount();
-                
-                // 모달 내 태그 선택 해제
-                const modalTagItem = document.querySelector(`.tag-item[data-tag="${tagToRemove}"]`);
-                if (modalTagItem) {
-                    modalTagItem.classList.remove('selected');
-                }
-            });
-        });
+        // 프로그레스 바 색상 변경
+        if (progress < 30) {
+            progressFill.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+        } else if (progress < 70) {
+            progressFill.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+        } else {
+            progressFill.style.background = 'linear-gradient(90deg, #667eea, #764ba2)';
+        }
     }
     
-    // 진행률 업데이트
+    // 입력 필드 변경 시 진행률 업데이트
     inputs.forEach(input => {
         input.addEventListener('input', updateProgress);
+        input.addEventListener('change', updateProgress);
     });
     
     // 초기 진행률 설정
     updateProgress();
     
-    // 태그 모달 열기
-    tagSelectBtn.addEventListener('click', function() {
-        tagModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    });
-    
-    // 태그 모달 닫기
-    function closeModal() {
-        tagModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    modalClose.addEventListener('click', closeModal);
-    
-    // 모달 배경 클릭 시 닫기
-    tagModal.addEventListener('click', function(e) {
-        if (e.target === tagModal) {
-            closeModal();
-        }
-    });
-    
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && tagModal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-    
-    // 탭 전환
-    modalTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
-            
-            // 탭 활성화
-            modalTabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            // 탭 컨텐츠 전환
-            tabContents.forEach(content => {
-                content.style.display = 'none';
-            });
-            document.getElementById(targetTab + '-tab').style.display = 'block';
-        });
-    });
-    
-    // 태그 선택/해제
-    tagItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const tag = this.getAttribute('data-tag');
-            
-            if (this.classList.contains('selected')) {
-                // 태그 해제
-                this.classList.remove('selected');
-                selectedTags = selectedTags.filter(t => t !== tag);
-            } else {
-                // 태그 선택
-                this.classList.add('selected');
-                if (!selectedTags.includes(tag)) {
-                    selectedTags.push(tag);
-                }
-            }
-            
-            updateSelectedCount();
-        });
-    });
-    
-    // 태그 초기화
-    modalReset.addEventListener('click', function() {
-        selectedTags = [];
-        tagItems.forEach(item => {
-            item.classList.remove('selected');
-        });
-        updateSelectedCount();
-    });
-    
-    // 태그 적용
-    modalApply.addEventListener('click', function() {
-        renderSelectedTags();
-        closeModal();
-        updateProgress(); // 진행률 업데이트
-    });
-    
-    // 기타 버튼 이벤트
-    document.querySelector('.submit-btn').addEventListener('click', function() {
-        alert('승인 요청이 전송되었습니다!');
-    });
-    
+    // 미리보기 버튼 이벤트
     document.querySelector('.preview-btn').addEventListener('click', function() {
-        alert('미리보기 기능을 준비중입니다!');
+        const formData = new FormData(document.getElementById('frm'));
+        const previewData = {};
+        
+        for (let [key, value] of formData.entries()) {
+            previewData[key] = value;
+        }
+        
+        console.log('미리보기 데이터:', previewData);
+        alert('미리보기 기능을 준비중입니다!\n\n현재 입력된 데이터를 콘솔에서 확인할 수 있습니다.');
     });
+    
+    // 폼 제출 시 유효성 검사
+    document.getElementById('frm').addEventListener('submit', function(e) {
+        const requiredFields = document.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = '#e74c3c';
+                isValid = false;
+            } else {
+                field.style.borderColor = '#e1e8ed';
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('필수 항목을 모두 입력해주세요.');
+            return;
+        }
+        
+        // 성공 메시지
+        alert('채용공고가 성공적으로 등록되었습니다!');
+    });
+    
+    // 연봉 입력 시 단위 표시
+    const salaryInput = document.querySelector('input[name="salary"]');
+    if (salaryInput) {
+        salaryInput.addEventListener('input', function() {
+            const value = this.value;
+            if (value) {
+                const formatted = parseInt(value).toLocaleString();
+                this.setAttribute('data-formatted', formatted + '만원');
+            }
+        });
+    }
 });
 </script>
 <th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
