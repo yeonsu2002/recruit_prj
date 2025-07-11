@@ -11,122 +11,7 @@
 <link rel="stylesheet" th:href="@{/user/mypage/css/sidebar.css}">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
 
-main {
-	margin-top: 60px;
-}
-
-body {
-	font-family: 'Malgun Gothic', sans-serif;
-	background-color: #f5f5f5;
-	color: #333;
-}
-
-.container {
-	display: flex;
-	max-width: 1200px;
-	margin: 0 auto;
-	background-color: white;
-	min-height: 100vh;
-}
-
-/* 메인 콘텐츠 */
-.main-content {
-	flex: 1;
-	padding: 20px 30px;
-}
-
-.page-title {
-	font-size: 24px;
-	font-weight: bold;
-	margin-bottom: 30px;
-	color: #333;
-}
-
-/* 통계 테이블 */
-.stats-table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-bottom: 40px;
-	background-color: white;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.stats-table th {
-	background-color: #f8f9fa;
-	padding: 15px;
-	text-align: center;
-	font-weight: normal;
-	color: #666;
-	border: 1px solid #e0e0e0;
-	font-size: 14px;
-}
-
-.stats-table td {
-	padding: 15px;
-	text-align: center;
-	border: 1px solid #e0e0e0;
-	font-size: 16px;
-	color: #333;
-}
-
-/* 기본정보 섹션 */
-.info-section {
-	background-color: white;
-	padding: 30px;
-	border-radius: 4px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.info-title {
-	font-size: 18px;
-	font-weight: bold;
-	margin-bottom: 30px;
-	color: #333;
-}
-
-.info-table {
-	width: 100%;
-	max-width: 600px;
-}
-
-.info-row {
-	display: flex;
-	margin-bottom: 20px;
-	align-items: center;
-}
-
-.info-label {
-	width: 120px;
-	color: #666;
-	font-size: 14px;
-	font-weight: normal;
-}
-
-.info-value {
-	color: #333;
-	font-size: 14px;
-}
-
-.edit-btn {
-	background-color: #4285f4;
-	color: white;
-	border: none;
-	padding: 6px 12px;
-	border-radius: 3px;
-	font-size: 12px;
-	cursor: pointer;
-	margin-left: 20px;
-}
-
-.edit-btn:hover {
-	background-color: #3367d6;
-}
 </style>
 </head>
 <body>
@@ -140,24 +25,24 @@ body {
 	<div class="main-content">
 	<div id="content-area">
 		<div class="page-title">MY페이지</div>
-		<table class="stats-table">
-		<thead>
-			<tr>
-			<th>지원완료</th>
-			<th>서류통과</th>
-			<th>최종합격</th>
-			<th>불합격</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-			<td>0</td>
-			<td>0</td>
-			<td>0</td>
-			<td>0</td>
-			</tr>
-		</tbody>
-		</table>
+		<div class="stats-grid">
+   		<div class="stats-item">
+        	<div class="stats-label">지원완료</div>
+        	<div class="stats-number highlight">1</div>
+    	</div>
+    	<div class="stats-item">
+        	<div class="stats-label">전형 진행중</div>
+        	<div class="stats-number">0</div>
+    	</div>
+    	<div class="stats-item">
+        	<div class="stats-label">최종합격</div>
+        	<div class="stats-number">0</div>
+    	</div>
+    	<div class="stats-item">
+        	<div class="stats-label">불합격</div>
+        	<div class="stats-number">0</div>
+   		</div>
+		</div><br><br>
 		<!-- 기본정보 섹션 -->
 		<div class="info-section">
 			<div class="info-title">기본정보</div>
