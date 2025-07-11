@@ -31,9 +31,15 @@ public class MainController {
 	@GetMapping("/corp/main")
 	public String corpMainPage(HttpServletRequest request, Model model) {
 	  
+		
 	  String token = jwtUtil.resolveToken(request);
-    UserDTO uDTO = jwtUtil.validateToken(token);
-    
+	  if(token == null || token.isBlank()) {
+	    model.addAttribute("user", null); // 명시적으로 null 지정
+	    return "corp/main_page";
+	  }
+	  UserDTO uDTO = jwtUtil.validateToken(token);
+	  System.out.println(uDTO);
+
     model.addAttribute("user", uDTO);
     
 		return "corp/main_page";
