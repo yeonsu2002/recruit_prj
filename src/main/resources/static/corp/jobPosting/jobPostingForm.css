@@ -349,3 +349,22 @@
   font-size: 0.7rem;
   vertical-align: middle;
 }
+
+.techStack-box {
+	position: relative;
+}
+
+#suggestedStackList {
+	background-color: #FAFDF4;
+	border-color: black;
+	width: 100%;
+	z-index: 1000;
+}
+
+#suggestedStackList li{
+	cursor: pointer;
+}
+
+#suggestedStackList li:hover {
+	background-color: #e0d6b4;
+}

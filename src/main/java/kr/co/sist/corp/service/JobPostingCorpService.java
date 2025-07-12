@@ -18,6 +18,7 @@ import kr.co.sist.error.LoginException;
 import kr.co.sist.error.NotFoundException;
 import kr.co.sist.login.CorpRepository;
 import kr.co.sist.user.dto.PositionCodeDTO;
+import kr.co.sist.user.dto.TechStackDTO;
 import kr.co.sist.user.entity.UserEntity;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,8 @@ public class JobPostingCorpService {
   @Transactional 
   public void uploadJobPost(JobPostingDTO jpDTO) {
   	
+  	System.out.println("jpDTO -> ");
+  	System.out.println(jpDTO);
   	try {
   		//1. 공고등록
       jpm.insertJobPost(jpDTO);
@@ -82,7 +85,7 @@ public class JobPostingCorpService {
   
 
   /**
-   * 키워드로 포지션 리스트 조회
+   * 키워드로 포지션 키워드 리스트 조회
    */
   public List<PositionCodeDTO> pDTOList(String keyword){
   	if(keyword == null || keyword.trim().isEmpty()) {
@@ -94,6 +97,21 @@ public class JobPostingCorpService {
   	pDTOList = jpm.selectPostionList(keyword);
   	
   	return pDTOList;
+  }
+  
+  /**
+   * 기술스택 키워드 리스트 조회 
+   */
+  public List<TechStackDTO> tsDTO(String keyword){
+  	if(keyword == null || keyword.trim().isEmpty()) {
+  		return Collections.emptyList(); //빈 리스트 반환, 이게 뭐지?
+  	}
+  	
+  	List<TechStackDTO> tsDTOList = new ArrayList<TechStackDTO>();
+  	
+  	tsDTOList = jpm.selectTechStackList(keyword);
+  	
+  	return tsDTOList;
   }
   
   
