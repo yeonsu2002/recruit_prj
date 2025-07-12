@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	//포지션 비동기 검색 조회
 	getPositionList();
 	
+	//기술스택 비동기 검색 조회
+	getStackList();
+	
 	
 });
 
@@ -29,16 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
 function openKakaoMap(){
 	new daum.Postcode({
 	    oncomplete: function(data) {
-	    	document.getElementById("zipcode").value = data.zonecode;
-	    	document.getElementById("roadAddress").value = data.roadAddress;
+	    	console.log(data);
+	    	document.getElementById("region").value = data.sido; //시도 
+	    	document.getElementById("district").value = data.sigungu; //시군구 
+	    	document.getElementById("zipcode").value = data.zonecode; //우편번호 
+	    	document.getElementById("roadAddress").value = data.roadAddress; //도로명주소 
 	    }
 	}).open();
 }
 
 
-//포지션 ajax로 가져오기
+//포지션 리스트 비동기 가져오기
 function getPositionList() {
-  document.getElementById('positionName').addEventListener('input', function () {
+	document.querySelector('#positionName').addEventListener('click', function(){
+		document.querySelector('#positionName').value = "";
+		document.querySelector('#positionSeq').value = "";
+	});
+	  
+  	document.getElementById('positionName').addEventListener('input', function () {
     const keyword = document.getElementById('positionName').value.trim();
     const resultBox = document.querySelector('#resultBox');
 
@@ -51,13 +62,13 @@ function getPositionList() {
       fetch(`/corp/searchPositionByKeyword?keyword=${encodeURIComponent(keyword)}`)
         .then(response => {
           if (!response.ok) {
-            throw new Error("서버 오류 발생");
+            throw new Error("포지션 리스트 호출 중 서버 오류 발생");
           }
           return response.json();
         })
         .then(data => {
           if (data.length > 0) {
-            resultBox.innerHTML = ''; // 기존 내용 비우기
+            resultBox.innerHTML = ''; // 기존 내용 초기화 
             resultBox.style.display = 'block';
 
             data.forEach(item => {
@@ -87,7 +98,79 @@ function getPositionList() {
   });
 }
 
-		
+//기술 스택 비동기 가져오기 
+function getStackList(){
+
+const techStackList = document.querySelector("#techStack-list");
+const suggestedList = document.querySelector("#suggestedStackList");
+
+	// 기술 추가
+	function addTechStack(stackName) {
+	  // 중복 방지
+	  if (document.querySelector(`input[name="techStack"][value="${stackName}"]`)){
+		  alert(`${stackName}` + "는 이미 등록하셨습니다.");
+		  return;
+	  }
+	
+	  const badge = document.createElement("span");
+	  badge.className = "badge bg-primary tech-tag";
+	  badge.innerHTML = `${stackName} <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Close"></button>`;
+	
+	  // hidden input
+	  const hiddenInput = document.createElement("input");
+	  hiddenInput.type = "hidden";
+	  hiddenInput.name = "techStack";
+	  hiddenInput.value = stackName;
+	  badge.appendChild(hiddenInput);
+	
+	  // 삭제 기능
+	  badge.querySelector("button").addEventListener("click", () => {
+	    techStackList.removeChild(badge);
+	  });
+	
+	  techStackList.appendChild(badge);
+	}
+	
+	// 검색어 입력 시 AJAX로 추천
+	document.querySelector("#techStackSearch").addEventListener("input", function() {
+	  const keyword = this.value.trim();
+	  suggestedList.innerHTML = "";
+	
+	  if (keyword.length === 0) return;
+	
+	  //비동기로 기술 스택 리스트 가져오기 
+	  if(keyword.length > 0){
+		  
+		  //여기서부터 다시 코드 작성 ----------------------_!!!!!!!((((((#!####(((((((((((((((((((())))))))))))))))))))))))))
+		  
+		  
+	  }
+	  // 예시용 더미 추천 리스트
+	  const allStacks = ["Java", "Spring Boot", "MySQL", "AWS", "React", "Node.js"];
+	  const filtered = allStacks.filter(stack => stack.toLowerCase().includes(keyword.toLowerCase()));
+	
+	  filtered.forEach(stack => {
+	    const li = document.createElement("li");
+	    li.className = "list-group-item list-group-item-action";
+	    li.textContent = stack;
+	    li.
+	    li.addEventListener("click", () => {
+	      addTechStack(stack);
+	      suggestedList.innerHTML = "";
+	      document.querySelector("#techStackSearch").value = "";
+	    });
+	    suggestedList.appendChild(li);
+	    
+	    //input hidden도 추가(서버전송용)
+	    const hidden = document.createElement("input");
+	    hidden.type = "hidden";
+	    hidden.name = "techStackSeqList";
+	    hidden.value = //여기다가 stack의 seq를 넣어야함 
+	    hidden.id = `input-${stack}`; //중복방지용
+	    document.getElementById("hiddenInputsArea").appendChild(hidden);
+	  });
+	});
+}	
 </script>
 </head>
 <body>
@@ -113,17 +196,22 @@ function getPositionList() {
                         <div class="form-help">지원자들이 가장 먼저 보게 되는 제목입니다. 명확하고 매력적으로 작성해주세요.</div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group position-box">
                         <label class="form-label required">포지션</label>
                         <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
-                        <ul id="resultBox" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
+                        <ul id="resultBox" class="list-group position-absolute w-100" ></ul>
                         <input type="text" id="positionSeq"> <!-- hidden으로 -->
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">주요 기술스택</label>
-                        <input type="text" name="techStack" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">
-                        <div class="techStack-list"></div>
+                        <label class="form-label required">주요 기술스택</label>
+                        <input type="text" id="techStackSearch" name="techStack" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">
+                        <!-- 추천 리스트 (AJAX로 ul > li) -->
+						<ul id="suggestedStackList" class="list-group mt-1 position-absolute w-100" style="z-index:1000;"></ul>
+						<!-- 선택된 스택들 -->
+						<div id="techStack-list" class="mt-3"></div>
+						<!-- 스택 seq담을 input -->
+						<div id="hiddenInputsArea"></div>
                     </div>
 
                     <div class="form-group">
@@ -227,6 +315,8 @@ function getPositionList() {
                         <input type="text" id="roadAddress" name="roadAddress" class="form-input" placeholder="도로명 주소" readonly style="margin-bottom: 10px;">
                         <input type="text" id="detailAddress" name="detailAddress" class="form-input" placeholder="상세 주소 (건물명, 층수 등)">
                         <div class="form-help">정확한 근무지 정보는 지원자들의 지원 결정에 중요한 요소입니다.</div>
+                        <input type="hidden" id="region" name="region">
+                        <input type="hidden" id="district" name="district">
                     </div>
                 </div>
 

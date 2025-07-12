@@ -57,7 +57,7 @@ public class loginJoinService {
         
         try {
             // 기본 정보 설정
-            ue.setEmail(uDTO.getEmail());
+            ue.setEmail(cu.cipherText(uDTO.getEmail()));
             ue.setCorpEntity(null);
             ue.setPassword(cu.hashText(uDTO.getPassword()));
             ue.setName(cu.cipherText(uDTO.getName()));

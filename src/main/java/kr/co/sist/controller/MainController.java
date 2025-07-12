@@ -34,7 +34,7 @@ public class MainController {
 		
 	  String token = jwtUtil.resolveToken(request);
 	  if(token == null || token.isBlank()) {
-	    model.addAttribute("user", null); // 명시적으로 null 지정
+	    model.addAttribute("user", null); // 명시적으로 null 지정, 안하면 user가 없지..?
 	    return "corp/main_page";
 	  }
 	  UserDTO uDTO = jwtUtil.validateToken(token);

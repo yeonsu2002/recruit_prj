@@ -14,10 +14,10 @@
 
 INSERT INTO job_posting (JOB_POSTING_SEQ, CORP_NO, POSITION_SEQ, POSTING_TITLE, POSTING_DETAIL, EXP_LEVEL,
     POSTING_END_DT, POSTING_START_DT, RECRUIT_CNT, EMPLOY_TYPE, WORKDAY, WORK_START_TIME, WORK_END_TIME,
-    SALARY, CONT_START_DT, CONT_END_DT, EDU_LEVEL, VIEW_CNT, ZIPCODE, ROAD_ADDRESS, DETAIL_ADDRESS)
+    SALARY, CONT_START_DT, CONT_END_DT, EDU_LEVEL, VIEW_CNT, ZIPCODE, ROAD_ADDRESS, DETAIL_ADDRESS, REGION, DISTRICT)
 VALUES ( #{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingDetail}, #{expLevel},
     #{postingEndDt}, #{postingStartDt}, #{recruitCnt}, #{employType}, #{workday}, #{workStartTime}, #{workEndTime},
-    #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress} )
+    #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress}, #{region}, #{district} )
 </insert>
 
 
