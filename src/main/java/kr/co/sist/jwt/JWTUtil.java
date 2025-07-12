@@ -183,6 +183,9 @@ public class JWTUtil {
 	 * 토큰 검증?? 만료시간? 등등
 	 */
 	public UserDTO validateToken(String token) {
+	  if (token == null || token.trim().isEmpty()) {
+      return null; 
+	  }
 		String secretKey  = environment.getProperty("spring.jwt.mysecret"); //properties의 키값 가져오기 
 		try {
 			SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
