@@ -20,6 +20,13 @@ delete from resume
 where resume_seq = #{resumeSeq}
 </delete>
 
+<!-- 해당 유저의 모든 첨부파일 가져오기 -->
+<select id="selectAllAttachment" parameterType="String" resultType="userAttachmentDTO">
+SELECT ATTACHMENT_SEQ, EMAIL, FILE_NAME , FILE_SIZE , FILE_TYPE 
+FROM attachment
+WHERE email = #{email}
+</select>
+
 <!-- JOIN 후 해당 이력서의 포지션 코드 가져오기 -->
 <select id="selectPositionByResume" parameterType="int" resultType="userResumePositionCodeDTO">
 SELECT resume_position_seq, resume_seq, p.position_seq, position_name

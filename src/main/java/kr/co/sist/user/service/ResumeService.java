@@ -1,19 +1,24 @@
 package kr.co.sist.user.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 import kr.co.sist.login.UserRepository;
+import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
+import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.AdditionalInfoEntity;
 import kr.co.sist.user.entity.CareerEntity;
 import kr.co.sist.user.entity.EducationHistoryEntity;
@@ -22,7 +27,6 @@ import kr.co.sist.user.entity.ResumeEntity;
 import kr.co.sist.user.entity.ResumePositionCodeEntity;
 import kr.co.sist.user.entity.ResumeTechStackEntity;
 import kr.co.sist.user.entity.SelfIntroductionEntity;
-import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.mapper.ResumeMapper;
 import kr.co.sist.user.repository.AdditionalInfoRepository;
 import kr.co.sist.user.repository.CareerRepository;
@@ -38,6 +42,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ResumeService {
+	
+	@Value("${upload.saveDir}")
+	private String saveDir;
 
 	//Mapper 생성자주입
 	private final ResumeMapper rMapper;
@@ -73,13 +80,12 @@ public class ResumeService {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	public int addResume() throws IllegalArgumentException {
+	public int addResume(UserDTO uEntity) throws IllegalArgumentException {
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-		
 		ResumeEntity re = new ResumeEntity();
 
 		//여기에 추후에 members에서 가져올 기본 정보 넣기
-		UserEntity uEntity = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+//		UserEntity uEntity = uRepos.findById("juhyunsuk@naver.com").orElse(null);
 		
 		re.setEmail(uEntity.getEmail());
 		re.setCreatedAt(now.toString());
@@ -88,7 +94,8 @@ public class ResumeService {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 	    String date = now.format(dtf);
 	    // 예: "주현석_250708" 이런 형식으로 title 생성
-	    re.setTitle(cu.plainText(uEntity.getName())+ "_" + date);
+//	    re.setTitle(cu.plainText(uEntity.getName())+ "_" + date);
+	    re.setTitle(uEntity.getName()+ "_" + date);
 	    re.setIsPublic("Y");
 	    
 		int resumeSeq = rRepos.save(re).getResumeSeq();
@@ -119,10 +126,15 @@ public class ResumeService {
 		ResumeEntity re = searchOneResume(resumeSeq); //기존 이력서 레코드 가져오기
 		ResumeEntity rEntity = rdd.getBasicInfo();
 		
-		
+		//이미지 업로드
 		if (profileImage != null && !profileImage.isEmpty()) {
-			re.setImage(profileImage.getOriginalFilename());//일단 파일명만 저장. 추후에 다시 수정 예정
+			try {
+				uploadImg(profileImage, re);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} 
+		
 		re.setIsPublic(Boolean.parseBoolean(rEntity.getIsPublic()) ? "Y" : "N"); //이력서 공개 여부 처리
 		re.setCareerType((rdd.getCareers() != null && !rdd.getCareers().isEmpty()) ? "E" : "N"); //경력 여부 처리
 		re.setIntroduction(rEntity.getIntroduction());
@@ -247,6 +259,37 @@ public class ResumeService {
 		rMapper.deleteStackByResume(resumeSeq);
 		rMapper.deleteAdditionalByResume(resumeSeq);
 		rMapper.deleteProjectByResume(resumeSeq);
+	}
+	
+	/**
+	 * 프로필 이미지 업로드
+	 * @param mf
+	 * @param re
+	 * @throws IOException
+	 */
+	public void uploadImg(MultipartFile mf, ResumeEntity re) throws IOException {
+		
+		re.setImage(mf.getOriginalFilename());
+		
+		String originalFilename = mf.getOriginalFilename();
+		File dir = new File(saveDir);
+		if( !dir.exists()) {
+			dir.mkdir();
+		}
+		
+		File uploadFile = new File(saveDir+File.separator+originalFilename);
+		
+		mf.transferTo(uploadFile);
+	}
+	
+	/**
+	 * 해당 유저의 모든 첨부파일 가져오기
+	 * @param email
+	 * @return
+	 */
+	public List<AttachmentDTO> searchAllAttachment(String email){
+		
+		return rMapper.selectAllAttachment(email);
 	}
 	
 

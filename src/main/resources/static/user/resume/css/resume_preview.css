@@ -35,7 +35,7 @@ body {
 
 .profile-image {
 	width: 120px;
-	height: 120px;
+	height: 150px;
 	border: 3px solid #333;
 	border-radius: 15px;
 	background-color: #f8f8f8;
@@ -259,3 +259,4 @@ body {
 	background-color: #fff;
 	border: 1px solid #ccc; /* 얇고 연한 회색 테두리 */
 }
+

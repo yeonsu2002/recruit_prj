@@ -1,3 +1,14 @@
+:root {
+	--primary-color: #007bff;
+	--success-color: #28a745;
+	--light-bg: #f8f9fa;
+	--white: #ffffff;
+	--text-primary: #212529;
+	--text-secondary: #6c757d;
+	--border-color: #dee2e6;
+	--hover-color: #e9ecef;
+}
+
 body {
 	background-color: #f5f5f5; /* 맨 바깥 회색 */
 }
@@ -267,4 +278,89 @@ main {
 	.management-section .card {
 		flex: 0 0 100%;
 	}
+}
+
+.add-btn {
+	background: none;
+	border: none;
+	padding: 0;
+	font-size: 0.9rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 12px;
+	font-weight: 500;
+}
+
+.add-btn:hover {
+	color: #218838;
+}
+
+.add-btn i {
+	background: var(--success-color);
+	color: white;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.7rem;
+}
+
+.add-btn:hover i {
+	background: #218838;
+}
+
+.file-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	background-color: #f3f4f6;
+	border-radius: 8px;
+	margin-bottom: 16px;
+	border: 1px solid #e5e7eb;
+}
+
+.file-info {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.file-icon {
+	width: 40px;
+	height: 32px;
+	background-color: #10b981;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 10px;
+	font-weight: 600;
+}
+
+.file-details {
+	display: flex;
+	flex-direction: column;
+}
+
+.file-name {
+	font-size: 14px;
+	font-weight: 500;
+	color: #111827;
+	margin-bottom: 2px;
+}
+
+.file-date {
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.file-actions {
+	display: flex;
+	gap: 8px;
 }
