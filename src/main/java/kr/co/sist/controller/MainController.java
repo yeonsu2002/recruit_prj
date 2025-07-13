@@ -20,10 +20,10 @@ public class MainController {
 	@GetMapping("/")
 	public String mainPage(HttpServletRequest request, Model model) {
 		
-		String token = jwtUtil.resolveToken(request);
-		UserDTO uDTO = jwtUtil.validateToken(token);
-		
-		model.addAttribute("user", uDTO);
+//		String token = jwtUtil.resolveToken(request);
+//		UserDTO uDTO = jwtUtil.validateToken(token);
+//		
+//		model.addAttribute("user", uDTO);
 		
 		return "user/main_page";
 	}
@@ -32,15 +32,15 @@ public class MainController {
 	public String corpMainPage(HttpServletRequest request, Model model) {
 	  
 		
-	  String token = jwtUtil.resolveToken(request);
-	  if(token == null || token.isBlank()) {
-	    model.addAttribute("user", null); // 명시적으로 null 지정, 안하면 user가 없지..?
-	    return "corp/main_page";
-	  }
-	  UserDTO uDTO = jwtUtil.validateToken(token);
-	  System.out.println(uDTO);
-
-    model.addAttribute("user", uDTO);
+//	  String token = jwtUtil.resolveToken(request);
+//	  if(token == null || token.isBlank()) {
+//	    model.addAttribute("user", null); // 명시적으로 null 지정, 안하면 user가 없지..?
+//	    return "corp/main_page";
+//	  }
+//	  UserDTO uDTO = jwtUtil.validateToken(token);
+//	  System.out.println(uDTO);
+//
+//    model.addAttribute("user", uDTO);
     
 		return "corp/main_page";
 	}

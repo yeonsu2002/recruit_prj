@@ -37,14 +37,14 @@ public class JobPostController {
   @GetMapping("/corp/jobPostingForm")
   public String getJobPostingForm(Model model, HttpServletRequest request) {
   	
-  	String token = jwtUtil.resolveToken(request);
-  	UserDTO userDTO = jwtUtil.validateToken(token);
-  	
-  	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
-  		 return "redirect:/accessDenied"; //로그인 안되어있거나, 기업회원이 아니면 거절 
-  	}
-  	
-  	model.addAttribute("user", userDTO);
+//  	String token = jwtUtil.resolveToken(request);
+//  	UserDTO userDTO = jwtUtil.validateToken(token);
+//  	
+//  	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
+//  		 return "redirect:/accessDenied"; //로그인 안되어있거나, 기업회원이 아니면 거절 
+//  	}
+//  	
+//  	model.addAttribute("user", userDTO);
   	
 	 return "corp/jobPosting/jobPostingForm";
   }
