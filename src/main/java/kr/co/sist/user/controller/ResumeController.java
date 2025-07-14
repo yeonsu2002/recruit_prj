@@ -17,12 +17,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.jwt.JWTUtil;
+<<<<<<< HEAD
 import kr.co.sist.user.dto.AttachmentDTO;
+=======
+import kr.co.sist.login.UserRepository;
+>>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.dto.UserDTO;
+<<<<<<< HEAD
+=======
+import kr.co.sist.user.entity.UserEntity;
+>>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +42,32 @@ public class ResumeController {
 	private final ResumeService rServ;
 	private final PositionCodeService pcs;
 	private final ObjectMapper objMapper;
+	
+	private final JWTUtil jwtUtil;
 
 	private final JWTUtil jwtUtil;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
 	public String resumeManagementPage(HttpServletRequest request, Model model) {
+<<<<<<< HEAD
 
 		String token = jwtUtil.resolveToken(request);
 		UserDTO user = jwtUtil.validateToken(token);
 
 		// 임시로 유저 등록
 //		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+=======
+		
+		String token = jwtUtil.resolveToken(request);
+	    UserDTO user = jwtUtil.validateToken(token);
+	    
+
+		// 임시로 유저 등록
+//		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		
+	    List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
+>>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
 
 		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
 		List<AttachmentDTO> files = rServ.searchAllAttachment(user.getEmail());
@@ -62,9 +84,16 @@ public class ResumeController {
 	public String resumeCreate(Model model, HttpServletRequest request) {
 
 		String token = jwtUtil.resolveToken(request);
+<<<<<<< HEAD
 		UserDTO user = jwtUtil.validateToken(token);
 
 		int resumeSeq = rServ.addResume(user);
+=======
+	    UserDTO user = jwtUtil.validateToken(token);
+	    
+		int resumeSeq = rServ.addResume(user);
+		
+>>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
 
 		return "redirect:/user/resume/resume_form/" + resumeSeq;
 	}
@@ -78,10 +107,17 @@ public class ResumeController {
 //		user.setName(cu.plainText(user.getName()));
 //		user.setPhone(cu.plainText(user.getPhone()));
 //		user.setBirth(user.getBirth().substring(0, 4));
+<<<<<<< HEAD
 
 		String token = jwtUtil.resolveToken(request);
 		UserDTO user = jwtUtil.validateToken(token);
 		model.addAttribute("user", user);
+=======
+		
+		String token = jwtUtil.resolveToken(request);
+	    UserDTO user = jwtUtil.validateToken(token);
+	    model.addAttribute("user", user);
+>>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
 
 		model.addAttribute("positionList", pcs.searchAllPositionCode());
 		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
