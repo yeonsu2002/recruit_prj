@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
+<mapper namespace="kr.co.sist.corp.mapper.ApplicantMapper">    
+
+<!-- 해당 회사의 모든 지원자 불러오기 -->
+<select id="selectAllApplicant" parameterType="long" resultType="corpApplicantDTO">
+select ja.job_application_seq, r.resume_seq, jp.job_posting_seq, ja.application_status, ja.pass_stage,
+ja.application_date, ja.is_read, r.career_type, r.title, jp.posting_title, jp.corp_no, m.name
+from JOB_APPLICATION ja
+join JOB_POSTING jp on ja.job_posting_seq = jp.job_posting_seq
+join resume r on ja.resume_seq = r.resume_seq
+join member m on r.email = m.email
+where jp.corp_no = #{corpNo}
+</select>
+
+
+
+</mapper>

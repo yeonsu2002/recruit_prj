@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
-import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.entity.AttachmentEntity;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 
@@ -34,15 +36,18 @@ public class AttachmentRestController {
 	
 	private final JWTUtil jwtUtil;
 	private final AttachmentService attachmentServ;
+	private final UserRepository userRepos;
 
 	// 첨부파일 추가
 	@PostMapping("/user/attachment")
-	public Map<String, Object> uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) {
+	public Map<String, Object> uploadFile(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser userInfo) {
 
 		Map<String, Object> result = new HashMap<>();
 
-		String token = jwtUtil.resolveToken(request);
-		UserDTO user = jwtUtil.validateToken(token);
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
+		
+//		String token = jwtUtil.resolveToken(request);
+//		UserDTO user = jwtUtil.validateToken(token);
 
 		AttachmentEntity attachment = attachmentServ.addAttachment(file, user);
 

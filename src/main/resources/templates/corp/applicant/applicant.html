@@ -69,79 +69,21 @@
             </div>
 
             <!-- 테이블 행들 -->
+            <th:block th:each="applicant : ${applicants}">
             <div class="table-row">
-                <div class="col-name">홍길동</div>
-                <div class="col-period">총 10년 2개월</div>
-                <div class="col-position">[앵무] 시니어/백엔드 개발자</div>
-                <div class="col-company">미열람</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
+                <div class="col-name" th:text="${applicant.name}"></div>
+                <div class="col-period" th:text="${applicant.careerType}"></div>
+                <div class="col-position" th:text="${applicant.postingTitle}"></div>
+                <div class="col-company" th:text="${applicant.statusName}"></div>
+                <div class="col-resume" th:text="${applicant.title}"></div>
+                <div class="col-date" th:text="${applicant.applicationDate}"></div>
                 <div class="col-status">
-                    <span class="status-badge status-applying">신규지원자</span>
+                    <span class="status-badge status-applying" th:text="${applicant.stageName}" th:classappend="${applicant.stageName == '신규지원' ? ' status-applying' : (applicant.stageName == '서류통과' ? ' status-reviewing' : (applicant.stageName == '최종합격' ? ' status-pending' : (applicant.stageName == '불합격' ? ' status-rejected' : '')))}"
+                    ></span>
                 </div>
             </div>
-
-            <div class="table-row">
-                <div class="col-name">홍길동2</div>
-                <div class="col-period">총 10년 2개월</div>
-                <div class="col-position">[앵무] 시니어/백엔드 개발자</div>
-                <div class="col-company">지원취소</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
-                <div class="col-status">
-                    <span class="status-badge status-applying">신규지원자</span>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <div class="col-name">홍길동3</div>
-                <div class="col-period">총 10년 2개월</div>
-                <div class="col-position">[앵무] 시니어/백엔드 개발자</div>
-                <div class="col-company">열람</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
-                <div class="col-status">
-                    <span class="status-badge status-reviewing">서류 통과</span>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <div class="col-name">홍길동4</div>
-                <div class="col-period">신입</div>
-                <div class="col-position">[앵무] 프론트엔드 신입 채용</div>
-                <div class="col-company">열람</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
-                <div class="col-status">
-                    <span class="status-badge status-pending">최종합격</span>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <div class="col-name">홍길동5</div>
-                <div class="col-period">신입</div>
-                <div class="col-position">[앵무] 프론트엔드 신입 채용</div>
-                <div class="col-company">지원취소</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
-                <div class="col-status">
-                    <span class="status-badge status-applying">신규지원자</span>
-                </div>
-            </div>
-
-            <div class="table-row">
-                <div class="col-name">홍길동6</div>
-                <div class="col-period">신입</div>
-                <div class="col-position">[앵무] 프론트엔드 신입 채용</div>
-                <div class="col-company">열람</div>
-                <div class="col-resume">이력서</div>
-                <div class="col-date">2025-07-14 14:25</div>
-                <div class="col-status">
-                    <span class="status-badge status-rejected">불합격</span>
-                </div>
-            </div>
+        	</th:block>
         </div>
-
         <!-- 페이지네이션 -->
         <div class="pagination-container">
             <div class="pagination">
