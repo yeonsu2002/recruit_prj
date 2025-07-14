@@ -90,7 +90,9 @@
 					<h4 th:text="${project.projectName}">영화예매</h4>
 					<div class="project-details">
 						<p>
-							<span class="tag">C++</span>
+						<th:block th:each="skills : ${project.projectSkills}">
+							<span class="tag" th:text="${skills.stackName}"></span>
+						</th:block>
 						</p>
 						<h5>상세내용</h5>
 						<p th:text="${project.projectContent}">재밌는 프로젝트였습니다.</p>

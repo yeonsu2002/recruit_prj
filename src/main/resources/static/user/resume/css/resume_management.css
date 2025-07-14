@@ -364,3 +364,13 @@ main {
 	display: flex;
 	gap: 8px;
 }
+
+.file-name.download {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.file-name.download:hover {
+    text-decoration: underline;
+    color: #1d4ed8; /* 더 진한 파란색 */
+}

@@ -72,7 +72,12 @@ public class ResumeService {
 	 */
 	public List<ResumeDTO> searchAllResumeByUser(String email){
 		
-		return rMapper.selectAllResumeByUser(email);
+		List<ResumeDTO> resumeList = rMapper.selectAllResumeByUser(email);
+		for(ResumeDTO resume : resumeList) {
+			resume.setCreatedAt(resume.getCreatedAt().substring(0, 10)); // 날짜 포맷팅
+		}
+		
+		return resumeList;
 	}
 	
 	/**
@@ -289,7 +294,12 @@ public class ResumeService {
 	 */
 	public List<AttachmentDTO> searchAllAttachment(String email){
 		
-		return rMapper.selectAllAttachment(email);
+		List<AttachmentDTO> attachments = rMapper.selectAllAttachment(email);
+		for(AttachmentDTO attachment : attachments) {
+			attachment.setCreatedAt(attachment.getCreatedAt().substring(0, 10)); // 날짜 포맷팅
+		}
+		
+		return attachments;
 	}
 	
 
