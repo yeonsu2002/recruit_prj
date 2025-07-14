@@ -64,7 +64,7 @@ public class CustomUser implements UserDetails{
 	//기업회원은 초기에 이름이 없음 
 	public String getName() {
 		if(userDTO.getName() == null) {
-			return "이름 없음";
+			return userDTO.getEmail();
 		}
 		return userDTO.getName();
 	}

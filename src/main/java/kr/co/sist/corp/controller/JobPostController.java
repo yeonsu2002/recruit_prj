@@ -42,13 +42,16 @@ public class JobPostController {
   	if(user == null) {
   		return "redirect:/accessDenied";
   	}
-  	
   	boolean hasCorpAuth = user.getAuthorities().stream()
   													.anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
   	
   	if( !hasCorpAuth) {
   		return "redirect:/accessDenied";
   	}
+  	
+  	//db조작시 user활용  
+  	//user.getEmail();
+  	//user.getCorpNo();
   	
 	 return "corp/jobPosting/jobPostingForm";
   }

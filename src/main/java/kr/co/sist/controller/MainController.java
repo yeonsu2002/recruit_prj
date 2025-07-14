@@ -28,7 +28,11 @@ public class MainController {
 	@GetMapping("/corp/main")
 	public String corpMainPage(HttpServletRequest request, @AuthenticationPrincipal CustomUser user) {
 
-		System.out.println("꺼내와 : " + user);
+		if(user == null) {
+			System.out.println("디버깅 / 회원정보 상태 : " + "비회원, 로그인 필요 ");
+		} else {
+			System.out.println("디버깅 / 회원정보 상태 : " + user);
+		}
 		
 		return "corp/main_page";
 	}
