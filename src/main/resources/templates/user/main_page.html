@@ -112,14 +112,51 @@ setInterval(() => moveSlide(1), 5000);
 
   <div class="notice-wrapper">
   
-  <div class="user-info-box">
-    <p class="user-welcome">유연수님 반가워요</p>
-    <p class="user-email">yeonsu@naver.com</p>
-    <div class="user-buttons">
-      <button>이력서작성</button>
-      <button>마이페이지</button>
+   <div class="user-info-box">
+        <div class="user-header">
+            <div class="user-text">
+                <p class="user-welcome">유연수님 반가워요</p>
+                <p class="user-email">yeonsu@naver.com</p>
+            </div>
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <svg class="bell-icon" viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+                <div class="notification-badge">3</div>
+            </div>
+        </div>
+        
+        <div class="user-buttons">
+            <button onclick="goToResume()">이력서작성</button>
+            <button onclick="goToMyPage()">마이페이지</button>
+        </div>
     </div>
-  </div>
+
+    <!-- 알림 드롭다운을 박스 외부로 이동 -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">알림</div>
+        <div class="notification-item" onclick="readNotification(this)">
+            <div class="notification-title">
+                <span class="notification-dot"></span>
+                새로운 채용공고가 등록되었습니다
+            </div>
+            <div class="notification-time">5분 전</div>
+        </div>
+        <div class="notification-item" onclick="readNotification(this)">
+            <div class="notification-title">
+                <span class="notification-dot"></span>
+                이력서 검토가 완료되었습니다
+            </div>
+            <div class="notification-time">1시간 전</div>
+        </div>
+        <div class="notification-item" onclick="readNotification(this)">
+            <div class="notification-title">
+                <span class="notification-dot"></span>
+                면접 일정이 확정되었습니다
+            </div>
+            <div class="notification-time">2시간 전</div>
+        </div>
+    </div>
 
   <h2 style="color: #1DD45A;">Notice</h2>
   <div class="notice-info">
@@ -203,6 +240,77 @@ setInterval(() => moveSlide(1), 5000);
 	
 
 </div>
+<script type="text/javascript">
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationDropdown');
+    const bell = document.querySelector('.notification-bell');
+    const userBox = document.querySelector('.user-info-box');
+    
+    if (dropdown.classList.contains('active')) {
+        dropdown.classList.remove('active');
+    } else {
+        // 종 버튼 위치 계산
+        const bellRect = bell.getBoundingClientRect();
+        const userBoxRect = userBox.getBoundingClientRect();
+        
+        // 드롭다운 위치 설정
+        dropdown.style.position = 'fixed';
+        dropdown.style.top = (bellRect.bottom + 4) + 'px';
+        dropdown.style.right = (window.innerWidth - bellRect.right) + 'px';
+        dropdown.style.left = 'auto';
+        
+        dropdown.classList.add('active');
+    }
+}
+
+function readNotification(item) {
+    // 읽음 표시 (점 제거)
+    const dot = item.querySelector('.notification-dot');
+    if (dot) {
+        dot.style.display = 'none';
+    }
+    
+    // 배지 숫자 감소
+    const badge = document.querySelector('.notification-badge');
+    let count = parseInt(badge.textContent);
+    if (count > 0) {
+        count--;
+        badge.textContent = count;
+        if (count === 0) {
+            badge.style.display = 'none';
+        }
+    }
+    
+    console.log('알림 읽음:', item.querySelector('.notification-title').textContent.trim());
+}
+
+function goToResume() {
+    alert('이력서 작성 페이지로 이동합니다.');
+}
+
+function goToMyPage() {
+    alert('마이페이지로 이동합니다.');
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('click', function(event) {
+    const bell = document.querySelector('.notification-bell');
+    const dropdown = document.getElementById('notificationDropdown');
+    
+    if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// 윈도우 리사이즈 시 드롭다운 위치 재조정
+window.addEventListener('resize', function() {
+    const dropdown = document.getElementById('notificationDropdown');
+    if (dropdown.classList.contains('active')) {
+        dropdown.classList.remove('active');
+    }
+});
+</script>
 </main>
 <footer>
 <div th:replace="~{fragments/footer :: footer}"></div>

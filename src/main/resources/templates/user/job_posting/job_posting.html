@@ -646,32 +646,42 @@ document.addEventListener('DOMContentLoaded', function() {
 <!--  공고( 인기순 ) -->
 <!-- 공고 목록을 반복해서 보여주는 부분 -->
 <div class="announcement-section">
-
     <div class="announcement-list">
-    
-        <a th:if="${jobPostingList != null and jobPostingList.size() > 0}" 
-           th:each="job : ${jobPostingList}" 
-           th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${job.jobPostingSeq})}" 
+        <a th:if="${jobPostingList != null and jobPostingList.size() > 0}"
+           th:each="job : ${jobPostingList}"
+           th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${job.jobPostingSeq})}"
            class="announcement-card-link">
-             <div class="announcement-card" th:attr="data-position-seq=${job.positionSeq}, data-exp-level=${job.expLevel}">
-
-            
-            
+            <div class="announcement-card" th:attr="data-position-seq=${job.positionSeq}, data-exp-level=${job.expLevel}">
+                
                 <div class="image-wrapper">
                     <!-- 기업 이미지 -->
                     <img th:src="@{'/images/' + ${job.corpNm} + '.jpg'}" alt="기업 이미지">
                 </div>
+                
                 <!-- 기업 이름 -->
                 <div class="company-name" th:text="${job.corpNm}">회사명</div>
+                
                 <!-- 공고 제목 -->
-                <div class="announcement-title"><strong th:text="${job.postingTitle}">공고 제목</strong></div>
-                <!-- 기술 스택 (예시로 Java, JavaScript, Spring, Mybatis 불러오기) -->
-                <div class="stack-name" th:text="${job.stackName}">기술스택</div>
+                <div class="announcement-title">
+                    <strong th:text="${job.postingTitle}">공고 제목</strong>
+                </div>
+                
                 <div class="company-info">
                     <!-- 지역 (주소의 첫 7자) -->
                     <span th:text="${#strings.length(job.roadAddress) >= 7 ? #strings.substring(job.roadAddress, 0, 7) : job.roadAddress}">지역</span> |
                     <!-- 경력 여부 (신입/경력) -->
                     <span th:text="${job.expLevel}">경력</span>
+                </div>
+                
+                <!-- 기술 스택 출력 -->
+                <div class="stack-name">
+                    <span th:if="${job.techStacks != null and !job.techStacks.isEmpty()}">
+                        <span th:each="stack, iterStat : ${job.techStacks}">
+                            <span th:text="${stack}"></span>
+                            <span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </span>
+                    <span th:if="${job.techStacks == null or job.techStacks.isEmpty()}">기술스택 없음</span>
                 </div>
                 
                 <div class="position-name" th:text="${job.positionName}">직무</div>

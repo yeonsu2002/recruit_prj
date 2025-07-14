@@ -27,5 +27,20 @@ public class JobPostingService {
             System.out.println("특정 공고 조회 호출, jobPostingSeq: " + jobPostingSeq);
             return jpm.selectJobPostingsBySeq(jobPostingSeq); // 특정 공고 조회
         }
+    }//getJobPostings
+    
+    
+    
+    public JobPostDTO findById(Integer jobPostingSeq) {
+        if (jobPostingSeq == null) {
+            throw new IllegalArgumentException("jobPostingSeq는 null일 수 없습니다.");
+        }
+
+        // 특정 공고 조회 (리스트가 아닌 단일 공고 조회)
+        JobPostDTO jobPost = jpm.selectJobPostingById(jobPostingSeq);
+        if (jobPost == null) {
+            throw new RuntimeException("해당 공고를 찾을 수 없습니다. jobPostingSeq: " + jobPostingSeq);
+        }
+        return jobPost; // 단일 공고 반환
     }
 }

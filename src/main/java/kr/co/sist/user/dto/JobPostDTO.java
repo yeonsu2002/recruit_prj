@@ -1,5 +1,7 @@
 package kr.co.sist.user.dto;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,11 +34,11 @@ public class JobPostDTO {
     private String detailAddress;
     private String positionName;  
     private String stackName;
+    private List<String> techStacks;
     
     
     private String corpNm;           // corp_nm
     private String corpInfo;         // corp_info
     private String corpUrl;       
     
-    private String techStack;        // techStack 필드 추가
 }

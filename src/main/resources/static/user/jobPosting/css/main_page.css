@@ -422,48 +422,194 @@
     right: 10px;
 }
 
-.user-info-box {
-  border: 1px solid #ccc;                /* notice-info와 같은 테두리 */
-  background-color: #fafaff;             /* 아주 연한 연보라 배경 */
-  padding: 20px;                         /* notice-info와 동일 padding */
-  border-radius: 8px;                    /* notice-info와 동일 radius */
-  margin-bottom: 12px;
-  width: 370px;                          /* notice-info width 에 맞춤 */
-  box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* 같은 수준의 그림자 */
-  font-family: 'Segoe UI', 'Helvetica', sans-serif;
-}
 
-.user-welcome {
-  margin: 0 0 6px 0;
-  font-weight: 600;
-  font-size: 15px;
-  color: #333;
-}
+        .user-info-box {
+            border: 1px solid #ddd;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 370px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
 
-.user-email {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: #666;
-  word-break: break-all; /* 이메일 줄바꿈 방지 */
-}
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
 
+        .user-text {
+            flex: 1;
+        }
 
+        .user-welcome {
+            margin: 0 0 4px 0;
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
 
+        .user-email {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+        }
 
-/* 버튼 스타일 */
-.button-link,
-.button-style {
-  background-color: #1DD45A; /* 버튼 색상 */
-  color: white; /* 글자 색상 */
-  border: none; /* 테두리 제거 */
-  border-radius: 5px; /* 모서리 둥글게 */
-  padding: 10px 20px; /* 여백 */
-  font-size: 16px; /* 글자 크기 */
-  cursor: pointer; /* 마우스를 올리면 포인터로 변경 */
-  text-decoration: none; /* 링크의 밑줄 제거 */
-  text-align: center; /* 텍스트 가운데 정렬 */
-  display: inline-block; /* 링크와 버튼이 인라인으로 배치되도록 */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
-    width: 130px;
-}
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 4px;
+            transition: opacity 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            opacity: 0.7;
+        }
+
+        .bell-icon {
+            width: 20px;
+            height: 20px;
+            fill: #666;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .user-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .user-buttons button {
+            flex: 1;
+            background: #1DD45A;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-buttons button:hover {
+            background: #17b94d;
+        }
+
+        .user-buttons button:nth-child(2) {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .user-buttons button:nth-child(2):hover {
+            background: #e9ecef;
+        }
+
+        /* 알림 드롭다운 - 부모 박스 밖으로 나오도록 수정 */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 280px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .notification-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f8f9fa;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-title {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .notification-dot {
+            width: 6px;
+            height: 6px;
+            background: #1DD45A;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .no-notifications {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+            .user-info-box {
+                width: 100%;
+                max-width: 370px;
+                padding: 16px;
+            }
+            
+            .user-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .notification-dropdown {
+                width: 260px;
+                right: -10px;
+            }
+        }

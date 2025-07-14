@@ -32,11 +32,17 @@ public class JobPostingController {
 		return "user/job_posting/job_posting";
 	}
 	
-	
-
-	@GetMapping("/user/job_posting/job_posting_detail")
-	public String JobPostingDetailPage() {
 		
+	
+	//공고 상세보기
+	@GetMapping("/user/job_posting/job_posting_detail")
+	public String JobPostingDetailPage(@RequestParam(required = false) Integer jobPostingSeq, Model model) {
+		
+		
+		
+		JobPostDTO jDto=jps.findById(jobPostingSeq);
+		model.addAttribute("jDto", jDto);
+		 System.out.println("Job Posting Detail: " + jDto.getTechStacks()); 
 		return "user/job_posting/job_posting_detail";
 	}
 	

@@ -9,11 +9,14 @@ import kr.co.sist.user.dto.JobPostDTO;
 @Mapper
 public interface JobPostingMapper {
 
-	/**
-     * 모든 채용공고 조회
-     */
-    List<JobPostDTO> selectAllJobPostings();
 
-	List<JobPostDTO> selectJobPostingsBySeq(Integer jobPostingSeq);
+    List<JobPostDTO> selectAllJobPostings();
     
+    List<JobPostDTO> selectJobPostingsBySeq(Integer jobPostingSeq);
+    
+    // 수정: List<JobPostDTO> 반환으로 변경
+    JobPostDTO selectJobPostingById(Integer jobPostingSeq); // 반환 타입 변경
+    
+    // 특정 공고에 대한 기술 스택 조회
+    List<String> selectTechStacksByJobPostingSeq(Integer jobPostingSeq);
 }

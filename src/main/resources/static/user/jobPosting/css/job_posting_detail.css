@@ -1,433 +1,918 @@
+     * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.stack span {
-  display: inline-block;
-  margin: 6px 8px 6px 0;
-  padding: 8px 14px;
-  border-radius: 20px;
-  background-color: #f0f0f0;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.stack span:hover {
-  background-color: #ddd;
-}
-.stack span.active {
-  background-color: #00c471;
-  color: #fff;
-  font-weight: bold;
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
 
-.job-info-box {
-  border: 1px solid #ccc;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #fdfdfd;
-  margin-top: 30px;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-.job-info-box > div {
-  margin-bottom: 16px;
-}
+        /* 헤더 */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-.job-info-box h2 {
-  font-size: 16px;
-  margin-bottom: 4px;
-}
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.job-info-box p {
-  font-size: 14px;
-  color: #444;
-  margin: 0;
-}
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
 
-/* 플로팅 사이드바 */
-.floating-sidebar {
-  position: fixed;
-  top: 35%;
-  left: 1200px;
-  transform: translateY(-50%);
-  width: 280px;
-  z-index: 1000;
-  transition: all 0.3s ease;
-}
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
 
-.company-floating-card {
-  background: white;
-  border-radius: 0;          /* 각지게 */
-  padding: 20px;
-  box-shadow: none;         /* 그림자 제거 */
-  border: 1px solid #e0e0e0;
-}
+        .nav-menu a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
 
-.company-logo-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
+        .nav-menu a:hover {
+            color: #007bff;
+        }
 
-.logo-placeholder {
-  width: 50px;
-  height: 50px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
+        /* 메인 컨텐츠 */
+        .main-wrapper {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            position: relative;
+        }
 
-.company-title h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-}
+        .main-content {
+            flex: 1;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-.company-title span {
-  font-size: 12px;
-  color: #666;
-  cursor: pointer;
-}
+        /* 제목 섹션 */
+        .job_posting_title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
 
-.company-title span:hover {
-  color: #00c471;
-}
+        .company-name {
+            font-size: 16px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
 
-.company-info-section {
-  margin-bottom: 20px;
-}
+        .job-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
 
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+        }
 
-.info-item:last-child {
-  border-bottom: none;
-}
+        .badge.new {
+            background: #e7f3ff;
+            color: #007bff;
+        }
 
-.info-item .label {
-  font-size: 14px;
-  color: #666;
-}
+        .badge.urgent {
+            background: #ffebee;
+            color: #d32f2f;
+        }
 
-.info-item .value {
-  font-size: 14px;
-  color: #333;
-}
+        /* 기술스택 스타일 */
+        .stack {
+            margin-bottom: 40px;
+        }
 
-.homepage-link {
-  color: #00c471;
-  text-decoration: none;
-  font-size: 14px;
-}
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
 
-.homepage-link:hover {
-  text-decoration: underline;
-}
+        .stack span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 8px 6px 0;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.floating-apply-btn {
-  width: 100%;
-  background: #00c471;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 16px;
-  transition: background 0.2s;
-}
+        .stack span:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
 
-.floating-apply-btn:hover {
-  background: #00b366;
-}
+        .stack span.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+            font-weight: bold;
+        }
 
-.floating-actions {
-  display: flex;
-  gap: 8px;
-}
+        /* 섹션 스타일 */
+        .job-section {
+            margin-bottom: 40px;
+        }
 
-.floating-action-btn {
-  flex: 1;
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 12px 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
+        .job-section h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
 
-.floating-action-btn:hover {
-  background: #f8f9fa;
-  border-color: #00c471;
-}
+        .job-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
 
-/* 기본 하트 색상 */
-.icon {
-  font-size: 24px;
-  cursor: pointer;
-}
+        .job-section li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            color: #495057;
+        }
 
-/* 하트가 빨간색으로 변경되었을 때 */
-.icon.liked {
-  color: red;
-}
-.floating-action-btn .text {
-  font-size: 11px;
-  color: #666;
-}
+        .job-section li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #007bff;
+            font-weight: bold;
+        }
 
-/* 반응형 - 모바일에서 숨김 */
-@media (max-width: 1024px) {
-  .floating-sidebar {
-    display: none;
-  }
-}
+        /* 상세 정보 그리드 */
+        .job-info-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
 
-/* 스크롤 애니메이션 */
-.floating-sidebar.scroll-up {
-  transform: translateY(-60%);
-}
+        .job-info-box > div {
+            margin-bottom: 0;
+        }
 
-.floating-sidebar.scroll-down {
-  transform: translateY(-40%);
-}
+        .job-info-box h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #6c757d;
+        }
 
-.detail h2 {
- 		
-    font-size: 16px; 
-    font-weight: normal;  /* 예: 두께 줄이기 */
-    line-height: 1.2;     /* 줄간격 조절 */
-    font-weight: bold;
-}
+        .job-info-box p {
+            font-size: 14px;
+            color: #2c3e50;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .detail {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .detail > div {
+            margin-bottom: 0;
+        }
+
+        .detail h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .detail p {
+            font-size: 14px;
+            color: #2c3e50;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* 회사 소개 */
+        .company-intro {
+            margin-top: 40px;
+        }
+
+        .company-image {
+            width: 100%;
+            max-width: 700px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .company-description {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #495057;
+        }
+
+        /* 플로팅 사이드바 */
+        .floating-sidebar {
+            position: fixed;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            width: 300px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .company-floating-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .company-logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .company-title h4 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .company-title span {
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .company-title span:hover {
+            text-decoration: underline;
+        }
+
+        .company-info-section {
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item .label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .info-item .value {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .homepage-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .homepage-link:hover {
+            text-decoration: underline;
+        }
+
+        .floating-apply-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+
+        .floating-apply-btn:hover {
+            background: #218838;
+        }
+
+        .floating-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .floating-action-btn {
+            flex: 1;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .floating-action-btn:hover {
+            background: #f8f9fa;
+            border-color: #007bff;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        .icon.liked {
+            color: red;
+        }
+
+        .floating-action-btn .text {
+            font-size: 12px;
+            color: #6c757d;
+        }
 
 
-.modal {
-    display: none;
+  
+      .modal {
+    display: none; /* 초기에는 숨김 */
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease;
+    background-color: rgba(0,0,0,0.5);
 }
 
 .modal.show {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block; /* show 클래스가 있을 때만 표시 */
 }
 
-.modal-content {
-    background: white;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    animation: slideUp 0.3s ease;
-    position: relative;
-}
 
-.modal-header {
-    background: #2c3e50;
-    color: white;
-    padding: 20px;
-    position: relative;
-    text-align: center;
-}
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
 
-.modal-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
 
-.close-btn {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
-    cursor: pointer;
-    color: white;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background 0.2s ease;
-}
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
 
-.close-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
+        .close-btn {
+            font-size: 24px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.modal-body {
-    padding: 30px 25px;
-}
+        .close-btn:hover {
+            color: #000;
+        }
 
-.job-info {
-    margin-bottom: 25px;
-}
+        .modal-body {
+            padding: 20px;
+        }
 
-.job-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
+        .job-info {
+            margin-bottom: 30px;
+        }
 
-.job-company {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 20px;
-}
+        .job-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
 
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #ecf0f1;
-}
+        .job-company {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
 
-.info-row:last-child {
-    border-bottom: none;
-}
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
 
-.info-label {
-    font-size: 14px;
-    color: #7f8c8d;
-    font-weight: 500;
-}
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
 
-.info-value {
-    font-size: 14px;
-    color: #2c3e50;
-    font-weight: 600;
-}
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
 
-.confirmation-text {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 25px;
-    text-align: center;
-}
+        .info-row:last-child {
+            border-bottom: none;
+        }
 
-.confirmation-text p {
-    font-size: 16px;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
 
-.confirmation-text small {
-    font-size: 13px;
-    color: #7f8c8d;
-    line-height: 1.4;
-}
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
 
-.modal-buttons {
-    display: flex;
-    gap: 12px;
-}
+        .resume-section {
+            margin-bottom: 20px;
+        }
 
-.modal-apply-btn,
-.modal-cancel-btn {
-    flex: 1;
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
+        .resume-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
 
-.modal-apply-btn {
-    background: #28a745;
-    color: white;
-}
+        .resume-item:hover {
+            background-color: #e9ecef;
+        }
 
-.modal-apply-btn:hover {
-    background: #218838;
-}
+        .resume-item.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
 
-.modal-cancel-btn {
-    background: #ecf0f1;
-    color: #7f8c8d;
-}
+        .resume-radio {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
 
-.modal-cancel-btn:hover {
-    background: #d5dbdb;
-    color: #2c3e50;
-}
+        .resume-label {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            cursor: pointer;
+        }
 
-/* 플로팅 버튼 스타일 수정 */
-.floating-apply-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
-    transition: background 0.2s ease;
-    width: 100%;
-    margin-top: 15px;
-}
+        .required {
+            color: #ff4444;
+            font-size: 12px;
+            margin-left: 5px;
+        }
 
-.floating-apply-btn:hover {
-    background: #218838;
-}
+        .resume-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+        .resume-icon::before {
+            content: "📄";
+            font-size: 18px;
+        }
 
-@keyframes slideUp {
-    from { 
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to { 
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .resume-info {
+            flex: 1;
+        }
 
-@media (max-width: 480px) {
-    .modal-content {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .modal-body {
-        padding: 25px 20px;
-    }
-    
-    .modal-buttons {
-        flex-direction: column;
-    }
-}
+        .resume-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .resume-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .resume-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .tag {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .attachment-section {
+            margin-bottom: 20px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #999;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .uploaded-files {
+            margin-top: 15px;
+        }
+
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .remove-file:hover {
+            color: #ff4444;
+        }
+
+        .confirmation-text {
+            background-color: #fff9c4;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-text p {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .confirmation-text small {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+        }
+
+        .modal-cancel-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-cancel-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        .modal-apply-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-apply-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-apply-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 메인 컨테이너 추가 스타일 */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* 업무 관련 섹션 스타일 */
+        .posting_detail {
+            margin-bottom: 40px;
+        }
+
+        .posting_detail h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .posting_detail h2[style*="14px"] {
+            font-size: 14px !important;
+            color: #495057 !important;
+            font-weight: normal !important;
+            line-height: 1.6;
+        }
+
+        /* 헤더 추가 */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: #007bff;
+        }
+
+        /* 메인 래퍼 */
+        .main-wrapper {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            position: relative;
+            max-width: 1200px;
+            margin: 30px auto 0;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .floating-sidebar {
+                display: none;
+            }
+            
+            .main-wrapper {
+                flex-direction: column;
+            }
+            
+            .main-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .job_posting_title {
+                font-size: 24px;
+            }
+            
+            .job-info-box {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail {
+                grid-template-columns: 1fr;
+            }
+        }
