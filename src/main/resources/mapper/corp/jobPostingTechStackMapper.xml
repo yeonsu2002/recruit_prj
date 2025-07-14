@@ -7,7 +7,7 @@
 <mapper namespace="kr.co.sist.corp.mapper.JobPostingTechStackMapper">    
 
 <!-- 새로운 공고 등록 -->
-<insert id="insertJobPost">
+<insert id="insertjobPostingTechStack">
 INSERT INTO JOB_POSTING_TECH_STACK (tech_stack_seq, job_posting_seq) 
 VALUES (#{techStackSeq}, #{jobPostingSeq})
 

@@ -6,12 +6,29 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.jwt.CustomUser;
+
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalHandler {
+	
+	@ModelAttribute("user")
+	public CustomUser getLoginUser(@AuthenticationPrincipal CustomUser customUser) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUser) {
+			return (CustomUser) auth.getPrincipal();
+		}
+		
+		return null;
+	}
 	
 	@ExceptionHandler(IllegalStateException.class)
   public String handleIllegalState(IllegalStateException ex, RedirectAttributes rttr) {

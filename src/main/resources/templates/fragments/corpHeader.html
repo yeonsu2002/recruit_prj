@@ -28,14 +28,16 @@
 	  <div id="corp-top-bar">
 	    <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo"></a> 
 	    <div class="corp-top-menu">
-	    	<div id="userInfo" th:if="${user != null and user.role eq 'ROLE_CORP'}" >
+	    <!-- GlobalHandler에서 user로 넘겨주고 있다. #authentication으로 securityContextHolder 세션의 객체를 꺼내도 된다. -->
+	    	<div id="userInfo" th:if="${#authentication != null and #authentication.authenticated}" >
+		      <a th:href="@{/void}" th:text="${#authentication.principal.email}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
 		      <a th:href="@{/void}" th:text="${user.email}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
-		      <a th:href="@{/void}" class="corp-header-link">로그아웃</a> |
+		      <a th:href="@{/logout}" class="corp-header-link">로그아웃</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
 	    	</div>
-	    	<div th:unless="${user != null and user.role eq 'ROLE_CORP'}" >
+	    	<div th:unless="${user != null}" >
 		      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
-		      <a th:href="@{/void}" class="corp-header-link">회원가입</a> |
+		      <a th:href="@{/corp/join}" class="corp-header-link">회원가입</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
 	    	</div>
 	    </div>

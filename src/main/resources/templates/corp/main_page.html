@@ -34,8 +34,8 @@ function hideSubmenu() {
         </div>
         <div class="corp-dashboard-subtitle">
             효율적인 채용 관리로 최고의 인재를 찾아보세요
-            <div th:if="${user}">
-	            <div th:text="${user}"></div>
+            <div th:if="${#authentication.principal}">
+	            <div th:text="${#authentication.principal}"></div>
             </div>
         </div>
     </div>

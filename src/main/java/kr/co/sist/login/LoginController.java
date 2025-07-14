@@ -66,7 +66,7 @@ public class LoginController {
   	String userJwt = jwtUtil.createJwt(uDTO, expiredMs);
   	
   	//3. 쿠키 생성
-    ResponseCookie cookie = ResponseCookie.from("token", userJwt)
+    ResponseCookie cookie = ResponseCookie.from("Authorization", userJwt)
 	    .httpOnly(true)// JS 접근 불가
 	    .secure(false) // HTTPS 환경에서만 동작 (개발시에는 false)
 	    .sameSite("Strict") // CSRF 방지
