@@ -231,6 +231,74 @@
             </div>
         </div>
     </main>
+
+    <!-- 문의하기 모달 -->
+    <div id="inquiryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">문의하기</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="inquiryForm" class="inquiry-form">
+                    <div class="form-group">
+                        <label for="inquiryType">문의 유형 <span class="required">*</span></label>
+                        <select id="inquiryType" name="inquiryType" required>
+                            <option value="">문의 유형을 선택해주세요</option>
+                            <option value="general">일반 문의</option>
+                            <option value="technical">기술 문의</option>
+                            <option value="account">계정 문의</option>
+                            <option value="recruitment">구직 관련</option>
+                            <option value="company">기업 서비스</option>
+                            <option value="payment">결제 관련</option>
+                            <option value="other">기타</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userName">이름 <span class="required">*</span></label>
+                        <input type="text" id="userName" name="userName" required placeholder="이름을 입력해주세요">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">이메일 <span class="required">*</span></label>
+                        <input type="email" id="userEmail" name="userEmail" required placeholder="이메일을 입력해주세요">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userPhone">연락처</label>
+                        <input type="tel" id="userPhone" name="userPhone" placeholder="연락처를 입력해주세요">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inquiryTitle">제목 <span class="required">*</span></label>
+                        <input type="text" id="inquiryTitle" name="inquiryTitle" required placeholder="문의 제목을 입력해주세요">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inquiryContent">문의 내용 <span class="required">*</span></label>
+                        <textarea id="inquiryContent" name="inquiryContent" required placeholder="문의 내용을 자세히 작성해주세요" maxlength="1000" oninput="updateCharCount()"></textarea>
+                        <div class="character-count">
+                            <span id="charCount">0</span>/1000
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attachFile">첨부파일</label>
+                        <input type="file" id="attachFile" name="attachFile" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                        <div class="attachment-info">
+                            ※ 파일 형식: jpg, jpeg, png, pdf, doc, docx (최대 10MB)
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+                        <button type="submit" class="btn btn-primary">문의하기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <footer>
         <div th:replace="~{fragments/footer :: footer}"></div>
@@ -258,10 +326,71 @@
             items.classList.toggle('active');
         }
 
-        // Contact button functionality
+        // Contact modal functionality
         function openContact() {
-            alert('문의사항을 작성할 수 있는 페이지로 이동합니다.');
+            document.getElementById('inquiryModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
         }
+
+        function closeModal() {
+            document.getElementById('inquiryModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // 배경 스크롤 복구
+            document.getElementById('inquiryForm').reset(); // 폼 리셋
+            document.getElementById('charCount').textContent = '0'; // 글자 수 리셋
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('inquiryModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // 글자 수 카운트 업데이트
+        function updateCharCount() {
+            const textarea = document.getElementById('inquiryContent');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = textarea.value.length;
+        }
+
+        // 폼 제출 처리
+        document.getElementById('inquiryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 폼 데이터 수집
+            const formData = new FormData(this);
+            const inquiryData = {
+                type: formData.get('inquiryType'),
+                name: formData.get('userName'),
+                email: formData.get('userEmail'),
+                phone: formData.get('userPhone'),
+                title: formData.get('inquiryTitle'),
+                content: formData.get('inquiryContent'),
+                file: formData.get('attachFile')
+            };
+
+            // 여기에 서버로 데이터를 전송하는 코드를 추가할 수 있습니다
+            console.log('문의 데이터:', inquiryData);
+            
+            // 성공 메시지 표시
+            alert('문의가 성공적으로 접수되었습니다.\n빠른 시일 내에 답변드리겠습니다.');
+            
+            // 모달 닫기
+            closeModal();
+        });
+
+        // 파일 크기 검증
+        document.getElementById('attachFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('파일 크기는 10MB를 초과할 수 없습니다.');
+                    e.target.value = '';
+                }
+            }
+        });
     </script>
 </body>
 </html>
