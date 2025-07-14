@@ -74,17 +74,8 @@
           setSuccess('id_success', '');
           return;
         }
-		
-        
-        
-        
         
         const fullEmail = getFullEmail();
-		
-        
-       
-        
-        
         // 실제 서버 요청 대신 임의 중복 체크
         const isDuplicate = Math.random() < 0.3;
 
@@ -105,6 +96,7 @@
         	contentType:"application/json",
         	data: JSON.stringify({email:fullEmail}),
         	dataType: "json",
+        	
         	success: function(response){
         		console.log(response.msg);
         		console.log(response.code);

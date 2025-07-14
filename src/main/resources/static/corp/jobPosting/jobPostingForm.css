@@ -317,3 +317,54 @@
 	list-style: none;
   padding-left: 0; /* 점 없어도 들여쓰기 남는 경우 제거 */
 }
+
+.position-box {
+	position: relative;
+	
+}
+
+#resultBox {
+	background-color: #FAFDF4;
+	border-color: black;
+	width: 100%;
+	z-index: 1000;
+	
+}
+
+#resultBox li{
+	cursor: pointer;
+}
+
+#resultBox li:hover {
+	background-color: #e0d6b4;
+}
+
+
+.tech-tag {
+  margin: 2px;
+  cursor: default;
+}
+.tech-tag .btn-close {
+  margin-left: 6px;
+  font-size: 0.7rem;
+  vertical-align: middle;
+}
+
+.techStack-box {
+	position: relative;
+}
+
+#suggestedStackList {
+	background-color: #FAFDF4;
+	border-color: black;
+	width: 100%;
+	z-index: 1000;
+}
+
+#suggestedStackList li{
+	cursor: pointer;
+}
+
+#suggestedStackList li:hover {
+	background-color: #e0d6b4;
+}

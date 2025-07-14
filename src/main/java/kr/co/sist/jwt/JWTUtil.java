@@ -62,7 +62,7 @@ public class JWTUtil {
 		}	
 	}
 	
-	public String getCorpNo(String token) {
+	public Long getCorpNo(String token) {
     try {
         Claims claims = Jwts.parser()
             .verifyWith(secretKey)
@@ -70,7 +70,7 @@ public class JWTUtil {
             .parseSignedClaims(token)
             .getPayload();
 
-        String corpNo = claims.get("corpNo", String.class);
+        Long corpNo = claims.get("corpNo", Long.class);
         return corpNo; // null일 수도 있음
     } catch (JwtException e) {
         e.printStackTrace();
@@ -171,7 +171,7 @@ public class JWTUtil {
 		
 		if(cookies != null) {
 			for(Cookie cookie : cookies) {
-				if(cookie.getName().equals("token")) {
+				if(cookie.getName().equals("Authorization")) { // 로그인 컨트롤러에서 이 이름으로 발급중 
 					return cookie.getValue(); //쿠키 이름이 token인거의 값 반환
 				}
 			}
@@ -183,6 +183,9 @@ public class JWTUtil {
 	 * 토큰 검증?? 만료시간? 등등
 	 */
 	public UserDTO validateToken(String token) {
+	  if (token == null || token.trim().isEmpty()) {
+      return null; 
+	  }
 		String secretKey  = environment.getProperty("spring.jwt.mysecret"); //properties의 키값 가져오기 
 		try {
 			SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
