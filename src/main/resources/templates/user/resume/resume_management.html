@@ -4,110 +4,13 @@
 <meta charset="UTF-8">
 <title>민기 인력</title>
 <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
-<link rel="stylesheet" th:href="@{/user/resume/css/resume_management.css}" />
-
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet"
+	th:href="@{/user/resume/css/resume_management.css}" />
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script>
-$(document).ready(function() {
-
-    // 이력서 추가 버튼 클릭 시 새 페이지로 이동
-    $('#addResumeBtn').on('click', function() {
-        window.location.href = '/user/resume/resume_create'; // 이력서 신규 작성
-    });
-
-    // 수정 버튼 클릭 이벤트
-    $(document).on('click', '.edit-btn', function() {
-    	var resumeseq = $(this).data('resumeseq');
-    	window.location.href = '/user/resume/resume_form/' + resumeseq;
-	});
-
-    // 삭제 버튼 클릭 이벤트
-    $(document).on('click', '.delete-btn', function() {
-		var resumeSeq = $(this).data("resumeseq");
-		var card = $(this).closest('.card');
-		
-        if(confirm('이력서를 정말 삭제하시겠습니까?')) {
-            
-        	$.ajax({
-				url : "/user/resume/resumeRemove/" + resumeSeq,
-				type : "POST",
-				success : function(response){
-					if(response == "success"){
-						card.fadeOut(0, function() {
-				        	$(this).remove();
-				   		});
-					}else{
-						alert("삭제에 실패했습니다.");
-					}
-				},
-				
-				error : function(xhr){
-					alert(xhr.status);
-				}
-        	});
-        }
-    });
-
-    // 다운로드 버튼 클릭 이벤트
-    $(document).on('click', '.download-btn', function() {
-        alert('이력서를 다운로드합니다.');
-        // 실제 다운로드 로직 구현
-    });
-
-    // 파일 업로드 관련 이벤트
-    $('#uploadArea').on('dragover', function(e) {
-        e.preventDefault();
-        $(this).addClass('dragover');
-    });
-    
-    $('#uploadArea').on('dragleave drop', function(e) {
-        e.preventDefault();
-        $(this).removeClass('dragover');
-    });
-    
-    $('#uploadArea').on('drop', function(e) {
-        const files = e.originalEvent.dataTransfer.files;
-        if (files.length > 0) handleFileUpload(files[0]);
-    });
-    
-    $('#uploadArea, .btn-upload').on('click', function() {
-        $('#fileInput').click();
-    });
-    
-    $('#fileInput').on('change', function(e) {
-        if (e.target.files.length > 0) handleFileUpload(e.target.files[0]);
-    });
-
-    function handleFileUpload(file) {
-        const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
-        if (!allowedTypes.includes(file.type)) {
-            alert('PDF 또는 Word 문서만 업로드 가능합니다.');
-            return;
-        }
-        if (file.size > 10 * 1024 * 1024) {
-            alert('파일 크기는 10MB를 초과할 수 없습니다.');
-            return;
-        }
-        $('#progressSection').show();
-        $('#progressText').text('업로드 중... ' + file.name);
-        let progress = 0;
-        const interval = setInterval(function() {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                $('#progressText').text('업로드 완료!');
-                setTimeout(() => {
-                    $('#progressSection').hide();
-                    $('#progressFill').css('width', '0%');
-                }, 2000);
-            }
-            $('#progressFill').css('width', progress + '%');
-        }, 200);
-    }
-});
-</script>
+<script th:src="@{/user/resume/js/resume_management.js}"></script>
 </head>
 <body>
 	<header>
@@ -120,17 +23,16 @@ $(document).ready(function() {
 			<div class="management-section" id="resumeContainer">
 				<!-- 이력서 카드 시작 -->
 				<th:block th:each="resume : ${resumes}">
-				<div class="card">
-					<span class="card-title" th:text="${resume.title}"></span>
-					<span class="card-subtitle" th:text="|${resume.createdAt} 등록|"></span>
-					<br>
-					<br>
-					<div class="card-actions">
-						<button class="action-btn edit edit-btn" th:attr="data-resumeseq=${resume.resumeSeq}">이력서 수정</button>
-						<button class="action-btn delete delete-btn" th:attr="data-resumeseq=${resume.resumeSeq}">이력서 삭제</button>
-						<button class="action-btn download download-btn" th:attr="data-resumeseq=${resume.resumeSeq}">다운로드</button>
+					<div class="card" th:attr="data-resumeseq=${resume.resumeSeq}">
+						<span class="card-title" th:text="${resume.title}"></span> <span
+							class="card-subtitle" th:text="|${resume.createdAt} 등록|"></span>
+						<br> <br>
+						<div class="card-actions">
+							<button class="action-btn edit edit-btn">이력서 수정</button>
+							<button class="action-btn delete delete-btn">이력서 삭제</button>
+							<button class="action-btn download download-btn">다운로드</button>
+						</div>
 					</div>
-				</div>
 				</th:block>
 				<!-- 이력서 카드 끝 -->
 				<div class="card add-resume" id="addResumeBtn">
@@ -140,23 +42,35 @@ $(document).ready(function() {
 			</div>
 
 			<div class="upload-section">
-				<div class="card-title">첨부파일 업로드</div>
-				<p style="color: #6b7280; margin-bottom: 20px;">이력서 파일을 업로드하거나
-					드래그하여 추가하세요. (최대 10MB, PDF/Word 파일만 지원)</p>
-				<div class="upload-area" id="uploadArea">
-					<div class="upload-icon">📄</div>
-					<div class="upload-text">파일을 선택하거나 여기에 드래그하세요</div>
-					<div class="upload-subtext">PDF, DOC, DOCX 파일을 지원합니다</div>
-					<button class="btn-upload" type="button">파일 선택</button>
+				<div class="card-title">첨부파일</div>
+				<p style="color: #6b7280; margin-bottom: 20px;">경험을 보여줄 수 있는
+					포트폴리오 / 경력기술서 등을 첨부해주세요. (PDF를 권장합니다.)</p>
+
+				<!-- 첨부파일 -->
+				<div id="fileListContainer">
+					<th:block th:each="file: ${files}">
+						<div class="file-item" th:attr="data-value=${file.attachmentSeq}">
+							<div class="file-info">
+								<div class="file-icon" th:text=${file.fileType}></div>
+								<div class="file-details">
+									<div class="file-name download" th:value="${file.attachmentSeq}" th:text="${file.fileName}"></div>
+									<div class="file-date" th:text="${file.createdAt}"></div>
+								</div>
+							</div>
+							<div class="file-actions">
+								<button class="action-btn delete">
+									<i class="fas fa-trash-alt"></i>
+								</button>
+							</div>
+						</div>
+					</th:block>
 				</div>
+
+				<button class="add-btn" id="addFileBtn">
+					<i class="fas fa-plus"></i> 첨부파일 추가
+				</button>
 				<input type="file" id="fileInput" class="file-input"
 					accept=".pdf,.doc,.docx">
-				<div class="progress-section" id="progressSection">
-					<div class="progress-bar">
-						<div class="progress-fill" id="progressFill"></div>
-					</div>
-					<div class="progress-text" id="progressText">업로드 준비중...</div>
-				</div>
 			</div>
 		</div>
 	</main>
@@ -164,4 +78,7 @@ $(document).ready(function() {
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</footer>
 </body>
+<script>
+
+</script>
 </html>

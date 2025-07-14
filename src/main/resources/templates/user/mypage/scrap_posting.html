@@ -131,10 +131,8 @@
 		 <div class="page-title">스크랩 공고(18)</div>
 	<div class="announcement-section">
     <div class="announcement-list">
-
-        <!-- 하드코딩된 예시 공고 카드 -->
-            <div class="announcement-card">
-
+    <th:block th:each="data : ${postingData}">
+    	<div class="announcement-card">
                 <div class="image-wrapper">
                     <!-- 기업 이미지 -->
                     <img src="/images/Ssangyong.jpg" alt="기업 이미지">
@@ -153,7 +151,8 @@
                 </div>
                 <!-- 직무 -->
                 <div class="position-name">백엔드 개발</div>
-            </div>
+		</div>
+	</th:block>
 
         <!-- 다른 예시 카드 추가 -->
             <div class="announcement-card">

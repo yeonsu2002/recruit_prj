@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import kr.co.sist.user.dto.AdditionalInfoDTO;
+import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.CareerDTO;
 import kr.co.sist.user.dto.EducationHistoryDTO;
 import kr.co.sist.user.dto.LinkDTO;
@@ -21,6 +22,9 @@ public interface ResumeMapper {
 	
 	//해당 이력서 삭제
 	public void deleteResume(int resumeSeq);
+	
+	//해당 유저의 모든 첨부파일 가져오기
+	public List<AttachmentDTO> selectAllAttachment(String email);
 	
 	//이력서 번호로 각 데이터 가져오기
 	public List<ResumePositionCodeDTO> selectPositionByResume(int resumeSeq);
