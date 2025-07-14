@@ -266,7 +266,6 @@ public class ResumeService {
 		rMapper.deleteProjectByResume(resumeSeq);
 	}
 	
-<<<<<<< HEAD
 	/**
 	 * 프로필 이미지 업로드
 	 * @param mf
@@ -301,12 +300,6 @@ public class ResumeService {
 		}
 		
 		return attachments;
-=======
-	public void uploadImg(MultipartFile mf, ResumeEntity re) {
-		
-		re.setImage(mf.getOriginalFilename());
->>>>>>> b56dfe674e4892e34f90365195e8204cd5e8852f
-	}
 	
-
+	}
 }//class
