@@ -10,18 +10,8 @@ import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 
 /**
- *  Spring Security가 로그인 처리 시 의존하는 핵심 서비스! 자동으로 호출됨 (UserDetailsService 객체로써)
- *  아이디/비밀번호 폼 로그인 처리
- *  
- *  이 클래스는 
- * 	SecurityConfig클래스의 
- * 		http
-			.formLogin((auth) -> auth
-				.loginPage("/member/login")
-				.loginProcessingUrl("/member/loginProc")
-				.defaultSuccessUrl("/", true) //로그인 성공시 해당 페이지로 가겠다는 의미 
-			);
-		코드 중 loginProcessingUrl에 의해 자동 호출된다. 
+ *  http.formLogin().loginProcessingUrl(...)에 의해 로그인 요청이 들어오면,
+ *  AuthenticationManager가 UserDetailsService.loadUserByUsername()를 자동 호출해서 사용자 정보를 로드합니다.
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -44,3 +34,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 }
+
+
+/**
+ * Spring Security는 내부적으로 UsernameNotFoundException을 가로채서 BadCredentialsException으로 바꿔버리기 때문입니다
+ * 이것은 보안상 이유로 "아이디가 틀렸는지", "비밀번호가 틀렸는지"를 구분하지 않기 위해 의도적으로 같은 에러로 덮는 것입니다.
+ * 
+ */

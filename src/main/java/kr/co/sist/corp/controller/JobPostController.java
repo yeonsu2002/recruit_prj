@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.service.JobPostingCorpService;
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
@@ -35,16 +37,14 @@ public class JobPostController {
 
   //새로운 공고등록 form으로 이동
   @GetMapping("/corp/jobPostingForm")
-  public String getJobPostingForm(Model model, HttpServletRequest request) {
+  public String getJobPostingForm(Model model, HttpServletRequest request, @AuthenticationPrincipal CustomUser user) {
   	
-//  	String token = jwtUtil.resolveToken(request);
-//  	UserDTO userDTO = jwtUtil.validateToken(token);
-//  	
-//  	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
-//  		 return "redirect:/accessDenied"; //로그인 안되어있거나, 기업회원이 아니면 거절 
-//  	}
-//  	
-//  	model.addAttribute("user", userDTO);
+  	boolean hasCorpAuth = user.getAuthorities().stream()
+  													.anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
+  	
+  	if(!hasCorpAuth) {
+  		return "redirect:/accessDenied";
+  	}
   	
 	 return "corp/jobPosting/jobPostingForm";
   }

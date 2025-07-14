@@ -47,13 +47,16 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     boolean hasRoleCorp = customUser.getAuthorities().stream()
     												.anyMatch(auth -> auth.getAuthority().equals("ROLE_CORP"));
     
+    boolean hasRoleUser = customUser.getAuthorities().stream()
+    												.anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
+    
     System.out.println(hasRoleCorp);
     
     //원하는 대로 리다이렉트 
     if(hasRoleCorp) {
     	response.sendRedirect("/corp/main");
-    } else {
-    	// 일반회원이라면 
+    } 
+    if(hasRoleUser) {
     	response.sendRedirect("/");
     }
 		

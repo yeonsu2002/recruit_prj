@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import kr.co.sist.jwt.CustomLoginFailureHandler;
 import kr.co.sist.jwt.CustomLoginSuccessHandler;
 import kr.co.sist.jwt.JWTFIlter;
 import kr.co.sist.jwt.JWTUtil;
@@ -48,6 +49,7 @@ public class SecurityConfig {
     			.loginProcessingUrl("/loginProcess") //post 해야해!
     			.usernameParameter("email") //이거 까먹고 겁나 시간 잡아먹었네, 아이디는 username으로 해줘야 편하긴 해 
     			.passwordParameter("password")
+    			.failureHandler(new CustomLoginFailureHandler()) //로그인 실패 핸들러 
     			.successHandler(new CustomLoginSuccessHandler(jwtUtil)) //JWT 발급 핸들러
     			.permitAll()
 			);

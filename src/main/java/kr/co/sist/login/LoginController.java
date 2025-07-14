@@ -52,10 +52,10 @@ public class LoginController {
   }
     
   /**
-   * 통합(일반, 기업) 로그인 처리
+   * 통합(일반, 기업) 로그인 처리 -> 현재 security의 핸들러에서 대체중 
    * @return
    */
-  @PostMapping("/loginProcess")
+  //@PostMapping("/loginProcess")
   public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
   	
   	//1. 사용자 인증

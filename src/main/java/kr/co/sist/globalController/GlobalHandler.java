@@ -1,4 +1,4 @@
-package kr.co.sist.error;
+package kr.co.sist.globalController;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -19,7 +19,13 @@ import kr.co.sist.jwt.CustomUser;
 @ControllerAdvice
 public class GlobalHandler {
 	
-	@ModelAttribute("user")
+	/**
+	 * controller 에서 ( @ModelAttribute("user") CustomUser user) 혹은 view에서 ${user}로 호출 
+	 * 	vs
+	 * 만약 @ModelAttribute("user")	 선언을 안한다면,
+	 * controller 에서'만' ( @AuthenticationPrincipal CustomUser user )로 가져올수도 있음  -> SecurityContextHolder.getContext().getAuthentication().getPrincipal()을 자동으로 꺼내서 바인딩
+	 */
+	@ModelAttribute("user")	 
 	public CustomUser getLoginUser(@AuthenticationPrincipal CustomUser customUser) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		

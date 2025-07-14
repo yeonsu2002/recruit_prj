@@ -486,7 +486,7 @@ function initSalaryFormatting() {
                         <label class="form-label required">포지션</label>
                         <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
                         <ul id="resultBox" class="list-group position-absolute w-100" ></ul>
-                        <input type="text" id="positionSeq"> <!-- hidden으로 -->
+                        <input type="hidden" id="positionSeq"> <!-- hidden으로 -->
                     </div>
                     
                     <div class="form-group techStack-box">
@@ -554,7 +554,7 @@ function initSalaryFormatting() {
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">연봉</label>
+                        <label class="form-label">급여</label>
                         <input type="number" id="salary" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 만원)" min="0">
                         <div class="salary-info">
                             <span>회사내규를 원하실 경우 0을 입력해주세요.</span>

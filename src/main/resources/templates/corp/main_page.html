@@ -33,9 +33,26 @@ function hideSubmenu() {
             안녕하세요, <span class="corp-company-name">[기업명]</span>님
         </div>
         <div class="corp-dashboard-subtitle">
-            효율적인 채용 관리로 최고의 인재를 찾아보세요
-            <div th:if="${#authentication.principal}">
-	            <div th:text="${#authentication.principal}"></div>
+            효율적인 채용 관리로 최고의 인재를 찾아보세요 <br>
+            <hr>
+            로그인 정보: <br>
+            
+            <div th:if="${user == null}">
+            	<div>로그인을 먼저 진행해주셔야 사용자 정보를 보실 수 있습니다. </div>
+            </div>
+            <div th:if="${user != null}">
+	            <div th:if="${#authentication.principal}">
+		            <div th:text="${#authentication.principal}"></div>
+		            <br>
+		            <div th:text="${user.authorities}"></div>
+		            <br>
+		            <div sec:authorize="hasRole('ROLE_CORP')">
+		            	<p>이거는 기업회원이면 보여지는 문자</p>
+		            </div>
+		            <div sec:authorize="!hasRole('ROLE_CORP')">
+		            	<p>이거는 기업회원이 아니면 보여지는 문자</p>
+		            </div>
+	            </div>
             </div>
         </div>
     </div>

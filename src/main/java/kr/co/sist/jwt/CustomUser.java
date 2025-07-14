@@ -77,6 +77,14 @@ public class CustomUser implements UserDetails{
 		return userDTO.getProfileImage();
 	}
 	
+	//Role 객체말고 String가져오기
+	public String getRole() {
+		if(userDTO.getRole() == null) {
+			return null;
+		}
+		return userDTO.getRole();
+	}
+	
 	//이정도만 가져올까?
 	
 	

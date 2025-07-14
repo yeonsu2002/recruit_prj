@@ -9,7 +9,7 @@
 <!-- 새로운 공고 등록 -->
 <insert id="insertJobPost" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
 	<selectKey keyProperty="jobPostingSeq" resultType="int" order="BEFORE">
-		SELECT ISEQ$$_75568.NEXTVAL FROM DUAL	
+		SELECT JOB_POSTING_SEQ.NEXTVAL FROM DUAL	
 	</selectKey>
 
 INSERT INTO job_posting (JOB_POSTING_SEQ, CORP_NO, POSITION_SEQ, POSTING_TITLE, POSTING_DETAIL, EXP_LEVEL,
