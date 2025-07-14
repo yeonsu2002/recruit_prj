@@ -41,10 +41,10 @@ $(document).ready(function() {
         const files = e.originalEvent.dataTransfer.files;
         if (files.length > 0) {
             const file = files[0];
-            if (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif') {
+            if (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif' || file.type === 'image/png') {
                 handleFile(file);
             } else {
-                alert('JPG, GIF 형식만 업로드 가능합니다.');
+                alert('JPG, PNG, GIF 형식만 업로드 가능합니다.');
             }
         }
     });
@@ -63,8 +63,8 @@ $(document).ready(function() {
     
     function handleFile(file) {
         // 파일 타입 검사
-        if (!file.type.match(/image\/(jpeg|jpg|gif)/)) {
-            alert('JPG, GIF 형식만 업로드 가능합니다.');
+        if (!file.type.match(/image\/(jpeg|jpg|gif|png)/)) {
+            alert('JPG, PNG, GIF 형식만 업로드 가능합니다.');
             return;
         }
         
@@ -169,7 +169,7 @@ $(document).ready(function() {
 						<button class="upload-btn" onclick="$('#fileInput').click()">파일
 							추가</button>
 						<input type="file" id="fileInput"
-							accept="image/jpeg,image/jpg,image/gif">
+							accept="image/jpeg,image/jpg,image/gif,image/png">
 					</div>
 
 					<div id="originalImageContainer"

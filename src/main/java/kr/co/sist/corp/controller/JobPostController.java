@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.service.JobPostingCorpService;
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.PositionCodeDTO;
+import kr.co.sist.user.dto.TechStackDTO;
 import kr.co.sist.user.dto.UserDTO;
 
 @Controller
@@ -34,34 +37,37 @@ public class JobPostController {
 
   //새로운 공고등록 form으로 이동
   @GetMapping("/corp/jobPostingForm")
-  public String getJobPostingForm(Model model, HttpServletRequest request) {
+  public String getJobPostingForm(Model model, HttpServletRequest request, @AuthenticationPrincipal CustomUser user) {
   	
-  	String token = jwtUtil.resolveToken(request);
-  	UserDTO userDTO = jwtUtil.validateToken(token);
+  	if(user == null) {
+  		return "redirect:/accessDenied";
+  	}
+  	boolean hasCorpAuth = user.getAuthorities().stream()
+  													.anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
   	
-  	if(userDTO == null || !userDTO.getRole().equals("ROLE_CORP")) {
-  		 return "redirect:/accessDenied"; //로그인 안되어있거나, 기업회원이 아니면 거절 
+  	if( !hasCorpAuth) {
+  		return "redirect:/accessDenied";
   	}
   	
-  	model.addAttribute("user", userDTO);
+  	//db조작시 user활용  
+  	//user.getEmail();
+  	//user.getCorpNo();
   	
 	 return "corp/jobPosting/jobPostingForm";
   }
   
   // 새로운 공고 등록 (JSON)
-  @PostMapping("/corp/uplaodJobPosting")
+  @PostMapping("/corp/uploadJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {
   	
+  	System.out.println("컨트롤러 검증 ");
+  	System.out.println(jpDTO);
   	//form 2차 검증(if)
   	
   	
   	
   	
   	try {
-  		//corpNo으로 회사정보 가져와서 jpDTO에 넣어주고
-  		CorpDTO cDTO = jpcService.getCorpDTO(jpDTO.getCorpNo());
-  		jpDTO.setCorpDTO(cDTO);
-  		
   		//공고 등록 호출
   		jpcService.uploadJobPost(jpDTO);
   		return ResponseEntity.ok("공고 등록 성공");
@@ -78,16 +84,24 @@ public class JobPostController {
    */
   
   /**
-   * 공고form 페이지에서 포지션 검색 ajax 수신 
+   * 공고form 페이지에서 포지션 검색 비동기 수신 
    */
   @GetMapping("/corp/searchPositionByKeyword") //Get은 @Requestbody를 가질수 없음
   public ResponseEntity<?> searchPositionByKeyword(@RequestParam String keyword){
-  	System.out.println("받은 키워드: " + keyword); // 로그 찍기
   	List<PositionCodeDTO> resultList = jpcService.pDTOList(keyword);
   	
   	return ResponseEntity.ok(resultList); // → JSON 배열로 자동 직렬화됨
   }
   
+  /**
+   * 공고form 페이지에서 기술스택 검색 비동기 수신 
+   */
+  @GetMapping("/corp/searchStackByKeyword")
+  public ResponseEntity<?> searchTechStackBykeyword(@RequestParam String keyword){
+  	List<TechStackDTO> resultList = jpcService.tsDTO(keyword);
+  	
+  	return ResponseEntity.ok(resultList);
+  }
   
   
 }

@@ -52,10 +52,10 @@ public class LoginController {
   }
     
   /**
-   * 통합(일반, 기업) 로그인 처리
+   * 통합(일반, 기업) 로그인 처리 -> 현재 security의 핸들러에서 대체중 
    * @return
    */
-  @PostMapping("/loginProcess")
+  //@PostMapping("/loginProcess")
   public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
   	
   	//1. 사용자 인증
@@ -66,7 +66,7 @@ public class LoginController {
   	String userJwt = jwtUtil.createJwt(uDTO, expiredMs);
   	
   	//3. 쿠키 생성
-    ResponseCookie cookie = ResponseCookie.from("token", userJwt)
+    ResponseCookie cookie = ResponseCookie.from("Authorization", userJwt)
 	    .httpOnly(true)// JS 접근 불가
 	    .secure(false) // HTTPS 환경에서만 동작 (개발시에는 false)
 	    .sameSite("Strict") // CSRF 방지

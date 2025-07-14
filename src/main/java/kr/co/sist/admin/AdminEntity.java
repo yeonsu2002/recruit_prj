@@ -23,7 +23,7 @@ public class AdminEntity {
 	private String name;
 	@Column(name="DEPT")
 	private String dept;
-	@Column(name="JOG")
+	@Column(name="JOB")
 	private String job;
 	@Column(name="APPROVAL_DATE")
 	private String approvalDate;
@@ -34,5 +34,5 @@ public class AdminEntity {
 	@Column(name="TEL")
 	private String tel;
 	@Column(name="ROLE")
-	private char role;
+	private String role;
 }
