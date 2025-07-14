@@ -1,8 +1,6 @@
-package kr.co.sist.corp.service;
+package kr.co.sist.mail;
 
 import org.springframework.stereotype.Service;
-
-import kr.co.sist.corp.dto.MailHtmlSendDTO;
 
 @Service
 public interface MailSendService {

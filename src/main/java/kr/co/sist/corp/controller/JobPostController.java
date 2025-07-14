@@ -60,8 +60,6 @@ public class JobPostController {
   @PostMapping("/corp/uploadJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {
   	
-  	System.out.println("컨트롤러 검증 ");
-  	System.out.println(jpDTO);
   	//form 2차 검증(if)
   	
   	

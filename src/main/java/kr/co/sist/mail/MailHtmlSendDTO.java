@@ -1,4 +1,4 @@
-package kr.co.sist.corp.dto;
+package kr.co.sist.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

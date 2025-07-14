@@ -39,8 +39,6 @@ public class JobPostingCorpService {
   @Transactional 
   public void uploadJobPost(JobPostingDTO jpDTO) {
   	
-  	System.out.println("jpDTO -> ");
-  	System.out.println(jpDTO);
   	try {
   		//1. 공고등록
       jpm.insertJobPost(jpDTO);
@@ -51,8 +49,9 @@ public class JobPostingCorpService {
        * mapper내부에서 setter(.setJobPostingSeq(123)) 이런 setter를 호출했꼬, 
        *  (keyProperty="jobPostingSeq" => DTO의 해당 필드에 자동 주입)
        * 나는 그 참조변수를다시 가져와서 보는 것이니 매개변수때와 그 값이 다르다. 
+       * 따라서 selectKey를 안쓰면 못가져와 
        */
-      int jobPostingSeq = jpDTO.getJobPostingSeq();
+      int jobPostingSeq = jpDTO.getJobPostingSeq();  
   		
       //2. 기술 스택등록(중간테이블)
       for(Integer techStackSeq : jpDTO.getTechStackSeqList()) {
