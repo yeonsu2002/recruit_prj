@@ -11,79 +11,105 @@
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
 
     <div class="container">
-        <div class="header">
-            <h1>기업정보 수정</h1>
-            <p>정확한 기업정보를 입력해주세요</p>
-        </div>
+        <form id="corpInfoForm" th:action="@{/corp/info/update}" method="post">
+            <input type="hidden" name="corpNo" th:value="${corpInfo.corpNo}" />
+            
+            <div class="form-container">
+                <h1>기업정보 수정</h1>
+                <p>정확한 기업정보를 입력해주세요</p>
+                <div class="section-title">기본 정보</div>
 
-        <div class="form-container">
-            <div class="section-title">기본 정보</div>
-
-            <div class="form-group">
-                <label for="company-name" class="required">회사명</label>
-                <input type="text" id="company-name" placeholder="회사명을 입력하세요">
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="business-number" class="required">사업자등록번호</label>
-                    <input type="text" id="business-number" placeholder="000-00-00000">
+                    <label for="company-name" class="required">회사명</label>
+                    <input type="text" id="company-name" name="corpNm" th:value="${corpInfo.corpNo}" readonly>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="business-number" class="required">사업자등록번호</label>
+                        <input type="text" id="business-number" name="bizCert" th:value="${corpInfo.bizCert}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="ceo-name" class="required">대표자명</label>
+                        <input type="text" id="ceo-name" name="corpCeo" th:value="${corpInfo.corpCeo}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="establishment-date">설립일</label>
+                        <input type="date" id="establishment-date" name="corpCreatedAt" th:value="${corpInfo.corpCreatedAt}">
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-count">직원 수</label>
+                        <input type="number" id="employee-count" name="corpEmpCnt" th:value="${corpInfo.corpEmpCnt}" placeholder="직원 수를 입력하세요">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="ceo-name" class="required">대표자명</label>
-                    <input type="text" id="ceo-name" placeholder="대표자명을 입력하세요">
+                    <label for="corp-info">회사 소개</label>
+                    <textarea id="corp-info" name="corpInfo" rows="5" placeholder="회사 소개를 입력하세요" th:text="${corpInfo.corpInfo}"></textarea>
                 </div>
-            </div>
 
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="establishment-date">설립일</label>
-                    <input type="date" id="establishment-date">
+                    <label for="website">웹사이트 URL</label>
+                    <input type="url" id="website" name="corpUrl" th:value="${corpInfo.corpUrl}" placeholder="https://www.company.com">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="address" class="required">주소</label>
-                <input type="text" id="address" placeholder="회사 주소를 입력하세요">
-            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="industry">업종</label>
+                        <select id="industry" name="industry">
+                            <option value="">업종을 선택하세요</option>
+                            <option value="IT/소프트웨어" th:selected="${corpInfo.industry == 'IT/소프트웨어'}">IT/소프트웨어</option>
+                            <option value="제조업" th:selected="${corpInfo.industry == '제조업'}">제조업</option>
+                            <option value="서비스업" th:selected="${corpInfo.industry == '서비스업'}">서비스업</option>
+                            <option value="금융업" th:selected="${corpInfo.industry == '금융업'}">금융업</option>
+                            <option value="교육" th:selected="${corpInfo.industry == '교육'}">교육</option>
+                            <option value="의료/헬스케어" th:selected="${corpInfo.industry == '의료/헬스케어'}">의료/헬스케어</option>
+                            <option value="건설업" th:selected="${corpInfo.industry == '건설업'}">건설업</option>
+                            <option value="유통/물류" th:selected="${corpInfo.industry == '유통/물류'}">유통/물류</option>
+                            <option value="기타" th:selected="${corpInfo.industry == '기타'}">기타</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="company-size">기업 규모</label>
+                        <select id="company-size" name="companySize">
+                            <option value="">기업 규모를 선택하세요</option>
+                            <option value="스타트업" th:selected="${corpInfo.companySize == '스타트업'}">스타트업</option>
+                            <option value="중소기업" th:selected="${corpInfo.companySize == '중소기업'}">중소기업</option>
+                            <option value="중견기업" th:selected="${corpInfo.companySize == '중견기업'}">중견기업</option>
+                            <option value="대기업" th:selected="${corpInfo.companySize == '대기업'}">대기업</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="form-row">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="avg-salary">평균 연봉</label>
+                        <input type="number" id="avg-salary" name="corpAvgSal" th:value="${corpInfo.corpAvgSal}" placeholder="평균 연봉을 입력하세요 (만원)">
+                    </div>
+                    <div class="form-group">
+                        <label for="annual-revenue">연매출</label>
+                        <input type="number" id="annual-revenue" name="corpAnnualRevenue" th:value="${corpInfo.corpAnnualRevenue}" placeholder="연매출을 입력하세요 (억원)">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="phone">전화번호</label>
-                    <input type="tel" id="phone" placeholder="02-0000-0000">
-                </div>
-                <div class="form-group">
-                    <label for="email">이메일</label>
-                    <input type="email" id="email" placeholder="company@example.com">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="website">웹사이트 URL</label>
-                <input type="url" id="website" placeholder="https://www.company.com">
-            </div>
-        </div>
-
-       
-
-        <div class="form-container">
-            <div class="section-title">추가 정보</div>
-
-            <div class="form-group">
-                <label for="logo">회사 로고</label>
-                <div class="file-upload">
-                    <input type="file" id="logo" accept="image/*">
-                    <div class="file-upload-icon">📁</div>
-                    <div>클릭하여 로고를 업로드하세요</div>
-                    <div class="help-text">PNG, JPG 파일만 가능 (최대 5MB)</div>
+                    <label for="ai-active">AI 활용 여부</label>
+                    <select id="ai-active" name="corpAiActive">
+                        <option value="N" th:selected="${corpInfo.corpAiActive == 'N'}">미활용</option>
+                        <option value="Y" th:selected="${corpInfo.corpAiActive == 'Y'}">활용</option>
+                    </select>
                 </div>
             </div>
-        </div>
 
-        <div class="btn-group">
-            <button type="button" class="btn btn-secondary">취소</button>
-            <button type="button" class="btn btn-primary">수정완료</button>
-        </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">취소</button>
+                <button type="button" class="btn btn-info" onclick="location.href='/corp/info/image'">이미지 등록</button>
+                <button type="submit" class="btn btn-primary">수정완료</button>
+            </div>
+        </form>
     </div>
 
     <th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
@@ -91,51 +117,54 @@
     <script th:src="@{/js/jquery.min.js}"></script>
     <script>
         $(function(){
-            // 태그 추가 기능
-            $('#tags').on('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const text = $(this).val().trim();
-                    if (text) {
-                        const tag = $(`
-                            <div class="tag">
-                                ${text} <span class="remove">×</span>
-                            </div>`);
-                        tag.find('.remove').on('click', function() {
-                            tag.remove();
-                        });
-                        $('.tag-container').append(tag);
-                        $(this).val('');
+            // 폼 제출 시 유효성 검사
+            $('#corpInfoForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // 필수 필드 검증
+                const requiredFields = ['corpNm', 'bizCert', 'corpCeo'];
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!$(`input[name="${field}"]`).val().trim()) {
+                        isValid = false;
+                        $(`input[name="${field}"]`).focus();
+                        return false;
                     }
+                });
+                
+                
+                // 확인 메시지
+                if (confirm('기업정보를 수정하시겠습니까?')) {
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                alert('기업정보가 성공적으로 수정되었습니다.');
+                                location.href = '/corp/main';
+                            } else {
+                                alert('수정 중 오류가 발생했습니다: ' + response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                        }
+                    });
                 }
             });
-
-            // 기존 태그 제거
-            $('.tag .remove').on('click', function() {
-                $(this).parent().remove();
+            
+            // 숫자 입력 필드에 콤마 추가
+            $('#avg-salary, #annual-revenue').on('input', function() {
+                let value = $(this).val().replace(/[^0-9]/g, '');
+                $(this).val(value);
             });
-
-            // 파일 업로드
-            $('.file-upload').on('click', function() {
-                $('#logo').click();
-            });
-
-            $('#logo').on('change', function() {
-                if (this.files.length > 0) {
-                    const fileName = this.files[0].name;
-                    $(this).siblings().last().text(`선택된 파일: ${fileName}`);
-                }
-            });
-
-            // 버튼 클릭
-            $('.btn').on('click', function() {
-                if ($(this).text().trim() === '수정완료') {
-                    alert('기업정보가 수정되었습니다!');
-                } else if ($(this).text().trim() === '취소') {
-                    if (confirm('수정을 취소하시겠습니까?')) {
-                        alert('수정이 취소되었습니다.');
-                    }
-                }
+            
+            // readonly 필드 스타일 적용
+            $('input[readonly]').css({
+                'background-color': '#f5f5f5',
+                'cursor': 'not-allowed'
             });
         });
     </script>
