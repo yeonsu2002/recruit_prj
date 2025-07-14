@@ -13,19 +13,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kr.co.sist.login.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sist.jwt.JWTUtil;
+import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
-import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
-import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -34,48 +33,56 @@ public class ResumeController {
 
 	private final ResumeService rServ;
 	private final PositionCodeService pcs;
-
-	private final UserRepository uRepos; // 임시
-	private final CipherUtil cu;
-
 	private final ObjectMapper objMapper;
+	
+	private final JWTUtil jwtUtil;
+
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
-	public String resumeManagementPage(Model model) {
+	public String resumeManagementPage(HttpServletRequest request, Model model) {
+
+		String token = jwtUtil.resolveToken(request);
+		UserDTO user = jwtUtil.validateToken(token);
 
 		// 임시로 유저 등록
-		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
-		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
+//		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		
+	    List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
 
-		for (ResumeDTO resume : resumes) {
-			resume.setCreatedAt(resume.getCreatedAt().substring(0, 10)); // 날짜 포맷팅
-		}
+		List<AttachmentDTO> files = rServ.searchAllAttachment(user.getEmail());
 
 		model.addAttribute("user", user);
 		model.addAttribute("resumes", resumes);
+		model.addAttribute("files", files);
 
 		return "/user/resume/resume_management";
 	}
 
 	// 이력서 신규 작성
 	@GetMapping("/user/resume/resume_create")
-	public String resumeCreate(Model model) {
+	public String resumeCreate(Model model, HttpServletRequest request) {
 
-		int resumeSeq = rServ.addResume();
+		String token = jwtUtil.resolveToken(request);
+		UserDTO user = jwtUtil.validateToken(token);
 
+		int resumeSeq = rServ.addResume(user);
+		
 		return "redirect:/user/resume/resume_form/" + resumeSeq;
 	}
 
 	// 이력서 폼으로 넘어가기(신규 작성 후 or 기존 이력서 클릭)
 	@GetMapping("/user/resume/resume_form/{resumeSeq}")
-	public String resumeForm(@PathVariable int resumeSeq, Model model) {
+	public String resumeForm(@PathVariable int resumeSeq, Model model, HttpServletRequest request) {
 
 		// 임시로 유저 등록
-		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
-		user.setName(cu.plainText(user.getName()));
-		user.setPhone(cu.plainText(user.getPhone()));
-		user.setBirth(user.getBirth().substring(0, 4));
+//		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+//		user.setName(cu.plainText(user.getName()));
+//		user.setPhone(cu.plainText(user.getPhone()));
+//		user.setBirth(user.getBirth().substring(0, 4));
+
+		String token = jwtUtil.resolveToken(request);
+		UserDTO user = jwtUtil.validateToken(token);
 		model.addAttribute("user", user);
 
 		model.addAttribute("positionList", pcs.searchAllPositionCode());
@@ -139,17 +146,15 @@ public class ResumeController {
 
 	// 이력서 미리보기 창 띄우기
 	@GetMapping("/user/resume/preview/{resumeSeq}")
-	public String resumePreviewPage(@PathVariable int resumeSeq, Model model) {
+	public String resumePreviewPage(@PathVariable int resumeSeq, Model model, HttpServletRequest request) {
 
 		// 임시로 유저 등록
-		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
-		user.setName(cu.plainText(user.getName()));
-		user.setPhone(cu.plainText(user.getPhone()));
-		user.setBirth(user.getBirth().substring(0, 4));
+		String token = jwtUtil.resolveToken(request);
+		UserDTO user = jwtUtil.validateToken(token);
 		model.addAttribute("user", user);
 
 		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
-		
+
 		model.addAttribute("resumeData", resumeData);
 		model.addAttribute("resume", resumeData.getResume());
 		model.addAttribute("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
@@ -167,11 +172,15 @@ public class ResumeController {
 	// 이력서 삭제하기
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")
 	@ResponseBody
-	public String resumeRemove(@PathVariable int resumeSeq) {
+	public Map<String, Object> resumeRemove(@PathVariable int resumeSeq) {
+
+		Map<String, Object> result = new HashMap<>();
 
 		rServ.removeResume(resumeSeq);
+		
+		result.put("result", "success");
 
-		return "success";
+		return result;
 	}
 
-}
+}// class

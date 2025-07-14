@@ -14,10 +14,10 @@
 
 INSERT INTO job_posting (JOB_POSTING_SEQ, CORP_NO, POSITION_SEQ, POSTING_TITLE, POSTING_DETAIL, EXP_LEVEL,
     POSTING_END_DT, POSTING_START_DT, RECRUIT_CNT, EMPLOY_TYPE, WORKDAY, WORK_START_TIME, WORK_END_TIME,
-    SALARY, CONT_START_DT, CONT_END_DT, EDU_LEVEL, VIEW_CNT, ZIPCODE, ROAD_ADDRESS, DETAIL_ADDRESS)
-VALUES ( #{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingDetail}, #{expLevel},
+    SALARY, CONT_START_DT, CONT_END_DT, EDU_LEVEL, VIEW_CNT, ZIPCODE, ROAD_ADDRESS, DETAIL_ADDRESS, REGION, DISTRICT)
+VALUES (#{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingDetail}, #{expLevel},
     #{postingEndDt}, #{postingStartDt}, #{recruitCnt}, #{employType}, #{workday}, #{workStartTime}, #{workEndTime},
-    #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress} )
+    #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress}, #{region}, #{district} )
 </insert>
 
 
@@ -39,6 +39,10 @@ SELECT position_seq, position_name FROM POSITION_CODE
 WHERE position_name LIKE '%' || #{keyword} || '%'
 </select>
 
-
+<!-- 공고안에서 기술스택 키워드로 조회 -->
+<select id="selectTechStackList" parameterType="string" resultType="kr.co.sist.user.dto.TechStackDTO">
+SELECT tech_stack_seq, stack_name FROM TECH_STACK
+WHERE UPPER(stack_name) LIKE UPPER( '%' || #{keyword} || '%' )
+</select>
 
 </mapper>
