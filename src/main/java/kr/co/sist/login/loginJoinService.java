@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
 import kr.co.sist.corp.dto.CorpEntity;
-import kr.co.sist.error.LoginException;
+import kr.co.sist.globalController.LoginException;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;

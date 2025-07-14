@@ -15,9 +15,13 @@
 		</div>
 
 		<!-- 오른쪽: 검색창 + 회원가입 + 기업서비스 -->
-		<div class="header-right">
-			<a href="/login" class="auth-button">회원가입/로그인</a> <a href="/corp/main"
-				class="business-button">기업서비스</a>
+		<div class="header-right" sec:authorize="!hasRole('ROLE_USER')">
+				<a th:href= @{/login} class="auth-button">회원가입/로그인</a> 
+				<a href="/corp/main" class="business-button">기업서비스</a>
+		</div>
+		<div class="header-right" sec:authorize="hasRole('ROLE_USER')">
+				<a th:href= @{/logout} class="auth-button">로그아웃</a> 
+				<a href="/corp/main" class="business-button">기업서비스</a>
 		</div>
 	</div>
 </div>

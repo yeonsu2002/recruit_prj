@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
+import kr.co.sist.user.dto.TechStackDTO;
 
 @Mapper
 public interface JobPostingCorpMapper {
@@ -24,6 +25,9 @@ public interface JobPostingCorpMapper {
 
   //공고안에서 포지션 비동기 검색 조회 
   public List<PositionCodeDTO> selectPostionList(String keyword);
+  
+  //공고안에서 기술스택 비동기 검색 조회
+  public List<TechStackDTO> selectTechStackList(String keyword);
 
   
 }

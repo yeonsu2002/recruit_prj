@@ -49,11 +49,15 @@ function joinPageForm(){
 <!-- 	<div id="alertBox" th:if="${errorMessage}" class="alert alert-success" role="alert" th:attr="data-error=${errorMessage}">
 				<p th:text="${errorMessage}" ></p>
 			</div> 
--->										<!-- 근데 밑에꺼나 input hidden이나 ..  -->
-	<div id="alertBox" th:if=${errorMessage} th:attr="data-error=${errorMessage}"></div>
+-->										
+<!-- 	<div id="alertBox" th:if=${errorMessage} th:attr="data-error=${errorMessage}"></div>
 	<div th:if="${msg}" class="alert alert-success" role="alert" >
 		<p th:text="${msg}" ></p>
-	</div> 
+	</div>  -->
+<!-- 사용자에게 에러 메시지 보여주기 -->
+<div th:if="${param.errorMessage}" class="alert alert-danger" role="alert">
+    <p th:text="${param.errorMessage}"></p>
+</div>
 
 
 	<div class="login-container">

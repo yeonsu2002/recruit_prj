@@ -18,30 +18,28 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class AdminRegisterRestController {
 
-
-	
-	private  Map<String, AdminEntity> adminMap=new HashMap<String, AdminEntity>();
-	
-	@Autowired(required=false)
-    private AdminService as;
-
-   
-	
-	@PostMapping("/sendEmail")
-	public Map<String, Object> mailConfirm(@RequestBody Map<String,String> request) {
-		String email = request.get("email");
-		Map<String, Object> mailConfirm = new HashMap<String, Object>();
-		mailConfirm = as.sendEmail(email);
-	    
-	    
-	    
-	    
-	    
-	    return mailConfirm;
-	}
-	
-	
-	
-	
+    @Autowired
+    private AdminRegisterService adminRegisterService;
     
+    @PostMapping("/sendEmail")
+    public Map<String, Object> mailConfirm(@RequestBody Map<String,String> request) {
+        String email = request.get("email");
+        return adminRegisterService.sendEmail(email);
+    }
+    
+    @PostMapping("/admin_register_process")
+    public Map<String, Object> doSignUp(@RequestBody AdminEntity admin) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            AdminEntity result = adminRegisterService.signUp(admin);
+            response.put("success", true);
+            response.put("message", "회원가입이 완료되었습니다.");
+            System.out.println("저장된 데이터: " + result);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "회원가입에 실패했습니다: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

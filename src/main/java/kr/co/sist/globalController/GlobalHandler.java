@@ -1,4 +1,4 @@
-package kr.co.sist.error;
+package kr.co.sist.globalController;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -6,12 +6,35 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.jwt.CustomUser;
+
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalHandler {
+	
+	/**
+	 * controller 에서 ( @ModelAttribute("user") CustomUser user) 혹은 view에서 ${user}로 호출 
+	 * 	vs
+	 * 만약 @ModelAttribute("user")	 선언을 안한다면,
+	 * controller 에서'만' ( @AuthenticationPrincipal CustomUser user )로 가져올수도 있음  -> SecurityContextHolder.getContext().getAuthentication().getPrincipal()을 자동으로 꺼내서 바인딩
+	 */
+	@ModelAttribute("user")	 
+	public CustomUser getLoginUser(@AuthenticationPrincipal CustomUser customUser) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUser) {
+			return (CustomUser) auth.getPrincipal();
+		}
+		
+		return null;
+	}
 	
 	@ExceptionHandler(IllegalStateException.class)
   public String handleIllegalState(IllegalStateException ex, RedirectAttributes rttr) {
