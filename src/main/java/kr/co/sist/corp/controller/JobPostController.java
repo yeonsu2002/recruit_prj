@@ -39,10 +39,14 @@ public class JobPostController {
   @GetMapping("/corp/jobPostingForm")
   public String getJobPostingForm(Model model, HttpServletRequest request, @AuthenticationPrincipal CustomUser user) {
   	
+  	if(user == null) {
+  		return "redirect:/accessDenied";
+  	}
+  	
   	boolean hasCorpAuth = user.getAuthorities().stream()
   													.anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
   	
-  	if(!hasCorpAuth) {
+  	if( !hasCorpAuth) {
   		return "redirect:/accessDenied";
   	}
   	
