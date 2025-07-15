@@ -51,12 +51,10 @@ public class JobPostingController {
             if (userEntity != null) {
                 try {
                     // 유저 정보 복호화
-                    userEntity.setName(cu.plainText(userEntity.getName()));
                     userEntity.setPhone(cu.plainText(userEntity.getPhone()));
                     String birth = userEntity.getBirth();
                 } catch (Exception e) {
                     // 복호화 실패 시 처리
-                    userEntity.setName("복호화 실패");
                     userEntity.setPhone("복호화 실패");
                     userEntity.setBirth("복호화 실패");
                 }

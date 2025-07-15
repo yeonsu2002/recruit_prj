@@ -28,13 +28,6 @@ public class MainPageController {
             return "redirect:/accessDenied"; 
         }
 
-        // 복호화 처리
-        try {
-            userEntity.setName(cu.plainText(userEntity.getName()));
-        } catch (Exception e) {
-            System.out.println("복호화 실패: " + e.getMessage());
-            userEntity.setName("복호화 실패");
-        }
 
         // UserDTO로 변환 후 model에 추가
         UserDTO user = new UserDTO(userEntity);
