@@ -2,21 +2,92 @@
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-    
+
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
-<mapper namespace="kr.co.sist.corp.mapper.ApplicantMapper">    
+<mapper namespace="kr.co.sist.corp.mapper.ApplicantMapper">
 
-<!-- 해당 회사의 모든 지원자 불러오기 -->
-<select id="selectAllApplicant" parameterType="long" resultType="corpApplicantDTO">
-select ja.job_application_seq, r.resume_seq, jp.job_posting_seq, ja.application_status, ja.pass_stage,
-ja.application_date, ja.is_read, r.career_type, r.title, jp.posting_title, jp.corp_no, m.name
-from JOB_APPLICATION ja
-join JOB_POSTING jp on ja.job_posting_seq = jp.job_posting_seq
-join resume r on ja.resume_seq = r.resume_seq
-join member m on r.email = m.email
-where jp.corp_no = #{corpNo}
-</select>
+	<!-- 해당 회사의 모든 지원자 불러오기 -->
+	<select id="selectAllApplicant" parameterType="long"
+		resultType="corpApplicantDTO">
+		select ja.job_application_seq, r.resume_seq,
+		jp.job_posting_seq,
+		ja.application_status, ja.pass_stage,
+		ja.application_date, ja.is_read, r.career_type, r.title,
+		jp.posting_title, jp.corp_no,
+		m.name
+		from JOB_APPLICATION ja
+		join
+		JOB_POSTING jp on ja.job_posting_seq = jp.job_posting_seq
+		join resume r
+		on ja.resume_seq = r.resume_seq
+		join member m on r.email = m.email
+		where jp.corp_no = #{corpNo}
+	</select>
 
+	<!-- 검색 조건에 맞는 지원자 불러오기 -->
+	<select id="selectApplicant"
+		parameterType="corpAllicantSearchDTO" resultType="corpApplicantDTO">
+		select ja.job_application_seq, r.resume_seq, jp.job_posting_seq,
+		ja.application_status, ja.pass_stage,
+		ja.application_date, ja.is_read,
+		r.career_type, r.title, jp.posting_title, jp.corp_no,
+		m.name
+		from
+		JOB_APPLICATION ja
+		join JOB_POSTING jp on ja.job_posting_seq =
+		jp.job_posting_seq
+		join resume r on ja.resume_seq = r.resume_seq
+		join
+		member m on r.email = m.email
+		where jp.corp_no = #{corpNo}
+		<choose>
+			<when test="postingStatus == 'progress'">
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &gt;= sysdate
+			</when>
+			<when test="postingStatus == 'closed'">
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &lt; sysdate
+			</when>
+		</choose>
+		<if test="postingTitle != 0">
+			and jp.job_posting_seq = #{postingTitle}
+		</if>
+		<if test="applicationStatus != 3">
+			and ja.application_status = #{applicationStatus}
+		</if>
+		<if
+			test="passStage != 4">
+			and ja.pass_stage = #{passStage}
+		</if>
+	</select>
+
+	<!-- 해당 회사의 진행중인 공고 불러오기 -->
+	<select id="selectPostingProgress" parameterType="long"
+		resultType="kr.co.sist.corp.dto.JobPostingDTO">
+		select job_posting_seq, posting_title
+		from job_posting
+		where
+		to_date(posting_end_dt, 'yyyy-mm-dd') &gt;= sysdate and corp_no =
+		#{corpNo}
+	</select>
+
+	<!-- 해당 회사의 마감된 공고 불러오기 -->
+	<select id="selectPostingClosed" parameterType="long"
+		resultType="kr.co.sist.corp.dto.JobPostingDTO">
+		select job_posting_seq, posting_title
+		from job_posting
+		where
+		to_date(posting_end_dt, 'yyyy-mm-dd') &lt; sysdate and corp_no =
+		#{corpNo}
+	</select>
+
+	<!-- 해당 회사의 전체 공고 불러오기 -->
+	<select id="selectPostingAll" parameterType="long"
+		resultType="kr.co.sist.corp.dto.JobPostingDTO">
+		select job_posting_seq, posting_title
+		from job_posting
+		where
+		corp_no = #{corpNo}
+	</select>
 
 
 </mapper>
