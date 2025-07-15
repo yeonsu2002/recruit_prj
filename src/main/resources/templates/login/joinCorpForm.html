@@ -205,9 +205,49 @@ $(function(){
 	}//validateForm()
 
 
-	//인증번호 처리, 인증요청 버튼을 클릭시 (180초하자)
+	//인증번호 처리, 인증요청 버튼을 클릭시 (300초하자)
 	document.getElementById('codeBtn').addEventListener('click', function(){
-		alert("디버깅모드로 5초만 유지합니다.");
+		
+		// 이메일 형식 정규표현식
+		const email = document.getElementById('email').value.trim();
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailPattern.test(email)) {
+	  		alert("올바른 이메일 형식을 입력해주세요. (예: user@example.com)");
+	  		return false;
+		}
+
+		if(email == ""){
+			alert('이메일을 입력 후 인증요청을 눌러주세요.');
+			return false;
+		}
+		
+		fetch('/signup/send-verification-email', {
+				method : "POST",
+				headers : {
+					"Content-Type": "application/json"
+				},
+				body : JSON.stringify({
+					emailAddr : email,
+					subject : "민기인력 회원가입 이메일 인증",
+					target : "기업회원"
+				})
+			})
+			.then(response => {
+				if(!response.ok){
+					return response.text().then(err => { throw new Error(err); });
+				}
+				return response.text();
+			})
+			.then(result => {
+		        alert(result); 
+		        // 이후 UI 처리...
+		    })
+			.catch(error => {
+		        alert("오류 발생: " + error.message);
+		        return false;
+		    });
+		
+		
 		//인증번호 입력칸& 확인버튼 표시
 		document.getElementById('confirmNumberFrm').style.display='block';
 		//display를 none → block으로 바꾸면 기존 flex 속성은 사라집니다. 따라서 다시 설정해줘야합니다.
@@ -218,57 +258,11 @@ $(function(){
 			btn.disabled = this.value.length !== 6;
 		});
 		
-    // 인증메일 전송 AJAX - 수정된 부분
-    /**
-    $.ajax({
-        url: "/mail/sendVfCode",
-        type: "post",
-        data: {
-            to: email,  // 필수 파라미터 추가
-            action: "join"  // 추가 파라미터
-        },
-        success: function(result) {
-            if (result === "success") {
-                console.log("이메일 발송 성공");
-            } else {
-                alert("이메일 발송에 실패했습니다. 다시 시도해주세요.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX 오류:", error);
-            alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-        }
-    });
-    */
-		/*  
-		        const email = emailInput.value.trim();
-        
-        //인증번호 생성 이메일 보내기 
-        //번호생성 -> 이메일 전송 -> 세션에 이메일과 번호를 저장 (보관:5분) -> 다음 클릭시, 값 확인: 세션값과 대조
-       	$.ajax({
-       		url : "${pageContext.request.contextPath}/login/controller/sendVerificationCode.jsp",
-       		type : "POST",
-       		data : {
-       			email : email,
-       			action : "join"
-       		},
-       		success:function(result){
-       			if(result == "success"){
-       				alert("이메일발송, 세션추가 성공");
-       			} else  if(result == "fail"){
-       				alert("이메일발송, 세션추가 실패");
-       			}
-       		}
-       		
-       	});
-		
-		*/
-		
 		
 		//보냈으므로 인증요청 버튼의 텍스트를 재전송으로 변경
 		document.getElementById('codeBtn').textContent='재전송'; 
 		//타이머 시작
-		startTimer(5, $("#timer"));
+		startTimer(300, $("#timer"));
 		document.getElementById('remainTime').style.display='block'; //남은 인증시간 표시, 만료시 숨김으로 해놨으므로 재전송시 필요
 		document.getElementById('verification-error').style.display='none';  //인증시간 만료 표시 숨김, 재전송시 필요
 		//
@@ -340,14 +334,50 @@ function uploadFile(){
 let isEmailVerified = false; //이 전역 변수는 이메일 인증함수에서 true로 변함
 //확인버튼 이벤트리스너에 등록될 인증번호확인 함수
 function checkConfirmNumber(){
+	let codeIsCorrect = false;
+	
+	let inputedCode = document.querySelector('#confirmNumber').value.trim();
+	if(inputedCode == ""){
+		alert("인증번호를 입력 후 확인을 눌러주세요.");
+	}
+	let email = document.querySelector('#email').value.trim();
+	if(email == ""){
+		alert('이메일을 입력후 시도해주세요.');
+	}
+	//requestparam 방식은 application/x-www-form-urlencoded 헤더로 전송해야..  
+	fetch('/signup/confirm-verification-code', {
+		method : "POST",
+		headers : {
+			"Content-Type": "application/json"  
+		},
+		body : JSON.stringify({
+			emailAddr : email,
+			content : inputedCode
+		})
+	})
+	.then(response => {
+		if(!response.ok){
+			return response.text().then(err => { throw new Error(err); });
+		}
+		return response.text();
+		})
+		.then(result => {
+	        alert(result); 
+	        // 이후 UI 처리...
+	        codeIsCorrect = true;
+			document.getElementById('confirmNumberFrm').style.display='block';
+	    })
+		.catch(error => {
+	        alert("오류 발생: " + error.message);
+	    });
+	
+	
 //확인버튼 클릭시 인증번호가 일치하지 않을 때 (예시로 123456으로 해놨음. 수정하자~)
-if(document.getElementById('confirmNumber').value != 123456){
+if(codeIsCorrect){
 	document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
 	document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
 	document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
 } else {
-	//인증에 성공할 때
-	alert('인증번호가 일치합니다.');
 	//타이머종료
 	clearInterval(timerInterval);
 	
@@ -355,6 +385,7 @@ if(document.getElementById('confirmNumber').value != 123456){
 	document.getElementById('verification-success').style.display='block';  //성공 텍스트 표시
 	document.getElementById('confirmBtn').disabled = true; //맞으니까 이제 확인버튼 막아
 	document.getElementById('codeBtn').disabled = true; //맞으니까 이제 재전송버튼도 막아
+	document.getElementById('email').readOnly = true; //이메일 입력창도 막아 
 	document.getElementById('confirmNumber').readOnly = true; //번호입력창도 막아
 	
 	isEmailVerified = true; //이메일 검증변수 true 변환 
@@ -417,24 +448,7 @@ function startTimer(duration, display) {
 	        $("#verification-error").show();
 	        $("#verification-error").text("인증 시간이 만료되었습니다. 다시 시도해주세요.");
 	        
-	        // 만료됐으므로 세션의 인증코드 번호 삭제 
-	        $.ajax({
-	            url : "",
-	            type : "POST"
-	        });
-	        
 	        document.getElementById('confirmBtn').disabled = true; //만료됐으니까 확인버튼 막아
-	        
-	     		// 만료됐으므로 세션의 인증코드 번호 삭제 
-          $.ajax({
-	          url : "",
-	          type : "POST",
-	          error : function(){
-	      			console.error("인증코드 삭제 요청 실패"); //->이거 에러 발생중
-	          }
-          });
-	        
-	        
 	    }
 	}, 1000);
 

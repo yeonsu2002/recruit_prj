@@ -6,11 +6,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-public class EmailVerificationEntity {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class MailVerificationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +28,12 @@ public class EmailVerificationEntity {
 
     private String verificationCode;
     
-    private int count = 0;
+    private int attemptCount = 0;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
     //인증 유지시간은 5분으로 고정 
-    private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
+    private LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
 
-    private boolean isVerified = false;
+    private String isVerified = "N";
 }

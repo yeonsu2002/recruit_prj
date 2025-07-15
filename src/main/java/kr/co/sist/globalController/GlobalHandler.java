@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.globalController.Exceptions.LoginException;
+import kr.co.sist.globalController.Exceptions.NotFoundException;
 import kr.co.sist.jwt.CustomUser;
 
 @ControllerAdvice
@@ -66,6 +68,10 @@ public class GlobalHandler {
       //이거 아직 사용자쪽에 뿌리는거 안만들었어.
       return new ResponseEntity<>(errorBody, HttpStatus.NOT_FOUND);
   }	
+  
+	//TooManyRequestsException.java
+	
+	//EmailSendException.java
 	
 	
 }

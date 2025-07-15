@@ -1,4 +1,4 @@
-package kr.co.sist.globalController;
+package kr.co.sist.globalController.Exceptions;
 
 import org.springframework.stereotype.Component;
 

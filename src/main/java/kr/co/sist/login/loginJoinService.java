@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
 import kr.co.sist.corp.dto.CorpEntity;
-import kr.co.sist.globalController.LoginException;
+import kr.co.sist.globalController.Exceptions.LoginException;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
@@ -117,27 +117,27 @@ public class loginJoinService {
             ue.setActiveStatus(0);
             
             // 저장 전 검증
-            System.out.println("저장 전 UserEntity: " + ue);
-            System.out.println("UserRepository 존재 여부: " + (ur != null));
+           // System.out.println("저장 전 UserEntity: " + ue);
+            //System.out.println("UserRepository 존재 여부: " + (ur != null));
             
             // DB 저장 시도
-            System.out.println("저장 시도 시작...");
+            //System.out.println("저장 시도 시작...");
             UserEntity savedEntity = ur.save(ue);
-            System.out.println("저장 완료!");
+            //System.out.println("저장 완료!");
             
             if (savedEntity != null) {
-                System.out.println("저장 후 UserEntity: " + savedEntity);
+                //System.out.println("저장 후 UserEntity: " + savedEntity);
                 return savedEntity;
                 //Entity보다 DTO를 반환하는게 맞는데, 귀찮으니까 나중에 
             } else {
-                System.err.println("저장 후 반환된 Entity가 null입니다!");
+                //System.err.println("저장 후 반환된 Entity가 null입니다!");
                 throw new RuntimeException("저장 후 Entity가 null로 반환됨");
             }
             
         } catch (Exception e) {
-            System.err.println("=== 회원가입 오류 상세 정보 ===");
-            System.err.println("오류 메시지: " + e.getMessage());
-            System.err.println("오류 타입: " + e.getClass().getSimpleName());
+            //System.err.println("=== 회원가입 오류 상세 정보 ===");
+            //System.err.println("오류 메시지: " + e.getMessage());
+            //System.err.println("오류 타입: " + e.getClass().getSimpleName());
             
             if (e.getCause() != null) {
                 System.err.println("원인: " + e.getCause().getMessage());
@@ -190,34 +190,14 @@ public class loginJoinService {
         ce.setBizCert(bizCertName); //사업자등록증명원 파일 이름
         ce.setCorpAiActive("N"); //AI기능 지원 여부인데, 나중에 결제시스템 도입하면 유의미해짐
         
-        //매출액으로만 기업규모 계산
-/*
-        String companySize = "";
-        Long corpAnnualRevenue = ucDTO.getCorpAnnualRevenue();
-        if(corpAnnualRevenue < 30_000_000_000L) { //300억 미만
-            companySize = "중소기업";
-        }
-        if(corpAnnualRevenue < 100_000_000_000L) { //1000억 미만
-            companySize = "강소기업";
-        }
-        if(corpAnnualRevenue < 30_000_000_000_000L) { //3조 미만
-            companySize = "중견기업";
-        }
-        if(corpAnnualRevenue >= 30_000_000_000_000L) { //3조 이상
-            companySize = "대기업";
-        }
-        ce.setCompanySize(companySize);
-*/        
-        //나머지 요소는 기업정보 수정페이지에서 입력하기
-        
         // 저장 전 검증
-        System.out.print("저장 전 CorpEntity: ");
-        System.out.println(ce);
-        System.out.println("CorpRepository 존재 여부: " + (cr != null));
+        //System.out.print("저장 전 CorpEntity: ");
+        //System.out.println(ce);
+        //System.out.println("CorpRepository 존재 여부: " + (cr != null));
         
         // DB 저장 - try-catch 제거
         cr.save(ce);
-        System.out.println("corpEntity 저장 완료!");
+        //System.out.println("corpEntity 저장 완료!");
         
         // 기본정보 기입
         UserEntity ue = new UserEntity();
@@ -233,7 +213,7 @@ public class loginJoinService {
         ue.setCorpEntity(corp);
         
         //디버깅
-        System.out.println(ue.getCorpEntity());
+        //System.out.println(ue.getCorpEntity());
         
         ue.setPassword(cu.hashText(ucDTO.getPassword()));
         //ue.setName(cu.cipherText(ucDTO.getName()));
@@ -282,12 +262,12 @@ public class loginJoinService {
         ue.setActiveStatus(0);
         
         // 저장 전 검증
-        System.out.println("저장 전 UserEntity: " + ue);
-        System.out.println("UserRepository 존재 여부: " + (ur != null));
+        //System.out.println("저장 전 UserEntity: " + ue);
+        //System.out.println("UserRepository 존재 여부: " + (ur != null));
         
         // DB 저장 - try-catch 제거
         UserEntity savedEntity = ur.save(ue);
-        System.out.println("ue 저장 완료!");
+        //System.out.println("ue 저장 완료!");
         
         return ce;
     }
