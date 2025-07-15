@@ -83,7 +83,6 @@ public class ResumeController {
 		// 토큰에서 유저 정보 빼오기
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
 		
-		user.setName(cu.plainText(user.getName()));
 		user.setPhone(cu.plainText(user.getPhone()));
 		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);
@@ -152,7 +151,6 @@ public class ResumeController {
 
 		// 토큰에서 유저 정보 빼오기
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
-		user.setName(cu.plainText(user.getName()));
 		user.setPhone(cu.plainText(user.getPhone()));
 		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);

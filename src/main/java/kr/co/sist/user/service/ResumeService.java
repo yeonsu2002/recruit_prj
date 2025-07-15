@@ -97,7 +97,7 @@ public class ResumeService {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyMMdd");
 		String date = now.format(dtf);
 
-		re.setTitle(cu.plainText(user.getName()) + "_" + date);
+		re.setTitle(user.getName() + "_" + date);
 		re.setIsPublic("Y");
 
 		int resumeSeq = rRepos.save(re).getResumeSeq();
