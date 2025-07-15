@@ -39,7 +39,7 @@ public class JoinMailController {
 			if(emailRepository.findByEmail(evEntity.getEmail()) == null) { //처음 시도면 insert
 				emailRepository.save(evEntity);
 			} else if (emailRepository.findByEmail(evEntity.getEmail()).getCount() > 5) { //이미 인증시도를 5회 초과했다? 넌 아웃 
-				return ResponseEntity.
+				return null;
 			} else {
 				int count = evEntity.getCount(); //아니면 시도횟수 +1
 				evEntity.setCount(count+1);

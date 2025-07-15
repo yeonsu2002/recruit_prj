@@ -60,7 +60,7 @@ public class loginJoinService {
             ue.setEmail(uDTO.getEmail());
             ue.setCorpEntity(null);
             ue.setPassword(cu.hashText(uDTO.getPassword()));
-            ue.setName(cu.cipherText(uDTO.getName()));
+            ue.setName(uDTO.getName());
             ue.setRole("ROLE_USER");
             ue.setPhone(cu.cipherText(uDTO.getPhone()));
             
