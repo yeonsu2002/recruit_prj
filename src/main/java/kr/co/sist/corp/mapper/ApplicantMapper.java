@@ -18,4 +18,6 @@ public interface ApplicantMapper {
 	public List<JobPostingDTO> selectPostingProgress(long corpNo);
 	public List<JobPostingDTO> selectPostingClosed(long corpNo);
 	public List<JobPostingDTO> selectPostingAll(long corpNo);
+	
+	public int updateResumeReadStatus(int resumeSeq);
 }

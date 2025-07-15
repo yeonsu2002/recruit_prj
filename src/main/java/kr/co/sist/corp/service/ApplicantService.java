@@ -90,14 +90,8 @@ public class ApplicantService {
 
 		for (ApplicantDTO applicant : applicantDTO) {
 
-			// 이름 복호화
-			if (applicant.getName() != null) {
-				applicant.setName(cu.plainText(applicant.getName()));
-			}
-
 			// 경력 설정
-			applicant.setCareerType((applicant.getCareerType() == "N") ? "신입" : "경력");
-
+			applicant.setCareerType((applicant.getCareerType().equals("N")) ? "신입" : "경력");
 			// 합격 상태 설정
 			String passStage = switch (applicant.getPassStage()) {
 			case 0 -> "신규지원";
@@ -122,5 +116,10 @@ public class ApplicantService {
 		return applicantDTO;
 
 	}//manufactureApplicantDTO
+	
+	public int modifyResumeReadStatus(int resumeSeq) {
+		
+		return applicantMapper.updateResumeReadStatus(resumeSeq);
+	}
 
 }

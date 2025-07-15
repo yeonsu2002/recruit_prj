@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.querySelectorAll('.col-resume').forEach( e => {
 		e.addEventListener('click', function(){
 			const resumeSeq = this.getAttribute('data-resume');
-			location.href = '/corp/applicant/resume/' + resumeSeq;			
+			const jobPostingSeq = this.getAttribute('data-posting');
+			location.href = `/corp/applicant/resume/${resumeSeq}/${jobPostingSeq}`;			
 		});
 	});
 	

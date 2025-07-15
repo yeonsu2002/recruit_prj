@@ -1,5 +1,7 @@
 package kr.co.sist.corp.controller;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,14 @@ import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.service.ApplicantService;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.CorpRepository;
+import kr.co.sist.login.UserRepository;
+import kr.co.sist.user.dto.LinkDTO;
+import kr.co.sist.user.dto.ResumeResponseDTO;
+import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.user.service.MessageService;
+import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -29,8 +39,13 @@ import lombok.RequiredArgsConstructor;
 public class ApplicantController {
 
 	private final CorpRepository corpRepos;
+	private final UserRepository userRepos;
 
 	private final ApplicantService applicantServ;
+	private final ResumeService resumeServ;
+	private final MessageService messageServ;
+
+	private final CipherUtil cu;
 
 	// 처음 지원자 관리 접근시 해당 회사의 모든 지원자 가져오기
 	@GetMapping("/corp/applicant")
@@ -95,16 +110,51 @@ public class ApplicantController {
 		searchDTO.setCorpNo(corp.getCorpNo());
 
 		List<ApplicantDTO> applicants = applicantServ.searchApplicant(searchDTO);
-
 		result.put("applicants", applicants);
 
 		return result;
 	}// applicantSearch
-	
-	//지원자 이력서 페이지로 넘어가기
-	@GetMapping("/corp/applicant/resume/{resumeSeq}")
-	public String applicantResume(@PathVariable int resumeSeq) {
-		
-		return "";
+
+	// 지원자 이력서 페이지로 넘어가기
+	@GetMapping("/corp/applicant/resume/{resumeSeq}/{jobPostingSeq}")
+	public String applicantResume(@PathVariable int resumeSeq, @PathVariable int jobPostingSeq, Model model,
+			@AuthenticationPrincipal CustomUser corpInfo) {
+
+		// 응답용 이력서 객체
+		ResumeResponseDTO resumeData = resumeServ.searchOneDetailResume(resumeSeq);
+
+		// 사용자 정보 바인딩
+//		UserEntity resumeUser = userRepos.findById(resumeData.getResume().getEmail()).orElse(null);
+//		resumeUser.setPhone(cu.plainText(resumeUser.getPhone()));
+//		resumeUser.setBirth(resumeUser.getBirth().substring(0, 4));
+//		model.addAttribute("resumeUser", resumeUser);
+		UserEntity userEntity = userRepos.findById(resumeData.getResume().getEmail()).orElse(null);
+		UserDTO userDTO = new UserDTO(userEntity);
+		userDTO.setPhone(cu.plainText(userDTO.getPhone()));
+		model.addAttribute("resumeUser", userDTO);
+
+		// 지원서 열람 처리
+		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq);
+
+		// 지원서 첫 열람시 사용자에게 메일 보내기
+		if (cnt > 0) {
+			CorpEntity corp = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+			messageServ.addResumeReadNotification(userDTO, corp, jobPostingSeq);
+		}
+
+		// 이력서 정보 바인딩
+		model.addAttribute("resumeData", resumeData);
+		model.addAttribute("resume", resumeData.getResume());
+		model.addAttribute("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
+		model.addAttribute("positions", resumeData.getPositions());
+		model.addAttribute("skills", resumeData.getSkills());
+		model.addAttribute("educations", resumeData.getEducations());
+		model.addAttribute("careers", resumeData.getCareers());
+		model.addAttribute("projects", resumeData.getProjects());
+		model.addAttribute("additionals", resumeData.getAdditionals());
+		model.addAttribute("introductions", resumeData.getIntroductions());
+
+		return "/corp/applicant/applicant_resume";
 	}
+
 }

@@ -106,6 +106,12 @@ ORDER BY
     WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
 </update>
 
+<update id="updateScrapN" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+	UPDATE RESUME_SCRAP
+    SET is_scrapped = 'N'
+    WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</update>
+
 <delete id="deleteScrap">
     DELETE FROM RESUME_SCRAP
     WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}

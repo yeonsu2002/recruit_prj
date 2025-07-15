@@ -23,28 +23,23 @@
 							<option value="25">25개</option>
 							<option value="50">50개</option>
 							<option value="100">100개</option>
-						</select> 
-						<select name="postingStatus">
+						</select> <select name="postingStatus">
 							<option value="">전체 공고</option>
 							<option value="progress">진행중인 공고</option>
 							<option value="closed">마감된 공고</option>
-						</select> 
-						<select name="postingTitle">
-						</select> 
-						<select name="applicationStatus">
+						</select> <select name="postingTitle">
+						</select> <select name="applicationStatus">
 							<option value="3">전체 지원상태</option>
 							<option value="0">미열람</option>
 							<option value="1">열람</option>
 							<option value="2">지원 취소</option>
-						</select> 
-						<select name="passStage">
+						</select> <select name="passStage">
 							<option value="4">전체 합격 상태</option>
 							<option value="0">신규지원</option>
 							<option value="1">서류통과</option>
 							<option value="2">최종합격</option>
 							<option value="3">불합격</option>
-						</select> 
-						<input type="text" name="keyword" placeholder="지원자명, 공고제목 검색">
+						</select> <input type="text" name="keyword" placeholder="지원자명, 공고제목 검색">
 						<button class="search-btn">검색</button>
 					</div>
 				</div>
@@ -69,7 +64,9 @@
 							<div class="col-period" th:text="${applicant.careerType}"></div>
 							<div class="col-position" th:text="${applicant.postingTitle}"></div>
 							<div class="col-company" th:text="${applicant.statusName}"></div>
-							<div class="col-resume" th:attr="data-resume=${applicant.resumeSeq}" th:text="${applicant.title}"></div>
+							<div class="col-resume"
+								th:attr="data-resume=${applicant.resumeSeq}, data-posting=${applicant.jobPostingSeq}"
+								th:text="${applicant.title}"></div>
 							<div class="col-date" th:text="${applicant.applicationDate}"></div>
 							<div class="col-status">
 								<span class="status-badge status-applying"
