@@ -113,8 +113,8 @@ setInterval(() => moveSlide(1), 5000);
   <div class="notice-wrapper">
   
   <div class="user-info-box">
-    <p class="user-welcome" th:text="${user != null ? user.name : 'Guest'}"></p>
-    <p class="user-email" th:text="${user != null ? user.email : '이메일 없음'}"></p>
+    <p class="user-welcome" th:text="${user != null ? user.name : 'Guest'}">사용자</p>
+    <p class="user-email" th:text="${user != null ? user.email : '로그인 필요'}">이메일 없음</p>
     <div class="user-buttons">
       <button>이력서작성</button>
       <button>마이페이지</button>

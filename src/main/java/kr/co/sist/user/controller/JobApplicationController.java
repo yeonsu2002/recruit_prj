@@ -1,96 +1,72 @@
 package kr.co.sist.user.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpSession;
-import kr.co.sist.user.dto.JobApplicationDTO;
-import kr.co.sist.user.dto.UserDTO;  // 사용자 정보 DTO (로그인한 사용자)
+import kr.co.sist.jwt.CustomUser;
+import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.service.JobApplicationService;
-import kr.co.sist.user.service.JobPostingService;
+import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
-    private final JobPostingService jobPostingService;
+
+    /**
+     * 로그인한 사용자의 이메일로 이력서 목록을 JSON 형태로 반환
+     * - AJAX 등에서 호출하여 사용
+     */
+    @GetMapping("/user/resume")
+    public ResponseEntity<List<ResumeDTO>> getResumes(@AuthenticationPrincipal CustomUser userInfo) {
+        List<ResumeDTO> resumes = jobApplicationService.getResumesByEmail(userInfo.getEmail());
+        return ResponseEntity.ok(resumes);
+    }
+
+    /**
+     * 지원하기 처리: 선택한 이력서와 공고로 지원 등록
+     * - 성공 시 "지원이 완료되었습니다." 반환
+     * - 실패 시 에러 메시지와 400 상태 반환
+     */
+    @PostMapping("/apply")
+    public ResponseEntity<String> applyToJob(
+            @RequestParam("resumeSeq") Integer resumeSeq,
+            @RequestParam("jobPostingSeq") Integer jobPostingSeq,
+            @AuthenticationPrincipal CustomUser userInfo) {
+        try {
+            jobApplicationService.applyToJobUsingResumeAttachments(resumeSeq, jobPostingSeq, userInfo.getEmail());
+            return ResponseEntity.ok("지원이 완료되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace(); // ✅ 콘솔에 전체 에러 로그 출력
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("지원 실패: " + (e.getMessage() != null ? e.getMessage() : "알 수 없는 오류"));
+        }
+    }
+
+    /**
+     * 타임리프로 렌더링하는 이력서 목록 페이지
+     * - Model에 이력서 목록 넣고 user/resume-list.html 뷰 반환
+     */
+    @GetMapping("/user/resume/resume_form")
+    public String showResumeList(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+        String email = userInfo.getEmail();
+        List<ResumeDTO> resumes = jobApplicationService.getResumesByEmail(email);
+        model.addAttribute("resumes", resumes);
+        return "user/resume-list";
+    }
     
-    @Autowired
-    public JobApplicationController(JobApplicationService jobApplicationService, JobPostingService jobPostingService) {
-        this.jobApplicationService = jobApplicationService;
-        this.jobPostingService = jobPostingService;
-    }
-
-    /**
-     * 공고 상세 페이지로 이동하여 지원하기 폼을 제공
-     */
-    @GetMapping("/user/job_application/job_apply")
-    public String applyForJob(@RequestParam Integer jobPostingSeq, HttpSession session, Model model) {
-		/*
-		 * // 세션에서 로그인된 사용자 확인 UserDTO loggedInUser = (UserDTO)
-		 * session.getAttribute("loggedInUser");
-		 * 
-		 * // 로그인된 사용자가 없으면 로그인 페이지로 리다이렉트 if (loggedInUser == null) { return
-		 * "redirect:/login"; // 로그인 페이지로 리다이렉트 }
-		 */
-    	
-    	
-    	    UserDTO user = new UserDTO();
-    	    user.setEmail("testuser@domain.com");
-    	    user.setName("테스트 사용자");
-    	    user.setPhone("010-1234-5678");
-
-    	    // 사용자 정보를 모델에 담아서 job_apply.html로 전달
-    	    model.addAttribute("user", user);
-    	    model.addAttribute("jobPosting", jobPostingService.findById(jobPostingSeq));
-
-    	    return "user/job_application/job_apply";  // job_apply.html로 이동
-    	}
-
-
-    /**
-     * 지원하기 처리 (폼에서 지원 버튼 클릭 후)
-     */
-    @PostMapping("/user/job_application/job_apply")
-    public String applyJob(@RequestParam Integer jobPostingSeq,
-                           @RequestParam Integer resumeSeq,   // 선택한 이력서 번호
-                           @RequestParam String applicationStatus, // 지원 상태
-                           @RequestParam(required = false) String interviewDate, // 면접 날짜 (옵션)
-                           Model model) {
-
-        // 로그인 없이 임시 사용자 정보 설정
-        UserDTO user = new UserDTO();
-        user.setEmail("testuser@domain.com");
-        user.setName("테스트 사용자");
-        user.setPhone("010-1234-5678");
-
-        // JobApplicationDTO 객체 생성 및 값 설정
-        JobApplicationDTO jobApplicationDTO = new JobApplicationDTO();
-        jobApplicationDTO.setJobPostingSeq(jobPostingSeq);  // 공고 시퀀스
-        jobApplicationDTO.setResumeSeq(resumeSeq);          // 선택한 이력서 시퀀스
-        jobApplicationDTO.setApplicationStatus(applicationStatus);  // 지원 상태 (지원완료 등)
-
-        // 지원 날짜는 현재 날짜로 설정
-        String applicationDate = java.time.LocalDate.now().toString();  // LocalDate로 현재 날짜 구하기
-        jobApplicationDTO.setApplicationDate(applicationDate);
-
-        // 면접 날짜가 입력되지 않았다면 null 처리
-        jobApplicationDTO.setInterviewDate(interviewDate != null ? interviewDate : "");
-
-        // 읽지 않음 상태로 설정 (기본값 "N")
-        jobApplicationDTO.setIsRead("N");
-
-        // DB에 지원 정보 저장
-        jobApplicationService.applyForJob(jobApplicationDTO);
-
-        // 사용자에게 성공 메시지와 함께 공고 목록을 다시 보여줌
-        model.addAttribute("message", "지원이 완료되었습니다!");
-
-        // 공고 목록 페이지로 리다이렉트
-        return "redirect:/user/job_posting/job_posting";  // 공고 목록으로 리다이렉트
-    }
+    
+    
 }

@@ -1,6 +1,5 @@
 package kr.co.sist.user.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,37 +7,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
+import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
+import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequiredArgsConstructor
 public class MainPageController {
-
-    @Autowired
-    private UserRepository ur;
     
-    @Autowired
-    private CipherUtil cipherUtil;
+    private final UserRepository ur;
+    private final CipherUtil cu;
     
-    @GetMapping("/user/main_page")
-    public String MainPage(@AuthenticationPrincipal CustomUser user, Model model) {
-        // UserEntity를 데이터베이스에서 조회
-        UserEntity userEntity = ur.findById(user.getEmail()).orElse(null);
+    @GetMapping("/user/main")
+    public String MainPage(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 
-        if (userEntity != null) {
-            // name이 암호화된 경우 복호화
-            if (userEntity.getName() != null) {
-                userEntity.setName(cipherUtil.plainText(userEntity.getName()));
-            }
-            // 디버깅: 복호화된 이름 출력
-            System.out.println(userEntity.getName() + "--------------------------------");
+        // 사용자 정보 가져오기
+        UserEntity userEntity = ur.findById(userInfo.getEmail()).orElse(null);
+        if(userEntity == null) { 
+            return "redirect:/accessDenied"; 
         }
 
-        // Model에 userEntity 및 user 객체를 전달
-        model.addAttribute("userEntity", userEntity);
+        // 복호화 처리
+        try {
+            userEntity.setName(cu.plainText(userEntity.getName()));
+        } catch (Exception e) {
+            System.out.println("복호화 실패: " + e.getMessage());
+            userEntity.setName("복호화 실패");
+        }
+
+        // UserDTO로 변환 후 model에 추가
+        UserDTO user = new UserDTO(userEntity);
         model.addAttribute("user", user);
 
+        // Main page로 이동
         return "user/main_page";
     }
-
 }

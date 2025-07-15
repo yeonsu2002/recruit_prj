@@ -1,39 +1,62 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//MyBatis//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.user.mapper.JobApplicationMapper">
 
-  <!-- 지원하기 데이터 삽입 -->
-  <insert id="insertJobApplication" parameterType="kr.co.sist.user.dto.JobApplicationDTO">
+    <!-- 1. 이메일로 이력서 조회 -->
+    <select id="selectResumesByEmail" resultType="kr.co.sist.user.dto.ResumeDTO">
+        SELECT
+            resume_seq,
+            email,
+            title,
+            image,
+            introduction,
+            created_at,
+            updated_at,
+            career_type,
+            is_public
+        FROM RESUME
+        WHERE email = #{email}
+    </select>
+
+   <insert id="insertJobApplication" parameterType="map">
     INSERT INTO JOB_APPLICATION (
-      resume_seq, job_posting_seq, application_status, application_date, is_read
+        resume_seq,
+        job_posting_seq,
+        application_status,
+        application_date,
+        interview_date,
+        is_read,
+        pass_stage
     ) VALUES (
-      #{resumeSeq}, #{jobPostingSeq}, #{applicationStatus}, #{applicationDate}, #{isRead}
+        #{resumeSeq},
+        #{jobPostingSeq},
+        #{applicationStatus},
+        #{applicationDate},
+        #{interviewDate},
+        #{isRead},
+        #{passStage}
     )
-  </insert>
+</insert>
 
-  <!-- 지원 상태 조회 -->
-  <select id="selectApplicationStatus" parameterType="Integer" resultType="String">
-    SELECT application_status 
-    FROM JOB_APPLICATION 
-    WHERE resume_seq = #{resumeSeq} AND job_posting_seq = #{jobPostingSeq}
-  </select>
-
-  <!-- 특정 지원 내역 조회 -->
-  <select id="selectJobApplication" parameterType="Integer" resultMap="jobApplicationResultMap">
-    SELECT * 
-    FROM JOB_APPLICATION 
-    WHERE job_application_seq = #{jobApplicationSeq}
-  </select>
-
-  <!-- jobApplicationResultMap 정의 -->
-  <resultMap id="jobApplicationResultMap" type="kr.co.sist.user.dto.JobApplicationDTO">
-    <id property="jobApplicationSeq" column="job_application_seq"/>
-    <result property="resumeSeq" column="resume_seq"/>
-    <result property="jobPostingSeq" column="job_posting_seq"/>
-    <result property="applicationStatus" column="application_status"/>
-    <result property="applicationDate" column="application_date"/>
-    <result property="isRead" column="is_read"/>
-  </resultMap>
+    <!-- 3. (DTO 방식) 공고 지원 등록 -->
+  <insert id="insertJobApplicationVO" parameterType="kr.co.sist.user.dto.JobApplicationDTO">
+    INSERT INTO JOB_APPLICATION (
+        resume_seq,
+        job_posting_seq,
+        application_status,
+        application_date,
+        interview_date,
+        is_read,
+        pass_stage
+    ) VALUES (
+        #{resumeSeq},
+        #{jobPostingSeq},
+        #{applicationStatus},
+        #{applicationDate},
+        #{interviewDate,jdbcType=VARCHAR},  <!-- interviewDate에 jdbcType 명시 -->
+        #{isRead},
+        #{passStage}
+    )
+</insert>
 
 </mapper>

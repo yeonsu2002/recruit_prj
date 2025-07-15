@@ -10,453 +10,147 @@
 <link rel="stylesheet" th:href="@{/user/jobPosting/css/job_posting_detail.css}"/>
 <style type="text/css">
 </style>     
-<script type="text/javascript">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    const $modal = $('#applyModal');
+    let selectedResumeId = null;
 
-	document.addEventListener('DOMContentLoaded', function() {
-	    const applyBtn = document.getElementById('applyBtn');
-	    const modal = document.getElementById('applyModal');
-	    const closeBtn = document.getElementById('closeBtn');
-	    const cancelBtn = document.getElementById('cancelBtn');
-	    const confirmBtn = document.getElementById('confirmBtn');
+    // 모달 열기
+    $('#applyBtn').on('click', function (e) {
+        e.preventDefault();
+        $modal.show().addClass('show');
+        fetchUserResumes();
+        $('#attachmentList').empty(); // 첨부파일 리스트 초기화
+    });
 
-	    // 요소 존재 확인 후 오류 방지
-	    if (!applyBtn || !modal) {
-	        console.error('필요한 요소를 찾을 수 없습니다:', {
-	            applyBtn: !!applyBtn,
-	            modal: !!modal
-	        });
-	        return;
-	    }
+    // 모달 닫기
+    function closeModal() {
+        $modal.hide().removeClass('show');
+        selectedResumeId = null;
+        $('.resume-item').removeClass('selected');
+        $('#attachmentList').empty();
+    }
 
-	    // 페이지 로드 시 모달 강제 닫기
-	    modal.style.display = 'none';
-	    modal.classList.remove('show');
+    $('#closeBtn, #cancelBtn').on('click', function () {
+        closeModal();
+    });
 
-	    // 사용자 정보 (DB에서 가져올 데이터)
-	    let userData = null;
-	    let uploadedFiles = [];
-	    let selectedResume = null;
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape' && $modal.hasClass('show')) {
+            closeModal();
+        }
+    });
 
-	    // 모달 열기 - 오류 처리 개선
-	    applyBtn.addEventListener('click', async (e) => {
-	        e.preventDefault();
-	        e.stopPropagation();
-	        
-	        try {
-	            console.log('지원하기 버튼 클릭됨');
-	            
-	            // 모달 먼저 표시
-	            modal.style.display = 'block';
-	            modal.classList.add('show');
-	            
-	            // 사용자 정보 로드 (오류 발생 시에도 모달은 유지)
-	            try {
-	                await loadUserData();
-	                
-	                if (userData) {
-	                    initResumeSelection();
-	                    initFileUpload();
-	                } else {
-	                    // 사용자 정보가 없어도 기본값으로 모달 표시
-	                    setDefaultUserData();
-	                    initResumeSelection();
-	                    initFileUpload();
-	                }
-	            } catch (error) {
-	                console.error('사용자 정보 로드 오류:', error);
-	                // 오류 발생 시 기본값 사용
-	                setDefaultUserData();
-	                initResumeSelection();
-	                initFileUpload();
-	            }
-	            
-	        } catch (error) {
-	            console.error('모달 열기 중 오류:', error);
-	            alert('오류가 발생했습니다: ' + error.message);
-	        }
-	    });
+    // 이력서 불러오기
+    function fetchUserResumes() {
+        $.ajax({
+            url: '/user/resume',
+            method: 'GET',
+            success: function (resumes) {
+                renderResumeList(resumes);
+            },
+            error: function () {
+                alert('이력서 불러오기에 실패했습니다.');
+            }
+        });
+    }
 
-	
-	    // 모달 닫기
-	    function closeModal() {
-	        if (modal) {
-	            modal.style.display = 'none';
-	            modal.classList.remove('show');
-	        }
-	        
-	        // 파일 업로드 초기화
-	        uploadedFiles = [];
-	        const uploadedFilesContainer = document.getElementById('uploadedFiles');
-	        if (uploadedFilesContainer) {
-	            uploadedFilesContainer.innerHTML = '';
-	        }
-	        const fileInput = document.getElementById('fileInput');
-	        if (fileInput) {
-	            fileInput.value = '';
-	        }
-	        
-	        // 이력서 선택 초기화
-	        selectedResume = null;
-	        
-	        // 라디오 버튼 선택 해제
-	        const resumeRadios = document.querySelectorAll('input[name="selectedResume"]');
-	        resumeRadios.forEach(radio => {
-	            radio.checked = false;
-	        });
-	        
-	        // 선택 스타일 제거
-	        const resumeItems = document.querySelectorAll('.resume-item');
-	        resumeItems.forEach(item => {
-	            item.classList.remove('selected');
-	        });
-	    }
+    function renderResumeList(resumes) {
+        const $container = $('.resume-section');
+        $container.empty();
 
-	    // 이벤트 리스너들 - null 체크 추가
-	    if (closeBtn) {
-	        closeBtn.addEventListener('click', (e) => {
-	            e.preventDefault();
-	            e.stopPropagation();
-	            closeModal();
-	        });
-	    }
-	    
-	    if (cancelBtn) {
-	        cancelBtn.addEventListener('click', (e) => {
-	            e.preventDefault();
-	            e.stopPropagation();
-	            closeModal();
-	        });
-	    }
+        if (!resumes || resumes.length === 0) {
+            $container.append('<p>등록된 이력서가 없습니다.</p>');
+            return;
+        }
 
-	    // 모달 외부 클릭 시 닫기
-	    modal.addEventListener('click', (e) => {
-	        if (e.target === modal) {
-	            e.preventDefault();
-	            e.stopPropagation();
-	            closeModal();
-	        }
-	    });
+        resumes.forEach((resume, index) => {
+            const resumeId = resume.resumeSeq;
 
-	    // ESC 키로 모달 닫기
-	    document.addEventListener('keydown', (e) => {
-	        if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
-	            e.preventDefault();
-	            closeModal();
-	        }
-	    });
+            const resumeItem = $(`
+                <div class="resume-item">
+                    <input type="radio" id="resume_${resumeId}" name="selectedResume" value="${resumeId}" class="resume-radio">
+                    <label for="resume_${resumeId}" class="resume-label">
+                        <div class="resume-icon"></div>
+                        <div class="resume-info">
+                            <div class="resume-title">${resume.title}</div>
+                            <div class="resume-meta">${resume.createdAt || ''} 등록</div>
+                        </div>
+                    </label>
+                </div>
+            `);
 
-	    // 이력서 선택 관련 함수 - 오류 방지
-	    function initResumeSelection() {
-	        try {
-	            const resumeRadios = document.querySelectorAll('input[name="selectedResume"]');
-	            
-	            // 첫 번째 이력서를 기본 선택으로 설정
-	            if (userData && userData.resumes && userData.resumes.length > 0) {
-	                selectedResume = userData.resumes[0].id;
-	                const firstRadio = document.querySelector(`input[value="${selectedResume}"]`);
-	                if (firstRadio) {
-	                    firstRadio.checked = true;
-	                }
-	            }
-	            
-	            resumeRadios.forEach((radio) => {
-	                radio.addEventListener('change', () => {
-	                    selectedResume = radio.value;
-	                    updateResumeSelection();
-	                });
-	            });
-	            
-	            // 초기 선택 상태 업데이트
-	            updateResumeSelection();
-	        } catch (error) {
-	            console.error('이력서 선택 초기화 오류:', error);
-	        }
-	    }
+            resumeItem.find('input').on('change', function () {
+                selectedResumeId = parseInt($(this).val(), 10);
+                $('.resume-item').removeClass('selected');
+                resumeItem.addClass('selected');
+                renderAttachmentList(resume.attachments || []);
+            });
 
-	    function updateResumeSelection() {
-	        try {
-	            const resumeItems = document.querySelectorAll('.resume-item');
-	            resumeItems.forEach((item) => {
-	                const radio = item.querySelector('input[type="radio"]');
-	                if (radio && radio.checked) {
-	                    item.classList.add('selected');
-	                } else {
-	                    item.classList.remove('selected');
-	                }
-	            });
-	        } catch (error) {
-	            console.error('이력서 선택 업데이트 오류:', error);
-	        }
-	    }
+            $container.append(resumeItem);
+        });
 
-	    // 파일 업로드 관련 함수 - 오류 방지
-	    function initFileUpload() {
-	        try {
-	            const uploadArea = document.getElementById('uploadArea');
-	            const fileInput = document.getElementById('fileInput');
+        if (resumes.length > 0) {
+            selectedResumeId = parseInt(resumes[0].resumeSeq, 10);
+            $(`#resume_${selectedResumeId}`).prop('checked', true);
+            $(`#resume_${selectedResumeId}`).closest('.resume-item').addClass('selected');
+            renderAttachmentList(resumes[0].attachments || []);
+        }
+    }
 
-	            if (!uploadArea || !fileInput) {
-	                console.warn('파일 업로드 요소를 찾을 수 없습니다');
-	                return;
-	            }
+    function renderAttachmentList(attachments) {
+        const $attachmentContainer = $('#attachmentList');
+        $attachmentContainer.empty();
 
-	            // 파일 업로드 이벤트
-	            uploadArea.addEventListener('click', () => {
-	                fileInput.click();
-	            });
+        if (!attachments || attachments.length === 0) {
+            $attachmentContainer.append('<p>첨부파일이 없습니다.</p>');
+            return;
+        }
 
-	            uploadArea.addEventListener('dragover', (e) => {
-	                e.preventDefault();
-	                uploadArea.classList.add('dragover');
-	            });
+        attachments.forEach(att => {
+            const attItem = $(`
+                <div class="attachment-item">
+                    <a href="/attachment/download/${att.id}" target="_blank">${att.fileName}</a>
+                </div>
+            `);
+            $attachmentContainer.append(attItem);
+        });
+    }
 
-	            uploadArea.addEventListener('dragleave', () => {
-	                uploadArea.classList.remove('dragover');
-	            });
+    // 지원하기 버튼 클릭
+    $('#confirmBtn').on('click', function () {
+        if (!selectedResumeId) {
+            alert('이력서를 선택해주세요.');
+            return;
+        }
 
-	            uploadArea.addEventListener('drop', (e) => {
-	                e.preventDefault();
-	                uploadArea.classList.remove('dragover');
-	                const files = e.dataTransfer.files;
-	                handleFiles(files);
-	            });
+        const jobPostingSeq = parseInt($('#jobPostingSeq').val(), 10);
+        if (!jobPostingSeq) {
+            alert('잘못된 공고 정보입니다.');
+            return;
+        }
 
-	            fileInput.addEventListener('change', (e) => {
-	                const files = e.target.files;
-	                handleFiles(files);
-	            });
-	        } catch (error) {
-	            console.error('파일 업로드 초기화 오류:', error);
-	        }
-	    }
+        $.ajax({
+            url: '/apply',
+            method: 'POST',
+            data: {
+                resumeSeq: selectedResumeId,
+                jobPostingSeq: jobPostingSeq
+            },
+            success: function () {
+                alert('지원 완료');
+                closeModal();
+            },
+            error: function (xhr) {
+                alert('지원 오류: ' + xhr.responseText);
+            }
+        });
+    });
+});
 
-	    function handleFiles(files) {
-	        try {
-	            Array.from(files).forEach(file => {
-	                // 파일 크기 제한 (5MB)
-	                if (file.size > 5 * 1024 * 1024) {
-	                    alert('파일 크기는 5MB를 초과할 수 없습니다.');
-	                    return;
-	                }
-
-	                // 중복 파일 체크
-	                if (uploadedFiles.some(f => f.name === file.name)) {
-	                    alert('이미 업로드된 파일입니다.');
-	                    return;
-	                }
-
-	                uploadedFiles.push(file);
-	                renderUploadedFiles();
-	            });
-	        } catch (error) {
-	            console.error('파일 처리 오류:', error);
-	        }
-	    }
-
-	    function renderUploadedFiles() {
-	        try {
-	            const uploadedFilesContainer = document.getElementById('uploadedFiles');
-	            if (!uploadedFilesContainer) return;
-	            
-	            uploadedFilesContainer.innerHTML = '';
-	            
-	            uploadedFiles.forEach((file, index) => {
-	                const fileDiv = document.createElement('div');
-	                fileDiv.className = 'uploaded-file';
-	                
-	                const fileSize = formatFileSize(file.size);
-	                const fileIcon = getFileIcon(file.name);
-	                
-	                fileDiv.innerHTML = `
-	                    <div class="file-info">
-	                        <span class="file-icon">${fileIcon}</span>
-	                        <span class="file-name">${file.name}</span>
-	                        <span class="file-size">${fileSize}</span>
-	                    </div>
-	                    <button class="remove-file" onclick="removeFile(${index})">×</button>
-	                `;
-	                
-	                uploadedFilesContainer.appendChild(fileDiv);
-	            });
-	        } catch (error) {
-	            console.error('파일 렌더링 오류:', error);
-	        }
-	    }
-
-	    // 전역 함수로 선언
-	    window.removeFile = function(index) {
-	        try {
-	            uploadedFiles.splice(index, 1);
-	            renderUploadedFiles();
-	        } catch (error) {
-	            console.error('파일 삭제 오류:', error);
-	        }
-	    };
-
-	    function formatFileSize(bytes) {
-	        if (bytes === 0) return '0 Bytes';
-	        const k = 1024;
-	        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-	        const i = Math.floor(Math.log(bytes) / Math.log(k));
-	        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-	    }
-
-	    function getFileIcon(filename) {
-	        const ext = filename.split('.').pop().toLowerCase();
-	        switch (ext) {
-	            case 'pdf': return '📄';
-	            case 'doc':
-	            case 'docx': return '📝';
-	            case 'txt': return '📄';
-	            default: return '📎';
-	        }
-	    }
-
-	    // 사용자 정보 불러오기 - 오류 처리 개선
-	    async function loadUserData() {
-	        try {
-	            console.log('사용자 정보 로드 시작');
-	            
-	            
-	            // 임시 데이터로 대체
-	            await new Promise(resolve => setTimeout(resolve, 100)); // 로딩 시뮬레이션
-	            setDefaultUserData();
-	            
-	            console.log('사용자 정보 로드 완료');
-	            
-	        } catch (error) {
-	            console.error('사용자 정보 로드 중 오류 발생:', error);
-	            throw error;
-	        }
-	    }
-
-	    // 사용자 정보 UI 업데이트
-	    function updateUserInfoUI() {
-	        try {
-	            if (!userData) return;
-	            
-	            // 사용자 이름 표시
-	            const nameElement = document.querySelector('.info-value');
-	            if (nameElement) {
-	                nameElement.textContent = userData.name;
-	            }
-	            
-	            // 이메일 표시
-	            const emailElement = document.querySelectorAll('.info-value')[1];
-	            if (emailElement) {
-	                emailElement.textContent = userData.email;
-	            }
-	            
-	            // 전화번호 표시
-	            const phoneElement = document.querySelectorAll('.info-value')[2];
-	            if (phoneElement) {
-	                phoneElement.textContent = userData.phone;
-	            }
-	            
-	            // 출생년도 표시
-	            const birthYearElement = document.querySelectorAll('.info-value')[3];
-	            if (birthYearElement) {
-	                birthYearElement.textContent = userData.birthYear;
-	            }
-	            
-	            // 이력서 목록 업데이트
-	            updateResumeList();
-	        } catch (error) {
-	            console.error('사용자 정보 UI 업데이트 오류:', error);
-	        }
-	    }
-
-	    // 이력서 목록 업데이트
-	    function updateResumeList() {
-	        try {
-	            const resumeContainer = document.querySelector('.resume-section');
-	            if (!resumeContainer || !userData.resumes) return;
-	            
-	            resumeContainer.innerHTML = '';
-	            
-	            userData.resumes.forEach((resume, index) => {
-	                const resumeItem = document.createElement('div');
-	                resumeItem.className = 'resume-item';
-	                
-	                const tagsHtml = resume.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-	                
-	                resumeItem.innerHTML = `
-	                    <input type="radio" id="resume_${resume.id}" name="selectedResume" value="${resume.id}" class="resume-radio">
-	                    <label for="resume_${resume.id}" class="resume-label">
-	                        <div class="resume-icon"></div>
-	                        <div class="resume-info">
-	                            <div class="resume-title">${resume.title}</div>
-	                            <div class="resume-meta">${resume.registeredDate} 등록</div>
-	                            <div class="resume-tags">${tagsHtml}</div>
-	                        </div>
-	                    </label>
-	                `;
-	                
-	                resumeContainer.appendChild(resumeItem);
-	            });
-	        } catch (error) {
-	            console.error('이력서 목록 업데이트 오류:', error);
-	        }
-	    }
-
-	    // 지원 확인 - 오류 처리 개선
-	    if (confirmBtn) {
-	        confirmBtn.addEventListener('click', async (e) => {
-	            e.preventDefault();
-	            
-	            if (confirmBtn.disabled) return;
-	            
-	            // 이력서 선택 확인
-	            if (!selectedResume) {
-	                alert('이력서를 선택해주세요.');
-	                return;
-	            }
-	            
-	            // 로딩 상태
-	            confirmBtn.disabled = true;
-	            const originalText = confirmBtn.innerHTML;
-	            confirmBtn.innerHTML = '<span class="loading"></span>지원 중...';
-	            
-	            try {
-	                // 실제 환경에서는 submitApplication() 함수 호출
-	                // await submitApplication();
-	                
-	                // 테스트용 - 2초 대기
-	                await new Promise(resolve => setTimeout(resolve, 2000));
-	                
-	                alert('지원이 완료되었습니다!');
-	                closeModal();
-	            } catch (error) {
-	                console.error('지원 중 오류 발생:', error);
-	                alert('지원 중 오류가 발생했습니다. 다시 시도해주세요.');
-	            } finally {
-	                confirmBtn.disabled = false;
-	                confirmBtn.innerHTML = originalText;
-	            }
-	        });
-	    }
-
-	    // 스크랩 기능
-	    const scrapBtn = document.getElementById('scrapBtn');
-	    const heartIcon = document.getElementById('heartIcon');
-
-	    if (scrapBtn && heartIcon) {
-	        scrapBtn.addEventListener('click', function() {
-	            try {
-	                if (heartIcon.textContent === '🤍') {
-	                    heartIcon.textContent = '❤️';
-	                    heartIcon.classList.add('liked');
-	                } else {
-	                    heartIcon.textContent = '🤍';
-	                    heartIcon.classList.remove('liked');
-	                }
-	            } catch (error) {
-	                console.error('스크랩 기능 오류:', error);
-	            }
-	        });
-	    }
-	});
 </script>
+
 </head>
 <body>
 <header>
@@ -598,96 +292,56 @@
 <!-- 모달창 -->
  <div id="applyModal" class="modal">
         <div class="modal-content">
+        <input type="hidden" id="jobPostingSeq" th:value="${jDto.jobPostingSeq}" />
             <div class="modal-header">
                 <h2>입사지원</h2>
                 <span class="close-btn" id="closeBtn">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="job-info">
-                    <div class="job-title">서버 백엔드 개발자</div>
-                    <div class="job-company">팩션엔스업컴퍼니</div>
+                   <div class="job-info">
+				    <div class="job-title" th:text="${jDto.postingTitle}">공고 제목</div>
+				    <div class="job-company" th:text="${jDto.corpNm}">회사명</div>
                 </div>
 
                 <div class="section-title">통합 계정정보</div>
                 <div class="info-section">
                     <div class="info-row">
                         <span class="info-label">이름</span>
-                        <span class="info-value">유연수</span>
+                        <span class="info-value" th:text="${user != null ? user.name : '게스트'}"></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">이메일</span>
-                        <span class="info-value">yeonsu0108@naver.com</span>
+                        <span class="info-value" th:text="${user != null ? user.email : '게스트'}"></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">연락처</span>
-                        <span class="info-value">010-2912-9954</span>
+                        <span class="info-value" th:text="${user != null ? user.phone : '게스트'}"></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">출생년도</span>
-                        <span class="info-value">2002</span>
+                        <span class="info-value" th:text="${user != null && user.birth != null ? user.birth : '정보 없음'}"></span>
                     </div>
                 </div>
 
                 <div class="section-title">지원 이력서 <span class="required">●</span></div>
                 <div class="resume-section">
+                    <th:block th:each="resume, stat : ${resumes}">
                     <div class="resume-item">
-                        <input type="radio" id="resume1" name="selectedResume" value="resume1" class="resume-radio" checked>
-                        <label for="resume1" class="resume-label">
+                        <input type="radio"   th:id="'resume' + ${stat.index}" name="selectedResume" th:value="${resume.resumeSeq}" class="resume-radio" th:checked="${stat.index == 0}">
+                        <label  th:for="'resume' + ${stat.index}" class="resume-label">
                             <div class="resume-icon"></div>
                             <div class="resume-info">
-                                <div class="resume-title">유연수 이력서입니다</div>
-                                <div class="resume-meta">2025.06.15 등록</div>
-                                <div class="resume-tags">
-                                    <span class="tag">기술스택</span>
-                                    <span class="tag">학력</span>
-                                    <span class="tag">경력/프로젝트</span>
-                                </div>
+                                <div class="resume-title"  th:text="${resume.title}"></div>
+                                <div class="resume-meta" th:text="|${resume.createdAt} 등록|"></div>
                             </div>
                         </label>
                     </div>
-                    <div class="resume-item">
-                        <input type="radio" id="resume2" name="selectedResume" value="resume2" class="resume-radio">
-                        <label for="resume2" class="resume-label">
-                            <div class="resume-icon"></div>
-                            <div class="resume-info">
-                                <div class="resume-title">백엔드 개발자 포트폴리오</div>
-                                <div class="resume-meta">2025.05.20 등록</div>
-                                <div class="resume-tags">
-                                    <span class="tag">Spring Boot</span>
-                                    <span class="tag">MySQL</span>
-                                    <span class="tag">AWS</span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                    <div class="resume-item">
-                        <input type="radio" id="resume3" name="selectedResume" value="resume3" class="resume-radio">
-                        <label for="resume3" class="resume-label">
-                            <div class="resume-icon"></div>
-                            <div class="resume-info">
-                                <div class="resume-title">신입 개발자 이력서</div>
-                                <div class="resume-meta">2025.04.10 등록</div>
-                                <div class="resume-tags">
-                                    <span class="tag">Java</span>
-                                    <span class="tag">프로젝트 경험</span>
-                                    <span class="tag">대학 전공</span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
+                    </th:block>
                 </div>
 
-                <div class="section-title">첨부 파일</div>
-                <div class="attachment-section">
-                    <div class="file-upload-area" id="uploadArea">
-                        <div class="upload-icon">📎</div>
-                        <div class="upload-text">같이 제출하실 추가 파일을 업로드해주세요</div>
-                        <div class="upload-subtext">PDF 참부를 추천드려요!</div>
-                        <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.txt">
-                    </div>
-                    <div class="uploaded-files" id="uploadedFiles"></div>
-                </div>
-
+               <div class="section-title">첨부 파일</div>
+				<div id="attachmentList" class="attachment-list"></div>
            
             </div>
             <div class="modal-buttons">
@@ -696,7 +350,7 @@
             </div>
         </div>
     </div>
-
+</div>
 </main>
 <footer>
 <div th:replace="~{fragments/footer :: footer}"></div>
