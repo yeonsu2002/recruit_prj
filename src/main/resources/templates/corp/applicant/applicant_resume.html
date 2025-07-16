@@ -170,23 +170,23 @@
 			</div>
 
 			<div class="modal-body">
-				<form method="post" action="#">
+				<form method="post" action="/corp/applicant/message">
 						<div class="form-row">
-							<select class="form-select" name="applicationStatus">
-								<option value="신규지원">신규지원</option>
-								<option value="서류통과">서류통과</option>
-								<option value="최종합격">최종합격</option>
-								<option value="불합격">불합격</option>
+							<select class="form-select" id="mail-option" name="passStage">
+								<option value="0">신규지원</option>
+								<option value="1">서류통과</option>
+								<option value="2">최종합격</option>
+								<option value="3">불합격</option>
 							</select>
 						</div>
 
 					<div class="email-section">
 						<div class="email-title">
-							<input type="text" class="email-title-input" placeholder="이메일 제목을 입력하세요">
+							<input type="text" class="email-title-input" name="messageTitle" placeholder="이메일 제목을 입력하세요">
 						</div>
 
 						<div class="email-body">
-							<textarea class="form-input email-textarea" name="emailBody" rows="12" placeholder="메일 내용을 입력하세요"></textarea>
+							<textarea class="form-input email-textarea" name="messageContent" rows="12" placeholder="메일 내용을 입력하세요"></textarea>
 						</div>
 					</div>
 
@@ -196,8 +196,12 @@
 					</div>
 
 					<button type="submit" class="submit-btn">
-						<span class="btn-send-icon">📧</span> 메일 보내기
+						<span class="btn-send-icon" id="send-mail">📧</span> 메일 보내기
+				
 					</button>
+					<input type="hidden" name="resumeSeq" th:value="${resume.resumeSeq}">
+					<input type="hidden" name="jobPostingSeq" th:value="${jobPostingSeq}">
+					<input type="hidden" name="email" th:value="${resumeUser.email}">
 				</form>
 			</div>
 		</div>

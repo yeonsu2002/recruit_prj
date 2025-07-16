@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			console.error('북마크 처리 실패:', error);
 		}
 	});
+	
+	//지원상태 변경 클릭시
+	document.querySelector('#interviewModal form').addEventListener('submit', function(){
+		alert('메일이 전송되었습니다.');
+	});
 
 });//DOMContentLoaded
 

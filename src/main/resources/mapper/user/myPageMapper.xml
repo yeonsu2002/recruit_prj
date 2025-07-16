@@ -14,4 +14,9 @@ where email = #{email}
 ORDER BY TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
 </select>
 
+<!-- 지원 회사 목록 가져오기 -->
+<select id="selectMyApplicant" parameterType="String" resultType="corpApplicantDTO">
+
+</select>
+
 </mapper>

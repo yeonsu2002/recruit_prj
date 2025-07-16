@@ -121,7 +121,7 @@ public class ApplicantController {
 			@AuthenticationPrincipal CustomUser corpInfo) {
 
 		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
-		
+
 		// 응답용 이력서 객체
 		ResumeResponseDTO resumeData = resumeServ.searchOneDetailResume(resumeSeq);
 
@@ -129,20 +129,20 @@ public class ApplicantController {
 		UserEntity userEntity = userRepos.findById(resumeData.getResume().getEmail()).orElse(null);
 
 		// 지원서 열람 처리
-		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq);
+		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq, jobPostingSeq);
 
 		// 지원서 첫 열람시 사용자에게 메일 보내기
 		if (cnt > 0) {
 			messageServ.addResumeReadNotification(userEntity, corpEntity, jobPostingSeq);
 		}
-		
-		//사용자 가공해서 바인딩
+
+		// 사용자 가공해서 바인딩
 		userEntity.setPhone(cu.plainText(userEntity.getPhone()));
 		userEntity.setBirth(userEntity.getBirth().substring(0, 4));
 		model.addAttribute("resumeUser", userEntity);
-		
-		//해당 지원서 스크랩 여부 가져오기
-		boolean isScraped = applicantServ.isScraped((long)resumeSeq, corpEntity.getCorpNo());
+
+		// 해당 지원서 스크랩 여부 가져오기
+		boolean isScraped = applicantServ.isScraped((long) resumeSeq, corpEntity.getCorpNo());
 
 		// 이력서 정보 바인딩
 		model.addAttribute("resumeData", resumeData);
@@ -156,32 +156,46 @@ public class ApplicantController {
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 		model.addAttribute("isScraped", isScraped);
+		model.addAttribute("jobPostingSeq", jobPostingSeq);
 
 		return "/corp/applicant/applicant_resume";
 	}
-	
-	//북마크 추가
+
+	// 북마크 추가
 	@PostMapping("/corp/bookmark/add/{resumeSeq}")
 	@ResponseBody
 	public String addBookmark(@PathVariable int resumeSeq, @AuthenticationPrincipal CustomUser corpInfo) {
-		
+
 		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
-		
-		applicantServ.addBoomark((long)resumeSeq, corpEntity.getCorpNo());
-		
+
+		applicantServ.addBoomark((long) resumeSeq, corpEntity.getCorpNo());
+
 		return "success";
 	}
-	
-	//북마크 제거
+
+	// 북마크 제거
 	@PostMapping("/corp/bookmark/remove/{resumeSeq}")
 	@ResponseBody
-	public String removeBookmark(@PathVariable int resumeSeq,  @AuthenticationPrincipal CustomUser corpInfo) {
-		
+	public String removeBookmark(@PathVariable int resumeSeq, @AuthenticationPrincipal CustomUser corpInfo) {
+
+		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+
+		applicantServ.removeBookmark(resumeSeq, corpEntity.getCorpNo());
+
+		return "success";
+	}
+
+	// 지원 상태 변경시 메시지 보내기
+	@PostMapping("/corp/applicant/message")
+	public String sendMessageToApplicant(int passStage, String messageTitle, String messageContent, int resumeSeq, String email, 
+			int jobPostingSeq, @AuthenticationPrincipal CustomUser corpInfo) {
+
 		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
 		
-		applicantServ.removeBookmark(resumeSeq, corpEntity.getCorpNo());
-		
-		return "success";
+		applicantServ.modifyPassStage(resumeSeq, jobPostingSeq, passStage); // 합격 상태 변경하기
+		messageServ.addMessage(email, corpEntity.getCorpNo(), messageTitle, messageContent);
+
+		return "redirect:/corp/applicant";
 	}
 
 }

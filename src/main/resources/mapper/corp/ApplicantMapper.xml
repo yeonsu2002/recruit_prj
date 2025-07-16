@@ -22,6 +22,7 @@
 		on ja.resume_seq = r.resume_seq
 		join member m on r.email = m.email
 		where jp.corp_no = #{corpNo}
+		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
 	</select>
 
 	<!-- 검색 조건에 맞는 지원자 불러오기 -->
@@ -60,6 +61,7 @@
 		<if test="passStage != 4">
 			and ja.pass_stage = #{passStage}
 		</if>
+		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
 	</select>
 
 	<!-- 해당 회사의 진행중인 공고 불러오기 -->
@@ -91,11 +93,25 @@
 		corp_no = #{corpNo}
 	</select>
 
+	<!-- 해당 지원서 가져오기 -->
+	<select id="selectOneApplicant" parameterType="corpApplicantDTO" resultType="corpApplicantDTO">
+		select JOB_APPLICATION_SEQ, RESUME_SEQ, JOB_POSTING_SEQ, APPLICATION_STATUS, APPLICATION_DATE, INTERVIEW_DATE, IS_READ, PASS_STAGE
+		from job_application
+		where job_posting_seq = #{jobPostingSeq} and resume_seq = #{resumeSeq}
+	</select>
+	
 	<!-- 해당 지원서 읽음 처리 -->
-	<update id="updateResumeReadStatus" parameterType="int">
+	<update id="updateResumeReadStatus" parameterType="corpApplicantDTO">
 		UPDATE job_application
 		SET application_status = 1, is_read = 'Y'
-		WHERE resume_seq = #{resumeSeq} AND is_read = 'N'
+		WHERE resume_seq = #{resumeSeq} AND is_read = 'N' AND job_posting_seq = #{jobPostingSeq}
+	</update>
+
+	<!-- 해당 지원서 지원 합격 상태 변경 -->
+	<update id="updateResumePassStage" parameterType="corpApplicantDTO">
+		UPDATE job_application
+		SET pass_stage = #{passStage}
+		WHERE resume_seq = #{resumeSeq} AND job_posting_seq = #{jobPostingSeq}
 	</update>
 
 
