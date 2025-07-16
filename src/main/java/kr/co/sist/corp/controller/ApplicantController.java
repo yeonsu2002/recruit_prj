@@ -120,27 +120,29 @@ public class ApplicantController {
 	public String applicantResume(@PathVariable int resumeSeq, @PathVariable int jobPostingSeq, Model model,
 			@AuthenticationPrincipal CustomUser corpInfo) {
 
+		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+		
 		// 응답용 이력서 객체
 		ResumeResponseDTO resumeData = resumeServ.searchOneDetailResume(resumeSeq);
 
-		// 사용자 정보 바인딩
-//		UserEntity resumeUser = userRepos.findById(resumeData.getResume().getEmail()).orElse(null);
-//		resumeUser.setPhone(cu.plainText(resumeUser.getPhone()));
-//		resumeUser.setBirth(resumeUser.getBirth().substring(0, 4));
-//		model.addAttribute("resumeUser", resumeUser);
+		// 사용자 가져오기
 		UserEntity userEntity = userRepos.findById(resumeData.getResume().getEmail()).orElse(null);
-		UserDTO userDTO = new UserDTO(userEntity);
-		userDTO.setPhone(cu.plainText(userDTO.getPhone()));
-		model.addAttribute("resumeUser", userDTO);
 
 		// 지원서 열람 처리
 		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq);
 
 		// 지원서 첫 열람시 사용자에게 메일 보내기
 		if (cnt > 0) {
-			CorpEntity corp = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
-			messageServ.addResumeReadNotification(userDTO, corp, jobPostingSeq);
+			messageServ.addResumeReadNotification(userEntity, corpEntity, jobPostingSeq);
 		}
+		
+		//사용자 가공해서 바인딩
+		userEntity.setPhone(cu.plainText(userEntity.getPhone()));
+		userEntity.setBirth(userEntity.getBirth().substring(0, 4));
+		model.addAttribute("resumeUser", userEntity);
+		
+		//해당 지원서 스크랩 여부 가져오기
+		boolean isScraped = applicantServ.isScraped((long)resumeSeq, corpEntity.getCorpNo());
 
 		// 이력서 정보 바인딩
 		model.addAttribute("resumeData", resumeData);
@@ -153,8 +155,33 @@ public class ApplicantController {
 		model.addAttribute("projects", resumeData.getProjects());
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
+		model.addAttribute("isScraped", isScraped);
 
 		return "/corp/applicant/applicant_resume";
+	}
+	
+	//북마크 추가
+	@PostMapping("/corp/bookmark/add/{resumeSeq}")
+	@ResponseBody
+	public String addBookmark(@PathVariable int resumeSeq, @AuthenticationPrincipal CustomUser corpInfo) {
+		
+		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+		
+		applicantServ.addBoomark((long)resumeSeq, corpEntity.getCorpNo());
+		
+		return "success";
+	}
+	
+	//북마크 제거
+	@PostMapping("/corp/bookmark/remove/{resumeSeq}")
+	@ResponseBody
+	public String removeBookmark(@PathVariable int resumeSeq,  @AuthenticationPrincipal CustomUser corpInfo) {
+		
+		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+		
+		applicantServ.removeBookmark(resumeSeq, corpEntity.getCorpNo());
+		
+		return "success";
 	}
 
 }

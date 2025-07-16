@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>이력서 상세보기</title>
 <link rel="stylesheet" th:href="@{/corp/applicant/applicant_resume.css}">
+<script th:src="@{/corp/applicant/applicant_resume.js}"></script>
 </head>
 <body>
 <header>
@@ -145,15 +146,15 @@
 
 		<div class="sidebar">
 			<div class="sidebar-buttons">
-				<button class="sidebar-btn position-btn" onclick="openModal()">
+				<button class="sidebar-btn position-btn" id="position-btn">
 					<span class="btn-icon">💼</span> <span class="btn-text">지원상태 변경</span>
 				</button>
 
-				<button class="sidebar-btn bookmark-btn" onclick="handleBookmark()">
+				<button th:data-resume-seq="${resume.resumeSeq}" class="sidebar-btn bookmark-btn" th:classappend="${isScraped} ? 'active'" id="bookmark-btn">
 					<span class="btn-icon">★</span> <span class="btn-text">스크랩</span>
 				</button>
 
-				<button class="sidebar-btn list-btn" onclick="handleGoBack()">
+				<button class="sidebar-btn list-btn" id="list-btn">
 					<span class="btn-icon">📋</span> <span class="btn-text">목록으로</span>
 				</button>
 			</div>
@@ -165,7 +166,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3>면접 안내 메일 보내기</h3>
-				<button type="button" class="modal-close" onclick="closeModal()">×</button>
+				<button type="button" class="modal-close" id="modal-close" >×</button>
 			</div>
 
 			<div class="modal-body">
@@ -202,40 +203,6 @@
 		</div>
 	</div>
 </main>
-
-<script>
-function openModal() {
-    document.getElementById('interviewModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('interviewModal').style.display = 'none';
-}
-
-function handleBookmark() {
-    const btn = document.querySelector('.bookmark-btn');
-    btn.classList.toggle('active');
-}
-
-function handleGoBack() {
-    window.history.back();
-}
-
-// 모달 외부 클릭 시 모달 닫기
-window.onclick = function(event) {
-    const modal = document.getElementById('interviewModal');
-    if (event.target === modal) {
-        closeModal();
-    }
-}
-
-// ESC 키로 모달 닫기
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeModal();
-    }
-});
-</script>
 <footer>
 	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </footer>

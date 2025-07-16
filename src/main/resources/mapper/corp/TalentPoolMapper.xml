@@ -100,6 +100,12 @@ ORDER BY
     VALUES (#{resumeSeq}, #{corpNo}, 'Y')
 </insert>
 
+<select id="selectScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+	select RESUME_SCRAP_SEQ, RESUME_SEQ, CORP_NO, IS_OFFERED, IS_SCRAPPED
+	from resume_scrap
+	where resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</select>
+
 <update id="updateScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
     UPDATE RESUME_SCRAP
     SET is_scrapped = 'Y'

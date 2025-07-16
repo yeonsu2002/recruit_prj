@@ -19,7 +19,11 @@ public interface TalentPoolMapper {
 
 	int insertScrap(ResumeScrapDTO sDTO);
 
+	ResumeScrapDTO selectScrap(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
+	
 	int updateScrap(ResumeScrapDTO sDTO);
+	
+	int updateScrapN(ResumeScrapDTO sDTO);
 	
 	int deleteScrap(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
 
