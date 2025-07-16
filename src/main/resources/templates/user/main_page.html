@@ -34,9 +34,107 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nextBtn').addEventListener('click', function() {
         moveSlide(1);
     });
-});
+    
+    
+    
+    
+    
+});//ready
+
+
 
 setInterval(() => moveSlide(1), 5000);
+
+// 알림 기능 - 로그인한 사용자만 사용 가능
+let isDropdownOpen = false;
+let unreadCount = 3;
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationDropdown');
+    
+    if (!dropdown) return; // 로그인하지 않은 경우 알림 기능 없음
+    
+    isDropdownOpen = !isDropdownOpen;
+    
+    if (isDropdownOpen) {
+        dropdown.classList.add('show');
+    } else {
+        dropdown.classList.remove('show');
+    }
+}
+
+function markAsRead(element) {
+    if (element.classList.contains('unread')) {
+        element.classList.remove('unread');
+        unreadCount--;
+        updateNotificationBadge();
+    }
+}
+
+function updateNotificationBadge() {
+    const badge = document.getElementById('notificationBadge');
+    if (!badge) return; // 로그인하지 않은 경우 배지 없음
+    
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function clearAllNotifications() {
+    const items = document.querySelectorAll('.notification-item');
+    items.forEach(item => {
+        if (item.classList.contains('unread')) {
+            item.classList.remove('unread');
+        }
+    });
+    unreadCount = 0;
+    updateNotificationBadge();
+    
+    // 알림 목록 비우기
+    setTimeout(() => {
+        const dropdown = document.getElementById('notificationDropdown');
+        if (dropdown) {
+            dropdown.innerHTML = '<div class="notification-empty">알림이 없습니다.</div>';
+        }
+    }, 300);
+}
+
+// 외부 클릭 시 드롭다운 닫기 - 로그인한 사용자만
+document.addEventListener('click', function(event) {
+    const notificationArea = document.querySelector('.notification-area');
+    if (notificationArea && !notificationArea.contains(event.target) && isDropdownOpen) {
+        toggleNotifications();
+    }
+});
+
+// 새 알림 추가 함수 (예시) - 로그인한 사용자만
+function addNewNotification(message, time, icon = '📢') {
+    const dropdown = document.getElementById('notificationDropdown');
+    if (!dropdown) return; // 로그인하지 않은 경우 알림 추가 불가
+    
+    const footer = dropdown.querySelector('.notification-footer');
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'notification-item unread';
+    newItem.onclick = function() { markAsRead(this); };
+    newItem.innerHTML = `
+        <div class="notification-content">
+            <div class="notification-icon-small">${icon}</div>
+            <div class="notification-text">
+                <div class="notification-message">${message}</div>
+                <div class="notification-time">${time}</div>
+            </div>
+        </div>
+    `;
+    
+    dropdown.insertBefore(newItem, footer);
+    unreadCount++;
+    updateNotificationBadge();
+}
+
 
 </script>
 </head>
@@ -46,167 +144,160 @@ setInterval(() => moveSlide(1), 5000);
 </header>
 <main>
 <div class="main-container">
-		<!-- 히어로 섹션 -->
-	<section class="hero-section">
-		<h1 class="hero-title">개발자 커리어의 시작</h1>
-		<p class="hero-subtitle">전국 최고의 IT 기업들이 당신을 기다리고 있습니다</p>
-		<div class="hero-search">
-			<input type="text" class="hero-search-box"
-				placeholder="어떤 포지션을 찾고 계신가요?" />
-			<button class="hero-search-button">🔍</button>
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+        <h1 class="hero-title">개발자 커리어의 시작</h1>
+        <p class="hero-subtitle">전국 최고의 IT 기업들이 당신을 기다리고 있습니다</p>
+        <div class="hero-search">
+            <input type="text" class="hero-search-box"
+                placeholder="어떤 포지션을 찾고 계신가요?" />
+            <button class="hero-search-button">🔍</button>
+        </div>
+    </section>
+    
+    <!-- 오른쪽 헤더부분 : 채용공고 + 공지 -->
+    <div class="side-by-side-section">
+      <div class="header-section">
+        <!-- Carousel Container -->
+        <div class="header-carousel-container">
+          <div class="header-carousel-track">
+            <!-- 타임리프를 이용하여 랜덤 공고 출력 -->
+          <th:block th:if="${randomPostings != null and randomPostings.size() > 0}">
+		    <th:block th:each="randomPosting : ${randomPostings}">
+		        <div class="main-img">
+		            <a th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${randomPosting.jobPostingSeq})}"
+		               class="main-img-link">
+		                <img th:src="@{'/images/' + ${randomPosting.corpNm} + '.jpg'}"
+		                     onerror="this.onerror=null;this.src='/images/default_img.jpg';" />
+		                <div class="main-content">
+		                    <h2 th:text="${randomPosting.corpNm}">회사 이름</h2>
+		                    <p th:text="${randomPosting.postingTitle != null ? randomPosting.postingTitle : '제목 없음'}">공고 제목</p>
+		                </div>
+		            </a>
+		        </div>
+		    </th:block>
+		</th:block>
+		<th:block th:unless="${randomPostings != null and randomPostings.size() > 0}">
+		    <div class="main-img">
+		        <img src="/images/default_img.jpg" />
+		        <div class="main-content">
+		            <h2>현재 랜덤 공고가 없습니다.</h2>
+		            <p>새로운 공고를 기다려 주세요.</p>
+		        </div>
+		    </div>
+		</th:block>
+	          </div>
+          <button class="header-carousel-btn prev" id="prevBtn">‹</button>
+          <button class="header-carousel-btn next" id="nextBtn">›</button>
+        </div>
+      </div>
+
+      <div class="notice-wrapper">
+        <div class="user-info-box">
+          <p class="user-welcome" th:text="${user != null ? user.name : 'Guest'}">사용자</p>
+          <p class="user-email" th:text="${user != null ? user.email : '로그인 필요'}">이메일 없음</p>
+        <div class="user-menu-buttons">
+		    <a th:href="@{/user/resume/resume_management}" class="user-menu-btn resume-btn">이력서작성</a>
+		    <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
 		</div>
-	</section>
-	
-<!-- 오른쪽 헤더부분 : 채용공고 + 공지 -->
-<div class="side-by-side-section">
-  <div class="header-section">
-    <!-- Carousel Container -->
-    <div class="header-carousel-container">
-      <div class="header-carousel-track">
-        <!-- 첫번째 공고 -->
-        <div class="main-img">
-          <img alt="삼성전자" src="/images/samsung.jpg" />
-          <div class="main-content">
-            <h2>삼성전자</h2>
-            <p>전산팀 서버 개발자 모집</p>
-        </div>
-        </div>	
-        <!-- 두번째 공고 -->
-        <div class="main-img">
-          <img alt="LG전자" src="/images/Lg.jpg" />
-          <div class="main-content">
-            <h2>LG전자</h2>
-            <p>웹 프론트엔드 개발자</p>
+          <!-- 알림 영역 (로그인한 사용자에게만 표시) -->
+          <div class="notification-area" th:if="${user != null}">
+            <div class="notification-header" onclick="toggleNotifications()">
+              <div class="notification-icon">
+                🔔
+                <span class="notification-badge" id="notificationBadge">3</span>
+              </div>
+            </div>
+            
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="notification-item unread" onclick="markAsRead(this)">
+                <div class="notification-content">
+                  <div class="notification-icon-small">📋</div>
+                  <div class="notification-text">
+                    <div class="notification-message">새로운 채용공고가 등록되었습니다: "네이버 프론트엔드 개발자"</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="notification-item unread" onclick="markAsRead(this)">
+                <div class="notification-content">
+                  <div class="notification-icon-small">✅</div>
+                  <div class="notification-text">
+                    <div class="notification-message">지원한 회사에서 서류 심사 결과가 나왔습니다.</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="notification-item unread" onclick="markAsRead(this)">
+                <div class="notification-content">
+                  <div class="notification-icon-small">🎯</div>
+                  <div class="notification-text">
+                    <div class="notification-message">관심 있는 기업에서 새로운 포지션이 열렸습니다.</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="notification-item" onclick="markAsRead(this)">
+                <div class="notification-content">
+                  <div class="notification-icon-small">📧</div>
+                  <div class="notification-text">
+                    <div class="notification-message">이력서 검토가 완료되었습니다.</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="notification-footer">
+                <button onclick="clearAllNotifications()">모든 알림 지우기</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 세번째 공고 -->
-        <div class="main-img">
-          <img alt="네이버" src="/images/naver.jpg" />
-          <div class="main-content">
-            <h2>네이버</h2>
-            <p>백엔드 개발자 채용</p>
-          </div>
-        </div>
-
-        <!-- 네번째 공고 -->
-        <div class="main-img">
-          <img alt="카카오" src="/images/kakao.jpg" />
-          <div class="main-content">
-            <h2>카카오</h2>
-            <p>모바일 앱 개발자</p>
-          </div>
+        <h2 style="color: #1DD45A;">Notice</h2>
+        <div class="notice-info">
+          <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
+          <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
         </div>
       </div>
-
-      <!-- 좌우 버튼 -->
-      <button class="header-carousel-btn prev" id="prevBtn">‹</button>
-      <button class="header-carousel-btn next" id="nextBtn">›</button>
- 
-    </div>
-</div>
-
-
-
-
-
-  <div class="notice-wrapper">
-  
-  <div class="user-info-box">
-    <p class="user-welcome" th:text="${user != null ? user.name : 'Guest'}">사용자</p>
-    <p class="user-email" th:text="${user != null ? user.email : '로그인 필요'}">이메일 없음</p>
-    <div class="user-buttons">
-      <button>이력서작성</button>
-      <button>마이페이지</button>
-    </div>
-  </div>
-
-  <h2 style="color: #1DD45A;">Notice</h2>
-  <div class="notice-info">
-    <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
-    <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
-  </div>
-</div>
-  </div>
-	<br><br>
-	
-	<!--  공고( 인기순 ) -->
-	<div class="announcement-section">
-  <h3>인기순</h3>
-  <br>
-  <div class="announcement-list">
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/samsung.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">삼성전자</div>
-      <div class="announcement-title"><strong>전산팀 (서버/ERP/개발) 경력직 채용</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
     </div>
     
-    <!-- 두번째 공고 -->
-     <div class="announcement-list">
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/Lg.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">LG전자</div>
-      <div class="announcement-title"><strong>웹 프론트엔드 개발자</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
+    <!-- 인기순 공고 섹션 -->
+    <div class="announcement-section">
+    <h3>인기순</h3>
+    <div class="announcement-list">
+        <th:block th:if="${popularPostings != null and popularPostings.size() > 0}">
+            <th:block th:each="posting : ${popularPostings}">
+                <div class="announcement-card">
+                    <a th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${posting.jobPostingSeq})}"
+                       class="announcement-card-link">
+                        <div class="image-wrapper">
+                            <img th:src="@{'/images/' + ${posting.corpNm} + '.jpg'}"
+                                 onerror="this.onerror=null;this.src='/images/default_img.jpg';" />
+                        </div>
+                        <div class="company-name" th:text="${posting.corpNm}">회사 이름</div>
+                        <div class="announcement-title">
+                            <strong th:text="${posting.postingTitle}">공고 제목</strong>
+                        </div>
+                        <div class="stack-name" th:text="${posting.stackName}">기술 스택</div>
+                        <div class="company-info">
+                            <span th:text="${posting.roadAddress}">위치</span> |
+                            <span th:text="${posting.expLevel}">경력</span>
+                        </div>
+                    </a>
+                </div>
+            </th:block>
+        </th:block>
+        <th:block th:unless="${popularPostings != null and popularPostings.size() > 0}">
+            <div class="no-postings">
+                <p>현재 인기 공고가 없습니다.</p>
+            </div>
+        </th:block>
     </div>
-    
-        
-    <!-- 세번째 공고 -->
-     <div class="announcement-list">
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/naver.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">네이버</div>
-      <div class="announcement-title"><strong>백엔드 개발자 채용</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
-    </div>
-    
-        
-    <!-- 네번째 공고 -->
-     <div class="announcement-list">
-    <div class="announcement-card">
-      <div class="image-wrapper">
-        <img src="/images/kakao.jpg" alt="회사 이미지" />
-      </div>
-
-      <div class="company-name">카카오</div>
-      <div class="announcement-title"><strong>모바일 앱 개발자</strong></div>
-      <div class="stack-name">Java | JavaScript | Spring | Mybatis</div>
-      <div class="company-info">
-        <span>서울 마포구</span> | <span>경력 3년</span>
-      </div>
-    </div>
-    </div>
-    </div>
-    </div>
-
-  </div>
 </div>
-	
-
 </div>
 </main>
 <footer>
-<div th:replace="~{fragments/footer :: footer}"></div>
+  <div th:replace="~{fragments/footer :: footer}"></div>
 </footer>
 </body>
 </html>
-

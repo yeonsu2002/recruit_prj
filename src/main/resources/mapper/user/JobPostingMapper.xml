@@ -25,49 +25,45 @@
     <result property="corpUrl" column="corpUrl"/>
     <result property="positionName" column="positionName"/>
     <result property="positionSeq" column="positionSeq"/>
-    
-    <!-- 기술 스택 컬렉션 - column 속성 추가 -->
-    <collection property="techStacks" ofType="string" column="stackName">
-        <result column="stackName"/>
-    </collection>
+    <result property="stackName" column="stackName"/>
 </resultMap>
 
 <!-- 전체 공고 조회 -->
 <select id="selectAllJobPostings" resultMap="jobPostResultMap">
-    SELECT
-        jp.job_posting_seq AS jobPostingSeq,
-        jp.posting_title AS postingTitle,
-        jp.posting_detail AS postingDetail,
-        jp.exp_level AS expLevel,
-        jp.recruit_cnt AS recruitCnt,
-        jp.salary AS salary,
-        jp.posting_start_dt AS postingStartDt,
-        jp.posting_end_dt AS postingEndDt,
-        jp.workday AS workday,
-        jp.work_start_time AS workStartTime,
-        jp.work_end_time AS workEndTime,
-        jp.view_cnt AS viewCnt,
-        jp.zipcode AS zipcode,
-        jp.road_address AS roadAddress,
-        jp.detail_address AS detailAddress,
-        jp.position_seq AS positionSeq,
-        c.corp_nm AS corpNm,
-        c.corp_info AS corpInfo,
-        c.corp_url AS corpUrl,
-        pc.position_name AS positionName,
-        ts.stack_name AS stackName
-    FROM JOB_POSTING jp
-    JOIN COMPANY c ON jp.corp_no = c.corp_no
-    JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
-    LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
-    LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
-    ORDER BY jp.job_posting_seq, ts.stack_name
+   SELECT
+    jp.job_posting_seq AS jobPostingSeq,
+    jp.posting_title AS postingTitle,
+    jp.posting_detail AS postingDetail,
+    jp.exp_level AS expLevel,
+    jp.recruit_cnt AS recruitCnt,
+    jp.salary AS salary,
+    jp.posting_start_dt AS postingStartDt,
+    jp.posting_end_dt AS postingEndDt,
+    jp.workday AS workday,
+    jp.work_start_time AS workStartTime,
+    jp.work_end_time AS workEndTime,
+    jp.view_cnt AS viewCnt,
+    jp.zipcode AS zipcode,
+    jp.road_address AS roadAddress,
+    jp.detail_address AS detailAddress,
+    jp.position_seq AS positionSeq,
+    c.corp_nm AS corpNm,
+    c.corp_info AS corpInfo,
+    c.corp_url AS corpUrl,
+    pc.position_name AS positionName,
+    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName  -- null일 경우 기본값 처리
+FROM JOB_POSTING jp
+JOIN COMPANY c ON jp.corp_no = c.corp_no
+JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
+LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
+LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+ORDER BY jp.job_posting_seq, ts.stack_name
 </select>
 
 <!-- 특정 jobPostingSeq에 해당하는 공고 조회 -->
-<select id="selectJobPostingById" parameterType="Integer" resultMap="jobPostResultMap">
+<select id="selectJobPostingsBySeq" parameterType="Integer" resultMap="jobPostResultMap">
     SELECT
-        jp.job_posting_seq AS jobPostingSeq,
+           jp.job_posting_seq AS jobPostingSeq,
         jp.posting_title AS postingTitle,
         jp.posting_detail AS postingDetail,
         jp.exp_level AS expLevel,
@@ -105,5 +101,47 @@
     WHERE jpts.job_posting_seq = #{jobPostingSeq}
     ORDER BY ts.stack_name
 </select>
+
+<!-- 조회수 -->
+<update id="updateJobPostingViewCount" parameterType="map">
+    UPDATE JOB_POSTING
+    SET view_cnt = #{viewCount}
+    WHERE job_posting_seq = #{jobPostingSeq}
+</update>
+
+<!-- 인기순 공고 8개 조회 (조회수 기준) -->
+<select id="getPopularJobPostings" resultMap="jobPostResultMap">
+    SELECT 
+    jp.job_posting_seq AS jobPostingSeq,
+    jp.posting_title AS postingTitle,
+    jp.posting_detail AS postingDetail,
+    jp.exp_level AS expLevel,
+    jp.recruit_cnt AS recruitCnt,
+    jp.salary AS salary,
+    jp.posting_start_dt AS postingStartDt,
+    jp.posting_end_dt AS postingEndDt,
+    jp.workday AS workday,
+    jp.work_start_time AS workStartTime,
+    jp.work_end_time AS workEndTime,
+    jp.view_cnt AS viewCnt,
+    jp.zipcode AS zipcode,
+    jp.road_address AS roadAddress,
+    jp.detail_address AS detailAddress,
+    jp.position_seq AS positionSeq,
+    c.corp_nm AS corpNm,
+    c.corp_info AS corpInfo,
+    c.corp_url AS corpUrl,
+    pc.position_name AS positionName,
+    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName  -- null일 경우 기본값 처리
+FROM JOB_POSTING jp
+JOIN COMPANY c ON jp.corp_no = c.corp_no
+JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
+LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
+LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+WHERE jp.posting_end_dt >= SYSDATE
+ORDER BY jp.view_cnt DESC
+FETCH FIRST 8 ROWS ONLY
+</select>
+
 
 </mapper>

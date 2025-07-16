@@ -1,5 +1,6 @@
 package kr.co.sist.user.controller;
 
+
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,15 +21,15 @@ import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequiredArgsConstructor // lombok으로 final 필드 자동 생성자 주입
+@RequiredArgsConstructor 
 public class JobPostingController {
     
     private final JobPostingService jps;
     private final UserRepository ur;
     private final CipherUtil cu;
-   private final  ResumeService rs;
-
-    
+    private final  ResumeService rs;
+   
+	    
     //개발자채용
     @GetMapping("/user/job_posting/job_posting")
     public String getJobPostings(@RequestParam(required = false) Integer jobPostingSeq, Model model) {
@@ -42,9 +43,16 @@ public class JobPostingController {
     public String JobPostingDetailPage(@RequestParam(required = false) Integer jobPostingSeq,
                                        @AuthenticationPrincipal CustomUser userInfo,
                                        Model model) {
+    	
         JobPostDTO jDto = jps.findById(jobPostingSeq);
+        
+        // 조회수 증가
+        if (jDto != null) {
+            jps.incrementViewCount(jobPostingSeq); // 조회수 증가
+        }
+
+        // 공고 데이터 모델에 추가
         model.addAttribute("jDto", jDto);
-        System.out.println("Job Posting Detail: " + jDto.getTechStacks());
 
         if (userInfo != null) {
             UserEntity userEntity = ur.findById(userInfo.getEmail()).orElse(null);
@@ -54,7 +62,7 @@ public class JobPostingController {
                     userEntity.setPhone(cu.plainText(userEntity.getPhone()));
                     String birth = userEntity.getBirth();
                 } catch (Exception e) {
-                    // 복호화 실패 시 처리
+                    // 복호화 실패 시 처리  
                     userEntity.setPhone("복호화 실패");
                     userEntity.setBirth("복호화 실패");
                 }
@@ -68,6 +76,24 @@ public class JobPostingController {
         }
 
         return "user/job_posting/job_posting_detail";
+    }
+    
+    
+    @GetMapping("/user/job_postings")
+    public String showMainPage(Model model) {
+        try {
+            List<JobPostDTO> randomPostings = jps.getRandomJobPostings();
+            List<JobPostDTO> popularPostings = jps.getPopularJobPostings();
+            
+            
+            model.addAttribute("randomPostings", randomPostings);
+            model.addAttribute("popularPostings", popularPostings);
+            
+            return "user/main_page";
+        } catch (Exception e) {
+            model.addAttribute("error", "데이터를 불러오는 중 오류가 발생했습니다.");
+            return "error/error";
+        }
     }
     
     

@@ -22,7 +22,7 @@ public class MainController {
 	@GetMapping("/")
 	public String mainPage(HttpServletRequest request) {
 		
-		return "user/main_page";
+		return "redirect:/user/job_postings";
 	}
 	
 	@GetMapping("/corp/main")

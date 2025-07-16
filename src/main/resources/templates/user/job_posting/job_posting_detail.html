@@ -162,6 +162,7 @@ $(document).ready(function () {
 
             <br>
             <h2 class="job_posting_title" th:text="${jDto.postingTitle}" style="font-weight: bold;"></h2>
+            
             <br>
             <div class="stack">
                 <h2 class="section-title" th:each="stack : ${jDto.techStacks}" th:text="${stack}">기술스택</h2>
@@ -169,46 +170,9 @@ $(document).ready(function () {
             </div>
 
             <div class="job-section">
-                <h3>주요업무</h3>
-                <ul>
-                    <li>웹 프론트엔드 개발 및 유지보수</li>
-                    <li>사용자 인터페이스 설계 및 구현</li>
-                    <li>백엔드 API 연동 및 데이터 처리</li>
-                    <li>크로스 브라우징 및 반응형 웹 구현</li>
-                    <li>성능 최적화 및 코드 리팩토링</li>
-                </ul>
-            </div>
-
-            <div class="job-section">
-                <h3>자격요건</h3>
-                <ul>
-                    <li>JavaScript / React framework 개발 가능하신 분</li>
-                    <li>HTML/CSS 마크업 능력</li>
-                    <li>Git 사용 경험</li>
-                    <li>웹 표준 및 접근성에 대한 이해</li>
-                    <li>팀워크와 커뮤니케이션 능력</li>
-                </ul>
-            </div>
-
-            <div class="job-section">
-                <h3>우대사항</h3>
-                <ul>
-                    <li>TypeScript 사용 경험자 우대</li>
-                    <li>Vue.js 또는 Angular 경험자 우대</li>
-                    <li>모바일 앱 개발 경험</li>
-                    <li>UI/UX 디자인 이해도</li>
-                </ul>
-            </div>
-
-            <div class="job-section">
-                <h3>복지 및 혜택</h3>
-                <ul>
-                    <li>급여 외 식대 지원</li>
-                    <li>자기계발비 지원</li>
-                    <li>유연근무제 시행</li>
-                    <li>연차 자유 사용</li>
-                    <li>건강검진 및 의료비 지원</li>
-                </ul>
+               <h2>주요내용</h2>
+               <p th:text="${jDto.postingDetail}"></p>
+            
             </div>
 
             <div class="job-info-box">
@@ -228,7 +192,7 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2>근무지</h2>
-                   <p th:text="${jDto.roadAddress}">근무주소<p>
+                   <p th:text="${jDto.roadAddress}">근무주소</p>
 
                 </div>
                 <div>
