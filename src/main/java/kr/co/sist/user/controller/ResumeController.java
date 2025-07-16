@@ -55,8 +55,6 @@ public class ResumeController {
 		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(userInfo.getEmail());
 		List<AttachmentDTO> files = aServ.searchAllAttachment(userInfo.getEmail());
 		
-		System.out.println("-----------------------------" + user.getEmail());
-
 		model.addAttribute("user", user);
 		model.addAttribute("resumes", resumes);
 		model.addAttribute("files", files);

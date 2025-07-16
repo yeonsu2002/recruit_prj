@@ -42,11 +42,14 @@
 		where jp.corp_no = #{corpNo}
 		<choose>
 			<when test="postingStatus == 'progress'">
-				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &gt;= sysdate
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &gt;=
+				sysdate
 			</when>
 			<when test="postingStatus == 'closed'">
-				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &lt; sysdate
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &lt;
+				sysdate
 			</when>
+			<otherwise></otherwise>
 		</choose>
 		<if test="postingTitle != 0">
 			and jp.job_posting_seq = #{postingTitle}
@@ -54,8 +57,7 @@
 		<if test="applicationStatus != 3">
 			and ja.application_status = #{applicationStatus}
 		</if>
-		<if
-			test="passStage != 4">
+		<if test="passStage != 4">
 			and ja.pass_stage = #{passStage}
 		</if>
 	</select>
@@ -88,6 +90,13 @@
 		where
 		corp_no = #{corpNo}
 	</select>
+
+	<!-- 해당 지원서 읽음 처리 -->
+	<update id="updateResumeReadStatus" parameterType="int">
+		UPDATE job_application
+		SET application_status = 1, is_read = 'Y'
+		WHERE resume_seq = #{resumeSeq} AND is_read = 'N'
+	</update>
 
 
 </mapper>

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import kr.co.sist.corp.dto.ApplicantDTO;
 import kr.co.sist.corp.dto.ApplicantSearchDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
+import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.mapper.ApplicantMapper;
+import kr.co.sist.corp.mapper.TalentPoolMapper;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -16,8 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class ApplicantService {
 
 	private final ApplicantMapper applicantMapper;
-
-	private final CipherUtil cu;
+	private final TalentPoolMapper talentPoolMapper;
 
 	/**
 	 * 해당 회사의 모든 지원자 찾기
@@ -41,7 +42,7 @@ public class ApplicantService {
 	public List<ApplicantDTO> searchApplicant(ApplicantSearchDTO searchDTO) {
 
 		List<ApplicantDTO> applicantDTO = applicantMapper.selectApplicant(searchDTO);
-		
+
 		return manufactureApplicantDTO(applicantDTO);
 	}
 
@@ -83,6 +84,7 @@ public class ApplicantService {
 
 	/**
 	 * applicantDTO 가공해서 반환
+	 * 
 	 * @param applicantDTO
 	 * @return
 	 */
@@ -90,14 +92,8 @@ public class ApplicantService {
 
 		for (ApplicantDTO applicant : applicantDTO) {
 
-			// 이름 복호화
-			if (applicant.getName() != null) {
-				applicant.setName(cu.plainText(applicant.getName()));
-			}
-
 			// 경력 설정
-			applicant.setCareerType((applicant.getCareerType() == "N") ? "신입" : "경력");
-
+			applicant.setCareerType((applicant.getCareerType().equals("N")) ? "신입" : "경력");
 			// 합격 상태 설정
 			String passStage = switch (applicant.getPassStage()) {
 			case 0 -> "신규지원";
@@ -118,9 +114,80 @@ public class ApplicantService {
 			applicant.setStatusName(applicationStatus);
 
 		}
-		
+
 		return applicantDTO;
 
-	}//manufactureApplicantDTO
+	}// manufactureApplicantDTO
+
+	/**
+	 * 지원서 읽음 처리
+	 * 
+	 * @param resumeSeq
+	 * @return
+	 */
+	public int modifyResumeReadStatus(int resumeSeq) {
+
+		return applicantMapper.updateResumeReadStatus(resumeSeq);
+	}
+
+	/**
+	 * 북마크 추가
+	 * 
+	 * @param resumeSeq
+	 */
+	public void addBoomark(long resumeSeq, long corpNo) {
+
+		// 이미 스크랩 되어있으면 return
+		if (talentPoolMapper.isResumeScrapped(resumeSeq, corpNo) >= 1)
+			return;
+
+		ResumeScrapDTO scrapDTO = null;
+
+		if (talentPoolMapper.checkScrapExists(resumeSeq, corpNo) >= 1) { // 이미 한번 생성된 상태면 update
+
+			scrapDTO = talentPoolMapper.selectScrap(resumeSeq, corpNo);
+			talentPoolMapper.updateScrap(scrapDTO);
+
+		} else { // 아니면 insert
+
+			scrapDTO = new ResumeScrapDTO();
+			scrapDTO.setResumeSeq(resumeSeq);
+			scrapDTO.setCorpNo(corpNo);
+			talentPoolMapper.insertScrap(scrapDTO);
+		}
+
+	}// addBoomark
+
+	/**
+	 * 북마크 제거
+	 * 
+	 * @param resumeSeq
+	 * @param corpNo
+	 */
+	public void removeBookmark(long resumeSeq, long corpNo) {
+
+		if (talentPoolMapper.checkScrapExists(resumeSeq, corpNo) == 0)
+			return;
+
+		ResumeScrapDTO scrapDTO = talentPoolMapper.selectScrap(resumeSeq, corpNo);
+		talentPoolMapper.updateScrapN(scrapDTO);
+
+	}
+
+	/**
+	 * 스크랩 여부 가져오기
+	 * 
+	 * @param resumeSeq
+	 * @param corpNo
+	 * @return
+	 */
+	public boolean isScraped(long resumeSeq, long corpNo) {
+
+		if (talentPoolMapper.isResumeScrapped(resumeSeq, corpNo) >= 1) {
+			return true;
+		}
+
+		return false;
+	}
 
 }

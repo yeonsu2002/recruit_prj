@@ -251,3 +251,14 @@ main {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
+
+.col-resume {
+	width: 20%;
+	cursor: pointer; /* 🔹 마우스 포인터 손가락 모양 */
+	transition: color 0.2s ease;
+}
+
+.col-resume:hover {
+	color: #007bff; /* 🔹 링크처럼 파란색 */
+	text-decoration: underline; /* 🔹 밑줄로 링크 느낌 */
+}
