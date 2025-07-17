@@ -165,60 +165,69 @@ $(document).ready(function () {
             
             <br>
             <div class="stack">
-                <h2 class="section-title" th:each="stack : ${jDto.techStacks}" th:text="${stack}">기술스택</h2>
-            
+                <h3 class="section-title" style="font-size: 20px;">기술스택</h3>
+                <div class="tech-stack-container">
+                    <th:block th:each="stack : ${jDto.techStacks}">
+                        <span class="tech-stack-tag" th:text="${stack}"></span>
+                    </th:block>
+                </div>
             </div>
 
+
             <div class="job-section">
-               <h2>주요내용</h2>
-               <p th:text="${jDto.postingDetail}"></p>
+               <h2 style="font-size: 20px;">주요내용</h2>
+               <p th:text="${jDto.postingDetail}" style="font-size: 15px;"></p>
             
             </div>
 
             <div class="job-info-box">
                 <div>
-                    <h2>경력</h2>
-                  <p th:text="${jDto.expLevel}">경력</p>
+                    <h2 style="font-size: 20px;" >경력</h2>
+                  <p th:text="${jDto.expLevel}" style="font-size: 15px;">경력</p>
 
                 </div>
                 <div>
-                    <h2>학력</h2>
-                    <p>무관</p>
+                    <h2 style="font-size: 20px;">학력</h2>
+                    <p style="font-size: 15px;">무관</p>
                 </div>
                 <div>
-                    <h2>마감일</h2>
-                    <p th:text="${jDto.postingEndDt}">마감일</p>
+                    <h2 style="font-size: 20px;">마감일 </h2>
+                    <p th:text="${jDto.postingEndDt}" style="font-size: 15px;">마감일</p>
 
                 </div>
                 <div>
-                    <h2>근무지</h2>
-                   <p th:text="${jDto.roadAddress}">근무주소</p>
+                    <h2 style="font-size: 20px;">근무지</h2>
+                   <p th:text="${jDto.roadAddress}" style="font-size: 15px;">근무주소</p>
 
                 </div>
                 <div>
-                    <h2>평균 연봉</h2>
-                    <p>3,000~4,500만원</p>
+                    <h2 style="font-size: 20px;">평균 연봉</h2>
+                    <p style="font-size: 15px;">3,000~4,500만원</p>
                 </div>
                 <div>
-                    <h2>근무형태</h2>
-                    <p th:text="${jDto.employType}">근무형태</p>
+                    <h2 style="font-size: 20px;">근무형태</h2>
+                  <p th:text="${jDto.employType} ?: '정보 없음'"  style="font-size: 15px;">근무형태</p>
                 </div>
             </div>
 
-            <div class="company-intro">
-                <h2 style="font-size: 30px; margin-bottom: 20px;"  th:utext="${jDto.corpInfo}"><strong>기업소개</strong></h2>
-                <img src="" class="company-image" />
-                <div class="company-description">
-                    저희 테크노베이션은 혁신적인 기술과 창의적인 아이디어로 디지털 혁신을 이끌어가는 IT 기업입니다. 
-                    2021년 설립 이후 지속적인 성장을 이어가고 있으며, 고객의 니즈를 정확히 파악하고 최적의 솔루션을 제공하기 위해 끊임없이 노력하고 있습니다.
-                    <br><br>
-                    직원들의 성장과 발전을 위한 다양한 프로그램을 운영하며, 자유롭고 수평적인 조직문화를 추구합니다. 
-                    개발자들이 최고의 퍼포먼스를 발휘할 수 있도록 최신 개발 환경과 도구를 제공하고 있으며, 
-                    지속적인 학습과 성장을 지원하는 교육 프로그램도 운영하고 있습니다.
-                    <br><br>
-                    함께 성장하며 더 나은 미래를 만들어갈 동료를 찾고 있습니다.
-                </div>
-            </div>
+           <div class="company-intro">
+    <h2 th:utext="${jDto.corpInfo}"><strong>기업소개</strong></h2>
+    
+    <div class="company-content">
+        <img src="/img/company_sample.jpg" class="company-image" />
+        
+        <div class="company-description">
+            저희 테크노베이션은 혁신적인 기술과 창의적인 아이디어로 디지털 혁신을 이끌어가는 IT 기업입니다. 
+            2021년 설립 이후 지속적인 성장을 이어가고 있으며, 고객의 니즈를 정확히 파악하고 최적의 솔루션을 제공하기 위해 끊임없이 노력하고 있습니다.
+            <br><br>
+            직원들의 성장과 발전을 위한 다양한 프로그램을 운영하며, 자유롭고 수평적인 조직문화를 추구합니다. 
+            개발자들이 최고의 퍼포먼스를 발휘할 수 있도록 최신 개발 환경과 도구를 제공하고 있으며, 
+            지속적인 학습과 성장을 지원하는 교육 프로그램도 운영하고 있습니다.
+            <br><br>
+            함께 성장하며 더 나은 미래를 만들어갈 동료를 찾고 있습니다.
+        </div>
+    </div>
+</div>
         </div>
     </div>
 

@@ -131,63 +131,65 @@ function addNewNotification(message, time, icon = '📢') {
     updateNotificationBadge();
 }
 
-/* 
 //검색기능
 $(document).ready(function(){
 	
-	const positions =[  
-		'서버/백엔드 개발자',
-        '프론트엔드 개발자',
-        '웹 풀스택 개발자',
-        '안드로이드 개발자',
-        'iOS 개발자',
-        '크로스플랫폼 앱개발자',
-        '게임 클라이언트 개발자',
-        '게임 서버 개발자',
-        'DBA',
-        '빅데이터 엔지니어',
-        '인공지능/머신러닝',
-        'DevOps/시스템 엔지니어',
-        '정보보안 담당자',
-        'QA 엔지니어',
-        '개발 PM',
-        'HW/임베디드',
-        'SW/솔루션',
-        '웹퍼블리셔',
-        'VR/AR/3D',
-        '블록체인',
-        '기술지원'
- ];
+	const $input= $("#keywordInput");
+	const $box=$("#autocomplete-box");
 	
-	let currentFocus=-1;
-	
-	$("#keywordInput").on("input", function(){
+	$input.on("keyup", function(){
 		
-		const inputValue=$(this).val().trim();
-		const dropdown=$("#autocompleteDropdown");
-		
-		if(inputValue.lengthv==0){
-			dropdown.hide();
+		const term =$(this).val();
+		if(term.length <1){
+			$box.hide().empty();
 			return;
-		}//end if
-		
-		filteredPositions= positions.filter(position => position.toLowerCase().includes(inputValue.toLowerCase()));
-		
-		if(filterdPositions.lengthv == 0){
-			dropdown.hide();
-			return;
-		}//end if
-		
-		let innerHtml="";
-		filteredPositions.forEach(position,index)=>{
-			
 		}
+		
+		$.ajax({
+			
+			url:"/autocomplete",
+			method:"GET",
+			data:{term:term},
+			success:function(data){
+				$box.empty();
+				if(data.length==0){
+					$box.hide();
+					return;
+				}//end if
+				
+				data.forEach(function (item){
+					
+					const $item= $("<div>")
+					 			.css({padding:"8px", cursor:"pointer"})
+					 			.append($("<span>")
+					 			.text(item))
+					 			.on("click", function(){
+					 				$input.val(item);
+					 				$box.empty().hide();
+					 			});
+						$box.append($item);
+				});
+				
+				
+				$box.show();
+			}
+			
+			
+		});//ajax
+		
 		
 	});
 	
+	$(document).on("click", function(e){
+		if(!$(e.target).closest("#autocomplete-box", "keywordInput").length){
+			$box.hide();
+		}
+			
+	})
+	
+	
 });//ready
- */       
- 
+
 
 </script>
 </head>
@@ -203,10 +205,13 @@ $(document).ready(function(){
         <p class="hero-subtitle">전국 최고의 IT 기업들이 당신을 기다리고 있습니다</p>
 
         <div class="hero-search">
-            <input type="text" id="keywordInput" class="hero-search-box"
-                   placeholder="어떤 포지션을 찾고 계신가요?" autocomplete="off" />
-            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
-            <button type="button" id="searchButton" class="hero-search-button">🔍 검색</button>
+        	<form th:action="@{/search}" method="get" style="position: relative;">
+            <input type="text" name="keyword" id="keywordInput" class="hero-search-box"
+                   placeholder="어떤 포지션을 찾고 계신가요?"/>
+            <div class="autocomplete-dropdown" id="autocomplete-box"  style="position: absolute; top: 100%; left: 0; right: 0; border: 1px solid #ccc;
+                background-color: white; display: none; z-index: 999;"></div>
+            <button type="submit" id="searchButton" class="hero-search-button">🔍</button>
+        	</form>
         </div>
 
         <!-- 선택한 키워드 표시 -->
@@ -252,13 +257,41 @@ $(document).ready(function(){
       </div>
 
       <div class="notice-wrapper">
-        <div class="user-info-box">
-          <p class="user-welcome" th:text="${user != null ? user.name : 'Guest'}">사용자</p>
-          <p class="user-email" th:text="${user != null ? user.email : '로그인 필요'}">이메일 없음</p>
-        <div class="user-menu-buttons">
-		    <a th:href="@{/user/resume/resume_management}" class="user-menu-btn resume-btn">이력서작성</a>
-		    <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
+      
+
+		<!-- 기업회원 -->
+		<div sec:authorize="hasRole('ROLE_CORP')">
+		 <div class="user-info-box">
+		    <div class="access-denied-container">
+		        <h2 style="font-size: 17px;">기업회원은 개인회원 메뉴에 접근할 수 없습니다.</h2>
+		        <a th:href="@{/corp/main}" class="redirect-btn">기업회원 메인</a>
+		    </div>
+		    </div>
 		</div>
+		
+		<!-- 비회원 -->
+		<div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
+		 <div class="user-info-box">
+		    <div class="login-required">
+		        <h2 style="font-size: 17px;">로그인이 필요합니다</h2>
+		        <a th:href="@{/login}" class="login-btn">로그인</a>
+		        <a th:href="@{/user/join}" class="signup-btn">회원가입</a>
+		    </div>
+		    </div>
+		</div>
+		
+			<!--사용자  -->
+		    <div sec:authorize="hasRole('ROLE_USER')">
+		    <div class="user-info-box">
+		        <div th:if="${user != null and user.corpNo == null}">
+		            <p class="user-welcome" th:text="${user.name}">사용자</p>
+		            <p class="user-email" th:text="${user.email}">이메일 없음</p>
+		            <div class="user-menu-buttons">
+		                <a th:href="@{/user/resume/resume_management}" class="user-menu-btn resume-btn">이력서작성</a>
+		                <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
+		            </div>
+		        </div>
+				
           <!-- 알림 영역 (로그인한 사용자에게만 표시) -->
           <div class="notification-area" th:if="${user != null}">
             <div class="notification-header" onclick="toggleNotifications()">
@@ -310,7 +343,8 @@ $(document).ready(function(){
               </div>
             </div>
           </div>
-        </div>
+    </div>
+</div><br>
 
         <h2 style="color: #1DD45A;">Notice</h2>
         <div class="notice-info">

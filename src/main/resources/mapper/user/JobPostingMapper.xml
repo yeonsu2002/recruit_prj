@@ -67,6 +67,7 @@ ORDER BY jp.job_posting_seq, ts.stack_name
         jp.posting_title AS postingTitle,
         jp.posting_detail AS postingDetail,
         jp.exp_level AS expLevel,
+        jp.employ_type AS employType,
         jp.recruit_cnt AS recruitCnt,
         jp.salary AS salary,
         jp.posting_start_dt AS postingStartDt,

@@ -18,28 +18,44 @@ public class JobPostingService {
     @Autowired
     private JobPostingMapper jpm;
     
-    // 전체 공고 조회
     public List<JobPostDTO> getJobPostings(Integer jobPostingSeq) {
-        if (jobPostingSeq == null) {
-            return jpm.selectAllJobPostings(); // 전체 공고 조회
-        } else {
-            List<JobPostDTO> jobPost = jpm.selectJobPostingsBySeq(jobPostingSeq);
-            return jobPost != null ? jobPost : List.of(); // 수정: jobPost를 반환하도록 수정
-        }
-    }
+      List<JobPostDTO> jobList;
+      
+      if (jobPostingSeq == null) {
+          jobList = jpm.selectAllJobPostings(); // 전체 공고 조회
+      } else {
+          jobList = jpm.selectJobPostingsBySeq(jobPostingSeq); // 단건 조회 (리스트 형태)
+      }
+
+      // 각 공고에 대해 기술스택 설정
+      for (JobPostDTO job : jobList) {
+          List<String> techStacks = jpm.selectTechStacksByJobPostingSeq(job.getJobPostingSeq());
+          job.setTechStacks(techStacks);
+      }
+
+      return jobList;
+  }
     
     // 특정 공고 조회
     public JobPostDTO findById(Integer jobPostingSeq) {
-        if (jobPostingSeq == null) {
-            throw new IllegalArgumentException("jobPostingSeq는 null일 수 없습니다.");
-        }
-        
-        List<JobPostDTO> results = jpm.selectJobPostingsBySeq(jobPostingSeq);
-        if (results.isEmpty()) {
-            throw new RuntimeException("해당 공고를 찾을 수 없습니다. jobPostingSeq: " + jobPostingSeq);
-        }
-        return results.get(0); // 첫 번째 결과만 반환
-    }
+      if (jobPostingSeq == null) {
+          throw new IllegalArgumentException("jobPostingSeq는 null일 수 없습니다.");
+      }
+
+      List<JobPostDTO> results = jpm.selectJobPostingsBySeq(jobPostingSeq);
+      if (results.isEmpty()) {
+          throw new RuntimeException("해당 공고를 찾을 수 없습니다. jobPostingSeq: " + jobPostingSeq);
+      }
+
+      JobPostDTO job = results.get(0);
+
+      // 기술스택 설정
+      List<String> techStacks = jpm.selectTechStacksByJobPostingSeq(jobPostingSeq);
+      job.setTechStacks(techStacks);
+
+      return job;
+  }
+    
     
     // 조회수 증가
     public void incrementViewCount(Integer jobPostingSeq) {
