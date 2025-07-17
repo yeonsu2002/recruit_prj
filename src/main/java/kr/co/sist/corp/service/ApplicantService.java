@@ -163,8 +163,4 @@ public class ApplicantService {
 
 	}// modifyPassStage
 
-<<<<<<< HEAD
 }// class
-=======
-}// class
->>>>>>> origin
