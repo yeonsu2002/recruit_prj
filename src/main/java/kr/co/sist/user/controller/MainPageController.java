@@ -1,16 +1,12 @@
 package kr.co.sist.user.controller;
 
-import java.util.List;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
-import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.JobPostingService;
@@ -46,4 +42,5 @@ public class MainPageController {
 
         return "user/main_page";
     }
-}  
+    
+}

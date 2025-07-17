@@ -11,6 +11,8 @@
 </style>   
 <script type="text/javascript">
 
+document.addEventListener('DOMContentLoaded', function() {
+
 let current = 0;
 const total = 4; 
 
@@ -26,7 +28,6 @@ function updateSlide() {
     track.style.transform = `translateX(-${current * 100}%)`;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('prevBtn').addEventListener('click', function() {
         moveSlide(-1);
     });
@@ -36,16 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     
-    
-    
-    
 });//ready
-
-
 
 setInterval(() => moveSlide(1), 5000);
 
-// 알림 기능 - 로그인한 사용자만 사용 가능
+
+// 알림 기능
 let isDropdownOpen = false;
 let unreadCount = 3;
 
@@ -110,7 +107,7 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// 새 알림 추가 함수 (예시) - 로그인한 사용자만
+// 새 알림 추가 함수 - 로그인한 사용자만
 function addNewNotification(message, time, icon = '📢') {
     const dropdown = document.getElementById('notificationDropdown');
     if (!dropdown) return; // 로그인하지 않은 경우 알림 추가 불가
@@ -125,7 +122,6 @@ function addNewNotification(message, time, icon = '📢') {
             <div class="notification-icon-small">${icon}</div>
             <div class="notification-text">
                 <div class="notification-message">${message}</div>
-                <div class="notification-time">${time}</div>
             </div>
         </div>
     `;
@@ -135,6 +131,63 @@ function addNewNotification(message, time, icon = '📢') {
     updateNotificationBadge();
 }
 
+/* 
+//검색기능
+$(document).ready(function(){
+	
+	const positions =[  
+		'서버/백엔드 개발자',
+        '프론트엔드 개발자',
+        '웹 풀스택 개발자',
+        '안드로이드 개발자',
+        'iOS 개발자',
+        '크로스플랫폼 앱개발자',
+        '게임 클라이언트 개발자',
+        '게임 서버 개발자',
+        'DBA',
+        '빅데이터 엔지니어',
+        '인공지능/머신러닝',
+        'DevOps/시스템 엔지니어',
+        '정보보안 담당자',
+        'QA 엔지니어',
+        '개발 PM',
+        'HW/임베디드',
+        'SW/솔루션',
+        '웹퍼블리셔',
+        'VR/AR/3D',
+        '블록체인',
+        '기술지원'
+ ];
+	
+	let currentFocus=-1;
+	
+	$("#keywordInput").on("input", function(){
+		
+		const inputValue=$(this).val().trim();
+		const dropdown=$("#autocompleteDropdown");
+		
+		if(inputValue.lengthv==0){
+			dropdown.hide();
+			return;
+		}//end if
+		
+		filteredPositions= positions.filter(position => position.toLowerCase().includes(inputValue.toLowerCase()));
+		
+		if(filterdPositions.lengthv == 0){
+			dropdown.hide();
+			return;
+		}//end if
+		
+		let innerHtml="";
+		filteredPositions.forEach(position,index)=>{
+			
+		}
+		
+	});
+	
+});//ready
+ */       
+ 
 
 </script>
 </head>
@@ -148,12 +201,18 @@ function addNewNotification(message, time, icon = '📢') {
     <section class="hero-section">
         <h1 class="hero-title">개발자 커리어의 시작</h1>
         <p class="hero-subtitle">전국 최고의 IT 기업들이 당신을 기다리고 있습니다</p>
+
         <div class="hero-search">
-            <input type="text" class="hero-search-box"
-                placeholder="어떤 포지션을 찾고 계신가요?" />
-            <button class="hero-search-button">🔍</button>
+            <input type="text" id="keywordInput" class="hero-search-box"
+                   placeholder="어떤 포지션을 찾고 계신가요?" autocomplete="off" />
+            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+            <button type="button" id="searchButton" class="hero-search-button">🔍 검색</button>
         </div>
-    </section>
+
+        <!-- 선택한 키워드 표시 -->
+        <div id="selectedKeywords" class="selected-keywords"></div>
+        
+</section>
     
     <!-- 오른쪽 헤더부분 : 채용공고 + 공지 -->
     <div class="side-by-side-section">

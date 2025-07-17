@@ -859,4 +859,21 @@
     .announcement-card:active {
         transform: scale(0.98);
     }
+} 
+
+.selected-keywords {
+    margin-top: 10px;
+}
+.selected-keywords span {
+    display: inline-block;
+    background-color: #1DD45A;
+    color: white;
+    border-radius: 12px;
+    padding: 5px 10px;
+    margin: 3px;
+    font-size: 13px;
+    cursor: default;
+}
+.popular-keywords {
+    margin-top: 10px;
 }

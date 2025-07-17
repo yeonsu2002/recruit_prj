@@ -63,7 +63,7 @@ ORDER BY jp.job_posting_seq, ts.stack_name
 <!-- 특정 jobPostingSeq에 해당하는 공고 조회 -->
 <select id="selectJobPostingsBySeq" parameterType="Integer" resultMap="jobPostResultMap">
     SELECT
-           jp.job_posting_seq AS jobPostingSeq,
+        jp.job_posting_seq AS jobPostingSeq,
         jp.posting_title AS postingTitle,
         jp.posting_detail AS postingDetail,
         jp.exp_level AS expLevel,
