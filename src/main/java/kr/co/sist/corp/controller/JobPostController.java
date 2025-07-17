@@ -56,6 +56,23 @@ public class JobPostController {
 	 return "corp/jobPosting/jobPostingForm";
   }
   
+  //나의 공고 리스트 화면으로 가기 
+  @GetMapping("/corp/myJobPostingList")
+  public String getMyJobPostingList(@AuthenticationPrincipal CustomUser user) {
+  	if(user == null) {
+  		return "redirect:/accessDenied";
+  	}
+  	boolean hasCorpAuth = user.getAuthorities().stream()
+  													.anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
+  	
+  	if( !hasCorpAuth) {
+  		return "redirect:/accessDenied";
+  	}
+  	
+  	return "corp/jobPosting/myJobPostingList";
+  }
+  
+  
   // 새로운 공고 등록 (JSON)
   @PostMapping("/corp/uploadJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {

@@ -96,8 +96,6 @@ public class MailSendServiceImpl implements MailSendService {
         // 인증이 처음일때 또는 30분 제한이 해제된 경우
         if (entities == null || entities.isEmpty() || lasted == null) {
             createAndSendVerification(mailHtmlSendDTO, clientIp, 1);
-            System.out.println("디버깅 인증메일 처음 보냄.");
-            
         // 인증만료 시간 전에, 재전송버튼을 누름으로 인해 이전의 인증코드를 강제 만료 처리하고 새로운 번호 재전송
         } else if (lasted.getIsVerified().equals("N") && lasted.getExpiredAt().isAfter(LocalDateTime.now())) {
             // 가장 최근 객체 강제 만료
@@ -177,7 +175,7 @@ public class MailSendServiceImpl implements MailSendService {
                 context.setVariable("userType", "기업 회원");
             }
             
-            // static/images/logo.png 파일을 CID 이름으로 첨부
+            // static/images/logo.png 파일을 CID 이름으로 첨부 --> 이거 안되고있음 
             File logoFile = new ClassPathResource("static/images/logo.png").getFile();
             helper.addInline("logoImage", logoFile);
             context.setVariable("logoImage", logoFile);
@@ -241,22 +239,19 @@ public class MailSendServiceImpl implements MailSendService {
 				// 유효한 가장 최신 객체 찾기
         MailVerificationEntity latest = findLatestValidEntity(entities);
 
-        System.out.println("디버깅  lastest = ");
+        System.out.print("디버깅  lastest = ");
         System.out.println(latest);
         if (latest == null || latest.getIsVerified().equals("Y") ) {
-            System.out.println("유효한 인증 기록이 없거나, 이미 인증 완료된 이메일 ");
             throw new IllegalStateException("인증 실패: 유효한 인증 기록이 존재하지 않거나, 이미 인증이 완료된 이메일입니다 ");
         }
         
         // 만료 시간 체크
         if (latest.getExpiredAt().isBefore(LocalDateTime.now())) {
-            System.out.println("인증 시간이 만료되었습니다.");
             throw new IllegalStateException("인증 실패: 인증 시간이 만료되었습니다.");
         }
 
         // 인증 코드 비교
         if (!latest.getVerificationCode().equals(code)) {
-            System.out.println("인증 코드가 일치하지 않습니다.");
             throw new IllegalStateException("인증 실패: 인증 코드가 일치하지 않습니다.");
         }
         
@@ -268,7 +263,16 @@ public class MailSendServiceImpl implements MailSendService {
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				return false;
+				throw e;
+				/**
+				 * 컨트롤러에서 예외처리를 잡아다 뷰에 던지고 있으므로, 서비스에서는 try-catch를 없애는게 깔끔.
+				 * 여기서 IllegalStateException을 이미 잡아버리고, 다시 던지지 않기 때문에, 컨트롤러는 예외를 절대 인식하지 못해.
+				 * 그래서 컨트롤러는 이렇게 착각하지:
+				 * "오~ 예외 없네? 인증 성공인가 보지?
+				 * 	→ "✅ 인증 성공 로직 완료" 출력 → "인증 성공" 반환
+				 * 
+				 * 따라서 다시 throw e; 로 던져주거나 try-catch를 삭제하거나 ~
+				 */
 			}
 		}
 

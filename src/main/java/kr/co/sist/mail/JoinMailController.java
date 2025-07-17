@@ -67,9 +67,13 @@ public class JoinMailController {
   public ResponseEntity<String> confirmVerifiCode(@RequestBody MailHtmlSendDTO dto){
   	try {
       mailSendService.chkVeirifiCode(dto.getEmailAddr(), dto.getContent());
+      System.out.println("인증 성공 로직 완료");
       return ResponseEntity.ok("인증 성공");
-	  } catch (IllegalStateException e) {
+	  } catch (Exception e) {
+	  	System.out.println("catch 블록 : " + e.getMessage());
       return ResponseEntity.badRequest().body(e.getMessage());
+      // ResponseEntity.badRequest() => HTTP 상태 코드 400 (Bad Request)를 응답
+      //서비스에서 넘어온 throw new IllegalStateException을 잡아서, e.getMessage()로 메시지를 꺼내서 ResponseEntity의 body에 그 문자열을 담고있다.
 	  }
   }
    

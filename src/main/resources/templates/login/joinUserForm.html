@@ -250,10 +250,12 @@ function checkConfirmNumber(){
 	let inputedCode = document.querySelector('#confirmNumber').value.trim();
 	if(inputedCode == ""){
 		alert("인증번호를 입력 후 확인을 눌러주세요.");
+		return;
 	}
 	let email = document.querySelector('#email').value.trim();
 	if(email == ""){
 		alert('이메일을 입력후 시도해주세요.');
+		return;	
 	}
 	//requestparam 방식은 application/x-www-form-urlencoded 헤더로 전송해야..  
 	fetch('/signup/confirm-verification-code', {
@@ -266,31 +268,29 @@ function checkConfirmNumber(){
 			content : inputedCode
 		})
 	})
-	.then(response => {
-		if(!response.ok){
-			return response.text().then(err => { throw new Error(err); });
-		}
-		return response.text();
-		})
-		.then(result => {
-	        alert(result); 
-	        // 이후 UI 처리...
-	        codeIsCorrect = true;
-			document.getElementById('confirmNumberFrm').style.display='block';
-	    })
-		.catch(error => {
-	        alert("오류 발생: " + error.message);
-	    });
-	
-	
-	//확인버튼 클릭시 인증번호가 일치하지 않을 때 (예시로 123456으로 해놨음. 수정하자~)
-	if(codeIsCorrect){
-		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
-		document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
-		document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
-	} else {
-		//타이머종료
-		clearInterval(timerInterval);
+	//.then(res => {...}) 는 조건문이 아닙니다.. 비동기 작업이 성공(resolve) 했을 때 실행되는 콜백 함수 등록입니다.
+	.then(response => { // response는 fetch()가 서버로부터 받은 응답(Response 객체)입니다. (HTTP 상태, 응답 헤더, 본문 등을 포함)
+		//------------------------이건 안돼--------------------------------------------------------
+		// if(!response.ok){
+		//	 throw new Error(response.text());
+		// } else {
+		//	 return reponse.text();
+		// }
+		// 1. response.text()으로 응답 본문을 먼저 비동기로 읽은 뒤, 상태에 따라 처리해야 해
+		// 2. throw new Error(response.text()) -> Promise를 그대로 에러로 던짐 — 의도한 메시지가 아님
+		// 3. return response.text() 두 번 호출 -> 스트림은 한 번만 읽을 수 있어서 오류 발생
+		//--------------------------------------------------------------------------------------
+		return response.text().then(msg => { // response.text() -> 서버 응답 본문을 문자열로 꺼내는 작업. 이 작업은 비동기(Promise 반환) → 그래서 .then(msg => {...})로 후속 처리
+			if (!response.ok) {	//200~299면 true			//본문을 문자열로 꺼내서 msg 변수에 담아줌.
+				throw new Error(msg); //.catch()로 에러가 넘어감
+			}
+			return msg;
+		});
+	})
+	.then(result => {
+  	console.log("인증 성공 ");
+	  alert(result); //성공시 메시지 날림 
+	  clearInterval(timerInterval);
 		
 		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
 		document.getElementById('verification-success').style.display='block';  //성공 텍스트 표시
@@ -298,13 +298,33 @@ function checkConfirmNumber(){
 		document.getElementById('codeBtn').disabled = true; //맞으니까 이제 재전송버튼도 막아
 		document.getElementById('email').readOnly = true; //이메일 입력창도 막아 
 		document.getElementById('confirmNumber').readOnly = true; //번호 입력창도 막아
+		document.getElementById('verification-error').style.display = 'none';
+		document.getElementById('confirmNumberFrm').style.display='block';
 		
 		isEmailVerified = true; //이메일 검증변수 true 변환 
+	  //codeIsCorrect = true;
+ 	})
+	.catch(error => { //요청이 실패하거나, .then() 중간에 throw new Error(...)가 실행되면 이 .catch()로 옵니다.
+  	console.log("인증 실패 ");
+  	alert(error.message); // alert(error.message)에서 서버에서 넘긴 메시지(e.getMessage())가 출력
+  	document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
+		document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
+		document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
 		
-		document.getElementById('verification-error').style.display = 'none'; //혹시나해서 
-		
-		return;
-	}
+  });
+	/** 
+	JavaScript의 비동기 처리는 기본적으로 non-blocking, event-driven입니다.
+	fetch()는 Promise를 반환하는 비동기 함수
+	Promise는 결과가 나중에 .then()이나 .catch()로 콜백을 등록해서 처리됨
+	JS는 fetch() 호출만 해놓고, 바로 다음 줄로 넘어가버림
+	그래서 결과가 오기도 전에 다음 코드가 실행돼, 따라서 fetch 아래에 다른 함수를 쓰면 순서대로 실행되지 않기때문에 너가 원하는 결과가 안나와. 
+	
+	promise란?
+	"나중에 결과 줄게!"라고 **약속(Promise)**하는 객체
+	
+	순서 정리 : 
+	서비스에서 throw → 컨트롤러에서 catch → ResponseEntity.badRequest().body(...) → 프론트에서 비동기(fetch, axios)로 받아서 사용자에게 표시
+	*/
 }
 
 // 모달창 골라 열기 
