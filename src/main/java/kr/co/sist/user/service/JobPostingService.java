@@ -13,7 +13,7 @@ import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.mapper.JobPostingMapper;
 
 @Service
-public class JobPostingService {
+public class JobPostingService {  
     
     @Autowired
     private JobPostingMapper jpm;
