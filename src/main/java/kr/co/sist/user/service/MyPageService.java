@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.user.dto.ApplicantStatisticsDTO;
 import kr.co.sist.user.dto.JobPostingScrapDTO;
-import kr.co.sist.user.dto.MessageDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.mapper.MyPageMapper;
@@ -60,6 +60,26 @@ public class MyPageService {
 		return mpMapper.updateApplicationCancel(jobApplicatioinSeq);
 		
 	}
+	
+	//지원자 통계 가공
+	public ApplicantStatisticsDTO getApplicantStatistics(List<MyApplicantDTO> applicantDTO) {
+		
+		ApplicantStatisticsDTO statistics = new ApplicantStatisticsDTO();
+		
+		//모든 내 지원 내역을 돌며 각각의 상태 수 설정
+		for (MyApplicantDTO dto : applicantDTO) {
+      if (dto.getApplicationStatus() == 2) continue; // 지원취소는 제외
+
+      switch (dto.getPassStage()) {
+          case 0: statistics.setCompleted(statistics.getCompleted()+1); break;
+          case 1: statistics.setDocPassed(statistics.getDocPassed()+1); break;
+          case 2: statistics.setPassed(statistics.getPassed()+1); break;
+          case 3: statistics.setFailed(statistics.getFailed()+1); break;
+      }
+  }
+		
+		return statistics;
+	}//statistics.setCompleted(statistics.getCompleted()+1)
 	
 
 }//class

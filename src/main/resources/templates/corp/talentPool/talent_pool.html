@@ -21,8 +21,9 @@
 		        전체 <span th:text="${totalCount}"></span>건
 		    </div>
 		    <div class="sort-controls">
-		        <span>최신순</span>|
-		        <span>경력순</span>
+			  <span class="sort-btn" data-sort="latest">최신순</span> |
+			  <span class="sort-btn" data-sort="career">경력순 <span class="arrow"></span></span> |
+			  <span class="sort-btn" data-sort="education">학력순 <span class="arrow"></span></span>
 				<select class="page-size-select" name="size" id="pageSizeSelect">
 				    <option value="5" th:selected="${pageSize == 5}">5명씩</option>
 				    <option value="10" th:selected="${pageSize == 10}">10명씩</option>
@@ -30,53 +31,8 @@
 				</select>
 		    </div>
 		</div>
-	
-        <div class="talent-list">
-            <div class="talent-item" th:each="talent : ${ talentPool }">
-                <div class="talent-left">
-                    <div class="talent-profile" th:text="${ talent.name }"></div>
-                    <div class="talent-info" 
-                    th:text="|${talent.gender == 'M' ? '남' : (talent.gender == 'F' ? '여' : '기타')}
-                    ·${ talent.birthYear }년생|"></div>
-                </div> 
-                
-                <div class="talent-right">
-                    <div class="spec-grid">
-                        <div class="spec-title">최종학력</div>
-                        <div th:text="${ talent.finalEducation }"><!-- 대학교 졸업 --></div>
-                        <div class="spec-title">경력</div>
-                        <div th:text="${ talent.totalCareer }"><!-- 경력 4년차 --></div>
-                        <div class="spec-title">거주지</div>
-                        <div th:text="${ talent.shortAddress }"><!-- 서울 --></div>
-                        <div class="spec-title">자격증</div>
-                        <div th:text="${ talent.certifications }"><!-- 정보처리기사 --></div>
-                        <div class="spec-title">기술 스택</div>
-                        <div class="skill-tags">
-                            <span class="skill-tag" th:text="${ talent.techStacks }"><!-- Docker --></span>
-                        </div>
-                     	<div class="spec-title">희망 직종</div>
-                        <div class="skill-tags">
-                            <span class="skill-tag" th:text="${ talent.desiredPositions }">Docker</span>
-                        </div> 
-                    </div>
-                </div>
-        
-                <div class="talent-actions">
-					<button class="action-btn bookmark-btn"
-			        th:data-resume-seq="${talent.resumeSeq}"
-			        th:data-corp-no="${talent.corpNo}">
-		    		<span class="bookmark-star" 
-			      	th:classappend="${talent.isScrapped == 'Y'} ? 'filled'" 
-			      	th:text="${talent.isScrapped == 'Y'} ? '★' : '☆'"></span>스크랩
-					</button>
-                    <a th:href="@{/corp/talentPool/resume_detail}">
-                    <button class="action-btn resume-btn">이력서 확인</button></a>
-                    <button class="action-btn interview-btn openInterviewModalBtn">
-                    면접 제안</button>
-                </div>
-            </div>
-        	</div>
-        </div>
+       	<div class="talent-list" th:replace="~{fragments/talentList :: talentList}"></div>
+     </div> 
 <div class="modal" id="interviewModal" style="display:none;"></div>
 			
 <div class="pagination">
@@ -91,148 +47,208 @@
 
 <script th:inline="javascript">
 (() => {
-	const dataEl = document.getElementById('pagination-data');
-	const totalPages = parseInt(dataEl.dataset.totalPages);
-	let currentPage = parseInt(dataEl.dataset.currentPage);
+	  let currentPage = parseInt(document.getElementById('pagination-data')?.dataset.currentPage || '1');
+	  let totalPages = parseInt(document.getElementById('pagination-data')?.dataset.totalPages || '1');
+	  let currentSortBy = 'latest';
+	  let currentOrder = 'desc';
+	  let currentSize = parseInt(document.getElementById('pageSizeSelect')?.value || '5');
+	  const blockSize = 5;
 
-  /** ------------------ 페이징 ------------------ **/
-  const pagination = document.querySelector('.pagination');
-  if (pagination && totalPages > 1) {
-    const prevBlockBtn = pagination.querySelector('.prev-block');
-    const nextBlockBtn = pagination.querySelector('.next-block');
-    const pageNumbersContainer = pagination.querySelector('.page-numbers');
-    const blockSize = 5;
-    let currentBlock = Math.floor((currentPage - 1) / blockSize);
-    const totalBlocks = Math.ceil(totalPages / blockSize);
+	  //목록 로딩
+	  function loadTalentList(page = 1) {
+	    const pageSizeSelect = document.getElementById('pageSizeSelect');
+	    const talentListEl = document.querySelector('.talent-list');
 
-    function renderPageNumbers() {
-      pageNumbersContainer.innerHTML = '';
-      const startPage = currentBlock * blockSize + 1;
-      const endPage = Math.min(startPage + blockSize - 1, totalPages);
+	    let size = pageSizeSelect?.value || '5';
 
-      for (let i = startPage; i <= endPage; i++) {
-        const btn = document.createElement('a');
-        btn.href = '#';
-        btn.className = 'page-btn';
-        btn.textContent = i;
-        if (i === currentPage) btn.classList.add('active');
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          goToPage(i);
-        });
-        pageNumbersContainer.appendChild(btn);
-      }
+	    fetch(`/sort?page=${page}&size=${size}&sortBy=${currentSortBy}&order=${currentOrder}`)
+	      .then(res => res.text())
+	      .then(html => {
+	        if (!talentListEl) return;
+	        talentListEl.innerHTML = html;
 
-      prevBlockBtn.classList.toggle('disabled', currentBlock === 0);
-      nextBlockBtn.classList.toggle('disabled', currentBlock >= totalBlocks - 1);
-    }
+	        currentPage = page;
+	        currentSize = parseInt(size);
 
-    function goToPage(page) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('page', page);
-      window.location.href = url.toString();
-    }
+	        bindListEvents();
+	        renderPagination();
+	      })
+	      .catch(err => console.error('목록 로딩 실패:', err));
+	  }
 
-    prevBlockBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (currentBlock > 0) {
-        currentBlock--;
-        goToPage(currentBlock * blockSize + 1);
-      } else if (currentPage > 1) {
-        goToPage(currentPage - 1);
-      }
-    });
+	  //페이지네이션 렌더링
+	  function renderPagination() {
+	    const paginationContainer = document.querySelector('.page-numbers');
+	    const prevBlockBtn = document.querySelector('.prev-block');
+	    const nextBlockBtn = document.querySelector('.next-block');
 
-    nextBlockBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (currentBlock < totalBlocks - 1) {
-        currentBlock++;
-        goToPage(currentBlock * blockSize + 1);
-      } else if (currentPage < totalPages) {
-        goToPage(currentPage + 1);
-      }
-    });
+	    if (!paginationContainer) return;
+	    paginationContainer.innerHTML = '';
 
-    renderPageNumbers();
-  }
+	    const currentBlock = Math.floor((currentPage - 1) / blockSize);
+	    const startPage = currentBlock * blockSize + 1;
+	    const endPage = Math.min(startPage + blockSize - 1, totalPages);
 
-  /** ------------------ 페이지 사이즈 변경 ------------------ **/
-  const sizeSelect = document.getElementById('pageSizeSelect');
-  if (sizeSelect) {
-    sizeSelect.addEventListener('change', function () {
-      const size = this.value;
-      const url = new URL(window.location);
-      url.searchParams.set('size', size);
-      url.searchParams.set('page', 1);
-      window.location.href = url.toString();
-    });
-  }
+	    for (let i = startPage; i <= endPage; i++) {
+	      const btn = document.createElement('a');
+	      btn.href = '#';
+	      btn.textContent = i;
+	      btn.className = 'page-btn';
+	      if (i === currentPage) btn.classList.add('active');
+	      btn.addEventListener('click', e => {
+	        e.preventDefault();
+	        loadTalentList(i);
+	      });
+	      paginationContainer.appendChild(btn);
+	    }
 
-  /** ------------------ 스크랩 버튼 ------------------ **/
-  document.querySelectorAll('.bookmark-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const resumeSeq = this.dataset.resumeSeq;
-      const star = this.querySelector('.bookmark-star');
+	    if (prevBlockBtn) {
+	      prevBlockBtn.onclick = e => {
+	        e.preventDefault();
+	        if (startPage > 1) loadTalentList(startPage - 1);
+	      };
+	    }
+	    if (nextBlockBtn) {
+	      nextBlockBtn.onclick = e => {
+	        e.preventDefault();
+	        if (endPage < totalPages) loadTalentList(endPage + 1);
+	      };
+	    }
+	  }
 
-      fetch('/corp/talentPool/scrap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeSeq })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'scrap_success') {
-            star.textContent = '★';
-            star.classList.add('filled');
-          } else if (data.status === 'scrap_cancel') {
-            star.textContent = '☆';
-            star.classList.remove('filled');
-          } else {
-            alert('스크랩 실패: ' + data.status);
-          }
-        })
-        .catch(err => {
-          console.error('스크랩 실패', err);
-          alert('스크랩 실패');
-        });
-    });
-  });
+	  //정렬 관련
+	  const sortButtons = document.querySelectorAll('.sort-btn');
 
-  /** ------------------ 모달 ------------------ **/
-  document.querySelectorAll('.openInterviewModalBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      fetch('/corp/talentPool/interviewOffer')
-        .then(response => response.text())
-        .then(html => {
-          const modal = document.getElementById('interviewModal');
-          if (modal) {
-            modal.innerHTML = html;
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-          }
-        });
-    });
-  });
+	  function getSortText(sortBy, order) {
+	    const baseText = {
+	      latest: '최신순',
+	      career: '경력순',
+	      education: '학력순',
+	    };
+	    if (!order || sortBy === 'latest') return baseText[sortBy];
+	    return `${baseText[sortBy]} ${order === 'desc' ? '↓' : '↑'}`;
+	  }
 
-  function closeModal() {
-    const modal = document.getElementById('interviewModal');
-    if (modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
-  }
+	  function bindSortEvents() {
+	    sortButtons.forEach(btn => {
+	      btn.addEventListener('click', () => {
+	        const clickedSortBy = btn.dataset.sort;
+	        if (!clickedSortBy) return;
 
-  window.addEventListener('click', function (event) {
-    const modal = document.getElementById('interviewModal');
-    if (event.target === modal) closeModal();
-  });
+	        if (clickedSortBy === 'latest') {
+	          currentSortBy = 'latest';
+	          currentOrder = 'desc';
+	        } else {
+	          if (currentSortBy === clickedSortBy) {
+	            currentOrder = currentOrder === 'desc' ? 'asc' : 'desc';
+	          } else {
+	            currentSortBy = clickedSortBy;
+	            currentOrder = 'asc';
+	          }
+	        }
 
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closeModal();
-  });
+	        sortButtons.forEach(b => {
+	          b.classList.remove('active');
+	          b.innerText = getSortText(b.dataset.sort, null);
+	        });
 
-})();
+	        btn.classList.add('active');
+	        btn.innerText = getSortText(clickedSortBy, currentOrder);
+
+	        loadTalentList(1);
+	      });
+	    });
+	  }
+
+	  //페이지 사이즈 변경 
+	  const pageSizeSelect = document.getElementById('pageSizeSelect');
+	  function bindPageSizeChange() {
+	    if (!pageSizeSelect) return;
+	    pageSizeSelect.addEventListener('change', e => {
+	      currentSize = parseInt(e.target.value);
+	      loadTalentList(1);
+	    });
+	  }
+
+	  //동적 목록 이벤트 바인딩 
+	  function bindListEvents() {
+	    const talentListEl = document.querySelector('.talent-list');
+	    const modalEl = document.getElementById('interviewModal');
+	    if (!talentListEl) return;
+
+	    // 스크랩 버튼
+	    talentListEl.querySelectorAll('.bookmark-btn').forEach(btn => {
+	      btn.onclick = () => {
+	        const resumeSeq = btn.dataset.resumeSeq;
+	        const star = btn.querySelector('.bookmark-star');
+	        if (!resumeSeq || !star) return;
+
+	        fetch('/corp/talentPool/scrap', {
+	          method: 'POST',
+	          headers: { 'Content-Type': 'application/json' },
+	          body: JSON.stringify({ resumeSeq }),
+	        })
+	          .then(res => res.json())
+	          .then(data => {
+	            if (data.status === 'scrap_success') {
+	              star.textContent = '★';
+	              star.classList.add('filled');
+	            } else if (data.status === 'scrap_cancel') {
+	              star.textContent = '☆';
+	              star.classList.remove('filled');
+	            } else {
+	              alert('스크랩 실패: ' + data.status);
+	            }
+	          })
+	          .catch(() => alert('스크랩 실패'));
+	      };
+	    });
+
+	    // 면접 제안 모달 버튼
+	    talentListEl.querySelectorAll('.openInterviewModalBtn').forEach(btn => {
+	      btn.onclick = () => {
+	        fetch('/corp/talentPool/interviewOffer')
+	          .then(res => res.text())
+	          .then(html => {
+	            if (!modalEl) return;
+	            modalEl.innerHTML = html;
+	            modalEl.style.display = 'block';
+	            document.body.style.overflow = 'hidden';
+
+	            const closeBtn = modalEl.querySelector('.modal-close');
+	            if (closeBtn) closeBtn.onclick = closeModal;
+	          })
+	          .catch(() => alert('면접 제안 모달 로딩 실패'));
+	      };
+	    });
+	  }
+
+	  // 모달 닫기
+	  function closeModal() {
+	    const modalEl = document.getElementById('interviewModal');
+	    if (!modalEl) return;
+	    modalEl.style.display = 'none';
+	    modalEl.innerHTML = '';
+	    document.body.style.overflow = 'auto';
+	  }
+
+	  function bindModalClose() {
+	    document.addEventListener('keydown', e => {
+	      if (e.key === 'Escape') closeModal();
+	    });
+	  }
+
+	  //초기 실행
+	  bindSortEvents();
+	  bindPageSizeChange();
+	  bindModalClose();
+	  loadTalentList(currentPage);
+	  renderPagination();
+	})();
+
 </script>
+
+
 	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </body>
 </html>

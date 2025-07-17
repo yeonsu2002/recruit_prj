@@ -28,19 +28,19 @@
 		<div class="stats-grid">
    		<div class="stats-item">
         	<div class="stats-label">지원완료</div>
-        	<div class="stats-number highlight">1</div>
+        	<div class="stats-number highlight" th:text="${statistics.completed}"></div>
     	</div>
     	<div class="stats-item">
         	<div class="stats-label">전형 진행중</div>
-        	<div class="stats-number">0</div>
+        	<div class="stats-number" th:text="${statistics.docPassed}">0</div>
     	</div>
     	<div class="stats-item">
         	<div class="stats-label">최종합격</div>
-        	<div class="stats-number">0</div>
+        	<div class="stats-number" th:text="${statistics.passed}">0</div>
     	</div>
     	<div class="stats-item">
         	<div class="stats-label">불합격</div>
-        	<div class="stats-number">0</div>
+        	<div class="stats-number" th:text="${statistics.failed}">0</div>
    		</div>
 		</div><br><br>
 		<!-- 기본정보 섹션 -->
@@ -49,20 +49,19 @@
 			<div class="info-table">
 				<div class="info-row">
 					<div class="info-label">이름:</div>
-					<div class="info-value">유연수</div>
+					<div class="info-value" th:text="${user.name}">유연수</div>
 				</div>
 				<div class="info-row">
 					<div class="info-label">생년월일:</div>
-					<div class="info-value">2002.01.08</div>
+					<div class="info-value" th:text="${user.birth}">2002.01.08</div>
 				</div>
 				<div class="info-row">
 					<div class="info-label">연락처:</div>
-					<div class="info-value">010-2222-1111</div>
+					<div class="info-value" th:text="${user.phone}">010-2222-1111</div>
 				</div>
 				<div class="info-row">
 					<div class="info-label">이메일:</div>
-					<div class="info-value">test@test.com</div>
-					<button class="edit-btn">수정</button>
+					<div class="info-value" th:text="${user.email}">test@test.com</div>
 				</div>
 			</div>
 		</div>

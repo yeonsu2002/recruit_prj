@@ -1,6 +1,8 @@
 package kr.co.sist.corp.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class TalentPoolServiceImpl implements TalentPoolService {
 
 	    for (TalentPoolDTO tDTO : list) {
 	        try {
-	            tDTO.setName(cu.plainText(tDTO.getName()));
+	            tDTO.setName(cu.decryptText(tDTO.getName()));
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -104,7 +106,7 @@ public class TalentPoolServiceImpl implements TalentPoolService {
 
 	    for (TalentPoolDTO tDTO : list) {
 	        try {
-	            tDTO.setName(cu.plainText(tDTO.getName()));
+	            tDTO.setName(cu.decryptText(tDTO.getName()));
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -119,29 +121,33 @@ public class TalentPoolServiceImpl implements TalentPoolService {
 
 	    return list;
 	}
+//	        boolean isScrapped = talentPoolMapper.isResumeScrapped(tDTO.getResumeSeq(), corpNo) > 0;
+//	        tDTO.setIsScrapped(isScrapped ? "Y" : "N");
+//전체인재
+  @Override
+  public List<TalentPoolDTO> getPaginatedTalents(String sortBy, String order, int offset, int size, Long corpNo) {
+      Map<String, Object> paramMap = new HashMap<>();
+      paramMap.put("sortBy", sortBy);
+      paramMap.put("order", order);
+      paramMap.put("offset", offset);
+      paramMap.put("size", size);
+      paramMap.put("corpNo", corpNo);
 
-	@Override
-	public List<TalentPoolDTO> getPaginatedTalents(int offset, int size, Long corpNo) {
-	    List<TalentPoolDTO> list = talentPoolMapper.selectPaginatedTalents(offset, size);
-	    for (TalentPoolDTO tDTO : list) {
-	        try {
-	            tDTO.setName(cu.plainText(tDTO.getName()));
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	        if (tDTO.getFinalEducation() == null || tDTO.getFinalEducation().trim().isEmpty()) {
-	            tDTO.setFinalEducation("고등학교 졸업");
-	        }
-	        tDTO.setTotalCareer(formatCareer(tDTO.getTotalCareer()));
+      return talentPoolMapper.selectPaginatedTalents(paramMap);
+  }
 
-	        // ✅ 스크랩 여부 체크
-	        boolean isScrapped = talentPoolMapper.isResumeScrapped(tDTO.getResumeSeq(), corpNo) > 0;
-	        tDTO.setIsScrapped(isScrapped ? "Y" : "N");
-	    }
-	    return list;
-	}
+	
+  @Override
+  public List<TalentPoolDTO> getScrappedTalents(Long corpNo, int offset, int size) {
+      return talentPoolMapper.selectPaginatedScrappedTalents(corpNo, offset, size);
+  }
 
+  @Override
+  public int getScrappedTalentsCount(Long corpNo) {
+      return talentPoolMapper.countScrappedTalents(corpNo);
+  }
 
+	
 
 
 

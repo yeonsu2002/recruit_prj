@@ -29,19 +29,19 @@
 					<div class="stats-grid">
 						<div class="stats-item">
 							<div class="stats-label">지원완료</div>
-							<div class="stats-number" th:text="${completed}">1</div>
+							<div class="stats-number" th:text="${statistics.completed}">1</div>
 						</div>
 						<div class="stats-item">
 							<div class="stats-label">서류 통과</div>
-							<div class="stats-number" th:text="${docPassed}">0</div>
+							<div class="stats-number" th:text="${statistics.docPassed}">0</div>
 						</div>
 						<div class="stats-item">
 							<div class="stats-label">최종합격</div>
-							<div class="stats-number" th:text="${passed}">0</div>
+							<div class="stats-number" th:text="${statistics.passed}">0</div>
 						</div>
 						<div class="stats-item">
 							<div class="stats-label">불합격</div>
-							<div class="stats-number" th:text="${failed}">0</div>
+							<div class="stats-number" th:text="${statistics.failed}">0</div>
 						</div>
 					</div>
 
