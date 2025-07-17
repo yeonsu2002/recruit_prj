@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			try {
 				const response = await fetch('/mypage/application/' + jobApplicationSeq, {
-					method: "DELETE"
+					method: "PUT"
 				});
 				
 				const result = await response.text();

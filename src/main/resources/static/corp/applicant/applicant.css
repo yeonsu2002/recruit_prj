@@ -68,7 +68,7 @@ main {
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	font-size: 14px;
-	width: 200px;
+	width: 300px;
 	transition: border-color 0.2s ease;
 }
 
@@ -118,6 +118,14 @@ main {
 	border-bottom: 1px solid #ddd;
 	font-weight: bold;
 	font-size: 14px;
+}
+
+select[name="postingTitle"] {
+  min-width: 250px; /* 최소 너비 지정 */
+  max-width: 500px; /* 최대 너비 제한 */
+  white-space: nowrap; /* 텍스트 줄바꿈 안 함 */
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 말줄임표 처리 */
 }
 
 .col-name {
