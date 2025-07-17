@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 coachingTextarea.value = '⚠️ 분석 결과를 불러오는 데 문제가 발생했습니다.\n' + JSON.stringify(data, null, 2);
             }
         } catch (err) {
-            coachingTextarea.value = '❌ 오류 발생: ' + err.message;
+            coachingTextarea.value = '❌ 오류 발생하였습니다. 잠시 후 다시 시도해주세요.'
+            console.log(err.message);
         }
     });
 
