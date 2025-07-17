@@ -1,15 +1,5 @@
 package kr.co.sist.user.dto;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-public class MyApplicantDTO {
-
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 import org.apache.ibatis.type.Alias;
 
 import lombok.Getter;
@@ -35,11 +25,4 @@ public class MyApplicantDTO {
 	
 	private String dDay;
 	
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 }
