@@ -20,6 +20,68 @@ VALUES (#{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingD
     #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress}, #{region}, #{district} )
 </insert>
 
+<!-- 전체건수(total), 진행중건수(ing), 마감건수(end) -->
+<select id="selectMyPostingCount" parameterType="java.lang.Long" resultType="map">
+SELECT COUNT(*) as total_posting_cnt,
+COUNT (CASE WHEN TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD') &gt; SYSDATE THEN 1 END) AS ing_posting_cnt,
+COUNT (CASE WHEN TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD') &lt; SYSDATE THEN 1 END) AS end_posting_cnt
+FROM (
+	SELECT jp.CORP_NO, jp.JOB_POSTING_SEQ
+	FROM job_posting jp 
+	WHERE jp.corp_no = #{corpNo} 
+	GROUP BY jp.CORP_NO, jp.JOB_POSTING_SEQ
+)
+jp_sub
+JOIN job_posting jp ON jp_sub.JOB_POSTING_SEQ = jp.JOB_POSTING_SEQ
+</select>
+
+<!-- 사업자등록번호로 모든 공고 목록 가져오기(사업자번호, 마감상태, 정렬순서), 비교에 #{}쓰지말고 변수명 그대로 쓰기   -->
+<select id="selectMyAllPosting" resultType="kr.co.sist.corp.dto.JobPostingDTO" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
+	SELECT 	jp.JOB_POSTING_SEQ AS job_posting_seq,
+					jp.CORP_NO AS corp_no, 
+					jp.POSTING_TITLE AS posting_title, 
+					jp.employ_type AS employ_type, 
+					jp.exp_level AS exp_level, 
+					jp.posting_start_dt AS posting_start_dt, 
+					jp.posting_end_dt AS posting_end_dt, 
+					c.CORP_NM AS corp_nm, 
+					pc.position_name AS position_name, 
+					LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.TECH_STACK_SEQ) AS tech_names,
+	        count(DISTINCT ja.RESUME_SEQ) AS app_cnt, 
+	        jp.view_cnt AS view_cnt
+	FROM job_posting jp 
+	INNER JOIN company c on jp.corp_no = c.corp_no
+	INNER JOIN job_posting_tech_stack jpts on jp.job_posting_seq = jpts.job_posting_seq
+	INNER JOIN position_code pc on jp.position_seq = pc.position_seq 
+	INNER JOIN tech_stack ts on jpts.tech_stack_seq = ts.tech_stack_seq
+	INNER JOIN job_application ja on jp.job_posting_seq = ja.job_posting_seq
+	<choose>
+		<when test="postSts == 'ing'">
+	  	WHERE jp.corp_no = #{corpNo} AND TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD') &gt; SYSDATE
+		</when>
+		<when test="postSts == 'end'">
+			WHERE jp.corp_no = #{corpNo} AND TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD') &lt; SYSDATE
+		</when>
+		<when test="postSts == 'total'">
+			WHERE jp.corp_no = #{corpNo}
+		</when>
+	</choose>
+	GROUP BY jp.CORP_NO, jp.JOB_POSTING_SEQ, jp.POSTING_TITLE, c.CORP_NM, pc.position_name, jp.posting_start_dt, jp.posting_end_dt, jp.employ_type, jp.exp_level, jp.view_cnt
+  <choose>
+  	<when test="orderBy == 'start'">
+   	ORDER BY jp.posting_start_dt DESC <!-- 전체(시작순) -->
+  	</when>
+  	<when test="orderBy == 'end'">
+    ORDER BY jp.posting_end_dt ASC <!-- 마감빠른순 -->
+  	</when>
+  	<when test="orderBy == 'viewCnt'">
+    ORDER BY jp.view_cnt DESC <!-- 조회순 -->
+  	</when>
+  </choose>
+</select>
+
+
+
 
 
 <!-- 특정 공고 가져오기 : selectJobPost -->
@@ -44,5 +106,14 @@ WHERE position_name LIKE '%' || #{keyword} || '%'
 SELECT tech_stack_seq, stack_name FROM TECH_STACK
 WHERE UPPER(stack_name) LIKE UPPER( '%' || #{keyword} || '%' )
 </select>
+
+
+<!--  
+	<	&lt;
+	>	&gt;
+	&	&amp;
+	"	&quot;
+	'	&apos; 
+-->
 
 </mapper>

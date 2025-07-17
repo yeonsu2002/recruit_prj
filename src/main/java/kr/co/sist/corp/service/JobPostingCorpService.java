@@ -113,6 +113,25 @@ public class JobPostingCorpService {
   	return tsDTOList;
   }
   
+  /**
+   * 나의 공고 전체,진행중,마감 갯수 가져오기 
+   */
+  public List<Map<String, Integer>> selectMyJobPostingCnt(Long corpNo){
+  	
+  	List<Map<String, Integer>> postCntList = jpm.selectMyPostingCount(corpNo);
+  	
+  	return postCntList;
+  }
+  /**
+   * 나의 공고 리스트 가져오기 
+   */
+  public List<JobPostingDTO> selectMyJobPosting(JobPostingDTO jpDTO){
+  	
+  	List<JobPostingDTO> jpList = new ArrayList<JobPostingDTO>();
+  	jpList = jpm.selectMyAllPosting(jpDTO);
+  	
+  	return jpList;
+  }
   
   
 }

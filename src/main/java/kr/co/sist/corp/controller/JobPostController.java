@@ -1,6 +1,8 @@
 package kr.co.sist.corp.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,9 @@ public class JobPostController {
 		this.jwtUtil = jwtUtil;
 	}
 
-  //새로운 공고등록 form으로 이동
+  /**
+   * 공고등록 form으로 가기 : 권한체크 
+   */
   @GetMapping("/corp/jobPostingForm")
   public String getJobPostingForm(Model model, HttpServletRequest request, @AuthenticationPrincipal CustomUser user) {
   	
@@ -56,9 +60,11 @@ public class JobPostController {
 	 return "corp/jobPosting/jobPostingForm";
   }
   
-  //나의 공고 리스트 화면으로 가기 
-  @GetMapping("/corp/myJobPostingList")
-  public String getMyJobPostingList(@AuthenticationPrincipal CustomUser user) {
+  /**
+   * 나의 공고 리스트 화면으로 가기 : 권한체크 
+   */
+  @GetMapping("/corp/myJobPostingListPage")
+  public String getMyJobPostingListPage(@AuthenticationPrincipal CustomUser user) {
   	if(user == null) {
   		return "redirect:/accessDenied";
   	}
@@ -69,11 +75,13 @@ public class JobPostController {
   		return "redirect:/accessDenied";
   	}
   	
-  	return "corp/jobPosting/myJobPostingList";
+  	return "corp/jobPosting/myJobPostingListPage";
   }
   
   
-  // 새로운 공고 등록 (JSON)
+  /**
+   * 새로운 공고 등록 (JSON)
+   */
   @PostMapping("/corp/uploadJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {
   	
@@ -116,6 +124,36 @@ public class JobPostController {
   	List<TechStackDTO> resultList = jpcService.tsDTO(keyword);
   	
   	return ResponseEntity.ok(resultList);
+  }
+  
+  /**
+   * 나의 공고 리스트 페이지에 뿌릴 자료 호출 (/corp/myJobPostingListPage 에 통합할지, 비동기로 호출할지 미정)
+   * 필요 변수: corpNO, postSts (total, ing, end), orderBy(start, end, viewCnt) 
+   */
+  @GetMapping("/corp/getMyAllPosting") //PostMapping 해야 @RequestBody 오류 안남 
+  public ResponseEntity<?> getMyAllPosting(@RequestParam Long corpNo, @RequestParam String postSts, @RequestParam String orderBy){
+  	
+  	JobPostingDTO jpDTO = new JobPostingDTO();
+  	jpDTO.setCorpNo(corpNo);
+  	jpDTO.setPostSts(postSts);
+  	jpDTO.setOrderBy(orderBy);
+  	
+  	try {
+  		List <Map<String, Integer>> postCntMapList =  jpcService.selectMyJobPostingCnt(jpDTO.getCorpNo());
+  		List <JobPostingDTO> postList = jpcService.selectMyJobPosting(jpDTO);
+  		
+  		Map<String, Object> result = new HashMap<String, Object>();
+  		result.put("postCnt", postCntMapList);
+  		result.put("postList", postList);
+  		
+  		System.out.println(result);
+  		
+  		return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 리스트 호출 실패: " + e.getMessage());
+		} 
+  	
   }
   
   
