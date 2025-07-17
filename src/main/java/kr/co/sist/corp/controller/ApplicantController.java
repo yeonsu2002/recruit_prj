@@ -132,12 +132,12 @@ public class ApplicantController {
 		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq, jobPostingSeq);
 
 		// 지원서 첫 열람시 사용자에게 메일 보내기
-		if (cnt > 0) {
+		if (cnt >= 0) {
 			messageServ.addResumeReadNotification(userEntity, corpEntity, jobPostingSeq);
 		}
 
 		// 사용자 가공해서 바인딩
-		userEntity.setPhone(cu.plainText(userEntity.getPhone()));
+		userEntity.setPhone(cu.decryptText(userEntity.getPhone()));
 		userEntity.setBirth(userEntity.getBirth().substring(0, 4));
 		model.addAttribute("resumeUser", userEntity);
 

@@ -155,11 +155,9 @@ public class ApplicantService {
 		applicantDTO.setResumeSeq(resumeSeq);
 		applicantDTO.setJobPostingSeq(jobPostingSeq);
 		applicantDTO = applicantMapper.selectOneApplicant(applicantDTO);
-		System.out.println("----------------------------------" + applicantDTO);
 
 		//찾은 지원서의 합격 상태 변경
 		applicantDTO.setPassStage(passStage);
-		System.out.println("----------------------------------" + applicantDTO);
 
 		applicantMapper.updateResumePassStage(applicantDTO);
 

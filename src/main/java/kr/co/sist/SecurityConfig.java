@@ -16,7 +16,6 @@ import kr.co.sist.login.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig {
 
 	@Bean
