@@ -360,6 +360,17 @@
         
         <!-- 메일 목록 -->
         <div class="application-list">
+        <th:block th:each="message : ${messages}">
+        	<div class="application-item">
+                <div class="application-info">
+                    <div class="company-name" th:text="${message.corpNm}">삼성전자</div>
+                    <div class="job-title" th:text="${message.messageTitle}">상반기 대졸신입공채 최종합격 안내</div>
+                    <div class="application-meta" th:text="${message.createdAt}">
+                        <span>2025-07-10 19:24</span>
+                    </div>
+                </div>
+            </div>
+        </th:block>
             <div class="application-item">
                 <div class="application-info">
                     <div class="company-name">삼성전자</div>
