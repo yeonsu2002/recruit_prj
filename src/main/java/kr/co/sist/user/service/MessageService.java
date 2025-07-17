@@ -30,7 +30,7 @@ public class MessageService {
 		JobPostDTO jobPostDTO = messageMapper.selectPostTitle(jobPostingSeq);
 		String title = "[" + corpEntity.getCorpNm() + "]에서 지원하신 이력서를 확인했습니다.";
 		String content = "안녕하세요, [" + userEntity.getName() + "]님.\n\n" + corpEntity.getCorpNm() + "에서 지원하신 \""
-				+ jobPostDTO.getPostingTitle() + "\" 이력서를 확인하였습니다.\n" + "검토 후 결과를 안내해 드릴 예정이니 조금만 기다려 주세요.\n\n감사합니다.";
+				+ jobPostDTO.getPostingTitle() + "\" 이력서를 확인하였습니다." + "검토 후 결과를 안내해 드릴 예정이니 조금만 기다려 주세요.\n\n감사합니다.";
 
 		// 메시지 객체 생성
 		MessageEntity message = new MessageEntity();
@@ -62,8 +62,14 @@ public class MessageService {
 	//특정 유저의 모든 메일 목록 가져오기
 	public List<MessageDTO> searchMyMessage(String email) {
 
-		List<MessageDTO> messageDTO = messageMapper.selectMyMessage(email);
-		
-		return messageDTO;
+		List<MessageDTO> messageList = messageMapper.selectMyMessage(email);
+		for(MessageDTO message : messageList) {
+			
+			//날짜 가공
+			String raw = message.getCreatedAt(); // 예: "2025-07-15T23:20:14"
+      String formatted = raw.replace("T", " ").substring(0, 16); // "2025-07-15 23:20"
+      message.setCreatedAt(formatted);
+		}
+		return messageList;
 	}
 }

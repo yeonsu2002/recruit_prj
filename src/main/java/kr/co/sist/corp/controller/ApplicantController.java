@@ -137,7 +137,7 @@ public class ApplicantController {
 		}
 
 		// 사용자 가공해서 바인딩
-		userEntity.setPhone(cu.plainText(userEntity.getPhone()));
+		userEntity.setPhone(cu.decryptText(userEntity.getPhone()));
 		userEntity.setBirth(userEntity.getBirth().substring(0, 4));
 		model.addAttribute("resumeUser", userEntity);
 
