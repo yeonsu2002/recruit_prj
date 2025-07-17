@@ -14,6 +14,10 @@ main {
 	margin-top: 30px;
 }
 
+.corp-main-menu td {
+  font-family: 'Noto Sans KR', Arial, sans-serif; /* td 단위로 명시 */
+}
+
 .container {
 	max-width: 1200px;
 	margin: 0 auto;
@@ -246,4 +250,15 @@ main {
 .page-btn.disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
+}
+
+.col-resume {
+	width: 20%;
+	cursor: pointer; /* 🔹 마우스 포인터 손가락 모양 */
+	transition: color 0.2s ease;
+}
+
+.col-resume:hover {
+	color: #007bff; /* 🔹 링크처럼 파란색 */
+	text-decoration: underline; /* 🔹 밑줄로 링크 느낌 */
 }

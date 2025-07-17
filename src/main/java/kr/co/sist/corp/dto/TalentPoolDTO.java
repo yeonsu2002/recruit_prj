@@ -6,12 +6,18 @@ import lombok.Data;
 public class TalentPoolDTO {
 
     private Long resumeSeq;
-    private String title;
-    private String image;
-    private String introduction;
-    private String createdAt;
     private String name;
-    private String email;
-    private String profileImage;
+    private String gender;
+    private String birthYear;
+    private String shortAddress;
+    
+    private String totalCareer;
+    private String finalEducation;
+    private String desiredPositions;
+    private String techStacks;
+    private String certifications;
+    
+    private Long corpNo;
+    private String isScrapped;
     
 }

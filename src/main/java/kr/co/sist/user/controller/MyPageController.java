@@ -1,14 +1,13 @@
 package kr.co.sist.user.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
-import kr.co.sist.login.UserRepository;
-import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +32,8 @@ public class MyPageController {
 	}
 	
 	@GetMapping("/user/mypage/apply_list")
-	public String applyList() {
+	public String applyList(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+		
 		return "/user/mypage/apply_list";
 	}
 	
@@ -62,7 +62,6 @@ public class MyPageController {
 	@GetMapping("/user/mypage/scrap_posting")
 	public String scrapPosting(HttpServletRequest request, Model model) {
 		
-	    
 		return "/user/mypage/scrap_posting";
 	}
 }
