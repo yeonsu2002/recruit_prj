@@ -9,6 +9,53 @@
 
 <style type="text/css">
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const analyzeBtn = document.querySelector('.analyze-button');
+    const resetBtn = document.querySelector('.reset-button');
+    const resumeTextarea = document.getElementById('resumeInput');
+    const coachingTextarea = document.querySelector('.resume-coaching-section textarea');
+
+    analyzeBtn.addEventListener('click', async function () {
+        const resume = resumeTextarea.value.trim();
+
+        if (resume.length < 200) {
+            alert("자기소개서는 최소 200자 이상 입력해야 분석이 가능합니다.");
+            return;
+        }
+
+        // 분석 중 메시지
+        coachingTextarea.value = "🔍 AI가 자기소개서를 분석 중입니다...\n잠시만 기다려주세요...";
+        
+        try {
+            const response = await fetch('/resume/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: resume })
+            });
+
+            const data = await response.json();
+
+            if (data.choices && data.choices.length > 0) {
+                const result = data.choices[0].message.content;
+                coachingTextarea.value = result;
+            } else {
+                coachingTextarea.value = '⚠️ 분석 결과를 불러오는 데 문제가 발생했습니다.\n' + JSON.stringify(data, null, 2);
+            }
+        } catch (err) {
+            coachingTextarea.value = '❌ 오류 발생: ' + err.message;
+        }
+    });
+
+    resetBtn.addEventListener('click', function () {
+        resumeTextarea.value = '';
+        coachingTextarea.value = '';
+    });
+});
+</script>
+
 </head>
 
 <body>
