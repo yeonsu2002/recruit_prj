@@ -1,0 +1,55 @@
+<th:block th:fragment="talentList" >
+   <div class="talent-list" id="talentList">
+         <div th:if="${#lists.isEmpty(talentPool)}">
+	  <p>인재 목록이 없습니다.</p>
+	  </div>
+	  
+	  <div th:if="${!#lists.isEmpty(talentPool)}">
+           <div class="talent-item" th:each="talent : ${ talentPool }">
+               <div class="talent-left">
+                   <div class="talent-profile" th:text="${ talent.name }"></div>
+                   <div class="talent-info" 
+                   th:text="|${talent.gender == 'M' ? '남' : (talent.gender == 'F' ? '여' : '기타')}
+                   ·${ talent.birthYear }년생|"></div>
+               </div> 
+               
+               <div class="talent-right">
+                   <div class="spec-grid">
+                       <div class="spec-title">최종학력</div>
+                       <div th:text="${ talent.finalEducation }"><!-- 대학교 졸업 --></div>
+                       <div class="spec-title">경력</div>
+                       <div th:text="${ talent.totalCareer }"><!-- 경력 4년차 --></div>
+                       <div class="spec-title">거주지</div>
+                       <div th:text="${ talent.shortAddress }"><!-- 서울 --></div>
+                       <div class="spec-title">자격증</div>
+                       <div th:text="${ talent.certifications }"><!-- 정보처리기사 --></div>
+                       <div class="spec-title">기술 스택</div>
+                       <div class="skill-tags">
+                           <span class="skill-tag" th:text="${ talent.techStacks }"></span>
+                       </div>
+                    	<div class="spec-title">희망 직종</div>
+                       <div class="skill-tags">
+                           <span class="skill-tag" th:text="${ talent.desiredPositions }"></span>
+                       </div> 
+                   </div>
+               </div>
+       
+               <div class="talent-actions">
+				<button class="action-btn bookmark-btn"
+		        th:data-resume-seq="${talent.resumeSeq}"
+		        th:data-corp-no="${talent.corpNo}">
+	    		<span class="bookmark-star" 
+		      	th:classappend="${talent.isScrapped == 'Y'} ? 'filled'" 
+		      	th:text="${talent.isScrapped == 'Y'} ? '★' : '☆'"></span>스크랩
+				</button>
+                   <a th:href="@{/corp/talentPool/resume_detail}">
+                   <button class="action-btn resume-btn">이력서 확인</button></a>
+                   <button class="action-btn interview-btn openInterviewModalBtn">
+                   면접 제안</button>
+               </div>
+            </div>
+       	</div>
+      	
+      	
+     </div>
+</th:block>
