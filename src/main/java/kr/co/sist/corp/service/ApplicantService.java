@@ -30,7 +30,7 @@ public class ApplicantService {
 			
 			//이름 복호화
 			if(applicant.getName() != null) {
-				applicant.setName(cu.plainText(applicant.getName()));
+				applicant.setName(cu.decryptText(applicant.getName()));
 			}
 			
 			//경력 설정

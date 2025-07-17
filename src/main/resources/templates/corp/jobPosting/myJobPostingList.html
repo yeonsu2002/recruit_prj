@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+//지원자 관리 모달창
+function openApplicantListModal(){
+	alert('지원자 관리 모달창 열림');
+}
+
 
 </script>
 </head>
@@ -79,12 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
 						<th>모집 내용</th>
 						<th>공고 관리</th>
 						<th>지원자 관리</th>
-						<th>보고서</th>
+						<th>보고서? AI인재추천?</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td class="posting-box-need-center">게재 종료</td>
+						<td class="posting-box-need-center">채용 마감</td>
 						<td>
 							<a><span>테스트 채용공고 02. 입사지원하..</span></a>
 							<ul>
@@ -99,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
 							<button type="button" >마감 </button>
 						</td>
 						<td class="posting-box-need-center">
-							<div>3명</div>
-							<div>지원자 관리</div>
-							<div>지원자 통계</div>
+							<div><a style="cursor: pointer; text-decoration: underline;" onclick="openApplicantListModal()"> 3명</a></div>
+							<div style="color: black; cursor: pointer;" onclick="openApplicantListModal()"> 지원자 관리 <i class="bi bi-file-earmark-ruled"></i></div>
+							<div> <input type="button" value="지원자 통계"> </div>
 						</td>
 						<td class="posting-box-need-center">
 							<button type="button">확인</button>

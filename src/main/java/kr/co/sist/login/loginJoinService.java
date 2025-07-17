@@ -62,7 +62,7 @@ public class loginJoinService {
             ue.setPassword(cu.hashText(uDTO.getPassword()));
             ue.setName(uDTO.getName());
             ue.setRole("ROLE_USER");
-            ue.setPhone(cu.cipherText(uDTO.getPhone()));
+            ue.setPhone(cu.encryptText(uDTO.getPhone()));
             
             // 현재 시간 설정
             LocalDateTime now = LocalDateTime.now();
