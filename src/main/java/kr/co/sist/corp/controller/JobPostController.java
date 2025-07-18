@@ -146,8 +146,6 @@ public class JobPostController {
   		result.put("postCnt", postCntMapList);
   		result.put("postList", postList);
   		
-  		System.out.println(result);
-  		
   		return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			e.printStackTrace();

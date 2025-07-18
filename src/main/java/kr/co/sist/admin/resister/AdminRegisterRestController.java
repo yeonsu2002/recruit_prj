@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.sist.admin.AdminDTO;
 import kr.co.sist.admin.AdminEntity;
 import kr.co.sist.admin.AdminService;
 import kr.co.sist.admin.email.EmailService;
@@ -28,13 +29,12 @@ public class AdminRegisterRestController {
     }
     
     @PostMapping("/admin_register_process")
-    public Map<String, Object> doSignUp(@RequestBody AdminEntity admin) {
+    public Map<String, Object> doSignUp(@RequestBody AdminDTO admin) {
         Map<String, Object> response = new HashMap<>();
         try {
-            AdminEntity result = adminRegisterService.signUp(admin);
+            adminRegisterService.signUp(admin);
             response.put("success", true);
             response.put("message", "회원가입이 완료되었습니다.");
-            System.out.println("저장된 데이터: " + result);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "회원가입에 실패했습니다: " + e.getMessage());
