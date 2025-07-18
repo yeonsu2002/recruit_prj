@@ -5,13 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.MessageDTO;
+import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.entity.MessageEntity;
 import kr.co.sist.user.entity.UserEntity;
-import kr.co.sist.user.mapper.JobPostingMapper;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class MessageService {
 		JobPostDTO jobPostDTO = messageMapper.selectPostTitle(jobPostingSeq);
 		String title = "[" + corpEntity.getCorpNm() + "]에서 지원하신 이력서를 확인했습니다.";
 		String content = "안녕하세요, [" + userEntity.getName() + "]님.\n\n" + corpEntity.getCorpNm() + "에서 지원하신 \""
-				+ jobPostDTO.getPostingTitle() + "\" 이력서를 확인하였습니다.\n" + "검토 후 결과를 안내해 드릴 예정이니 조금만 기다려 주세요.\n\n감사합니다.";
+				+ jobPostDTO.getPostingTitle() + "\" 이력서를 확인하였습니다." + "검토 후 결과를 안내해 드릴 예정이니 조금만 기다려 주세요.\n\n감사합니다.";
 
 		// 메시지 객체 생성
 		MessageEntity message = new MessageEntity();
@@ -39,6 +40,7 @@ public class MessageService {
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
 		message.setCreatedAt(now.toString());
+		message.setIsRead("N");
 
 		messageRepos.save(message);
 	}// addResumeReadNotification
@@ -54,16 +56,52 @@ public class MessageService {
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
 		message.setCreatedAt(now.toString());
+		message.setIsRead("N");
 
 		messageRepos.save(message);
 
-	}
+	}//addMessage
 
 	//특정 유저의 모든 메일 목록 가져오기
 	public List<MessageDTO> searchMyMessage(String email) {
 
-		List<MessageDTO> messageDTO = messageMapper.selectMyMessage(email);
+		List<MessageDTO> messageList = messageMapper.selectMyMessage(email);
+		for(MessageDTO message : messageList) {
+			
+			//날짜 가공
+			String raw = message.getCreatedAt(); // 예: "2025-07-15T23:20:14"
+      String formatted = raw.replace("T", " ").substring(0, 16); // "2025-07-15 23:20"
+      message.setCreatedAt(formatted);
+		}
+		return messageList;
+	}//searchMyMessage
+	
+	//특정 메시지 읽음 처리
+	@Transactional
+	public void readMessage(int messageSeq) {
 		
-		return messageDTO;
+		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+		 
+		//트랜잭션이 끝나면 JPA가 자동으로 Dirty Checking 후 Update
+		MessageEntity messageEntity = messageRepos.findById(messageSeq).orElse(null);
+		messageEntity.setIsRead("Y");
+		messageEntity.setReadedAt(now.toString());
+		
+	}//readMessage
+	
+	//메시지 통게 집계
+	public MessageStatisticsDTO getMessageStatistics(List<MessageDTO> messageList) {
+		
+		MessageStatisticsDTO statistics = new MessageStatisticsDTO();
+		
+		long readCnt = messageList.stream().filter(m -> "Y".equals(m.getIsRead())).count();
+		long offeredCnt = messageList.stream().filter(m -> "Y".equals(m.getIsOffered())).count();
+		
+		statistics.setTotal(messageList.size());
+		statistics.setRead((int)readCnt);
+		statistics.setUnread(messageList.size() - (int)readCnt);
+		statistics.setPosition((int)offeredCnt);
+		
+		return statistics;
 	}
 }

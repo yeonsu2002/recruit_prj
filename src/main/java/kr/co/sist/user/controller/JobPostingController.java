@@ -58,8 +58,10 @@ public class JobPostingController {
             UserEntity userEntity = ur.findById(userInfo.getEmail()).orElse(null);
             if (userEntity != null) {
                 try {
+                	
+                	
                     // 유저 정보 복호화
-                    userEntity.setPhone(cu.plainText(userEntity.getPhone()));
+                    userEntity.setPhone(cu.decryptText(userEntity.getPhone()));
                     String birth = userEntity.getBirth();
                 } catch (Exception e) {
                     // 복호화 실패 시 처리  

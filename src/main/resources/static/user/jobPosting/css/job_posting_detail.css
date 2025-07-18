@@ -130,11 +130,11 @@
             gap: 6px;
             margin: 6px 8px 6px 0;
             padding: 8px 16px;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: #00E00B;
+            border: 1px solid #00E00B;
             border-radius: 20px;
             font-size: 14px;
-            color: #495057;
+            color: white;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -152,36 +152,36 @@
         }
 
         /* 섹션 스타일 */
-        .job-section {
-            margin-bottom: 40px;
-        }
+.job-section {
+    max-width: 1000px;  
+}
 
-        .job-section h3 {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
+.job-section h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
 
-        .job-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
+.job-section ul {
+    list-style: none;
+    padding-left: 0;
+}
 
-        .job-section li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 8px;
-            color: #495057;
-        }
+.job-section li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    color: #495057;
+}
 
-        .job-section li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #007bff;
-            font-weight: bold;
-        }
+.job-section li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #007bff;
+    font-weight: bold;
+}
 
         /* 상세 정보 그리드 */
         .job-info-box {
@@ -258,11 +258,11 @@
             margin: 20px 0;
         }
 
-        .company-description {
-            font-size: 15px;
-            line-height: 1.7;
-            color: #495057;
-        }
+       .company-description {
+		    max-width: 600px; /* 설명 영역 최대 너비 제한 */
+		    line-height: 1.6;
+		    font-size: 16px;
+		}
 
         /* 플로팅 사이드바 */
         .floating-sidebar {
@@ -280,7 +280,6 @@
             border: 1px solid #e9ecef;
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .company-logo-section {
@@ -475,10 +474,28 @@
             padding: 20px;
         }
 
-        .job-info {
-            margin-bottom: 30px;
-        }
-
+      .job-info-box {
+	    display: flex;
+	    flex-direction: column;  /* 세로 정렬 */
+	    align-items: flex-start; /* 왼쪽 정렬 */
+	    gap: 20px;
+	    margin-top: 40px;
+	    width: 100%;
+	    max-width: 700px;
+	    height: auto;
+	}
+	.job-info-box > div {
+	    width: 100%;  /* 전체 폭 사용 */
+	}
+	.job-info-box h2 {
+	    font-size: 20px;
+	    margin-bottom: 5px;
+	}
+	.job-info-box p {
+	    margin: 0;
+	    font-size: 16px;
+	    color: #333;
+	}
         .job-title {
             font-size: 20px;
             font-weight: 600;
