@@ -33,6 +33,8 @@
 		      <a th:href="@{/void}" th:text="${user.name}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
 		      <a th:href="@{/logout}" class="corp-header-link">로그아웃</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+<!-- user 정보를 dataset에 담아서 쓰려고, 문자열은 뽑기 어려우니까 json으로 주기  -->
+		      <div id="userDataDiv" th:attr="data-user=${user}"></div>
 	    	</div>
 	    	<!-- sec:authorize는 내부적으로 SecurityContext에서 현재 사용자의 인증 상태를 확인 : 비로그인 상태인 경우, 내부적으로 ROLE_ANONYMOUS 권한이 부여, 따라서 오류 안남 -->
 	    	<div sec:authorize="!hasRole('ROLE_CORP')"  >
@@ -74,7 +76,7 @@
 	        <td>
 	          <div class="corp-submenu-item">
 	            <a th:href="@{/corp/jobPostingForm}"><span class="corp-submenu-link">새로운 공고 등록</span></a> <br>
-	            <a th:href="@{/corp/myJobPostingList}"><span class="corp-submenu-link">나의 공고 목록</span></a> <br>
+	            <a th:href="@{/corp/myJobPostingListPage}"><span class="corp-submenu-link">나의 공고 목록</span></a> <br>
 	          </div>
 	        </td>
 	        <td>

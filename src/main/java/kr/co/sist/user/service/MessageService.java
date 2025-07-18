@@ -5,13 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.MessageDTO;
+import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.entity.MessageEntity;
 import kr.co.sist.user.entity.UserEntity;
-import kr.co.sist.user.mapper.JobPostingMapper;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class MessageService {
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
 		message.setCreatedAt(now.toString());
+		message.setIsRead("N");
 
 		messageRepos.save(message);
 	}// addResumeReadNotification
@@ -54,10 +56,11 @@ public class MessageService {
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
 		message.setCreatedAt(now.toString());
+		message.setIsRead("N");
 
 		messageRepos.save(message);
 
-	}
+	}//addMessage
 
 	//특정 유저의 모든 메일 목록 가져오기
 	public List<MessageDTO> searchMyMessage(String email) {
@@ -71,5 +74,34 @@ public class MessageService {
       message.setCreatedAt(formatted);
 		}
 		return messageList;
+	}//searchMyMessage
+	
+	//특정 메시지 읽음 처리
+	@Transactional
+	public void readMessage(int messageSeq) {
+		
+		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+		 
+		//트랜잭션이 끝나면 JPA가 자동으로 Dirty Checking 후 Update
+		MessageEntity messageEntity = messageRepos.findById(messageSeq).orElse(null);
+		messageEntity.setIsRead("Y");
+		messageEntity.setReadedAt(now.toString());
+		
+	}//readMessage
+	
+	//메시지 통게 집계
+	public MessageStatisticsDTO getMessageStatistics(List<MessageDTO> messageList) {
+		
+		MessageStatisticsDTO statistics = new MessageStatisticsDTO();
+		
+		long readCnt = messageList.stream().filter(m -> "Y".equals(m.getIsRead())).count();
+		long offeredCnt = messageList.stream().filter(m -> "Y".equals(m.getIsOffered())).count();
+		
+		statistics.setTotal(messageList.size());
+		statistics.setRead((int)readCnt);
+		statistics.setUnread(messageList.size() - (int)readCnt);
+		statistics.setPosition((int)offeredCnt);
+		
+		return statistics;
 	}
 }

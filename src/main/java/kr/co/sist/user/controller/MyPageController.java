@@ -12,6 +12,7 @@ import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.ApplicantStatisticsDTO;
 import kr.co.sist.user.dto.MessageDTO;
+import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
@@ -80,8 +81,12 @@ public class MyPageController {
 
 		// 모든 메일목록 가져오기
 		List<MessageDTO> messages = messageServ.searchMyMessage(userEntity.getEmail());
+		
+		//메일 통계 집계
+		MessageStatisticsDTO statistics = messageServ.getMessageStatistics(messages);
 
 		model.addAttribute("messages", messages);
+		model.addAttribute("statistics", statistics);
 
 		return "/user/mypage/mail_list";
 	}

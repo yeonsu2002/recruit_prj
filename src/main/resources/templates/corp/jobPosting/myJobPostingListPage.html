@@ -5,7 +5,7 @@
 <title>민기인력 - 기업 메인</title>
 <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
 <link rel="stylesheet" th:href="@{/corp/mainCss/main_page.css}"/>
-<link rel="stylesheet" th:href="@{/corp/jobPosting/myJobPostingList.css}">
+<link rel="stylesheet" th:href="@{/corp/jobPosting/myJobPostingListPage.css}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 <style type="text/css">
 
@@ -18,18 +18,58 @@ document.addEventListener('DOMContentLoaded', () => {
  		window.location.href = '/corp/jobPostingForm'; // 페이지 이동
 	});
 	
-	
+	//헤더에 있는 것도 가져올수가 있네 
+	// userJson을 가져와서 userInfo에 넣으면 문자열이 되는데, JSON.parse(...)로 변환해야 객체로 사용가능 
+	// JSON.parse(...) -> 문자열로 되어 있는 JSON 데이터를 JavaScript 객체로 변환해주는 함수 / 반대로 자바객체를 JSON으로 -> JSON.stringify()
+	let userInfoJson = document.querySelector('#userDataDiv').dataset.user;
+	console.log(userInfoJson);
+	let userInfoJs = JSON.parse(userInfoJson);
+	console.log(userInfoJs);
 	
 	
 	
 });//ready
 
 
-
 //지원자 관리 모달창
 function openApplicantListModal(){
 	alert('지원자 관리 모달창 열림');
 }
+
+//처음화면 자료 뿌리기(진행중, 전체)
+function fetchStartData(){
+	
+	
+}
+
+
+//진행중 버튼 누르면 진행중인 공고만 가져와 뿌리기
+function getProcessingPosting(){
+	
+}
+//마감 버튼을 누르면 마감된 공고만 가져와 뿌리기 (마감된 공고는 공고관리 > 연장,마감 버튼, 인재추천 비활성화)
+function getEndPosting(){
+	
+}
+//전체 버튼 누르면 전체 공고를 가져와 뿌리기
+function getAllPosting(){
+	
+}
+
+//전체(최신등록순) 정렬
+function orderByStartDate(){
+	
+}
+//마감일순 정렬 
+function orderByEndDate(){
+	
+}
+//조회수순 정렬
+function orderByViewCnt(){
+	
+}
+
+
 
 
 </script>
@@ -43,9 +83,9 @@ function openApplicantListModal(){
 			<div> <!-- 테이블 -->
 				<table class="table table-bordered"> 
 					<tr>
-						<th>진행중 (<span>2</span>)건 </th>
-						<th>마감 (<span>12</span>)건 </th>
-						<th>전체 (<span>14</span>)건 </th>
+						<th id="getProcessingPosting">진행중 (<span>2</span>)건 </th>
+						<th id="getEndPosting">마감 (<span>12</span>)건 </th>
+						<th id="getAllPosting">전체 (<span>14</span>)건 </th>
 					</tr>
 				</table>
 			</div>
@@ -56,9 +96,10 @@ function openApplicantListModal(){
 		<hr class="border border-primary border-2 opacity-50 status-bottom-hr">
 		<div class="get-posting-orderby"> <!-- 상단의 정렬 순서 -->
 			<div> 
-				<input type="button" value="전체"> |
-				<input type="button" value="마감일순"> |
-				<input  type="button"value="조회수순">
+				<!-- 전체는 최신 등록순 -->
+				<input type="button" value="전체" id="orderByStartDate"> |
+				<input type="button" value="마감일순" id="orderByEndDate"> |
+				<input  type="button"value="조회수순" id="orderByViewCnt">
 			</div>
 		</div>
 	</div> <!-- 상단 끝 -->
@@ -84,7 +125,7 @@ function openApplicantListModal(){
 						<th>모집 내용</th>
 						<th>공고 관리</th>
 						<th>지원자 관리</th>
-						<th>보고서? AI인재추천?</th>
+						<th style="color: #f53600">AI인재추천</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -116,6 +157,16 @@ function openApplicantListModal(){
 			</table>
 		</div>
 	</div> <!-- 하단 끝 -->
+	
+	<!-- 모달창 : 지원자 관리 -->
+	<div>
+	
+	</div>
+	
+	
+	<!-- 모달창 : 지원자 통계 -->
+	
+	
 </div>
  
 <th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>

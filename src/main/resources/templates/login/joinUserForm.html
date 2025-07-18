@@ -13,6 +13,9 @@
 <script type="text/javascript">
 $(function(){
 	
+	//버튼딸깍 랜덤유저 10000개 생성
+	document.querySelector('#createRandomUsers').addEventListener('click', addTenThousandUsers);
+	
 	isForYou();
 	
 	//비밀번호 규정에 맞는지 확인여부UI
@@ -515,10 +518,79 @@ function isForYou(){
 	  this.value = formatted;
 	  console.log(this.value);
 	});
-	
-	
-	
 }
+
+//10000개 유저 데이터 넣기
+function addTenThousandUsers(){
+	const familyName = ["김", "신", "이", "주", "유", "박", "서", "한", "하"];
+	const lastName1 = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"];
+	const lastName2 = ["고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호"];
+	const digits = [1,2,3,4,5,6,7,8,9];
+
+	for(let i = 1; i <= 1000; i++){
+		// 이름 생성
+		let randomFN = familyName[Math.floor(Math.random() * familyName.length)];
+		let randomN1 = lastName1[Math.floor(Math.random() * lastName1.length)];
+		let randomN2 = lastName2[Math.floor(Math.random() * lastName2.length)];
+		let fullName = randomFN + randomN1 + randomN2;
+
+		// 전화번호 8자리 랜덤 생성
+		let num = () => digits[Math.floor(Math.random() * digits.length)];
+		let phoneNumber = `010-${num()}${num()}${num()}${num()}-${num()}${num()}${num()}${num()}`;
+
+		// 주소
+		let zipcode = Math.floor(Math.random() * 90000) + 10000;
+		let roadAddress = "서울시 강남구 테헤란로 132";
+		let detailAddress = `${num()}${num()}-${num()}${num()}`;
+
+		// 이메일 / 비밀번호
+		let email = `testUser${i}@test.com`;
+		let password = `Testuser${i}`;
+
+		// 생일
+		let birth = `200${num()}-0${num()}-25`;
+
+		// 성별
+		let gender = Math.random() < 0.5 ? "M" : "F";
+
+		// 전송할 객체
+		let formData = {
+			name: fullName,
+			email: email,
+			password: password,
+			phone: phoneNumber,
+			zipcode: zipcode,
+			roadAddress: roadAddress,
+			detailAddress: detailAddress,
+			birth: birth,
+			gender: gender
+		};
+
+		// fetch로 전송
+		fetch('/user/joinProcessJson', {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify(formData)
+		})
+		.then(response => {
+			if(!response.ok){
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return response.text();
+		})
+		.then(data => {
+			console.log(`회원 ${i} 가입 성공:`, data);
+		})
+		.catch(error => {
+			console.error(`회원 ${i} 가입 실패:`, error);
+		});
+	}
+}
+
+
 	
 </script>
 <body>
@@ -669,6 +741,8 @@ function isForYou(){
 
             <button type="submit" id="submitBtn" class="submit-btn" >다음단계</button>
         </form>
+        <hr>
+        <button type="button" id="createRandomUsers">랜덤유저 생성</button>
     </div>
     
     <!-- Vertically centered scrollable modal -->

@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -219,6 +222,25 @@ public class LoginController {
   @GetMapping("/corp/testForm")
   public String testForm() {
     return "login/joinCorpFormOnlyHTML";
+  }
+  
+  
+  
+  
+  /**
+   * 대량의 일반회원 가입 프로세스 (JSON)
+   */
+  @PostMapping("/user/joinProcessJson")
+	public ResponseEntity<?> userJoinProcess(@RequestBody UserDTO uDTO) {
+    // model에 Entity를 담는건 아니야. DTO를 담아. Entity는 보안문제도 있고 민감한 객체야. 
+    try {
+    	ljs.registerUser(uDTO);
+    	return ResponseEntity.ok("등록 성공");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+    
   }
   
 }

@@ -1,6 +1,7 @@
 package kr.co.sist.corp.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -31,10 +32,24 @@ public interface TalentPoolMapper {
 
 	int isResumeScrapped(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
 
-	List<TalentPoolDTO> selectPaginatedTalents(@Param("offset") int offset, @Param("size") int size);
+	//전체 인재
+//	List<TalentPoolDTO> selectPaginatedTalents(@Param("offset") int offset, @Param("size") int size);
+  List<TalentPoolDTO> selectPaginatedTalents(Map<String, Object> paramMap);
+
     
 	List<TalentPoolDTO> selectPaginatedScrappedTalents(@Param("offset") int offset, @Param("size") int size, @Param("corpNo") Long corpNo);
 
-    int selectScrappedTalentTotalCount(@Param("corpNo") Long corpNo);
+  // 스크랩한 인재 목록 조회 (페이징)
+  List<TalentPoolDTO> selectPaginatedScrappedTalents(@Param("corpNo") Long corpNo,
+                                              @Param("offset") int offset,
+                                              @Param("size") int size);
+  // 스크랩한 인재 전체 수
+  int countScrappedTalents(@Param("corpNo") Long corpNo);
+  //툴바
+  List<TalentPoolDTO> getSortedTalentPool(@Param("sortBy") String sortBy,
+      @Param("order") String order,
+      @Param("offset") int offset,
+      @Param("size") int size,
+      @Param("corpNo") Long corpNo);
 	
 }
