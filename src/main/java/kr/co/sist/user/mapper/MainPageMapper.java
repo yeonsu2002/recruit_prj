@@ -10,6 +10,6 @@ import kr.co.sist.user.dto.JobPostDTO;
 @Mapper
 public interface MainPageMapper {
 
-	
+	//검색
 	List<JobPostDTO> searchJobPostings(@Param("keyword") String keyword);
 }

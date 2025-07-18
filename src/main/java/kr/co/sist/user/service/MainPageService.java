@@ -20,11 +20,13 @@ public class MainPageService {
     private final UserRepository userRepository;
     private final MainPageMapper mainPageMapper;
 
+    
     public UserEntity getUserInfo(String email) {
         return userRepository.findById(email).orElse(null);
     }
     
- 
+    
+    //검색
     public List<JobPostDTO> searchJobPostings(String keyword){
     	
     	return mainPageMapper.searchJobPostings(keyword);

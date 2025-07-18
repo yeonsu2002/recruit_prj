@@ -149,6 +149,27 @@ $(document).ready(function () {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+//공고 스크랩
+const scrapBtn = document.getElementById('scrapBtn');
+const heartIcon = document.getElementById('heartIcon');
+
+// 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
+scrapBtn.addEventListener('click', function() {
+	
+  if (heartIcon.textContent === '🤍') {
+    heartIcon.textContent = '❤️';  // 빨간 하트로 변경
+    heartIcon.classList.add('liked');  // 빨간색 적용
+    alert('관심 기업에 추가되었습니다!', 'success');
+    
+  } else {
+    heartIcon.textContent = '🤍';  // 빈 하트로 변경
+    heartIcon.classList.remove('liked');  // 빨간색 제거
+    alert('관심 기업에서 제거되었습니다.', 'success');
+  }
+});
+});
+
 </script>
 
 </head>
