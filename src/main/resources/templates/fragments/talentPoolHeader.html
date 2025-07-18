@@ -17,42 +17,64 @@
                 <div class="search-row">
                     <select class="search-select" name="searchType" id="searchType">
                         <option value="all">통합검색</option>
-                        <option value="company">회사명</option>
-                        <option value="major">전공/학교명</option>
+                        <option value="company">구직자명</option>
+                        <option value="major">학교명</option>
                     </select>
                     <input type="text" class="search-input" name="keyword" id="keyword" placeholder="키워드를 자유롭게 입력해보세요">
                     <button type="submit" class="search-btn">검색</button>
                 </div>
 
                 <div class="select-row">
-                    <select class="search-select" name="experience" id="experience">
-                        <option value="">경력</option>
-                        <option value="신입">신입</option>
-                        <option value="1-3년">1-3년</option>
-                        <option value="3-5년">3-5년</option>
-                        <option value="5년이상">5년 이상</option>
-                    </select>
-                    <select class="search-select" name="education" id="education">
-                        <option value="">학력</option>
-                        <option value="고졸">고졸</option>
-                        <option value="전문대졸">전문대졸</option>
-                        <option value="대졸">대졸</option>
-                        <option value="대학원졸">대학원졸</option>
-                    </select>
-                    <select class="search-select" name="location" id="location">
-                        <option value="">지역</option>
-                        <option value="서울">서울</option>
-                        <option value="경기">경기</option>
-                        <option value="인천">인천</option>
-                        <option value="부산">부산</option>
-                    </select>
-                    <select class="search-select" name="salary" id="salary">
-                        <option value="">희망연봉</option>
-                        <option value="2000-3000">2,000-3,000만원</option>
-                        <option value="3000-4000">3,000-4,000만원</option>
-                        <option value="4000-5000">4,000-5,000만원</option>
-                        <option value="5000+">5,000만원 이상</option>
-                    </select>
+					<select class="search-select" name="gender" id="gender">
+					    <option value="">성별</option>
+					    <option value="male">남</option>
+					    <option value="female">여</option>
+					</select>
+					<select class="search-select" name="experience" id="experience">
+					    <option value="">경력</option>
+					    <option value="신입">신입</option>
+					    <option value="1-3년">1-3년</option>
+					    <option value="3-5년">3-5년</option>
+					    <option value="5년이상">5년 이상</option>
+					</select>
+					<select class="search-select" name="age" id="age">
+					    <option value="">나이</option>
+					    <option value="20-25">20~25</option>
+					    <option value="25-30">25~30</option>
+					    <option value="30-35">30~35</option>
+					    <option value="35-40">35~40</option>
+					    <option value="40+">40세 이상</option>
+					</select>
+					<select class="search-select" name="location" id="location">
+					    <option value="">지역</option>
+					    <option value="서울">서울</option>
+					    <option value="경기">경기</option>
+					    <option value="인천">인천</option>
+					    <option value="부산">부산</option>
+					    <option value="기타">기타</option>
+					</select>
+					<select class="search-select" name="education" id="education">
+					    <option value="">학력</option>
+					    <option value="고졸">고등학교 졸업</option>
+					    <option value="전문대졸">전문대학 졸업</option>
+					    <option value="대졸">대학교(4년제) 졸업</option>
+					    <option value="대학원졸">대학원 졸업</option>
+					</select>
+					<select class="search-select" name="skill" id="skill">
+					    <option value="">직무 스킬</option>
+					    <option value="java">Java</option>
+					    <option value="cpp">C++</option>
+					    <option value="c">C</option>
+					    <option value="python">Python</option>
+					    <option value="기타">기타</option>
+					</select>
+					<select class="search-select" name="position" id="position">
+					    <option value="">희망 포지션</option>
+					    <option value="backend">백엔드</option>
+					    <option value="frontend">프론트엔드</option>
+					    <option value="fullstack">풀스택</option>
+					    <option value="기타">기타</option>
+					</select>
                 </div>
             </form>
 
