@@ -14,8 +14,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import kr.co.sist.globalController.Exceptions.LoginException;
+import kr.co.sist.globalController.Exceptions.NotFoundException;
 import kr.co.sist.jwt.CustomUser;
-
+/**
+ * 이 클래스에 예외처리가 안오는 이유 !
+ * 1. 예외가 @RestController or @ResponseBody가 붙은 컨트롤러에서 발생한 경우 (여기도 붙여줘야 한다).
+ * 2. 예외가 비동기 요청(AJAX) 중 발생한 경우
+ * 3. Controller 계층에서 발생한 예외만 처리 가능! 
+ * 4. 예외가 이미 try-catch로 감싸져 있는 경우 -> throw e 로 다시 던져줘야 함  
+ */
 @ControllerAdvice
 public class GlobalHandler {
 	
@@ -66,6 +74,10 @@ public class GlobalHandler {
       //이거 아직 사용자쪽에 뿌리는거 안만들었어.
       return new ResponseEntity<>(errorBody, HttpStatus.NOT_FOUND);
   }	
+  
+	//TooManyRequestsException.java
+	
+	//EmailSendException.java
 	
 	
 }

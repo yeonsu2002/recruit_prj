@@ -38,7 +38,7 @@ public class CipherUtil {
 	}
 	
 	//*cipher는 원칙적으로 양방향 암호화(복호화 가능한 암호화)**를 의미 (이메일, 이름, 휴대폰, 도로명주소, 상세주소)
-	public String cipherText(String plainText) {
+	public String encryptText(String plainText) {
 		String cipherText = "";
 		System.out.println("디버깅 cipherText() 키와 솔트 = " + key + " / " + salt);
 		TextEncryptor te = Encryptors.text(key, salt);
@@ -48,7 +48,7 @@ public class CipherUtil {
 	}
 	
 	
-	public String plainText(String plainText) {
+	public String decryptText(String plainText) {
 		String cipherText = "";
 		TextEncryptor te = Encryptors.text(key, salt);
 		cipherText = te.decrypt(plainText);

@@ -520,4 +520,13 @@ body {
   margin-left: 5px;
 }
 
-
+.tech-tag {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+}

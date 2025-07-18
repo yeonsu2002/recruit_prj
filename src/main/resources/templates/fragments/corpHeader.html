@@ -33,6 +33,10 @@
 		      <a th:href="@{/void}" th:text="${user.name}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
 		      <a th:href="@{/logout}" class="corp-header-link">로그아웃</a> |
 		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+					<!-- SercurityContext에서 가져와, (java의 .toString()으로 변환된) CustomUser객체를 저장   -->
+		      <div id="userEmail" th:attr="data-user=${user.email}"></div>
+		      <div id="userRole" th:attr="data-user=${user.role}"></div>
+		      <div id="userCorpNo" th:attr="data-user=${user.corpNo}"></div>
 	    	</div>
 	    	<!-- sec:authorize는 내부적으로 SecurityContext에서 현재 사용자의 인증 상태를 확인 : 비로그인 상태인 경우, 내부적으로 ROLE_ANONYMOUS 권한이 부여, 따라서 오류 안남 -->
 	    	<div sec:authorize="!hasRole('ROLE_CORP')"  >
@@ -74,7 +78,7 @@
 	        <td>
 	          <div class="corp-submenu-item">
 	            <a th:href="@{/corp/jobPostingForm}"><span class="corp-submenu-link">새로운 공고 등록</span></a> <br>
-	            <span class="corp-submenu-link">구인 공고 목록</span><br>
+	            <a th:href="@{/corp/myJobPostingListPage}"><span class="corp-submenu-link">나의 공고 목록</span></a> <br>
 	          </div>
 	        </td>
 	        <td>
@@ -95,9 +99,9 @@
 	        </td>
 	        <td>
 	          <div class="corp-submenu-item">
-	            <a th:href="@{/corp/corp_info_edit}"><span class="corp-submenu-link">기업 정보 수정</span></a><br>
-	            <span class="corp-submenu-link">이미지 등록</span><br>
-	            <span class="corp-submenu-link">비밀번호 변경</span>
+	            <a th:href="@{/corp/info/edit}"><span class="corp-submenu-link">기업 정보 수정</span></a><br>
+	            <a th:href="@{/corp/image}"><span class="corp-submenu-link">이미지 등록</span></a><br>
+	            <a href="#void"><span class="corp-submenu-link">비밀번호 변경</span></a>
 	          </div>
 	        </td>
 	      </tr>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
+<mapper namespace="kr.co.sist.user.mapper.MessageMapper">
+
+<!-- 메시지 보내기 위해 회사명 가져오기... -->
+<select id="selectPostTitle" parameterType="int" resultType="kr.co.sist.user.dto.JobPostDTO">
+select posting_title
+from job_posting
+where job_posting_seq = #{jobPostingSeq}
+</select>
+
+<!-- 해당 유저의 모든 메시지 가져오기 -->
+<select id="selectMyMessage" parameterType="String" resultType="userMessageDTO">
+select m.MESSAGE_SEQ, m.CORP_NO, m.EMAIL, m.MESSAGE_TITLE, m.MESSAGE_CONTENT, m.CREATED_AT, m.IS_READ, m.READED_AT, m.IS_OFFERED, c.corp_nm
+from message m
+join company c on c.corp_no = m.corp_no
+where email = #{email}
+ORDER BY m.created_at DESC
+</select>
+
+
+</mapper>

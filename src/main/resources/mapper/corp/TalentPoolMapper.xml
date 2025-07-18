@@ -6,26 +6,379 @@
     
 <mapper namespace="kr.co.sist.corp.mapper.TalentPoolMapper">
 
-<select id="selectAllTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
-    SELECT
-        r.resume_seq,
-        r.title,
-        r.image,
-        r.introduction,
-        r.created_at,
-        m.name,
-        m.email,
-        m.profile_image
-    FROM
-        resume r
-    JOIN
-        member m ON r.email = m.email
-    WHERE
-        r.is_public = 'Y'
-    ORDER BY
-        r.created_at DESC
+<select id="selectAllTalents" parameterType="map" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+SELECT
+    r.resume_seq AS resumeSeq,
+    m.name,
+    TO_NUMBER(SUBSTR(m.birth, 1, 4)) AS birthYear,
+    m.gender,
+    SUBSTR(m.road_address, 1, 2) AS shortAddress,
+
+    (
+        SELECT 
+            FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(c.end_date, 'YYYY-MM'), TO_DATE(c.start_date, 'YYYY-MM'))))
+        FROM CAREER c
+        WHERE c.resume_seq = r.resume_seq
+    ) AS totalCareer,
+
+    (
+        SELECT school_name || ' (' ||
+               CASE
+                 WHEN graduate_date IS NOT NULL THEN '졸업'
+                 ELSE '재학'
+               END || ')'
+        FROM EDUCATION_HISTORY
+        WHERE resume_seq = r.resume_seq
+          AND education_history_seq = (
+              SELECT MAX(education_history_seq)
+              FROM EDUCATION_HISTORY
+              WHERE resume_seq = r.resume_seq
+          )
+    ) AS finalEducation,
+
+    (
+        SELECT LISTAGG(pc.position_name, ', ') WITHIN GROUP (ORDER BY pc.position_name)
+        FROM RESUME_POSITION_CODE rpc
+        JOIN POSITION_CODE pc ON rpc.position_seq = pc.position_seq
+        WHERE rpc.resume_seq = r.resume_seq
+    ) AS desiredPositions,
+
+    (
+        SELECT LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name)
+        FROM RESUME_TECH_STACK rts
+        JOIN TECH_STACK ts ON rts.tech_stack_seq = ts.tech_stack_seq
+        WHERE rts.resume_seq = r.resume_seq
+    ) AS techStacks,
+
+    (
+        SELECT LISTAGG(ai.activity_name, ', ') WITHIN GROUP (ORDER BY ai.activity_name)
+        FROM ADDITIONAL_INFO ai
+        WHERE ai.resume_seq = r.resume_seq
+          AND ai.record_type = '자격증'
+    ) AS certifications,
+
+    -- 스크랩 여부 추가
+    CASE WHEN rs.is_scrapped = 'Y' THEN 'Y' ELSE 'N' END AS isScrapped
+
+FROM
+    RESUME r
+JOIN
+    MEMBER m ON r.email = m.email
+LEFT JOIN
+    RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq AND rs.corp_no = #{corpNo}
+WHERE
+    r.is_public = 'Y'
+ORDER BY
+    r.resume_seq DESC
 </select>
 
+
+<select id="isResumeScrapped" resultType="int">
+    SELECT COUNT(*)
+    FROM RESUME_SCRAP
+    WHERE resume_seq = #{resumeSeq}
+      AND corp_no = #{corpNo}
+      AND is_scrapped = 'Y'
+</select>
+
+
+
+<!-- 스크랩부분 -->
+<select id="checkScrapExists" resultType="int">
+    SELECT COUNT(*) 
+    FROM RESUME_SCRAP 
+    WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</select>
+
+<insert id="insertScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+    INSERT INTO RESUME_SCRAP (resume_seq, corp_no, is_scrapped)
+    VALUES (#{resumeSeq}, #{corpNo}, 'Y')
+</insert>
+
+<select id="selectScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+	select RESUME_SCRAP_SEQ, RESUME_SEQ, CORP_NO, IS_OFFERED, IS_SCRAPPED
+	from resume_scrap
+	where resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</select>
+
+<update id="updateScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+    UPDATE RESUME_SCRAP
+    SET is_scrapped = 'Y'
+    WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</update>
+
+<update id="updateScrapN" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
+	UPDATE RESUME_SCRAP
+    SET is_scrapped = 'N'
+    WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</update>
+
+<delete id="deleteScrap">
+    DELETE FROM RESUME_SCRAP
+    WHERE resume_seq = #{resumeSeq} AND corp_no = #{corpNo}
+</delete>
+
+<select id="selectScrappedTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+SELECT
+    r.resume_seq AS resumeSeq,
+    m.name,
+    TO_NUMBER(SUBSTR(m.birth, 1, 4)) AS birthYear,
+    m.gender,
+    SUBSTR(m.road_address, 1, 2) AS shortAddress,
+
+    (
+        SELECT 
+            FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(c.end_date, 'YYYY-MM'), TO_DATE(c.start_date, 'YYYY-MM'))))
+        FROM CAREER c
+        WHERE c.resume_seq = r.resume_seq
+    ) AS totalCareer,
+
+    (
+        SELECT school_name || ' (' ||
+               CASE
+                 WHEN graduate_date IS NOT NULL THEN '졸업'
+                 ELSE '재학'
+               END || ')'
+        FROM EDUCATION_HISTORY
+        WHERE resume_seq = r.resume_seq
+          AND education_history_seq = (
+              SELECT MAX(education_history_seq)
+              FROM EDUCATION_HISTORY
+              WHERE resume_seq = r.resume_seq
+          )
+    ) AS finalEducation,
+
+    (
+        SELECT LISTAGG(pc.position_name, ', ') WITHIN GROUP (ORDER BY pc.position_name)
+        FROM RESUME_POSITION_CODE rpc
+        JOIN POSITION_CODE pc ON rpc.position_seq = pc.position_seq
+        WHERE rpc.resume_seq = r.resume_seq
+    ) AS desiredPositions,
+
+    (
+        SELECT LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name)
+        FROM RESUME_TECH_STACK rts
+        JOIN TECH_STACK ts ON rts.tech_stack_seq = ts.tech_stack_seq
+        WHERE rts.resume_seq = r.resume_seq
+    ) AS techStacks,
+
+    (
+        SELECT LISTAGG(ai.activity_name, ', ') WITHIN GROUP (ORDER BY ai.activity_name)
+        FROM ADDITIONAL_INFO ai
+        WHERE ai.resume_seq = r.resume_seq
+        AND ai.record_type = '자격증'
+    ) AS certifications
+
+FROM RESUME r
+JOIN MEMBER m ON r.email = m.email
+JOIN RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq
+WHERE rs.corp_no = #{corpNo}
+  AND rs.is_scrapped = 'Y'
+ORDER BY r.resume_seq DESC
+</select>
+
+<select id="selectTalentTotalCount" resultType="int">
+    SELECT COUNT(*) FROM RESUME WHERE is_public = 'Y'
+</select>
+
+<select id="selectPaginatedTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+SELECT * FROM (
+    SELECT inner_query.*, ROWNUM rn
+    FROM (
+        SELECT
+            r.resume_seq AS resumeSeq,
+            m.name,
+            TO_NUMBER(SUBSTR(m.birth, 1, 4)) AS birthYear,
+            m.gender,
+            SUBSTR(m.road_address, 1, 2) AS shortAddress,
+
+            (
+                SELECT FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(c.end_date, 'YYYY-MM'), TO_DATE(c.start_date, 'YYYY-MM'))))
+                FROM CAREER c
+                WHERE c.resume_seq = r.resume_seq
+            ) AS totalCareer,
+            (
+                SELECT school_name || ' (' ||
+                    CASE
+                        WHEN graduate_date IS NOT NULL THEN '졸업'
+                        ELSE '재학'
+                    END || ')'
+                FROM EDUCATION_HISTORY
+                WHERE resume_seq = r.resume_seq
+                AND education_history_seq = (
+                    SELECT MAX(education_history_seq)
+                    FROM EDUCATION_HISTORY
+                    WHERE resume_seq = r.resume_seq
+                )
+            ) AS finalEducation,
+            (
+                SELECT LISTAGG(pc.position_name, ', ') WITHIN GROUP (ORDER BY pc.position_name)
+                FROM RESUME_POSITION_CODE rpc
+                JOIN POSITION_CODE pc ON rpc.position_seq = pc.position_seq
+                WHERE rpc.resume_seq = r.resume_seq
+            ) AS desiredPositions,
+            (
+                SELECT LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name)
+                FROM RESUME_TECH_STACK rts
+                JOIN TECH_STACK ts ON rts.tech_stack_seq = ts.tech_stack_seq
+                WHERE rts.resume_seq = r.resume_seq
+            ) AS techStacks,
+
+            (
+                SELECT LISTAGG(ai.activity_name, ', ') WITHIN GROUP (ORDER BY ai.activity_name)
+                FROM ADDITIONAL_INFO ai
+                WHERE ai.resume_seq = r.resume_seq
+                AND ai.record_type = '자격증'
+            ) AS certifications,
+			
+			GREATEST(
+			    NVL(TO_DATE(REPLACE(r.updated_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')),
+			    NVL(TO_DATE(REPLACE(r.created_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'), TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+			) AS latestDate,
+			              -- 스크랩 여부 가져오기
+            CASE WHEN rs.is_scrapped = 'Y' THEN 'Y' ELSE 'N' END AS isScrapped
+			
+        FROM RESUME r
+        JOIN MEMBER m ON r.email = m.email
+        LEFT JOIN RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq AND rs.corp_no = #{corpNo}
+        WHERE r.is_public = 'Y'
+		<!-- ORDER BY latestDate DESC -->
+ <choose>
+    <when test="sortBy == 'latest'">
+      ORDER BY latestDate DESC
+    </when>
+    <when test="sortBy == 'career'">
+                ORDER BY (
+                    SELECT FLOOR(SUM(MONTHS_BETWEEN(
+                        TO_DATE(c.end_date, 'YYYY-MM'),
+                        TO_DATE(c.start_date, 'YYYY-MM')
+                    )))
+                    FROM CAREER c
+                    WHERE c.resume_seq = r.resume_seq
+                ) ${order}
+            </when>
+            <when test="sortBy == 'education'">
+                ORDER BY (
+                    SELECT MAX(education_history_seq)
+                    FROM EDUCATION_HISTORY
+                    WHERE resume_seq = r.resume_seq
+                ) ${order}
+            </when>
+    <otherwise>
+      ORDER BY latestDate DESC
+    </otherwise>
+  </choose>
+<!--        <choose>
+            <when test="sortBy == 'career'">
+                ORDER BY (
+                    SELECT FLOOR(SUM(MONTHS_BETWEEN(
+                        TO_DATE(c.end_date, 'YYYY-MM'),
+                        TO_DATE(c.start_date, 'YYYY-MM')
+                    )))
+                    FROM CAREER c
+                    WHERE c.resume_seq = r.resume_seq
+                ) ${order}
+            </when>
+            <when test="sortBy == 'education'">
+                ORDER BY (
+                    SELECT MAX(education_history_seq)
+                    FROM EDUCATION_HISTORY
+                    WHERE resume_seq = r.resume_seq
+                ) ${order}
+            </when>
+            <otherwise>
+                ORDER BY GREATEST(
+                    NVL(TO_DATE(REPLACE(r.updated_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'),
+                        TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')),
+                    NVL(TO_DATE(REPLACE(r.created_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'),
+                        TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+                ) ${order}
+            </otherwise>
+        </choose> -->
+    ) inner_query
+    WHERE ROWNUM &lt;= #{offset} + #{size}
+)
+WHERE rn &gt; #{offset}
+</select>
+
+
+
+<select id="selectPaginatedScrappedTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+SELECT * FROM (
+    SELECT inner_query.*, ROWNUM rn
+    FROM (
+	            SELECT
+			    r.resume_seq AS resumeSeq,
+			    m.name,
+			    TO_NUMBER(SUBSTR(m.birth, 1, 4)) AS birthYear,
+			    m.gender,
+			    SUBSTR(m.road_address, 1, 2) AS shortAddress,
+			    rs.is_scrapped AS isScrapped,
+			
+			    (
+			        SELECT 
+			            FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(c.end_date, 'YYYY-MM'), TO_DATE(c.start_date, 'YYYY-MM'))))
+			        FROM CAREER c
+			        WHERE c.resume_seq = r.resume_seq
+			    ) AS totalCareer,
+			
+			    (
+			        SELECT school_name || ' (' ||
+			               CASE
+			                 WHEN graduate_date IS NOT NULL THEN '졸업'
+			                 ELSE '재학'
+			               END || ')'
+			        FROM EDUCATION_HISTORY
+			        WHERE resume_seq = r.resume_seq
+			          AND education_history_seq = (
+			              SELECT MAX(education_history_seq)
+			              FROM EDUCATION_HISTORY
+			              WHERE resume_seq = r.resume_seq
+			          )
+			    ) AS finalEducation,
+			
+			    (
+			        SELECT LISTAGG(pc.position_name, ', ') WITHIN GROUP (ORDER BY pc.position_name)
+			        FROM RESUME_POSITION_CODE rpc
+			        JOIN POSITION_CODE pc ON rpc.position_seq = pc.position_seq
+			        WHERE rpc.resume_seq = r.resume_seq
+			    ) AS desiredPositions,
+			
+			    (
+			        SELECT LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name)
+			        FROM RESUME_TECH_STACK rts
+			        JOIN TECH_STACK ts ON rts.tech_stack_seq = ts.tech_stack_seq
+			        WHERE rts.resume_seq = r.resume_seq
+			    ) AS techStacks,
+			
+			    (
+			        SELECT LISTAGG(ai.activity_name, ', ') WITHIN GROUP (ORDER BY ai.activity_name)
+			        FROM ADDITIONAL_INFO ai
+			        WHERE ai.resume_seq = r.resume_seq
+			        AND ai.record_type = '자격증'
+			    ) AS certifications
+			
+			FROM RESUME r
+			JOIN MEMBER m ON r.email = m.email
+			JOIN RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq
+			WHERE rs.corp_no = #{corpNo}
+			  AND rs.is_scrapped = 'Y'
+			ORDER BY r.resume_seq DESC
+  ) inner_query
+    WHERE ROWNUM &lt;= #{offset} + #{size}
+)
+WHERE rn > #{offset}
+</select>
+
+<select id="countScrappedTalents" resultType="int">
+    SELECT COUNT(*)
+    FROM RESUME_SCRAP rs
+    JOIN RESUME R ON rs.resume_seq = R.resume_seq
+    WHERE rs.corp_no = #{corpNo}
+      AND rs.is_scrapped = 'Y'
+</select>
+
+<!--  -->
+
+
 </mapper>
-    
-    

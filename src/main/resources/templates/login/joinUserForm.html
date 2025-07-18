@@ -13,6 +13,9 @@
 <script type="text/javascript">
 $(function(){
 	
+	//버튼딸깍 랜덤유저 10000개 생성
+	document.querySelector('#createRandomUsers').addEventListener('click', addTenThousandUsers);
+	
 	isForYou();
 	
 	//비밀번호 규정에 맞는지 확인여부UI
@@ -84,30 +87,30 @@ $(function(){
 		//비밀번호
 		const password = document.getElementById("password").value.trim();
 		const password2 = document.getElementById("password2").value.trim();
-	  const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s#$*])[\S]{8,}$/;
+	  	const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s#$*])[\S]{8,}$/;
     	if (!pwPattern.test(password)) {
-      alert("비밀번호는 8자 이상이며, 영문 대문자, 소문자, 숫자, 특수문자(공백, $#*제외)를 모두 포함해야 합니다.");
-      isEverythingOk = false;
-      return false;
-    }
-    if(password != password2){
-    	alert("비밀번호가 서로 일치하지 않습니다.");
-    	document.getElementById('password2').focus();
-    	isEverythingOk = false;
-      return false;
-    }
-		
+	      alert("비밀번호는 8자 이상이며, 영문 대문자, 소문자, 숫자, 특수문자(공백, $#*제외)를 모두 포함해야 합니다.");
+	      isEverythingOk = false;
+	      return false;
+	    }
+	    if(password != password2){
+	    	alert("비밀번호가 서로 일치하지 않습니다.");
+	    	document.getElementById('password2').focus();
+	    	isEverythingOk = false;
+	      return false;
+	    }
+			
 		//휴대폰
 		const phone = document.getElementById("phone").value;
-   	const phonePattern = /^010-\d{4}-\d{4}$/;
-    if (!phonePattern.test(phone)) {
-      alert("핸드폰 번호는 010-1234-5678 형식으로 입력해주세요.");
-      isEverythingOk = false;
-      return false;
-  	}
+	   	const phonePattern = /^010-\d{4}-\d{4}$/;
+	    if (!phonePattern.test(phone)) {
+	      alert("핸드폰 번호는 010-1234-5678 형식으로 입력해주세요.");
+	      isEverythingOk = false;
+	      return false;
+	  	}
 		
 		//이름
-    const name = document.getElementById('name').value.trim();
+    	const name = document.getElementById('name').value.trim();
 		const namePattern = /^[가-힣a-zA-Z]{2,20}$/;
 		if (!namePattern.test(name)) {
 	  	alert("이름은 2~20자의 한글 또는 영문만 입력 가능합니다.");
@@ -167,9 +170,51 @@ $(function(){
 	}//validateForm()
 	
 	
-	//인증번호 처리, 인증요청 버튼을 클릭시 (180초하자)
+	//인증번호 처리, 인증요청 버튼을 클릭시 (5분 하자)
 	document.getElementById('codeBtn').addEventListener('click', function(){
-		alert("디버깅모드로 5초만 유지합니다.");
+		
+		// 이메일 형식 정규표현식
+		const email = document.getElementById('email').value.trim();
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailPattern.test(email)) {
+	  		alert("올바른 이메일 형식을 입력해주세요. (예: user@example.com)");
+	  		return false;
+		}
+		
+		if(email == ""){
+			alert('이메일을 입력 후 인증요청을 눌러주세요.');
+			return false;
+		}
+		
+		fetch('/signup/send-verification-email', {
+				method : "POST",
+				headers : {
+					"Content-Type": "application/json"
+				},
+				body : JSON.stringify({
+					emailAddr : email,
+					subject : "민기인력 회원가입 이메일 인증",
+					target : "일반회원"
+				})
+			})
+			.then(response => {
+				if(!response.ok){
+					return response.text().then(err => { throw new Error(err); });
+				}
+				return response.text();
+			})
+			.then(result => {
+		        alert(result); 
+		        // 이후 UI 처리...
+		    })
+			.catch(error => {
+		        alert("오류 발생: " + error.message);
+		        return false;
+		    });
+		
+		
+		
+		
 		//인증번호 입력칸& 확인버튼 표시
 		document.getElementById('confirmNumberFrm').style.display='block';
 		//display를 none → block으로 바꾸면 기존 flex 속성은 사라집니다. 따라서 다시 설정해줘야합니다.
@@ -187,14 +232,12 @@ $(function(){
 		//보냈으므로 인증요청 버튼의 텍스트를 재전송으로 변경
 		document.getElementById('codeBtn').textContent='재전송'; 
 		//타이머 시작
-		startTimer(5, $("#timer"));
+		startTimer(300, $("#timer"));
 		document.getElementById('remainTime').style.display='block'; //남은 인증시간 표시, 만료시 숨김으로 해놨으므로 재전송시 필요
 		document.getElementById('verification-error').style.display='none';  //인증시간 만료 표시 숨김, 재전송시 필요
 		//
 		
 	});
-	
-	
 
 	//이메일 인증번호 확인버튼에 이벤트리스너 등록 (참조만 넘기는거에 주의, ..() x)
 	document.getElementById('confirmBtn').addEventListener('click', checkConfirmNumber); 
@@ -205,29 +248,86 @@ $(function(){
 let isEmailVerified = false; //이 전역 변수는 이메일 인증함수에서 true로 변함
 //확인버튼 이벤트리스너에 등록될 인증번호확인 함수
 function checkConfirmNumber(){
-	//확인버튼 클릭시 인증번호가 일치하지 않을 때 (예시로 123456으로 해놨음. 수정하자~)
-	if(document.getElementById('confirmNumber').value != 123456){
-		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
-		document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
-		document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
-	} else {
-		//인증에 성공할 때
-		alert('인증번호가 일치합니다.');
-		//타이머종료
-		clearInterval(timerInterval);
+	let codeIsCorrect = false;
+	
+	let inputedCode = document.querySelector('#confirmNumber').value.trim();
+	if(inputedCode == ""){
+		alert("인증번호를 입력 후 확인을 눌러주세요.");
+		return;
+	}
+	let email = document.querySelector('#email').value.trim();
+	if(email == ""){
+		alert('이메일을 입력후 시도해주세요.');
+		return;	
+	}
+	//requestparam 방식은 application/x-www-form-urlencoded 헤더로 전송해야..  
+	fetch('/signup/confirm-verification-code', {
+		method : "POST",
+		headers : {
+			"Content-Type": "application/json"  
+		},
+		body : JSON.stringify({
+			emailAddr : email,
+			content : inputedCode
+		})
+	})
+	//.then(res => {...}) 는 조건문이 아닙니다.. 비동기 작업이 성공(resolve) 했을 때 실행되는 콜백 함수 등록입니다.
+	.then(response => { // response는 fetch()가 서버로부터 받은 응답(Response 객체)입니다. (HTTP 상태, 응답 헤더, 본문 등을 포함)
+		//------------------------이건 안돼--------------------------------------------------------
+		// if(!response.ok){
+		//	 throw new Error(response.text());
+		// } else {
+		//	 return reponse.text();
+		// }
+		// 1. response.text()으로 응답 본문을 먼저 비동기로 읽은 뒤, 상태에 따라 처리해야 해
+		// 2. throw new Error(response.text()) -> Promise를 그대로 에러로 던짐 — 의도한 메시지가 아님
+		// 3. return response.text() 두 번 호출 -> 스트림은 한 번만 읽을 수 있어서 오류 발생
+		//--------------------------------------------------------------------------------------
+		return response.text().then(msg => { // response.text() -> 서버 응답 본문을 문자열로 꺼내는 작업. 이 작업은 비동기(Promise 반환) → 그래서 .then(msg => {...})로 후속 처리
+			if (!response.ok) {	//200~299면 true			//본문을 문자열로 꺼내서 msg 변수에 담아줌.
+				throw new Error(msg); //.catch()로 에러가 넘어감
+			}
+			return msg;
+		});
+	})
+	.then(result => {
+  	console.log("인증 성공 ");
+	  alert(result); //성공시 메시지 날림 
+	  clearInterval(timerInterval);
 		
 		document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
 		document.getElementById('verification-success').style.display='block';  //성공 텍스트 표시
 		document.getElementById('confirmBtn').disabled = true; //맞으니까 이제 확인버튼 막아
 		document.getElementById('codeBtn').disabled = true; //맞으니까 이제 재전송버튼도 막아
-		document.getElementById('confirmNumber').readOnly = true; //번호입력창도 막아
+		document.getElementById('email').readOnly = true; //이메일 입력창도 막아 
+		document.getElementById('confirmNumber').readOnly = true; //번호 입력창도 막아
+		document.getElementById('verification-error').style.display = 'none';
+		document.getElementById('confirmNumberFrm').style.display='block';
 		
 		isEmailVerified = true; //이메일 검증변수 true 변환 
+	  //codeIsCorrect = true;
+ 	})
+	.catch(error => { //요청이 실패하거나, .then() 중간에 throw new Error(...)가 실행되면 이 .catch()로 옵니다.
+  	console.log("인증 실패 ");
+  	alert(error.message); // alert(error.message)에서 서버에서 넘긴 메시지(e.getMessage())가 출력
+  	document.getElementById('remainTime').style.display='none'; //남은 인증시간 숨기고,
+		document.getElementById('verification-error').textContent='인증번호가 일치하지않습니다. 다시 입력해주세요.'  //에러 텍스트 수정하고,
+		document.getElementById('verification-error').style.display='block';  //에러 텍스트 표시
 		
-		document.getElementById('verification-error').style.display = 'none'; //혹시나해서 
-		
-		return;
-	}
+  });
+	/** 
+	JavaScript의 비동기 처리는 기본적으로 non-blocking, event-driven입니다.
+	fetch()는 Promise를 반환하는 비동기 함수
+	Promise는 결과가 나중에 .then()이나 .catch()로 콜백을 등록해서 처리됨
+	JS는 fetch() 호출만 해놓고, 바로 다음 줄로 넘어가버림
+	그래서 결과가 오기도 전에 다음 코드가 실행돼, 따라서 fetch 아래에 다른 함수를 쓰면 순서대로 실행되지 않기때문에 너가 원하는 결과가 안나와. 
+	
+	promise란?
+	"나중에 결과 줄게!"라고 **약속(Promise)**하는 객체
+	
+	순서 정리 : 
+	서비스에서 throw → 컨트롤러에서 catch → ResponseEntity.badRequest().body(...) → 프론트에서 비동기(fetch, axios)로 받아서 사용자에게 표시
+	*/
 }
 
 // 모달창 골라 열기 
@@ -284,17 +384,6 @@ function startTimer(duration, display) {
             
             document.getElementById('confirmBtn').disabled = true; //만료됐으니까 확인버튼 막아
 
-            // 만료됐으므로 세션의 인증코드 번호 삭제 
-            $.ajax({
-              url : "",
-              type : "POST",
-              error : function(){
-          			console.error("인증코드 삭제 요청 실패"); //->이거 에러 발생중
-              }
-            });
-            
-            
-            
         }
     }, 1000);
 }
@@ -429,10 +518,79 @@ function isForYou(){
 	  this.value = formatted;
 	  console.log(this.value);
 	});
-	
-	
-	
 }
+
+//10000개 유저 데이터 넣기
+function addTenThousandUsers(){
+	const familyName = ["김", "신", "이", "주", "유", "박", "서", "한", "하"];
+	const lastName1 = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"];
+	const lastName2 = ["고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호"];
+	const digits = [1,2,3,4,5,6,7,8,9];
+
+	for(let i = 1; i <= 1000; i++){
+		// 이름 생성
+		let randomFN = familyName[Math.floor(Math.random() * familyName.length)];
+		let randomN1 = lastName1[Math.floor(Math.random() * lastName1.length)];
+		let randomN2 = lastName2[Math.floor(Math.random() * lastName2.length)];
+		let fullName = randomFN + randomN1 + randomN2;
+
+		// 전화번호 8자리 랜덤 생성
+		let num = () => digits[Math.floor(Math.random() * digits.length)];
+		let phoneNumber = `010-${num()}${num()}${num()}${num()}-${num()}${num()}${num()}${num()}`;
+
+		// 주소
+		let zipcode = Math.floor(Math.random() * 90000) + 10000;
+		let roadAddress = "서울시 강남구 테헤란로 132";
+		let detailAddress = `${num()}${num()}-${num()}${num()}`;
+
+		// 이메일 / 비밀번호
+		let email = `testUser${i}@test.com`;
+		let password = `Testuser${i}`;
+
+		// 생일
+		let birth = `200${num()}-0${num()}-25`;
+
+		// 성별
+		let gender = Math.random() < 0.5 ? "M" : "F";
+
+		// 전송할 객체
+		let formData = {
+			name: fullName,
+			email: email,
+			password: password,
+			phone: phoneNumber,
+			zipcode: zipcode,
+			roadAddress: roadAddress,
+			detailAddress: detailAddress,
+			birth: birth,
+			gender: gender
+		};
+
+		// fetch로 전송
+		fetch('/user/joinProcessJson', {
+			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify(formData)
+		})
+		.then(response => {
+			if(!response.ok){
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return response.text();
+		})
+		.then(data => {
+			console.log(`회원 ${i} 가입 성공:`, data);
+		})
+		.catch(error => {
+			console.error(`회원 ${i} 가입 실패:`, error);
+		});
+	}
+}
+
+
 	
 </script>
 <body>
@@ -461,7 +619,7 @@ function isForYou(){
 	                <button type="button" id="codeBtn" class="btn btn-primary btn-sm" >인증요청</button>
                 </div>
                 <div id="confirmNumberFrm" class="email-container" style="margin-top: 5px; display: none; gap: 8px;">
-	                <input type="text" id="confirmNumber" class="form-input" placeholder="인증번호를 입력해주세요. (123456)" style="flex: 8;" >
+	                <input type="text" id="confirmNumber" class="form-input" placeholder="인증번호를 입력해주세요." style="flex: 8;" >
 	                <button type="button" id="confirmBtn" class="btn btn-success btn-sm" style="flex: 2;" disabled>확인</button> <!-- js: 숫자 6자리일경우에만 활성화 -->
                 </div>
                 <div id="remainTime" style="display: none">
@@ -583,6 +741,8 @@ function isForYou(){
 
             <button type="submit" id="submitBtn" class="submit-btn" >다음단계</button>
         </form>
+        <hr>
+        <button type="button" id="createRandomUsers">랜덤유저 생성</button>
     </div>
     
     <!-- Vertically centered scrollable modal -->

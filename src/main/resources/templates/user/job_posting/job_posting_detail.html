@@ -10,227 +10,313 @@
 <link rel="stylesheet" th:href="@{/user/jobPosting/css/job_posting_detail.css}"/>
 <style type="text/css">
 </style>     
-<script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function() {
-    const applyBtn = document.getElementById('applyBtn');
-    const modal = document.getElementById('applyModal');
-    const closeBtn = document.getElementById('closeBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const confirmBtn = document.getElementById('confirmBtn');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    const $modal = $('#applyModal');
+    let selectedResumeId = null;
 
     // 모달 열기
-    applyBtn.addEventListener('click', () => {
-        modal.classList.add('show');
+    $('#applyBtn').on('click', function (e) {
+        e.preventDefault();
+        $modal.show().addClass('show');
+        fetchUserResumes();
+        $('#attachmentList').empty(); // 첨부파일 리스트 초기화
     });
 
     // 모달 닫기
     function closeModal() {
-        modal.classList.remove('show');
+        $modal.hide().removeClass('show');
+        selectedResumeId = null;
+        $('.resume-item').removeClass('selected');
+        $('#attachmentList').empty();
     }
 
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // 모달 외부 클릭 시 닫기
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // 지원 확인
-    confirmBtn.addEventListener('click', () => {
-        alert('지원이 완료되었습니다!');
+    $('#closeBtn, #cancelBtn').on('click', function () {
         closeModal();
     });
 
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('show')) {
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape' && $modal.hasClass('show')) {
             closeModal();
         }
     });
-    
-    
-    
-    
-    const scrapBtn = document.getElementById('scrapBtn');
-    const heartIcon = document.getElementById('heartIcon');
 
-    // 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
-    scrapBtn.addEventListener('click', function() {
-      // 빈 하트 ↔ 빨간 하트 상태 변경
-      if (heartIcon.textContent === '🤍') {
-        heartIcon.textContent = '❤️';  // 빨간 하트로 변경
-        heartIcon.classList.add('liked');  // 빨간색 적용
-      } else {
-        heartIcon.textContent = '🤍';  // 빈 하트로 변경
-        heartIcon.classList.remove('liked');  // 빨간색 제거
-      }
+    // 이력서 불러오기
+    function fetchUserResumes() {
+        $.ajax({
+            url: '/user/resume',
+            method: 'GET',
+            success: function (resumes) {
+                renderResumeList(resumes);
+            },
+            error: function () {
+                alert('이력서 불러오기에 실패했습니다.');
+            }
+        });
+    }
+
+    function renderResumeList(resumes) {
+        const $container = $('.resume-section');
+        $container.empty();
+
+        if (!resumes || resumes.length === 0) {
+            $container.append('<p>등록된 이력서가 없습니다.</p>');
+            return;
+        }
+
+        resumes.forEach((resume, index) => {
+            const resumeId = resume.resumeSeq;
+
+            const resumeItem = $(`
+                <div class="resume-item">
+                    <input type="radio" id="resume_${resumeId}" name="selectedResume" value="${resumeId}" class="resume-radio">
+                    <label for="resume_${resumeId}" class="resume-label">
+                        <div class="resume-icon"></div>
+                        <div class="resume-info">
+                            <div class="resume-title">${resume.title}</div>
+                            <div class="resume-meta">${resume.createdAt || ''} 등록</div>
+                        </div>
+                    </label>
+                </div>
+            `);
+
+            resumeItem.find('input').on('change', function () {
+                selectedResumeId = parseInt($(this).val(), 10);
+                $('.resume-item').removeClass('selected');
+                resumeItem.addClass('selected');
+                renderAttachmentList(resume.attachments || []);
+            });
+
+            $container.append(resumeItem);
+        });
+
+        if (resumes.length > 0) {
+            selectedResumeId = parseInt(resumes[0].resumeSeq, 10);
+            $(`#resume_${selectedResumeId}`).prop('checked', true);
+            $(`#resume_${selectedResumeId}`).closest('.resume-item').addClass('selected');
+            renderAttachmentList(resumes[0].attachments || []);
+        }
+    }
+
+    function renderAttachmentList(attachments) {
+        const $attachmentContainer = $('#attachmentList');
+        $attachmentContainer.empty();
+
+        if (!attachments || attachments.length === 0) {
+            $attachmentContainer.append('<p>첨부파일이 없습니다.</p>');
+            return;
+        }
+
+        attachments.forEach(att => {
+            const attItem = $(`
+                <div class="attachment-item">
+                    <a href="/attachment/download/${att.id}" target="_blank">${att.fileName}</a>
+                </div>
+            `);
+            $attachmentContainer.append(attItem);
+        });
+    }
+
+    // 지원하기 버튼 클릭
+    $('#confirmBtn').on('click', function () {
+        if (!selectedResumeId) {
+            alert('이력서를 선택해주세요.');
+            return;
+        }
+
+        const jobPostingSeq = parseInt($('#jobPostingSeq').val(), 10);
+        if (!jobPostingSeq) {
+            alert('잘못된 공고 정보입니다.');
+            return;
+        }
+
+        $.ajax({
+            url: '/apply',
+            method: 'POST',
+            data: {
+                resumeSeq: selectedResumeId,
+                jobPostingSeq: jobPostingSeq
+            },
+            success: function () {
+                alert('지원 완료');
+                closeModal();
+            },
+            error: function (xhr) {
+                alert('지원 오류: ' + xhr.responseText);
+            }
+        });
     });
-    
-    
-	});
+});
 
 </script>
+
 </head>
 <body>
 <header>
 <div th:replace="~{fragments/header :: header}"></div>
 </header>
 <main>
-<div class="main-container" style="display: flex; gap: 30px;">
-  <div style="flex: 1;">
-  <br>
-    <h2 class="job_posting_title">웹 프론트엔드 개발자</h2>
-    <div class="stack">
-    <br><br>
-    <h2 style="font-size: 20px"><strong>기술스택</strong></h2>
-        <span>Java</span>
-        <span>C++</span>
-        <span>Linux</span>
-        <span>JavaScript</span>
-        <span>MySQL</span>
-        <span>AWS</span>
-        <span>React</span>
-        <span>Python</span>
-    </div>
-    <br>
-    <br>
-    <div>
-    <div class="posting_detail">
-    <h2 style="font-size: 20px">주요업무</h2>
-    <h2 style="font-size: 14px">
-    • 패션앤스타일 백엔드 서비스 설계 및 개발<br>
-    • 서비스 및 인프라의 안정성, 확장성, 효율성 개선 및 유지/보수 업무 진행
-    <br><br><br>
-    <h2 style="font-size: 20px">자격요건</h2>
-    <h2 style="font-size: 14px">
-    • Java / Spring framework(Spring Boot) 개발 가능하신 분<br>
-    • RESTful API 이해와 개발 경험이 있으신 분<br>
-    • RDBMS(Oracle/MySQL 등) 쿼리 개발 가능하신 분<br>
-    • Git/GitHub, Figma 등을 통한 협업 업무 경험이 있으신 분<br>
-    • 원활하게 협업할 수 있는 커뮤니케이션 역량을 보유하신 분<br>
-    • 코딩하는 것을 좋아하고 기술 향상을 위해 끊임없이 노력하시는 분
-    <br><br><br>
-    </h2>
-    
-    <h2 style="font-size: 20px">우대사항</h2>
-    <h2 style="font-size: 14px">
-    • Python 사용 가능자 우대
-    </h2>
-    <br><br><br>
-    <h2 style="font-size: 20px">복지 및 혜택</h2>
-    <h2 style="font-size: 14px">
-    • 급여 외 식대 지원<br>
-    • 건강 검진, 각종 경조사 지원<br>
-    • 명절 선물, 생일 파티<br>
-    • 최신 맥북, 사무용품 지급, 공기 청정기<br>
-    • 자유 복장, 자유로운 연차, 회식 강요 없음
-    <br><br>
-    </h2>
-    </div>
-    <br>
-    <div class="detail">
-    <div class="history"> 
-    <h2>경력</h2>
-    </div>
-    <div class="school"> 
-    <h2>학력</h2>
-    </div>
-    <div class="end"> 
-    <h2>마감일</h2>
-    </div>
-    <div class="zipCode"> 
-    <h2>근무주소</h2>
-    </div>
-    </div>
-	</div>
- 	<br><br>
- 	<div>
-    <h2 style="font-size: 30px"><strong>기업소개</strong></h2><br/>
-    <img src="/images/samsung.jpg" style="width: 700px;" height="auto" />
-    <br><br><br>
-    <h2 style="font-size: 15px; width: 700px;" height="auto" >
-    [회사 소개]<br>
-	  삼성전자는 사람과 사회를 생각하는 글로벌 일류기업을 추구합니다.
-	 ‘경영이념, 핵심가치, 경영원칙’의 가치체계를 경영의 나침반으로 삼고, 
-	  인재와 기술을 바탕으로 최고의 제품과 서비스를 창출하여 인류사회에 공헌하는 것을 궁극적인 목표로 삼고 있습니다. 
-	  이를 위해 삼성전자가 지켜나갈 약속인 5가지 경영원칙을 세부원칙과 행동지침으로 구체화하여
-	  삼성전자 임직원이 지켜야 할 행동규범(Global Code of Conduct)으로 제정하였으며, 
-	  모든 임직원의 사고와 행동에 5가지 핵심가치를 내재화하여 삼성전자의 지속적인 성장을 견인하고 미래 방향성을 제시하고자 합니다.
-    </h2>
-    </div>
-    </div>
- 	</div>
-  
- <!-- 플로팅 사이드바 -->
-<div class="floating-sidebar">
-  <div class="company-floating-card">
-    <div class="company-logo-section">
-      <div class="logo-placeholder">
-        <span>🏢</span>
-      </div>
-      <div class="company-title">
-        <h4>삼성전자</h4>
-        <span><a href="/user/job_posting/company_info">기업정보 보기 &gt;</a></span>
-      </div>
-    </div>
-    
-    <div class="company-info-section">
-      <div class="info-item">
-        <span class="label">업력</span>
-        <span class="value">5년차 (2021년 설립)</span>
-      </div>
-    </div>
-    
-  <!-- 지원하기 버튼만 여기에 -->
-    <button class="floating-apply-btn" id="applyBtn">지원하기</button>
-    
-    <div class="floating-actions">
-     <button class="floating-action-btn" id="scrapBtn">
-	  <span class="icon" id="heartIcon">🤍</span> <!-- 빈 하트 초기 상태 -->
-	  <span class="text">스크랩</span>
-	</button>
-    </div>
-  </div>
-</div>
+     <div class="main-container" style="display: flex; gap: 30px;">
+<div style="flex: 1;">
 
-<!-- 모달은 플로팅 사이드바 밖으로 이동 (main 태그 안, 하지만 사이드바 밖) -->
-<div id="applyModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>입사지원</h2>
-            <span class="close-btn" id="closeBtn">&times;</span>
+            <br>
+            <h2 class="job_posting_title" th:text="${jDto.postingTitle}" style="font-weight: bold;"></h2>
+            
+            <br>
+            <div class="stack">
+                <h3 class="section-title" style="font-size: 20px;">기술스택</h3>
+                <div class="tech-stack-container">
+                    <th:block th:each="stack : ${jDto.techStacks}">
+                        <span class="tech-stack-tag" th:text="${stack}"></span>
+                    </th:block>
+                </div>
+            </div>
+
+
+            <div class="job-section">
+               <h2 style="font-size: 20px;">주요내용</h2>
+               <p th:text="${jDto.postingDetail}" style="font-size: 15px;"></p>
+            
+            </div>
+
+            <div class="job-info-box">
+                <div>
+                    <h2 style="font-size: 20px;" >경력</h2>
+                  <p th:text="${jDto.expLevel}" style="font-size: 15px;">경력</p>
+
+                </div>
+                <div>
+                    <h2 style="font-size: 20px;">학력</h2>
+                    <p style="font-size: 15px;">무관</p>
+                </div>
+                <div>
+                    <h2 style="font-size: 20px;">마감일 </h2>
+                    <p th:text="${jDto.postingEndDt}" style="font-size: 15px;">마감일</p>
+
+                </div>
+                <div>
+                    <h2 style="font-size: 20px;">근무지</h2>
+                   <p th:text="${jDto.roadAddress}" style="font-size: 15px;">근무주소</p>
+
+                </div>
+                <div>
+                    <h2 style="font-size: 20px;">평균 연봉</h2>
+                    <p style="font-size: 15px;">3,000~4,500만원</p>
+                </div>
+                <div>
+                    <h2 style="font-size: 20px;">근무형태</h2>
+                  <p th:text="${jDto.employType} ?: '정보 없음'"  style="font-size: 15px;">근무형태</p>
+                </div>
+            </div>
+
+           <div class="company-intro">
+    <h2 th:utext="${jDto.corpInfo}"><strong>기업소개</strong></h2>
+    
+    <div class="company-content">
+        <img src="/img/company_sample.jpg" class="company-image" />
+        
+        <div class="company-description">
+            저희 테크노베이션은 혁신적인 기술과 창의적인 아이디어로 디지털 혁신을 이끌어가는 IT 기업입니다. 
+            2021년 설립 이후 지속적인 성장을 이어가고 있으며, 고객의 니즈를 정확히 파악하고 최적의 솔루션을 제공하기 위해 끊임없이 노력하고 있습니다.
+            <br><br>
+            직원들의 성장과 발전을 위한 다양한 프로그램을 운영하며, 자유롭고 수평적인 조직문화를 추구합니다. 
+            개발자들이 최고의 퍼포먼스를 발휘할 수 있도록 최신 개발 환경과 도구를 제공하고 있으며, 
+            지속적인 학습과 성장을 지원하는 교육 프로그램도 운영하고 있습니다.
+            <br><br>
+            함께 성장하며 더 나은 미래를 만들어갈 동료를 찾고 있습니다.
         </div>
-        <div class="modal-body">
-            <div class="job-info">
-                <div class="job-title">서버 백엔드 개발[신입]</div>
-                <div class="job-company">패션센스타일컴퍼니</div>
-                
-                <div class="info-row">
-                    <span class="info-label">이름</span>
-                    <span class="info-value">유연수</span>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <!-- 플로팅 사이드바 -->
+    <div class="floating-sidebar">
+        <div class="company-floating-card">
+            <div class="company-logo-section">
+                <div class="logo-placeholder">
+                    <span>🏢</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">이메일</span>
-                    <span class="info-value">yeonsu0108@naver.com</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">연락처</span>
-                    <span class="info-value">010-2912-9954</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">출생년도</span>
-                    <span class="info-value">2002</span>
+                <div class="company-title">
+                    <h4 th:text="${jDto.corpNm}">기업이름</h4>
+                    <span><a th:href="@{/user/job_posting/company_info}">기업정보 보기 &gt;</a></span>
                 </div>
             </div>
-            
-            <div class="confirmation-text">
-                <p>위 정보로 지원하시겠습니까?</p>
-                <small>지원 후에는 취소할 수 없으며, 채용 담당자에게 정보가 전달됩니다.</small>
+
+            <div class="company-info-section">
+                <div class="info-item">
+                    <span class="label">업력</span>
+                    <span class="value">5년차 (2021년 설립)</span>
+                </div>
             </div>
-            
+
+            <button class="floating-apply-btn" id="applyBtn">지원하기</button>
+
+            <div class="floating-actions">
+                <button class="floating-action-btn" id="scrapBtn">
+                    <span class="icon" id="heartIcon">🤍</span>
+                    <span class="text">스크랩</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- 모달창 -->
+ <div id="applyModal" class="modal">
+        <div class="modal-content">
+        <input type="hidden" id="jobPostingSeq" th:value="${jDto.jobPostingSeq}" />
+            <div class="modal-header">
+                <h2>입사지원</h2>
+                <span class="close-btn" id="closeBtn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="job-info">
+                   <div class="job-info">
+				    <div class="job-title" th:text="${jDto.postingTitle}">공고 제목</div>
+				    <div class="job-company" th:text="${jDto.corpNm}">회사명</div>
+                </div>
+
+                <div class="section-title">통합 계정정보</div>
+                <div class="info-section">
+                    <div class="info-row">
+                        <span class="info-label">이름</span>
+                        <span class="info-value" th:text="${user != null ? user.name : '게스트'}"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">이메일</span>
+                        <span class="info-value" th:text="${user != null ? user.email : '게스트'}"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">연락처</span>
+                        <span class="info-value" th:text="${user != null ? user.phone : '게스트'}"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">출생년도</span>
+                        <span class="info-value" th:text="${user != null && user.birth != null ? user.birth : '정보 없음'}"></span>
+                    </div>
+                </div>
+
+                <div class="section-title">지원 이력서 <span class="required">●</span></div>
+                <div class="resume-section">
+                    <th:block th:each="resume, stat : ${resumes}">
+                    <div class="resume-item">
+                        <input type="radio"   th:id="'resume' + ${stat.index}" name="selectedResume" th:value="${resume.resumeSeq}" class="resume-radio" th:checked="${stat.index == 0}">
+                        <label  th:for="'resume' + ${stat.index}" class="resume-label">
+                            <div class="resume-icon"></div>
+                            <div class="resume-info">
+                                <div class="resume-title"  th:text="${resume.title}"></div>
+                                <div class="resume-meta" th:text="|${resume.createdAt} 등록|"></div>
+                            </div>
+                        </label>
+                    </div>
+                    </th:block>
+                </div>
+
+               <div class="section-title">첨부 파일</div>
+				<div id="attachmentList" class="attachment-list"></div>
+           
+            </div>
             <div class="modal-buttons">
                 <button class="modal-cancel-btn" id="cancelBtn">취소</button>
                 <button class="modal-apply-btn" id="confirmBtn">지원하기</button>

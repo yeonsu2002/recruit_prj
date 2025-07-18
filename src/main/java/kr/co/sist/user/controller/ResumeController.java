@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,16 +16,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kr.co.sist.jwt.JWTUtil;
+import kr.co.sist.jwt.CustomUser;
+import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
-import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.user.service.AttachmentService;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -32,26 +35,26 @@ import lombok.RequiredArgsConstructor;
 public class ResumeController {
 
 	private final ResumeService rServ;
+	private final AttachmentService aServ;
 	private final PositionCodeService pcs;
-	private final ObjectMapper objMapper;
-	
-	private final JWTUtil jwtUtil;
 
+	private final UserRepository userRepos;
+	
+	private final ObjectMapper objMapper;
+	private final CipherUtil cu;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
-	public String resumeManagementPage(HttpServletRequest request, Model model) {
+	public String resumeManagementPage(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 
-		String token = jwtUtil.resolveToken(request);
-		UserDTO user = jwtUtil.validateToken(token);
-
-		// 임시로 유저 등록
-//		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
+		// 토큰에서 유저 정보 빼오기
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
+		if(user == null) { return "redirect:/accessDenied"; }
 		
-	    List<ResumeDTO> resumes = rServ.searchAllResumeByUser(user.getEmail());
 
-		List<AttachmentDTO> files = rServ.searchAllAttachment(user.getEmail());
-
+		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(userInfo.getEmail());
+		List<AttachmentDTO> files = aServ.searchAllAttachment(userInfo.getEmail());
+		
 		model.addAttribute("user", user);
 		model.addAttribute("resumes", resumes);
 		model.addAttribute("files", files);
@@ -61,28 +64,25 @@ public class ResumeController {
 
 	// 이력서 신규 작성
 	@GetMapping("/user/resume/resume_create")
-	public String resumeCreate(Model model, HttpServletRequest request) {
+	public String resumeCreate(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 
-		String token = jwtUtil.resolveToken(request);
-		UserDTO user = jwtUtil.validateToken(token);
+		// 토큰에서 유저 정보 빼오기
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
 
 		int resumeSeq = rServ.addResume(user);
-		
+
 		return "redirect:/user/resume/resume_form/" + resumeSeq;
 	}
 
 	// 이력서 폼으로 넘어가기(신규 작성 후 or 기존 이력서 클릭)
 	@GetMapping("/user/resume/resume_form/{resumeSeq}")
-	public String resumeForm(@PathVariable int resumeSeq, Model model, HttpServletRequest request) {
+	public String resumeForm(@PathVariable int resumeSeq, Model model, @AuthenticationPrincipal CustomUser userInfo) {
 
-		// 임시로 유저 등록
-//		UserEntity user = uRepos.findById("juhyunsuk@naver.com").orElse(null);
-//		user.setName(cu.plainText(user.getName()));
-//		user.setPhone(cu.plainText(user.getPhone()));
-//		user.setBirth(user.getBirth().substring(0, 4));
-
-		String token = jwtUtil.resolveToken(request);
-		UserDTO user = jwtUtil.validateToken(token);
+		// 토큰에서 유저 정보 빼오기
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
+		
+		user.setPhone(cu.decryptText(user.getPhone()));
+		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);
 
 		model.addAttribute("positionList", pcs.searchAllPositionCode());
@@ -112,7 +112,6 @@ public class ResumeController {
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
 			rServ.modifyResume(rdd, profileImage, rdd.getBasicInfo().getResumeSeq());
-
 			result.put("result", "success");
 
 		} catch (Exception e) {
@@ -146,11 +145,12 @@ public class ResumeController {
 
 	// 이력서 미리보기 창 띄우기
 	@GetMapping("/user/resume/preview/{resumeSeq}")
-	public String resumePreviewPage(@PathVariable int resumeSeq, Model model, HttpServletRequest request) {
+	public String resumePreviewPage(@PathVariable int resumeSeq, Model model, @AuthenticationPrincipal CustomUser userInfo) {
 
-		// 임시로 유저 등록
-		String token = jwtUtil.resolveToken(request);
-		UserDTO user = jwtUtil.validateToken(token);
+		// 토큰에서 유저 정보 빼오기
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
+		user.setPhone(cu.decryptText(user.getPhone()));
+		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);
 
 		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
@@ -177,7 +177,7 @@ public class ResumeController {
 		Map<String, Object> result = new HashMap<>();
 
 		rServ.removeResume(resumeSeq);
-		
+
 		result.put("result", "success");
 
 		return result;

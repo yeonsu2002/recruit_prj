@@ -14,8 +14,8 @@ import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.mapper.JobPostingCorpMapper;
 import kr.co.sist.corp.mapper.JobPostingTechStackMapper;
-import kr.co.sist.globalController.LoginException;
-import kr.co.sist.globalController.NotFoundException;
+import kr.co.sist.globalController.Exceptions.LoginException;
+import kr.co.sist.globalController.Exceptions.NotFoundException;
 import kr.co.sist.login.CorpRepository;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
@@ -39,8 +39,6 @@ public class JobPostingCorpService {
   @Transactional 
   public void uploadJobPost(JobPostingDTO jpDTO) {
   	
-  	System.out.println("jpDTO -> ");
-  	System.out.println(jpDTO);
   	try {
   		//1. 공고등록
       jpm.insertJobPost(jpDTO);
@@ -51,8 +49,9 @@ public class JobPostingCorpService {
        * mapper내부에서 setter(.setJobPostingSeq(123)) 이런 setter를 호출했꼬, 
        *  (keyProperty="jobPostingSeq" => DTO의 해당 필드에 자동 주입)
        * 나는 그 참조변수를다시 가져와서 보는 것이니 매개변수때와 그 값이 다르다. 
+       * 따라서 selectKey를 안쓰면 못가져와 
        */
-      int jobPostingSeq = jpDTO.getJobPostingSeq();
+      int jobPostingSeq = jpDTO.getJobPostingSeq();  
   		
       //2. 기술 스택등록(중간테이블)
       for(Integer techStackSeq : jpDTO.getTechStackSeqList()) {
@@ -114,6 +113,25 @@ public class JobPostingCorpService {
   	return tsDTOList;
   }
   
+  /**
+   * 나의 공고 전체,진행중,마감 갯수 가져오기 
+   */
+  public List<Map<String, Integer>> selectMyJobPostingCnt(Long corpNo){
+  	
+  	List<Map<String, Integer>> postCntList = jpm.selectMyPostingCount(corpNo);
+  	
+  	return postCntList;
+  }
+  /**
+   * 나의 공고 리스트 가져오기 
+   */
+  public List<JobPostingDTO> selectMyJobPosting(JobPostingDTO jpDTO){
+  	
+  	List<JobPostingDTO> jpList = new ArrayList<JobPostingDTO>();
+  	jpList = jpm.selectMyAllPosting(jpDTO);
+  	
+  	return jpList;
+  }
   
   
 }

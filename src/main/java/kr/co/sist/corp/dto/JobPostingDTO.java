@@ -40,4 +40,16 @@ public class JobPostingDTO {
   
   private List<Integer> techStackSeqList; //사용 기술 리스트 (자바, Oracle, Javascript, JQuery 등등)
   
+  //내 공고 리스트에서 쓰일 변수들 
+  private String postSts; //상태: 전체(total), 진행중(ing), 마감(end)
+  private String orderBy; //정렬: 전체,시작순(start), 마감순(end), 조회순(viewCnt)
+  
+  private int totalPostingCnt; //갯수
+  private int ingPostingCnt;
+  private int endPostingCnt;
+  
+  private int appCnt; //지원자 수
+  private String positionName; //포지션 이름
+  private String techNames; //기술스택 이름 나열 
+  
 }

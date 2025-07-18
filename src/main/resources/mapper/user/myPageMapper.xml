@@ -14,4 +14,24 @@ where email = #{email}
 ORDER BY TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
 </select>
 
+<!-- 지원 회사 목록 가져오기 -->
+<select id="selectMyApplicant" parameterType="String" resultType="userMyApplicantDTO">
+select ja.job_application_seq, ja.application_date, ja.application_status, ja.resume_seq, ja.pass_stage,
+jp.corp_no, jp.posting_title, jp.job_posting_seq, jp.posting_end_dt, c.corp_nm
+from job_application ja
+join job_posting jp on jp.job_posting_seq = ja.job_posting_seq
+join company c on jp.corp_no = c.corp_no
+join resume r on r.resume_seq = ja.resume_seq
+join member m on m.email = r.email
+where m.email = #{email}
+ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
+</select>
+
+<!-- 지원 취소 -->
+<update id="updateApplicationCancel" parameterType="int">
+update job_application
+set application_status = 2
+where job_application_seq = #{jobApplicationSeq}
+</update>
+
 </mapper>
