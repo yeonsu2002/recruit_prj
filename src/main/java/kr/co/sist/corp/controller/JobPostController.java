@@ -64,7 +64,9 @@ public class JobPostController {
    * 나의 공고 리스트 화면으로 가기 : 권한체크 
    */
   @GetMapping("/corp/myJobPostingListPage")
-  public String getMyJobPostingListPage(@AuthenticationPrincipal CustomUser user) {
+  public String getMyJobPostingListPage(@AuthenticationPrincipal CustomUser user, Model model) {
+  	
+  	//회원권한 체크
   	if(user == null) {
   		return "redirect:/accessDenied";
   	}
@@ -74,6 +76,22 @@ public class JobPostController {
   	if( !hasCorpAuth) {
   		return "redirect:/accessDenied";
   	}
+  	
+  	//공고 데이터 model에 갖고 보내기
+  	JobPostingDTO jpDTO = new JobPostingDTO();
+  	jpDTO.setCorpNo(user.getCorpNo());
+  	jpDTO.setPostSts("ing");
+  	jpDTO.setOrderBy("start");
+  	
+  	try {
+  		List <Map<String, Integer>> postCntMapList =  jpcService.selectMyJobPostingCnt(jpDTO.getCorpNo());
+  		List <JobPostingDTO> postList = jpcService.selectMyJobPosting(jpDTO);
+  		
+  		model.addAttribute("postCntMapList", postCntMapList);
+  		model.addAttribute("postList", postList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
   	
   	return "corp/jobPosting/myJobPostingListPage";
   }
@@ -153,6 +171,7 @@ public class JobPostController {
 		} 
   	
   }
+  
   
   
 }

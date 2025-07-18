@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
  		window.location.href = '/corp/jobPostingForm'; // 페이지 이동
 	});
 	
-	//헤더에 있는 것도 가져올수가 있네 
+	//헤더에 있는 값들, SecurityContext에서 가져와서 toString형태임  
 	// JSON.parse(...) -> 문자열로 되어 있는 JSON 데이터를 JavaScript 객체로 변환해주는 함수 / 반대로 자바객체를 JSON으로 -> JSON.stringify()
-	let userEmail = document.querySelector('#userEmail').dataset.user;
-	console.log(userEmail);
-	let userRole = document.querySelector('#userRole').dataset.user;
-	console.log(userRole);
-	let userCorpNo = document.querySelector('#userCorpNo').dataset.user;
-	console.log(userCorpNo);
-	
+	let userEmail = document.querySelector('#userEmail').value;
+	let userRole = document.querySelector('#userRole').value;
+	let userCorpNo = document.querySelector('#userCorpNo').value;
+	let userInfo = document.querySelector('#userInfo').dataset.user;
+
+	//첫 화면 데이터 비동기 가져오기 (매개변수 넣는거 까먹지마) 
+	fetchStartData(userCorpNo);
 	
 });//ready
 
@@ -37,12 +37,12 @@ function openApplicantListModal(){
 }
 
 //처음화면 자료 뿌리기(진행중, 전체)
-function fetchStartData(){
-	
-	fetch(`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`)
+function fetchStartData(userCorpNo){
+	var url =`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`;
+	fetch( url )
 	.then(response => {
 		if(!response){
-			alert('데이터 갖고오기 실패');
+			alert("데이터 갖고오기 실패");
 			throw new Error("데이터를 가져오던 중에 서버 오류 발생");
 		}
 		return response.json();
@@ -50,6 +50,10 @@ function fetchStartData(){
 	.then(data => {
 		//데이터가 존재할 떄
 		if(data.length > 0){ 
+			let resultData = document.querySelector('#resultData');
+			
+			console.log(data);
+			
 			
 		} else {
 			//검색 결과가 없을 때
@@ -99,9 +103,9 @@ function orderByViewCnt(){
 			<div> <!-- 테이블 -->
 				<table class="table table-bordered"> 
 					<tr>
-						<th id="getProcessingPosting">진행중 (<span>2</span>)건 </th>
-						<th id="getEndPosting">마감 (<span>12</span>)건 </th>
-						<th id="getAllPosting">전체 (<span>14</span>)건 </th>
+						<th id="getIngPosting">진행중 (<span th:text="${postCntMapList[0].ING_POSTING_CNT}"></span>)건 </th>
+						<th id="getEndPosting">마감 (<span th:text="${postCntMapList[0].END_POSTING_CNT}"></span>)건 </th>
+						<th id="getAllPosting">전체 (<span th:text="${postCntMapList[0].TOTAL_POSTING_CNT}"></span>)건 </th>
 					</tr>
 				</table>
 			</div>
@@ -119,6 +123,15 @@ function orderByViewCnt(){
 			</div>
 		</div>
 	</div> <!-- 상단 끝 -->
+	<ul th:each="post : ${postList}">
+		<li th:text="${post}"></li>
+		<li th:text="${post.postingEndDt}"></li>
+		<!-- <li th:text="${#temporals.format(post.postingEndDt, 'yyyy.MM.dd')}"></li> -->
+	</ul>
+	<div th:text="${#dates.createNow()}"></div>
+	<div th:text="${#dates.createToday()}"></div>
+	
+	
 	
 	<div class="bottom-start-container"> <!-- 하단 시작 -->
 		<div class="bottom-select-box"> <!-- 하단에 '일반 채용공고' 글자, 정렬 기준 셀렉션 -->
@@ -144,8 +157,7 @@ function orderByViewCnt(){
 						<th style="color: #f53600">AI인재추천</th>
 					</tr>
 				</thead>
-				<tbody>
-					
+				<tbody id="resultData" th:each="post : ${postList}">
 					<tr>
 						<td class="posting-box-need-center">채용 마감</td>
 						<td>
@@ -170,6 +182,7 @@ function orderByViewCnt(){
 							<button type="button">확인</button>
 						</td>
 					</tr>
+					
 				</tbody>
 			</table>
 		</div>
