@@ -1,4 +1,4 @@
-package kr.co.sist.admin;
+package kr.co.sist.admin.login;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminLoginController {
 
 	
-	@GetMapping("/admin_login")
+	@GetMapping("/admin/admin_login")
 	public String loginPage() {
 		
 		return "admin/admin_login";
