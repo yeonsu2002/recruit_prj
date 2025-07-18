@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 	
 	//헤더에 있는 것도 가져올수가 있네 
-	// userJson을 가져와서 userInfo에 넣으면 문자열이 되는데, JSON.parse(...)로 변환해야 객체로 사용가능 
 	// JSON.parse(...) -> 문자열로 되어 있는 JSON 데이터를 JavaScript 객체로 변환해주는 함수 / 반대로 자바객체를 JSON으로 -> JSON.stringify()
-	let userInfoJson = document.querySelector('#userDataDiv').dataset.user;
-	console.log(userInfoJson);
-	let userInfoJs = JSON.parse(userInfoJson);
-	console.log(userInfoJs);
-	
+	let userEmail = document.querySelector('#userEmail').dataset.user;
+	console.log(userEmail);
+	let userRole = document.querySelector('#userRole').dataset.user;
+	console.log(userRole);
+	let userCorpNo = document.querySelector('#userCorpNo').dataset.user;
+	console.log(userCorpNo);
 	
 	
 });//ready
@@ -39,7 +39,23 @@ function openApplicantListModal(){
 //처음화면 자료 뿌리기(진행중, 전체)
 function fetchStartData(){
 	
-	
+	fetch(`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`)
+	.then(response => {
+		if(!response){
+			alert('데이터 갖고오기 실패');
+			throw new Error("데이터를 가져오던 중에 서버 오류 발생");
+		}
+		return response.json();
+	})
+	.then(data => {
+		//데이터가 존재할 떄
+		if(data.length > 0){ 
+			
+		} else {
+			//검색 결과가 없을 때
+			
+		}
+	})
 }
 
 
@@ -129,6 +145,7 @@ function orderByViewCnt(){
 					</tr>
 				</thead>
 				<tbody>
+					
 					<tr>
 						<td class="posting-box-need-center">채용 마감</td>
 						<td>
