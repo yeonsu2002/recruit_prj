@@ -1,0 +1,285 @@
+@charset "UTF-8";
+  * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #2D4A6B;
+            color: white;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        .user-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .user-link:hover {
+            text-decoration: underline;
+        }
+
+        .main-content {
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2D4A6B;
+        }
+
+        .form-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .upload-section {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2D4A6B;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2D4A6B;
+            padding-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background-color: white;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: #2D4A6B;
+        }
+
+        .upload-area.dragover {
+            border-color: #2D4A6B;
+            background-color: #f0f4f8;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .upload-subtext {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background-color: #2D4A6B;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: #1a2f42;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .preview-item img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .preview-item.logo img {
+            width: 150px;
+            height: 80px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-btn:hover {
+            background-color: rgba(255, 0, 0, 1);
+        }
+
+        .image-info {
+            padding: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #2D4A6B;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a2f42;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .requirements {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .btn-group {
+    display: flex;
+    justify-content: flex-end;  /* 오른쪽 정렬 */
+    gap: 10px;                  /* 버튼 사이 간격 */
+    margin-top: 40px;           /* 위쪽 여백 (필요하면 조절) */
+    padding-right: 20px;        /* 오른쪽 여백 (필요하면 조절) */
+}
+
+        .requirements h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .requirements ul {
+            color: #666;
+            padding-left: 20px;
+        }
+
+        .requirements li {
+            margin-bottom: 5px;
+        }

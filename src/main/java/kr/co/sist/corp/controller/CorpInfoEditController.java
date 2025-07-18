@@ -66,21 +66,13 @@ public class CorpInfoEditController {
         return "corp/corp_info_view";
     }
 
-    // 이미지 등록 페이지
-    @GetMapping("/image")
-    public String imageUploadForm(Model model) {
-        Long corpNo = getCurrentCorpNo();
-        CorpEntity corpInfo = corpService.getCorpInfo(corpNo);
-        model.addAttribute("corpInfo", corpInfo);
-        
-        return "corp/corp_image_upload";
-    }
+   
 
     // 현재 로그인한 기업번호 가져오기 (실제 구현에서는 세션에서 가져와야 함)
     private Long getCurrentCorpNo() {
         // TODO: 세션에서 로그인한 기업 번호 가져오기
         // HttpSession session = request.getSession();
         // return (Long) session.getAttribute("corpNo");
-        return 105L; // 임시값
+        return 102L; // 임시값
     }
 }
