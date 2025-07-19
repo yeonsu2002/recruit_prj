@@ -70,7 +70,7 @@ $(function(){
 		
 		// 이메일 형식 정규표현식
 		const email = document.getElementById('email').value.trim();
-		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 		if (!emailPattern.test(email)) {
 	  	alert("올바른 이메일 형식을 입력해주세요. (예: user@example.com)");
 	  	isEverythingOk = false;
@@ -175,7 +175,7 @@ $(function(){
 		
 		// 이메일 형식 정규표현식
 		const email = document.getElementById('email').value.trim();
-		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 		if (!emailPattern.test(email)) {
 	  		alert("올바른 이메일 형식을 입력해주세요. (예: user@example.com)");
 	  		return false;

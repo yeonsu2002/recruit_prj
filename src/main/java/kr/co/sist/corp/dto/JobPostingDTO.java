@@ -1,5 +1,6 @@
 package kr.co.sist.corp.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import kr.co.sist.user.dto.TechStackDTO;
@@ -35,6 +36,7 @@ public class JobPostingDTO {
   private String detailAddress; //상세주소
   private String region; //시
   private String district; //구군 
+  private String isEnded; //마감 여부 
   
   private CorpDTO corpDTO; //기타 회사 정보 (태그같은거)
   
@@ -51,5 +53,39 @@ public class JobPostingDTO {
   private int appCnt; //지원자 수
   private String positionName; //포지션 이름
   private String techNames; //기술스택 이름 나열 
+  
+  
+  //entity 받으면 dto로 변환해주는 생성자.. 만들어두면 편하다. 만들기 귀찮아서 그렇지
+  public JobPostingDTO(JobPostingEntity entity) {
+	  this.jobPostingSeq = entity.getJobPostingSeq() != null ? entity.getJobPostingSeq() : 0;
+	  this.corpNo = entity.getCorpNo() != null ? entity.getCorpNo().getCorpNo() : 0L; // CorpEntity에서 corpNo 추출
+	  this.positionSeq = entity.getPositionSeq() != null ? entity.getPositionSeq().getPositionSeq() : 0; // PositionCodeEntity에서 positionSeq 추출
+	  this.postingTitle = entity.getPostingTitle();
+	  this.postingDetail = entity.getPostingDetail();
+	  this.expLevel = entity.getExpLevel();
+	  this.postingEndDt = entity.getPostingEndDt();
+	  this.postingStartDt = entity.getPostingStartDt();
+	  this.recruitCnt = entity.getRecruitCnt() != null ? entity.getRecruitCnt() : 0;
+	  this.employType = entity.getEmployType();
+	  this.workday = entity.getWorkday();
+	  this.workStartTime = entity.getWorkStartTime();
+	  this.workEndTime = entity.getWorkEndTime();
+	  this.salary = entity.getSalary() != null ? entity.getSalary().longValue() : 0L;
+	  this.contStartDt = entity.getContStartDt();
+	  this.contEndDt = entity.getContEndDt();
+	  this.eduLevel = entity.getEduLevel();
+	  this.viewCnt = entity.getViewCnt() != null ? entity.getViewCnt() : 0;
+	  this.zipcode = entity.getZipcode();
+	  this.roadAddress = entity.getRoadAddress();
+	  this.detailAddress = entity.getDetailAddress();
+	  this.region = entity.getRegion();
+	  this.district = entity.getDistrict();
+	  this.isEnded = entity.getIsEnded();
+  }
+  
+	public static JobPostingDTO from(JobPostingEntity entity) {
+		return new JobPostingDTO(entity);
+	}
+  
   
 }

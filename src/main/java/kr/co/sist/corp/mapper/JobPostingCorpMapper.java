@@ -22,7 +22,7 @@ public interface JobPostingCorpMapper {
   public int modifyJobPost(JobPostingDTO jpDTO);
   
   //공고삭제
-  public int deleteJobPost(int jobPostingSeq);
+  public void finishJobPosting(int jobPostingSeq);
 
   //공고안에서 포지션 비동기 검색 조회 
   public List<PositionCodeDTO> selectPostionList(String keyword);

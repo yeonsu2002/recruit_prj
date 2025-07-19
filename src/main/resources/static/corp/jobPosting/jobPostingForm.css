@@ -315,7 +315,7 @@
 
 .position-absolute {
 	list-style: none;
-  padding-left: 0; /* 점 없어도 들여쓰기 남는 경우 제거 */
+  	padding-left: 15px; /* 점 없어도 들여쓰기 남는 경우 제거 */
 }
 
 .position-box {
@@ -325,10 +325,13 @@
 
 #resultBox {
 	background-color: #FAFDF4;
-	border-color: black;
-	width: 100%;
 	z-index: 1000;
 	
+	border: 1px solid #ccc;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* x y blur color */
+	padding: 16px;
+	background-color: white;
+	border-radius: 8px; /* 더 부드럽게 */
 }
 
 #resultBox li{
@@ -356,9 +359,13 @@
 
 #suggestedStackList {
 	background-color: #FAFDF4;
-	border-color: black;
-	width: 100%;
 	z-index: 1000;
+	
+	border: 1px solid #ccc;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* x y blur color */
+	padding: 16px;
+	background-color: white;
+	border-radius: 8px; /* 더 부드럽게 */
 }
 
 #suggestedStackList li{

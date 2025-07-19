@@ -1,16 +1,22 @@
 package kr.co.sist.corp.controller;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -92,7 +98,6 @@ public class JobPostController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
-  	
   	return "corp/jobPosting/myJobPostingListPage";
   }
   
@@ -145,11 +150,14 @@ public class JobPostController {
   }
   
   /**
-   * 나의 공고 리스트 페이지에 뿌릴 자료 호출 (/corp/myJobPostingListPage 에 통합할지, 비동기로 호출할지 미정)
+   * 나의 공고 리스트 페이지에 뿌릴 자료 호출 (비동기용!) RESTful 하게 ㄱㄱ 
    * 필요 변수: corpNO, postSts (total, ing, end), orderBy(start, end, viewCnt) 
    */
-  @GetMapping("/corp/getMyAllPosting") //PostMapping 해야 @RequestBody 오류 안남 
-  public ResponseEntity<?> getMyAllPosting(@RequestParam Long corpNo, @RequestParam String postSts, @RequestParam String orderBy){
+  @GetMapping("/corp/postings/selectby/{corpNo}/{postSts}/{orderBy}") //PostMapping 할땐 @RequestBody 받아야 오류 안남 
+  public ResponseEntity<?> getMyAllPosting(@PathVariable("corpNo") long corpNo, @PathVariable("postSts") String postSts, @PathVariable("orderBy") String orderBy){
+  	
+  	System.out.println("fetch로 공고 가져오기 디버깅 : ");
+  	System.out.println(corpNo + "/ " + postSts + "/ " + orderBy);
   	
   	JobPostingDTO jpDTO = new JobPostingDTO();
   	jpDTO.setCorpNo(corpNo);
@@ -170,6 +178,35 @@ public class JobPostController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 리스트 호출 실패: " + e.getMessage());
 		} 
   	
+  }
+  
+  /**
+   * 공고 조기마감 (논리적 삭제) 
+   */
+  @DeleteMapping("/corp/postings/{jobPostingSeq}") 
+  public ResponseEntity<?> updatePostingToFinish(@PathVariable("jobPostingSeq") int jobPostingSeq) {
+  	System.out.println("디버깅: 컨트롤러 -> updatePostingToFinish 실행 ");
+  	try {
+			jpcService.updateJobPotingToEnd(jobPostingSeq);
+			return ResponseEntity.ok("공고 조기마감 처리 성공");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 조기마감 처리 실패 : " + e.getMessage());
+		}
+  }
+  
+  /**
+   *	공고 수정 폼으로 이동 
+   */
+  @GetMapping("/corp/postings/updateForm/{jobPostingSeq}")
+  public String getUpdateForm(@AuthenticationPrincipal CustomUser loginUser, @PathVariable("jobPostingSeq") int jobPostingSeq, Model model) {
+  	//특정공고 가져와 
+  	long corpNo = loginUser.getCorpNo();
+  	JobPostingDTO jpDTO = jpcService.selectMyJobPostingOne(corpNo, jobPostingSeq);
+  	
+  	model.addAttribute("posting", jpDTO);
+  	
+  	return "corp/jobPosting/updateJobPostingForm";
   }
   
   

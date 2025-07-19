@@ -14,5 +14,8 @@ public interface JobPostingRepository extends JpaRepository<JobPostingEntity, In
 	//사업자등록번호로 해당 기업의 공고 목록 가져오기
 	public List<JobPostingEntity> findByCorpNo_CorpNo(Long corpNo);
 	
+	//사업자번호와 포스팅 번호로 공고 하나 가져오기 
+	public JobPostingEntity findByCorpNo_CorpNoAndJobPostingSeq(Long corpNo, int jobPostingSeq);
+	
 	
 }

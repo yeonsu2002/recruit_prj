@@ -1,5 +1,8 @@
 package kr.co.sist.corp.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.corp.dto.JobPostingDTO;
+import kr.co.sist.corp.dto.JobPostingEntity;
 import kr.co.sist.corp.mapper.JobPostingCorpMapper;
 import kr.co.sist.corp.mapper.JobPostingTechStackMapper;
+import kr.co.sist.corp.repository.JobPostingRepository;
 import kr.co.sist.globalController.Exceptions.LoginException;
 import kr.co.sist.globalController.Exceptions.NotFoundException;
 import kr.co.sist.login.CorpRepository;
@@ -30,6 +35,7 @@ public class JobPostingCorpService {
   private final JobPostingCorpMapper jpm;
   private final JobPostingTechStackMapper jptm;
   private final CorpRepository cRepository;
+  private final JobPostingRepository jRepository;
   
   /**
    * 연속적인 insert는 항상 서비스단에서 묶어서 처리하고, @Transactional을 걸어야 안전빵
@@ -131,6 +137,26 @@ public class JobPostingCorpService {
   	jpList = jpm.selectMyAllPosting(jpDTO);
   	
   	return jpList;
+  }
+  
+  /**
+   * 공고 강제(조기)마감 처리 
+   */
+  public void updateJobPotingToEnd(int jobPostingSeq) {
+  	jpm.finishJobPosting(jobPostingSeq);
+  	
+  }
+  
+  /**
+   * 나의 특정 공고 가져오기
+   */
+  public JobPostingDTO selectMyJobPostingOne(long corpNo, int jobPostingSeq) {
+  	
+  	JobPostingEntity jpEntity  = jRepository.findByCorpNo_CorpNoAndJobPostingSeq(corpNo, jobPostingSeq);
+  	
+  	JobPostingDTO jpDTO = JobPostingDTO.from(jpEntity);
+  	
+  	return jpDTO;
   }
   
   

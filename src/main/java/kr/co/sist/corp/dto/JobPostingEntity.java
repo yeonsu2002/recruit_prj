@@ -91,5 +91,7 @@ public class JobPostingEntity {
 
   @Column(name = "DETAIL_ADDRESS", length = 50)
   private String detailAddress;
+  
+  private String isEnded;
 	
 }
