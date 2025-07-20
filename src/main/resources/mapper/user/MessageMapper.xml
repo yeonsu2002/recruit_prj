@@ -14,7 +14,7 @@ where job_posting_seq = #{jobPostingSeq}
 </select>
 
 <!-- 해당 유저의 모든 메시지 가져오기 -->
-<select id="selectMyMessage" parameterType="String" resultType="userMessageDTO">
+<select id="selectMyAllMessage" parameterType="String" resultType="userMessageDTO">
 select m.MESSAGE_SEQ, m.CORP_NO, m.EMAIL, m.MESSAGE_TITLE, m.MESSAGE_CONTENT, m.CREATED_AT, m.IS_READ, m.READED_AT, m.IS_OFFERED, c.corp_nm
 from message m
 join company c on c.corp_no = m.corp_no
@@ -22,5 +22,68 @@ where email = #{email}
 ORDER BY m.created_at DESC
 </select>
 
+<!-- 해당 유저의 메시지(페이징 및 정렬처리) -->
+<select id="selectMyMessage" parameterType="userMessageSearchDTO" resultType="userMessageDTO">
+select m.MESSAGE_SEQ, m.CORP_NO, m.EMAIL, m.MESSAGE_TITLE, m.MESSAGE_CONTENT, m.CREATED_AT, m.IS_READ, m.READED_AT, m.IS_OFFERED, c.corp_nm
+from message m
+join company c on c.corp_no = m.corp_no
+where email = #{email}
+<choose>
+<when test="type == 'read'">
+and m.is_read = 'Y'
+</when>
+<when test="type == 'unread'">
+and m.is_read != 'Y'
+</when>
+<when test="type == 'offered'">
+and m.is_offered = 'Y'
+</when>
+<otherwise></otherwise>
+</choose>
+<if test="keyword != null and keyword.trim() != ''">
+and (
+m.message_title LIKE '%' || #{keyword} || '%' or
+c.corp_nm LIKE '%' || #{keyword} || '%'
+)
+</if>
+ORDER BY m.created_at DESC
+offset #{offSet} ROWS FETCH NEXT #{size} ROWS only
+</select>
+
+
+
+<!-- 해당 유저의 모든 메시지의 수 -->
+<select id="cntMyAllMessage" parameterType="String" resultType="int">
+select count(*)
+from message m
+join company c on c.corp_no = m.corp_no
+where email = #{email}
+</select>
+
+<!-- 검색된 해당 유저의 모든 메시지 수 -->
+<select id="cntMyMessage" parameterType="userMessageSearchDTO" resultType="int">
+select count(*)
+from message m
+join company c on c.corp_no = m.corp_no
+where email = #{email}
+<choose>
+<when test="type == 'read'">
+and m.is_read = 'Y'
+</when>
+<when test="type == 'unread'">
+and m.is_read != 'Y'
+</when>
+<when test="type == 'offered'">
+and m.is_offered = 'Y'
+</when>
+<otherwise></otherwise>
+</choose>
+<if test="keyword != null and keyword.trim() != ''">
+and (
+m.message_title LIKE '%' || #{keyword} || '%' or
+c.corp_nm LIKE '%' || #{keyword} || '%'
+)
+</if>
+</select>
 
 </mapper>

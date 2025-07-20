@@ -24,52 +24,67 @@
 				<div id="content-area">
 					<div class="page-title">메일 목록</div>
 					<div class="stats-grid">
-						<div class="stats-item">
+						<div class="stats-item" data-filter="all">
 							<div class="stats-label">전체 메일</div>
-							<div class="stats-number" id="total-count" th:text="${statistics.total}">7</div>
+							<div class="stats-number" id="total-count"
+								th:text="${statistics.total}">7</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="unread">
 							<div class="stats-label">안읽은 메일</div>
-							<div class="stats-number" id="unread-count" th:text="${statistics.unread}">5</div>
+							<div class="stats-number" id="unread-count"
+								th:text="${statistics.unread}">5</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="read">
 							<div class="stats-label">읽은 메일</div>
-							<div class="stats-number" id="read-count" th:text="${statistics.read}">2</div>
+							<div class="stats-number" id="read-count"
+								th:text="${statistics.read}">2</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="offered">
 							<div class="stats-label">포지션 제안</div>
 							<div class="stats-number" th:text="${statistics.position}">2</div>
 						</div>
 					</div>
-					<div class="filter-buttons">
-						<div class="filter-checkbox">
-							<input type="checkbox" id="exclude-canceled"> <label
-								for="exclude-canceled">열람 제외</label>
+
+					<!-- 툴바 -->
+					<div class="mail-toolbar">
+						<div class="toolbar-left">
+							<input type="checkbox" id="selectAllCheckbox"> <label
+								for="selectAllCheckbox">전체선택</label>
 						</div>
-						<div class="filter-select">
-							<select>
-								<option>지난 1개월</option>
-								<option>지난 6개월</option>
-								<option>지난 1년</option>
-								<option>전체</option>
-							</select>
-						</div>
-						<div class="filter-select">
-							<select>
-								<option>전체</option>
-								<option>공지/알림</option>
-								<option>지원 결과</option>
-								<option>포지션 제안</option>
-							</select>
+						<div class="toolbar-right">
+							<div class="select-all-checkbox">
+
+								<button class="toolbar-btn" id="markReadBtn">읽음처리</button>
+								<button class="toolbar-btn" id="markUnreadBtn">안읽음처리</button>
+								<button class="toolbar-btn danger" id="deleteBtn">삭제</button>
+								<div class="searchbox">
+									<input type="text" th:value="${search.keyword}" name="keyword" placeholder="메일 검색...">
+									<i id="search" class="fas fa-search search-icon"></i>
+								</div>
+							</div>
 						</div>
 					</div>
 
 					<!-- 메일 목록 -->
 					<div class="application-list">
+						<div class="empty-mailbox" th:if="${search.searchCnt == 0}">
+							<div class="empty-icon">
+								<i class="fas fa-inbox"></i>
+							</div>
+							<div class="empty-title">메일함이 비어있어요</div>
+							<div class="empty-subtitle">
+								아직 받은 메일이 없습니다.<br> 기업으로부터 메일을 받으면 이곳에 표시됩니다.
+							</div>
+						</div>
 						<th:block th:each="message : ${messages}">
-							<div class="application-item" th:classappend="${message.isRead=='Y'}?' read-mail'"
+							<div class="application-item"
+								th:classappend="${message.isRead=='Y'}?' read-mail'"
 								th:data-messageSeq="${message.messageSeq}"
 								th:data-content="${message.messageContent}">
+								<div class="mail-checkbox">
+									<input type="checkbox" class="mail-item-checkbox"
+										th:value="${message.messageSeq}">
+								</div>
 								<div class="application-info">
 									<div class="company-name" th:text="${message.corpNm}"></div>
 									<div class="job-title" th:text="${message.messageTitle}"></div>
@@ -79,26 +94,32 @@
 						</th:block>
 					</div>
 
-						<!-- 페이지네이션 -->
-						<div class="pagination-container">
-							<div class="pagination">
-								<button class="page-btn disabled">
-									<i class="fas fa-chevron-left"></i>
-								</button>
-								<button class="page-btn active">1</button>
-								<button class="page-btn">2</button>
-								<button class="page-btn">3</button>
-								<button class="page-btn">4</button>
-								<button class="page-btn">5</button>
-								<button class="page-btn">6</button>
-								<button class="page-btn">
-									<i class="fas fa-chevron-right"></i>
-								</button>
-							</div>
+
+					<!-- 페이지네이션 -->
+					<div class="pagination-container"
+						th:attr="data-start-page=${search.startPage},data-end-page=${search.endPage},data-total-page=${search.totalPage},data-page-Group=${search.pageGroup}">
+						<div class="pagination">
+							<button class="page-btn prev"
+								th:classappend="${search.prev==false}?'invisible-btn'">
+								<i class="fas fa-chevron-left"></i>
+							</button>
+
+							<th:block th:if="${search.searchCnt > 0}"
+								th:each="num : ${#numbers.sequence(search.startPage, search.endPage)}">
+								<button class="page-btn" th:text="${num}"
+									th:classappend="${num == search.page}?' active'"
+									th:attr="data-page=${num}"></button>
+							</th:block>
+
+							<button class="page-btn next"
+								th:classappend="${search.next==false}?'invisible-btn'">
+								<i class="fas fa-chevron-right"></i>
+							</button>
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 	</main>
 	<footer>
 		<div th:replace="~{fragments/footer :: footer}"></div>

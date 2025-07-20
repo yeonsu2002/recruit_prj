@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,9 +45,10 @@ public class ApplicantController {
 
 	private final CipherUtil cu;
 
-	// 처음 지원자 관리 접근시 해당 회사의 모든 지원자 가져오기
+	// 처음 지원자 관리 접근시 해당 회사의 모든 지원자 가져오기(직접 페이징 기능 구현)
 	@GetMapping("/corp/applicant")
-	public String applicant(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+	public String applicant(@AuthenticationPrincipal CustomUser userInfo, @ModelAttribute ApplicantSearchDTO searchDTO,
+			Model model) {
 
 		// 기업 회원이 아니면 접근금지
 		boolean hasCorpAuth = userInfo.getAuthorities().stream().anyMatch(auth -> "ROLE_CORP".equals(auth.getAuthority()));
@@ -56,9 +58,23 @@ public class ApplicantController {
 
 		CorpEntity corp = corpRepos.findById(userInfo.getCorpNo()).orElse(null);
 
-		List<ApplicantDTO> applicants = applicantServ.searchAllApplicant(corp.getCorpNo());
+		// 모든 지원자 수
+		int totalCnt = applicantServ.searchAllApplicantCnt(corp.getCorpNo());
+		
+
+		// 검색 조건 및 페이징 DTO
+		searchDTO.setTotalCnt(totalCnt);
+		searchDTO.setCorpNo(corp.getCorpNo());
+		
+		//검색된 지원자 수
+		int searchCnt = applicantServ.searchApplicantCnt(searchDTO);
+		searchDTO.setSearchCnt(searchCnt);
+
+		// 지원자 목록
+		List<ApplicantDTO> applicants = applicantServ.searchApplicant(searchDTO);
 
 		model.addAttribute("applicants", applicants);
+		model.addAttribute("search", searchDTO);
 
 		return "/corp/applicant/applicant";
 	}// applicant
@@ -184,11 +200,11 @@ public class ApplicantController {
 
 	// 지원 상태 변경시 메시지 보내기
 	@PostMapping("/corp/applicant/message")
-	public String sendMessageToApplicant(int passStage, String messageTitle, String messageContent, int resumeSeq, String email, 
-			int jobPostingSeq, @AuthenticationPrincipal CustomUser corpInfo) {
+	public String sendMessageToApplicant(int passStage, String messageTitle, String messageContent, int resumeSeq,
+			String email, int jobPostingSeq, @AuthenticationPrincipal CustomUser corpInfo) {
 
 		CorpEntity corpEntity = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
-		
+
 		applicantServ.modifyPassStage(resumeSeq, jobPostingSeq, passStage); // 합격 상태 변경하기
 		messageServ.addMessage(email, corpEntity.getCorpNo(), messageTitle, messageContent);
 

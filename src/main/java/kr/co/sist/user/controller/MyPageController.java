@@ -1,17 +1,24 @@
 package kr.co.sist.user.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.ApplicantStatisticsDTO;
 import kr.co.sist.user.dto.MessageDTO;
+import kr.co.sist.user.dto.MessageSearchDTO;
 import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.entity.UserEntity;
@@ -28,7 +35,7 @@ public class MyPageController {
 	private final MessageService messageServ;
 
 	private final UserRepository userRepos;
-	
+
 	private final CipherUtil cu;
 
 	@GetMapping("/user/mypage")
@@ -36,10 +43,10 @@ public class MyPageController {
 
 		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
 		userEntity.setPhone(cu.decryptText(userEntity.getPhone()));
-		
+
 		// 전체 지원목록 가져오기
 		List<MyApplicantDTO> applicantDTO = myPageServ.searchMyApplicant(userEntity.getEmail());
-		
+
 		// 지원 통계 가져오기
 		ApplicantStatisticsDTO statistics = myPageServ.getApplicantStatistics(applicantDTO);
 
@@ -75,18 +82,32 @@ public class MyPageController {
 
 	// 메일 목록으로 이동
 	@GetMapping("/user/mypage/mail_list")
-	public String mailList(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+	public String mailList(@AuthenticationPrincipal CustomUser userInfo, @ModelAttribute MessageSearchDTO searchDTO,
+			Model model) {
 
 		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
 
-		// 모든 메일목록 가져오기
-		List<MessageDTO> messages = messageServ.searchMyMessage(userEntity.getEmail());
+		// 모든 메일 개수 가져오기
+		int totalCnt = messageServ.cntMyAllMesage(userEntity.getEmail());
+
+		// 검색 조건 및 페이징 DTO
+		searchDTO.setEmail(userEntity.getEmail());
+		searchDTO.setTotalCnt(totalCnt);
+
+		// 검색된 메일 개수 가져오기
+		int searchCnt = messageServ.cntMyMessage(searchDTO);
+		searchDTO.setSearchCnt(searchCnt);
 		
-		//메일 통계 집계
-		MessageStatisticsDTO statistics = messageServ.getMessageStatistics(messages);
+		// 페이징된 메일목록 가져오기
+		List<MessageDTO> messages = messageServ.searchMyMessage(searchDTO);
+
+		// 모든 메일로 통계 집계
+		List<MessageDTO> allMessages = messageServ.searchMyAllMessage(userEntity.getEmail());
+		MessageStatisticsDTO statistics = messageServ.getMessageStatistics(allMessages);
 
 		model.addAttribute("messages", messages);
 		model.addAttribute("statistics", statistics);
+		model.addAttribute("search", searchDTO);
 
 		return "/user/mypage/mail_list";
 	}
