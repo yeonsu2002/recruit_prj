@@ -21,7 +21,7 @@ public interface JobPostingCorpMapper {
   //공고수정
   public int modifyJobPost(JobPostingDTO jpDTO);
   
-  //공고삭제
+  //공고삭제 (논리적삭제)
   public void finishJobPosting(int jobPostingSeq);
 
   //공고안에서 포지션 비동기 검색 조회 

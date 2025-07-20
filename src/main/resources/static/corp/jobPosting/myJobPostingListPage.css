@@ -269,6 +269,11 @@
 .posting-status.selected { 
 	background-color: #b7bdc7;
 }
+
+/* 전체, 마감일순, 조회수순 글자 색상 변경  */
+.posting-subStatus.subSelected {
+	color: #007bff;
+}
 /* 공고 제목 줄임 */
 .detail-posting-link {
 	cursor: pointer;

@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	//진행중, 마감, 전체버튼을 눌렀을 때 클래스 제거 및 추가
 	changeClassSelectedTotd(userCorpNo);
 	
-	//
+	//전체, 마감일순, 조회수순 버튼을 눌렀을 때 클래스 제거 및 추가
+	changeClassSubSelectedToInput(userCorpNo);
 	
 });//ready
 
@@ -70,6 +71,10 @@ function fetchStartData(userCorpNo){
 
 //진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
 function changeClassSelectedTotd(userCorpNo){
+	//console.log(typeof userCorpNo); //String 이라서 number로 바꿔줘야 
+	let corpNo = Number(userCorpNo); 
+	let orderBy = "start"; //정률순은 고정 
+	let postSts = "";
 	document.querySelectorAll('.posting-status').forEach(td => {
 		//초기값 동기적으로 부여 
 		/* if(td.classList.contains('selected')){
@@ -83,10 +88,6 @@ function changeClassSelectedTotd(userCorpNo){
 			td.classList.add('selected');
 			
 			//비동기로 해당 버튼에 맞는 데이터 리스트 가져오기(진행중ing, 마감end, 전체total) & 전체(공고최신순)
-			//console.log(typeof userCorpNo); //String 이라서 number로 바꿔줘야 
-			let corpNo = Number(userCorpNo); 
-			let orderBy = "start"; //정률순은 고정 
-			let postSts = "";
 			if(td.id == 'getIngPosting'){
 				postSts = "ing";
 			} else if (td.id == 'getEndPosting'){
@@ -94,6 +95,14 @@ function changeClassSelectedTotd(userCorpNo){
 			} else if (td.id == 'getAllPosting'){
 				postSts = "total";
 			}
+			//자식버튼 클래스를 '전체'쪽으로 초기화 해줘 
+			document.querySelectorAll('.posting-subStatus').forEach(item => {
+				item.classList.remove('subSelected');
+			});
+			document.querySelector('.posting-subStatus').classList.add('subSelected'); //맨 처음요소(전체)에 클래스 부여 
+			
+			//alert('종류 : ' + postSts + ', 정렬순서 : ' + orderBy);
+			
 			let url = `/corp/postings/selectby/${corpNo}/${postSts}/${orderBy}`;
 			fetch(url, {
 				method : 'GET',
@@ -115,32 +124,80 @@ function changeClassSelectedTotd(userCorpNo){
 			})
 		});
 	});
+}
+
+//진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
+function changeClassSubSelectedToInput(userCorpNo){
+	let corpNo = userCorpNo;
+	let postSts = "ing";
+	let orderBy = "start"; //초기값 
 	
-	
-	
-	
+	document.querySelectorAll('.posting-subStatus').forEach(sub => {
+		
+		sub.addEventListener('click', () => {
+			document.querySelectorAll('.posting-subStatus').forEach(item => {
+				item.classList.remove('subSelected');
+			});
+			sub.classList.add('subSelected');
+			
+			//상위 버튼클래스 확인 먼저 
+			document.querySelectorAll('.posting-status').forEach(item => {
+				if(item.classList.contains('selected')){
+					if(item.id == 'getIngPosting'){
+						postSts = "ing";
+					} else if(item.id == 'getEndPosting'){
+						postSts = "end";
+					} else if(item.id == 'getAllPosting'){
+						postSts = "total";
+					}
+				}
+			});
+			
+			//하위버튼 값 확인
+			if(sub.id == 'odbSd'){
+				orderBy = "start";
+			} else  if(sub.id == 'odbEd'){
+				orderBy = "end";
+			} else  if (sub.id == 'odbVc'){
+				orderBy = "viewCnt";
+			}
+			
+			//alert('종류 : ' + postSts + ', 정렬순서 : ' + orderBy);
+			
+			//DOM 재구성 fetch 전송 
+			let url = `/corp/postings/selectby/${corpNo}/${postSts}/${orderBy}`;
+			fetch(url, {
+				method : 'GET',
+			})
+			.then(response => {
+				if(!response){
+					throw new Error('조회 요청 실패');
+				}
+				return response.json(); //밑에서DOM다시 해야하니까 JSON으로, (.text() xxx)
+			})
+			.then(data => {
+				console.log(data);
+                updatePostingTable(data.postList);
+                updatePostingCounts(data);
+			})
+			.catch(error => {
+				
+				console.error(error);
+			})
+			
+		});
+	});
 }
 
 //상단에 공고 n개씩 보기 설정
 function selectPostingByCnt(){
 	alert('미구현');
 }
-//전체(최신등록순) 정렬
-function orderByStartDate(){
-	alert('미구현');
-}
-//마감일순 정렬 
-function orderByEndDate(){
-	alert('미구현');
-}
-//조회수순 정렬
-function orderByViewCnt(){
-	alert('미구현');
-}
+
 
 //수정 버튼 클릭
 function updatePosting(jobPostingSeq){
-	if(confirm(jobPostingSeq + '번 공고를 수정하시겠습니까?')){
+	if(confirm('jobPostingSeq : ' + jobPostingSeq + ', 공고 수정 ㄱ?')){
 		location.href=`/corp/postings/updateForm/${jobPostingSeq}`;
 	}
 }
@@ -173,7 +230,7 @@ function finishPosting(jobPostingSeq){
 
 //지원자 통계 버튼 클릭
 function getApplicantStats(jobPostingSeq){
-	alert(jobPostingSeq +'번 공고의 지원자 통계 조회 : 현재 미구현');
+	alert(jobPostingSeq +'-공고 지원자 통계 : 현재 미구현');
 }
 
 //공고 상세보기 (유저페이지로 이동)
@@ -277,9 +334,9 @@ function updatePostingCounts(data) {
 		<div class="get-posting-orderby"> <!-- 상단의 정렬 순서 -->
 			<div> 
 				<!-- 전체는 최신 등록순 -->
-				<input type="button" value="전체" id="orderByStartDate" th:onclick="orderByStartDate()"> |
-				<input type="button" value="마감일순" id="orderByEndDate" th:onclick="orderByEndDate()"> |
-				<input  type="button"value="조회수순" id="orderByViewCnt" th:onclick="orderByViewCnt()">
+				<input type="button" class="posting-subStatus subSelected" value="전체" id="odbSd" > |
+				<input type="button" class="posting-subStatus" value="마감일순" id="odbEd" > |
+				<input type="button" class="posting-subStatus" value="조회수순" id="odbVc" >
 			</div>
 		</div>
 	</div> <!-- 상단 끝 -->

@@ -38,6 +38,7 @@ public class JobPostingCorpService {
   private final JobPostingRepository jRepository;
   
   /**
+   * 공고 새로 등록하기 
    * 연속적인 insert는 항상 서비스단에서 묶어서 처리하고, @Transactional을 걸어야 안전빵
    * @param jpDTO
    * @return
@@ -71,6 +72,29 @@ public class JobPostingCorpService {
 			throw new RuntimeException("공고등록 중 예외 발생", e); 
 		}
   } //end uploadJobPost()
+  
+  /**
+   * 공고 수정하기 (공고수정 -> 기존 기술스택 리스트 삭제 -> 기술스택 새로 등록)
+   */
+  @Transactional
+  public void updateJobPost(JobPostingDTO jpDTO) {
+  	
+  	try {
+  		jpm.modifyJobPost(jpDTO); //공고 수정
+  		
+  		jptm.deleteJobPostingTechStack(jpDTO.getJobPostingSeq()); //기존 기술스택 데이터 모두 삭제 
+  		
+      for(Integer techStackSeq : jpDTO.getTechStackSeqList()) {
+      	jptm.insertjobPostingTechStack(jpDTO.getJobPostingSeq(), techStackSeq); //기술스택 새로 등록 
+      }
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("공고 수정중 예외 발생!", e);
+		}
+  	
+  }
+  
   
   
   /**

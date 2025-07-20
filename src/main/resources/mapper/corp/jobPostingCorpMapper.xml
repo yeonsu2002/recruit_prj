@@ -20,6 +20,35 @@ VALUES (#{jobPostingSeq}, #{corpNo}, #{positionSeq}, #{postingTitle}, #{postingD
     #{salary}, #{contStartDt}, #{contEndDt}, #{eduLevel}, #{viewCnt}, #{zipcode}, #{roadAddress}, #{detailAddress}, #{region}, #{district} )
 </insert>
 
+<!-- 공고 수정 -->
+<update id="modifyJobPost" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
+UPDATE job_posting SET
+	CORP_NO = #{corpNo},
+	POSITION_SEQ = #{positionSeq},
+	POSTING_TITLE = #{postingTitle},
+	POSTING_DETAIL = #{postingDetail},
+	EXP_LEVEL = #{expLevel},
+	POSTING_END_DT = #{postingEndDt},
+	POSTING_START_DT = #{postingStartDt},
+	RECRUIT_CNT = #{recruitCnt},
+	EMPLOY_TYPE = #{employType},
+	WORKDAY = #{workday},
+	WORK_START_TIME = #{workStartTime},
+	WORK_END_TIME = #{workEndTime},
+	SALARY = #{salary},
+	CONT_START_DT = #{contStartDt},
+	CONT_END_DT = #{contEndDt},
+	EDU_LEVEL = #{eduLevel},
+	VIEW_CNT = #{viewCnt},
+	ZIPCODE = #{zipcode},
+	ROAD_ADDRESS = #{roadAddress},
+	DETAIL_ADDRESS = #{detailAddress},
+	REGION = #{region},
+	DISTRICT = #{district}
+WHERE JOB_POSTING_SEQ = #{jobPostingSeq}
+</update>
+
+
 <!-- 전체건수(total), 진행중건수(ing), 마감건수(end) -->
 <select id="selectMyPostingCount" parameterType="java.lang.Long" resultType="map">
 SELECT 
@@ -90,7 +119,7 @@ WHERE jp.corp_no = #{corpNo}
 
 <!-- 공고 마감 : finishJobPosting-->
 <update id="finishJobPosting" parameterType="int" >
-UPDATE job_posting SET is_ended = 'Y' WHERE job_posting_seq = #{jobPostingSeq}
+UPDATE job_posting SET is_ended = 'Y', posting_end_dt = TO_CHAR(SYSDATE, 'YYYY-MM-DD') WHERE job_posting_seq = #{jobPostingSeq}
 </update>
 
 

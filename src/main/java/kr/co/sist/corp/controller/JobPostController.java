@@ -108,19 +108,30 @@ public class JobPostController {
   @PostMapping("/corp/uploadJobPosting")
   public ResponseEntity<?> registerJobPost(@RequestBody JobPostingDTO jpDTO) {
   	
-  	//form 2차 검증(if)
-  	
-  	
-  	
+  	//form 2차 검증(if) 나중에 하자 시간없다 
   	
   	try {
   		//공고 등록 호출
   		jpcService.uploadJobPost(jpDTO);
   		return ResponseEntity.ok("공고 등록 성공");
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공고 등록 실패: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
     
+  }
+  
+  /**
+   * 공고 수정하기
+   */
+  @PostMapping("/corp/updateJobPosting")
+  public ResponseEntity<?> updateJobPost(@RequestBody JobPostingDTO jpDTO) {
+  	
+  	try {
+  		jpcService.updateJobPost(jpDTO);
+  		return ResponseEntity.ok("공고 수정 성공");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
   }
   
   //예외처리 어떻게 하지? https://chatgpt.com/s/t_686fe64224988191838976d9bfa9aea0
@@ -205,6 +216,7 @@ public class JobPostController {
   	JobPostingDTO jpDTO = jpcService.selectMyJobPostingOne(corpNo, jobPostingSeq);
   	
   	model.addAttribute("posting", jpDTO);
+  	System.out.println(jpDTO);
   	
   	return "corp/jobPosting/updateJobPostingForm";
   }

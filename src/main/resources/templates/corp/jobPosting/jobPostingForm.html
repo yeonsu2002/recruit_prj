@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	// 공고 시작일을 현재 날짜로 설정
 	setPostingStartDate();
 	
+	//급여 입력 자동 채우기 
+	initSalaryFormatting();
+	
+	//계약직 이외 선택시 계약기간 탭 비활성화
+	 preventContDt();
+	
 });//end ready
 
 /**
@@ -130,8 +136,6 @@ function getStackList() {
 
 	/**
 	 * 기술스택 추가 함수
-	 * @param {string} stackName - 스택 이름
-	 * @param {number} stackSeq - 스택 시퀀스
 	 */
 	function addTechStack(stackName, stackSeq) {
 		// 중복 방지 체크
@@ -216,7 +220,6 @@ function getStackList() {
 							suggestedList.innerHTML = "";
 							document.querySelector("#techStackSearch").value = "";
 							suggestedList.style.display = 'none';
-
 						});
 						suggestedList.style.display = 'block';
 
@@ -233,6 +236,7 @@ function getStackList() {
 				suggestedList.style.display = 'block';
 			});
 	});
+	
 }
 
 /**
@@ -341,7 +345,7 @@ function collectFormData() {
 		eduLevel: document.getElementById('eduLevel').value,
 		employType: document.getElementById('employType').value,
 		recruitCnt: parseInt(document.getElementById('recruitCnt').value),
-		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value) : null,
+		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value.replace( /,/g, '')) : 0,
 		workday: document.getElementById('workday').value,
 		workStartTime: document.getElementById('workStartTime').value,
 		workEndTime: document.getElementById('workEndTime').value,
@@ -382,7 +386,7 @@ function getUserCorpNo() {
 }
 
 /**
- * 진행률 표시 기능 초기화
+ * 진행률 표시 기능 초기화 (클로드 선생 쎼쎼)
  */
 function initProgressTracking() {
 	const inputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
@@ -433,7 +437,6 @@ function initPreviewFeature() {
 	document.querySelector('.preview-btn').addEventListener('click', function() {
 		const formData = collectFormData();
 		
-		console.log('미리보기 데이터:', formData);
 		alert('미리보기 기능을 준비중입니다!\n\n현재 입력된 데이터를 콘솔에서 확인할 수 있습니다.');
 	});
 }
@@ -453,14 +456,30 @@ function setPostingStartDate() {
 function initSalaryFormatting() {
 	const salaryInput = document.querySelector('input[name="salary"]');
 	if (salaryInput) {
-		salaryInput.addEventListener('input', function() {
-			const value = this.value;
-			if (value) {
-				const formatted = parseInt(value).toLocaleString();
-				this.setAttribute('data-formatted', formatted + '만원');
-			}
+		salaryInput.addEventListener('blur', function() {
+			let value = this.value;
+			value = value.replace(/[^0-9]/g, ''); //숫자 이외의 문자 제거
+			this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		});
 	}
+}
+
+/**
+ * 계약직 이외 선택시, 계약기간 탭 비활성화 
+ */
+ function preventContDt(){
+	document.querySelector('select[name="employType"]').addEventListener('change', function(){
+		let type = this.value;
+		if(type == "계약"){
+			document.querySelector('input[name="contStartDt"]').disabled = false;
+			document.querySelector('input[name="contEndDt"]').disabled = false;
+		} else {
+			document.querySelector('input[name="contStartDt"]').disabled = true;
+			document.querySelector('input[name="contEndDt"]').disabled = true;
+			document.querySelector('input[name="contStartDt"]').value = "";
+			document.querySelector('input[name="contEndDt"]').value = "";
+		}
+	})
 }
 
 </script>
@@ -562,7 +581,7 @@ function initSalaryFormatting() {
 
                     <div class="form-group">
                         <label class="form-label">급여</label>
-                        <input type="number" id="salary" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 만원)" min="0">
+                        <input type="text" id="salary" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 원)" >
                         <div class="salary-info">
                             <span>회사내규를 원하실 경우 0을 입력해주세요.</span>
                         </div>
@@ -577,9 +596,9 @@ function initSalaryFormatting() {
                     <div class="form-group">
                         <label class="form-label">근무 시간</label>
                         <div class="time-range">
-                            <input type="time" id="workStartTime" name="workStartTime" class="form-input">
+                            <input type="time" id="workStartTime" name="workStartTime" class="form-input" value="09:00">
                             <span>~</span>
-                            <input type="time" id="workEndTime" name="workEndTime" class="form-input">
+                            <input type="time" id="workEndTime" name="workEndTime" class="form-input" value="18:00">
                         </div>
                         <div class="form-help">근무 시작 시간과 종료 시간을 설정해주세요.</div>
                     </div>

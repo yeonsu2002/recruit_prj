@@ -10,8 +10,13 @@
 <insert id="insertjobPostingTechStack">
 INSERT INTO JOB_POSTING_TECH_STACK (tech_stack_seq, job_posting_seq) 
 VALUES (#{techStackSeq}, #{jobPostingSeq})
-
 </insert>
+
+<!-- 공고 수정 1. 기존의 기술스택 데이터 삭제 -->
+<delete id="deleteJobPostingTechStack" parameterType="int">
+DELETE FROM JOB_POSTING_TECH_STACK WHERE job_posting_seq = #{jobPostingSeq}
+</delete>
+<!-- 공고 수정 2. 새로운 기술스택 등록 : 위에꺼 재활용 -->
 
 
 
