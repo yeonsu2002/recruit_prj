@@ -1,6 +1,7 @@
 package kr.co.sist.admin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,6 +49,13 @@ public class AdminService {
 		
 		return flag;
 	}
+	
+	/**
+   * 관리자의 모든 정보를 조회
+   */
+  public List<AdminEntity> searchAllAdmin() {
+      return ar.findAll();
+  }
 	
 	
 }

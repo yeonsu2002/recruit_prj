@@ -1,7 +1,5 @@
 package kr.co.sist.corp.controller;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +25,6 @@ import kr.co.sist.login.CorpRepository;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
-import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
 import kr.co.sist.user.service.ResumeService;
@@ -132,7 +129,7 @@ public class ApplicantController {
 		int cnt = applicantServ.modifyResumeReadStatus(resumeSeq, jobPostingSeq);
 
 		// 지원서 첫 열람시 사용자에게 메일 보내기
-		if (cnt >= 0) {
+		if (cnt > 0) {
 			messageServ.addResumeReadNotification(userEntity, corpEntity, jobPostingSeq);
 		}
 

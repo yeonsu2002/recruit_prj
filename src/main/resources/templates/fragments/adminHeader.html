@@ -1,7 +1,6 @@
+<!-- fragments/adminHeader.html -->
 <th:block th:fragment="adminHeader">
-<link rel="stylesheet" th:href="@{/admin/admin_header.css}"/>
-</head>
-<body>
+<link rel="stylesheet" th:href="@{/admin/css/admin_header.css}"/>
     <!-- 모바일 메뉴 버튼 -->
     <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
@@ -12,62 +11,49 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo" style="width: 80%; height: 80%; object-fit: contain;"></a>
+                <a th:href="@{/admin/admin_mainpage}">
+                    <img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo" style="width: 80%; height: 80%; object-fit: contain;">
+                </a>
             </div>
             <div class="admin-info">
                 <h3>관리자</h3>
                 <p>시스템 관리</p>
-                <a href="/admin/logout" class="sidebar-logout-btn">로그아웃</a>
+                <a th:href="@{/admin/logout}" class="sidebar-logout-btn">로그아웃</a>
             </div>
         </div>
-        
 
         <div class="sidebar-menu">
             <!-- 기본 메뉴 그룹 -->
             <div class="menu-group">
-                <!-- <a href="#" class="menu-item active">관리자홈</a> -->
                 <a href="#" class="menu-item">대시보드</a>
-                <a href="#" class="menu-item">이력서 관리</a>
-                <a href="#" class="menu-item">공고 관리</a>
+                <a href="/admin/admin_list" class="menu-item">관리자명단</a>
             </div>
-            
+
             <!-- 회원 관리 그룹 -->
             <div class="menu-group">
                 <div class="menu-item main-menu">회원관리</div>
                 <a href="#" class="menu-item sub-menu">회원목록</a>
                 <a href="#" class="menu-item sub-menu">제재내역</a>
+                <a href="#" class="menu-item">이력서관리</a>
             </div>
-            
+
             <!-- 기업 관리 그룹 -->
             <div class="menu-group">
                 <div class="menu-item main-menu">기업관리</div>
                 <a href="#" class="menu-item sub-menu">기업목록</a>
                 <a href="#" class="menu-item sub-menu">제재목록</a>
-            </div>
-            
-            <!-- 리뷰 관리 그룹 -->
-            <div class="menu-group">
                 <a href="#" class="menu-item">리뷰관리</a>
+                <a href="#" class="menu-item">공고관리</a>
             </div>
-            
-            <!-- 상품 관리 그룹 -->
-            <div class="menu-group">
-                <div class="menu-item main-menu">상품관리</div>
-                <a href="#" class="menu-item sub-menu">상품등록</a>
-                <a href="#" class="menu-item sub-menu">상품목록</a>
-                <a href="#" class="menu-item sub-menu">결제목록</a>
-            </div>
-            
+
             <!-- 고객센터 관리 그룹 -->
             <div class="menu-group">
-                <div class="menu-item main-menu">고객센터 관리</div>
+                <div class="menu-item main-menu">고객센터관리</div>
                 <a href="#" class="menu-item sub-menu">문의내역</a>
                 <a href="#" class="menu-item sub-menu">FAQ</a>
             </div>
         </div>
     </nav>
-
-  
 
     <script>
         function toggleSidebar() {
@@ -104,5 +90,4 @@
             });
         });
     </script>
-</body>
 </th:block>

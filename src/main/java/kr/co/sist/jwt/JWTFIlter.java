@@ -44,7 +44,7 @@ public class JWTFIlter extends OncePerRequestFilter{
 			}
 		}
 		String token = authorization; //사용자 정보 보유중 
-
+		
 		//1.쿠키 Authorizaiton의 값 검증
 		if(token == null) {
 			filterChain.doFilter(request, response);

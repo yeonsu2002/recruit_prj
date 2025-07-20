@@ -15,7 +15,6 @@
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
     <div class="container">
 	<th:block th:replace="~{fragments/talentPoolHeader :: talentPoolHeader(activeTab='talent_pool')}"></th:block>
-        
 		<div class="search-toolbar">
 		    <div class="list-totalcount">
 		        전체 <span th:text="${totalCount}"></span>건
@@ -247,8 +246,6 @@
 	})();
 
 </script>
-
-
 	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </body>
 </html>
