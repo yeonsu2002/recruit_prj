@@ -12,9 +12,15 @@
 
 </style>
 <script type="text/javascript">
+//header에서 corpNo갖고와서 전역변수에 넣을 꺼야.
+var corpNo = "";
+
 document.addEventListener('DOMContentLoaded', () => {
-	const userInfo = `[[${user}]]`;
+	const userInfo = `[[${user}]]`; //그냥 문자열임 
 	console.log(userInfo);
+	
+	//header에서 가져옴 
+	corpNo = document.querySelector('#userCorpNo').value;
 	
 	// 카카오맵 주소 찾기
 	document.getElementById("openKakaoMap").addEventListener("click", openKakaoMap);
@@ -31,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// 진행률 표시 기능 초기화
 	initProgressTracking();
 	
-	// 미리보기 기능 초기화
+	// 미리보기 기능 : 미구현 
 	initPreviewFeature();
 	
 	// 공고 시작일을 현재 날짜로 설정
@@ -41,7 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	initSalaryFormatting();
 	
 	//계약직 이외 선택시 계약기간 탭 비활성화
-	 preventContDt();
+	preventContDt();
+	
+	//공고 마감일 현재날짜보다 앞으로 못가게 감시 
+	document.querySelector('input[name="postingEndDt"]').addEventListener('change', setPostingEndDate);
+	
+	//계약 날짜 검증
+	document.querySelectorAll('.contractDt').forEach(input => {
+		input.addEventListener('change', isValidStdEdd);
+	});
 	
 });//end ready
 
@@ -333,8 +347,7 @@ function submitJobPostingForm() {
 }
 
 /**
- * 폼 데이터를 수집하여 객체로 반환
- * @returns {Object} 폼 데이터 객체
+ * 폼 데이터를 객체로 반환
  */
 function collectFormData() {
 	// 기본 폼 데이터 수집
@@ -345,7 +358,7 @@ function collectFormData() {
 		eduLevel: document.getElementById('eduLevel').value,
 		employType: document.getElementById('employType').value,
 		recruitCnt: parseInt(document.getElementById('recruitCnt').value),
-		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value.replace( /,/g, '')) : 0,
+		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value.replace( /,/g, '')) : 0, //,삭제 잊지말기 
 		workday: document.getElementById('workday').value,
 		workStartTime: document.getElementById('workStartTime').value,
 		workEndTime: document.getElementById('workEndTime').value,
@@ -359,7 +372,7 @@ function collectFormData() {
 		postingDetail: document.getElementById('postingDetail').value,
 		postingStartDt: document.getElementById('postingStartDt').value,
 		postingEndDt: document.getElementById('postingEndDt').value,
-		corpNo: getUserCorpNo() // 사용자의 회사 번호 (세션 또는 다른 방법으로 가져와야 함)
+		corpNo: corpNo //헤더에서 갖고왔음 
 	};
 	
 	// 기술스택 배열 수집
@@ -371,18 +384,6 @@ function collectFormData() {
 	
 	console.log('수집된 폼 데이터:', formData);
 	return formData;
-}
-
-/**
- * 사용자의 회사 번호를 가져오는 함수
- * @returns {number} 회사 번호
- */
-function getUserCorpNo() {
-	// 실제 구현에서는 세션, 로컬스토리지, 또는 서버에서 가져온 데이터를 사용
-	// 예시로 하드코딩된 값 사용 (실제로는 서버에서 전달받은 값을 사용해야 함)
-	const corpNo = `[[${user.corpNo}]]`; // Thymeleaf 변수
-	// userInfo에서 corpNo 추출하는 로직 필요
-	return corpNo; 
 }
 
 /**
@@ -442,12 +443,26 @@ function initPreviewFeature() {
 }
 
 /**
- * 공고 시작일을 현재 날짜로 설정
+ * 공고 시작일을 현재 날짜로 설정(숨겨있으니 알아서 조심 )
  */
 function setPostingStartDate() {
 	const today = new Date();
 	const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD 형식
 	document.getElementById('postingStartDt').value = formattedDate;
+}
+
+/**
+ * 공고 마감일 현재날짜보다 앞으로 못가게 감시 
+ */
+ function setPostingEndDate(){
+	const today = new Date();
+	let dt = document.querySelector('input[name="postingEndDt"]').value;
+	//날짜로 변환
+	const endDt =  new Date(dt);
+	if(endDt < today.setHours(0,0,0,0)){
+		alert('공고 마감일은 오늘보다 이전일 수 없습니다. ');
+		document.querySelector('input[name="postingEndDt"]').value = "";
+	}
 }
 
 /**
@@ -481,6 +496,32 @@ function initSalaryFormatting() {
 		}
 	})
 }
+
+/**
+ * 계약기간 날짜 실시간 검증 
+ */
+function isValidStdEdd(){
+ 	const today = new Date();
+ 	const startDayStr = document.querySelector('input[name="contStartDt"]').value;
+ 	const endDayStr = document.querySelector('input[name="contEndDt"]').value;
+
+ 	//날짜로 변환
+ 	const startDay = new Date(startDayStr);
+ 	const endDay = new Date(endDayStr);
+ 	
+ 	//1. 시작일은 오늘보다 전으로 할수 없다.
+ 	if(startDay < today.setHours(0,0,0,0,)){
+ 		alert("계약 시작일은 오늘보다 이전이 될 수 없습니다.");
+ 		document.querySelector('input[name="contStartDt"]').value = "";
+ 		return;
+ 	}
+ 	//2. 마감일은 시작일보다 앞일 수 없다. 
+ 	if(endDay < startDay.setHours(0,0,0,0)){
+ 		alert("계약 마감일은 시작일보다 이전이 될 수 없습니다. ");
+ 		document.querySelector('input[name="contEndDt"]').value = "";
+ 		return;
+ 	}
+ }
 
 </script>
 
@@ -606,9 +647,9 @@ function initSalaryFormatting() {
                     <div class="form-group">
                         <label class="form-label">계약 기간 (계약직인 경우)</label>
                         <div class="date-range">
-                            <input type="date" id="contStartDt" name="contStartDt" class="form-input">
+                            <input type="date" id="contStartDt" name="contStartDt" class="form-input contractDt">
                             <span>~</span>
-                            <input type="date" id="contEndDt" name="contEndDt" class="form-input">
+                            <input type="date" id="contEndDt" name="contEndDt" class="form-input contractDt">
                         </div>
                         <div class="form-help">계약직인 경우에만 입력해주세요.</div>
                     </div>
