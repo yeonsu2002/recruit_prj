@@ -21,7 +21,7 @@
 
                 <div class="form-group">
                     <label for="company-name" class="required">회사명</label>
-                    <input type="text" id="company-name" name="corpNm" th:value="${corpInfo.corpNo}" readonly>
+                    <input type="text" id="company-name" name="corpNm" th:value="${corpInfo.corpNm}" readonly>
                 </div>
 
                 <div class="form-row">
@@ -106,7 +106,6 @@
 
             <div class="btn-group">
                 <button type="button" class="btn btn-secondary" onclick="history.back()">취소</button>
-                <button type="button" class="btn btn-info" onclick="location.href='/corp/info/image'">이미지 등록</button>
                 <button type="submit" class="btn btn-primary">수정완료</button>
             </div>
         </form>

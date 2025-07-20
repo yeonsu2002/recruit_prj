@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	//검색 조건 넘기기
 	document.querySelector('.search-btn').addEventListener('click', function() {
 		const params = {
-			size: document.querySelector('select[name="size"]').value,
+			//size: document.querySelector('select[name="size"]').value,
 			postingStatus: document.querySelector('select[name="postingStatus"]').value,
 			postingTitle: document.querySelector('select[name="postingTitle"]').value,
 			applicationStatus: document.querySelector('select[name="applicationStatus"]').value,

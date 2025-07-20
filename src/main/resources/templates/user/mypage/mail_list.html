@@ -67,7 +67,7 @@
 					<!-- 메일 목록 -->
 					<div class="application-list">
 						<th:block th:each="message : ${messages}">
-							<div class="application-item" th:classappend="${message.isRead}?' read-mail'"
+							<div class="application-item" th:classappend="${message.isRead=='Y'}?' read-mail'"
 								th:data-messageSeq="${message.messageSeq}"
 								th:data-content="${message.messageContent}">
 								<div class="application-info">

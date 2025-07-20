@@ -182,17 +182,18 @@
         .mobile-menu-btn {
             display: none;
         }
-        .admin-container {
-		  margin-left: 220px; /* 사이드바 공간 확보 */
-		  padding: 30px 40px;
-		  min-height: 100vh;
-		  background-color: #f9fafb;
-		  box-sizing: border-box;
-		  display: flex;
-		  flex-direction: column;
-		  gap: 30px;
-		  transition: margin-left 0.3s ease;
-		}
+       .admin-container {
+       		flex-grow: 1; /* 남은 공간 모두 차지 */
+            margin-left: 220px;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+		
 		/* 768px 이하: 사이드바 숨기거나 오버레이로 전환 시 */
 		@media (max-width: 768px) {
 		  .admin-container {

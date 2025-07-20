@@ -106,10 +106,64 @@ main {
 	font-weight: bold;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
+}
+
+.table-header .header-left {
+	display: flex;
+	align-items: center;
+}
+
+.table-header .header-right {
+	display: flex;
+	align-items: center;
+	gap: 15px;
 }
 
 .table-header input[type="checkbox"] {
 	margin-right: 10px;
+}
+
+.sort-controls {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.sort-controls label {
+	font-size: 13px;
+	color: #666;
+	font-weight: normal;
+}
+
+.sort-controls select {
+	padding: 4px 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 13px;
+	background-color: white;
+	min-width: 100px;
+}
+
+.items-per-page {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.items-per-page label {
+	font-size: 13px;
+	color: #666;
+	font-weight: normal;
+}
+
+.items-per-page select {
+	padding: 4px 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 13px;
+	background-color: white;
+	min-width: 70px;
 }
 
 .table-columns {
