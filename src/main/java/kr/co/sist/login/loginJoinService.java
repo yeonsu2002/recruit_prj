@@ -272,7 +272,7 @@ public class loginJoinService {
         return ce;
     }
     
-    
+     
     //이메일 중복 체크
     public boolean chkEmailDupl(String email) {
     	return ur.existsById(email);
