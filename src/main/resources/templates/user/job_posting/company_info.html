@@ -280,11 +280,9 @@
     if (heartIcon.textContent === '🤍') {
       heartIcon.textContent = '❤️';  // 빨간 하트로 변경
       heartIcon.classList.add('liked');  // 빨간색 적용
-      alert('관심 기업에 추가되었습니다!', 'success');
     } else {
       heartIcon.textContent = '🤍';  // 빈 하트로 변경
       heartIcon.classList.remove('liked');  // 빨간색 제거
-      alert('관심 기업에서 제거되었습니다.', 'success');
     }
   });
  });

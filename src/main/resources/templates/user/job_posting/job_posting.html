@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 const totalButton = document.querySelector('.position-button[data-position="전체"]');
                 if (totalButton.classList.contains('active')) {
-                    alert('전체를 선택한 경우 다른 직무는 선택할 수 없습니다.');
+                	totalButton.classList.remove('active');
                     return;
                 }
 
