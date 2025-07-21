@@ -722,12 +722,7 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                 
                 <!-- 기술 스택 출력 -->
                 <div class="stack-name">
-                    <span th:if="${job.techStacks != null and !job.techStacks.isEmpty()}">
-                        <span th:each="stack, iterStat : ${job.techStacks}">
-                            <span th:text="${stack}"></span>
-                        </span>
-                    </span>
-                    <span th:if="${job.techStacks == null or job.techStacks.isEmpty()}">기술스택 없음</span>
+                  <span th:text="${job != null} ? ${job.techNames} : ''"></span>
                 </div>
                 
                 <div class="position-name" th:text="${job.positionName}">직무</div>

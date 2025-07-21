@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기 인력</title>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<link rel="stylesheet" th:href="@{/user/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
+  <style>
+    .review-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 10px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    .star-rating span {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: lightgray;
+    }
+    .star-rating .selected {
+      color: gold;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      resize: vertical;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const stars = document.querySelectorAll('.star-rating span');
+      const ratingInput = document.getElementById('ratingInput');
+
+      stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          const rating = index + 1;
+          ratingInput.value = rating;
+
+          stars.forEach((s, i) => {
+            s.classList.toggle('selected', i < rating);
+          });
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div th:replace="~{fragments/header :: header}"></div>
+  </header>
+
+    <main>
+    <div class="review-container">
+      <h2>삼성전자 후기 작성</h2> <!-- 기업명 하드코딩 -->
+      <form action="/user/job_posting/review/write" method="post">
+        <input type="hidden" name="companyId" value="1001" /> <!-- 회사 ID 하드코딩 -->
+        <input type="hidden" name="rating" id="ratingInput" value="0" />
+
+        <div class="form-group">
+          <label>별점</label>
+          <div class="star-rating">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pros">장점</label>
+          <textarea id="pros" name="pros" placeholder="이 회사의 장점은 무엇인가요?" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="cons">단점</label>
+          <textarea id="cons" name="cons" placeholder="아쉬웠던 점이나 개선되었으면 하는 점은?" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="summary">총평 (한줄평)</label>
+          <input type="text" id="summary" name="summary" placeholder="한 줄 요약을 적어주세요." class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="anonymous" value="true" />
+            익명으로 작성
+          </label>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">후기 등록</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+  </footer>
+</body>
+</html>

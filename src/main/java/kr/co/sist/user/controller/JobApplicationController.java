@@ -49,7 +49,7 @@ public class JobApplicationController {
         	
         	
         	 JobPostDTO jobPost = jps.findById(jobPostingSeq);
-           if (jobPost.isExpired()) {
+           if (jobPost.getIsEnded().equals("Y")) {
                return ResponseEntity
                    .status(HttpStatus.BAD_REQUEST)
                    .body("마감된 공고입니다. 지원할 수 없습니다.");

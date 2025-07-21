@@ -27,11 +27,6 @@ public class JobPostingService {
           jobList = jpm.selectJobPostingsBySeq(jobPostingSeq); // 단건 조회 (리스트 형태)
       }
 
-      // 각 공고에 대해 기술스택 설정
-      for (JobPostDTO job : jobList) {
-          List<String> techStacks = jpm.selectTechStacksByJobPostingSeq(job.getJobPostingSeq());
-          job.setTechStacks(techStacks);
-      }
 
       return jobList;
   }
@@ -49,9 +44,6 @@ public class JobPostingService {
 
       JobPostDTO job = results.get(0);
 
-      // 기술스택 설정
-      List<String> techStacks = jpm.selectTechStacksByJobPostingSeq(jobPostingSeq);
-      job.setTechStacks(techStacks);
 
       return job;
   }

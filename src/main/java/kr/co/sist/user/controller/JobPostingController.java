@@ -106,4 +106,11 @@ public class JobPostingController {
     public String review() {
         return "user/job_posting/review";
     }
+    
+    //기업리뷰
+    @GetMapping("/user/job_posting/review_write")
+    public String reviewWrite() {
+    	return "user/job_posting/review_write";
+    }
+    
 }

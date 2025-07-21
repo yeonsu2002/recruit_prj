@@ -130,11 +130,10 @@
             gap: 6px;
             margin: 6px 8px 6px 0;
             padding: 8px 16px;
-            background: #00E00B;
             border: 1px solid #00E00B;
             border-radius: 20px;
             font-size: 14px;
-            color: white;
+            color: black;
             cursor: pointer;
             transition: all 0.2s;
         }

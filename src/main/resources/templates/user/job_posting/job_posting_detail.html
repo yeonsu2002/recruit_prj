@@ -207,9 +207,7 @@ $(document).ready(function () {
             <div class="stack">
                 <h3 class="section-title" style="font-size: 20px;">기술스택</h3>
                 <div class="tech-stack-container">
-                    <th:block th:each="stack : ${jDto.techStacks}">
-                        <span class="tech-stack-tag" th:text="${stack}"></span>
-                    </th:block>
+                       <span class="tech-stack-tag" th:text="${jDto != null} ? ${jDto.techNames} : ''"></span>
                 </div>
             </div>
 
@@ -250,21 +248,13 @@ $(document).ready(function () {
             </div>
 
            <div class="company-intro">
-    <h2 th:utext="${jDto.corpInfo}"><strong>기업소개</strong></h2>
+    <h2><strong>기업소개</strong></h2><br><br>
+    <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2>
     
     <div class="company-content">
-        <img src="/img/company_sample.jpg" class="company-image" />
+       <img th:if="${jDto != null}" th:src="@{${jDto.corpImg}}" alt="회사 이미지"/>
         
-        <div class="company-description">
-            저희 테크노베이션은 혁신적인 기술과 창의적인 아이디어로 디지털 혁신을 이끌어가는 IT 기업입니다. 
-            2021년 설립 이후 지속적인 성장을 이어가고 있으며, 고객의 니즈를 정확히 파악하고 최적의 솔루션을 제공하기 위해 끊임없이 노력하고 있습니다.
-            <br><br>
-            직원들의 성장과 발전을 위한 다양한 프로그램을 운영하며, 자유롭고 수평적인 조직문화를 추구합니다. 
-            개발자들이 최고의 퍼포먼스를 발휘할 수 있도록 최신 개발 환경과 도구를 제공하고 있으며, 
-            지속적인 학습과 성장을 지원하는 교육 프로그램도 운영하고 있습니다.
-            <br><br>
-            함께 성장하며 더 나은 미래를 만들어갈 동료를 찾고 있습니다.
-        </div>
+        <div class="company-description" th:text="${jDto.corpInfo}"></div>
     </div>
 </div>
         </div>
@@ -288,21 +278,20 @@ $(document).ready(function () {
         <div class="company-info-section">
             <div class="info-item">
                 <span class="label">업력</span>
-                <span class="value">5년차 (2021년 설립)</span>
+                <span class="value" th:text="${jDto.corpCreatedAt}"></span>
             </div>
         </div>
 
         <!-- 마감일 체크해서 지원 버튼 비활성화 -->
-        <button class="floating-apply-btn" 
-                id="applyBtn" 
-                th:disabled="${jDto.expired}" 
-                th:text="${jDto.expired ? '마감된 공고' : '지원하기'}"
-                th:classappend="${jDto.expired ? ' disabled' : ''}">
-            지원하기
-        </button>
-
+       <button class="floating-apply-btn" 
+        id="applyBtn" 
+        th:disabled="${jDto.isEnded == 'Y'}" 
+        th:text="${jDto.isEnded == 'Y' ? '마감된 공고' : '지원하기'}"
+        th:classappend="${jDto.isEnded == 'Y' ? ' disabled' : ''}">
+		    지원하기
+		</button>
+		
      <div class="floating-actions">
-	    <!-- id만 다른 이름으로 변경 -->
 	    <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}" />
 	
 	    <button class="floating-action-btn" id="scrapBtn">
