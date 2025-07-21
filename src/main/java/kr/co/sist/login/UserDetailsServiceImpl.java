@@ -30,10 +30,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		UserEntity userEntity = userRepository.findById(email)
 															.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+		System.out.println("loadUserByUsername entity디버깅 : " + userEntity);
 		
 		UserDTO userDTO = UserDTO.from(userEntity);
 		
-		System.out.println("loadUserByUsername 디버깅 : " + userDTO.getActiveStatus());
+		System.out.println("loadUserByUsername dto디버깅 : " + userDTO.getActiveStatus());
 		//운영자에 의해 제재당하였을 때. 
 		if(userDTO.getActiveStatus() == 1) {
 			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다.");
