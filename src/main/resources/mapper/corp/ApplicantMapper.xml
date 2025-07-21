@@ -7,22 +7,31 @@
 <mapper namespace="kr.co.sist.corp.mapper.ApplicantMapper">
 
 	<!-- 해당 회사의 모든 지원자 불러오기 -->
-	<select id="selectAllApplicant" parameterType="long"
-		resultType="corpApplicantDTO">
-		select ja.job_application_seq, r.resume_seq,
+	<select id="selectAllApplicant"
+		parameterType="corpAllicantSearchDTO" resultType="corpApplicantDTO">
+		select
+		ja.job_application_seq, r.resume_seq,
 		jp.job_posting_seq,
 		ja.application_status, ja.pass_stage,
-		ja.application_date, ja.is_read, r.career_type, r.title,
+		ja.application_date, ja.is_read,
+		r.career_type, r.title,
 		jp.posting_title, jp.corp_no,
 		m.name
-		from JOB_APPLICATION ja
+		from
+		JOB_APPLICATION ja
 		join
-		JOB_POSTING jp on ja.job_posting_seq = jp.job_posting_seq
+		JOB_POSTING jp on ja.job_posting_seq =
+		jp.job_posting_seq
 		join resume r
 		on ja.resume_seq = r.resume_seq
-		join member m on r.email = m.email
+		join
+		member m on r.email = m.email
 		where jp.corp_no = #{corpNo}
-		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
+		ORDER BY
+		TO_DATE(ja.application_date,
+		'YYYY-MM-DD HH24:MI:SS') desc
+		offset
+		#{offSet} ROWS FETCH NEXT #{size} ROWS only
 	</select>
 
 	<!-- 검색 조건에 맞는 지원자 불러오기 -->
@@ -61,7 +70,90 @@
 		<if test="passStage != 4">
 			and ja.pass_stage = #{passStage}
 		</if>
-		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
+		<if test="keyword != null and keyword.trim() != ''">
+			AND (
+			m.name LIKE '%' || #{keyword} || '%'
+			OR
+			jp.posting_title LIKE '%' || #{keyword} || '%'
+			OR r.title LIKE '%' ||
+			#{keyword} || '%'
+			)
+		</if>
+		<choose>
+			<when test="sortBy == 'old'">
+				ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD
+				HH24:MI:SS')
+			</when>
+			<when test="sortBy == 'nameUp'">
+				ORDER BY m.name
+			</when>
+			<when test="sortBy == 'nameDown'">
+				ORDER BY m.name desc
+			</when>
+			<otherwise>
+				ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD
+				HH24:MI:SS') desc
+			</otherwise>
+		</choose>
+		offset #{offSet} ROWS FETCH NEXT #{size} ROWS only
+	</select>
+
+	<!-- 해당 회사의 모든 지원자 수 -->
+	<select id="selectAllApplicantCnt" parameterType="long"
+		resultType="int">
+		SELECT count(*)
+		FROM job_application ja
+		JOIN job_posting jp
+		ON ja.job_posting_seq = jp.JOB_POSTING_SEQ
+		WHERE jp.CORP_NO =
+		#{corp_no}
+	</select>
+
+	<!-- 검색 조건에 맞는 총 지원자 수 -->
+	<select id="selectApplicantCnt"
+		parameterType="corpAllicantSearchDTO" resultType="int">
+		select count(*)
+		from
+		JOB_APPLICATION ja
+		join JOB_POSTING jp on
+		ja.job_posting_seq =
+		jp.job_posting_seq
+		join resume r on ja.resume_seq =
+		r.resume_seq
+		join
+		member m on r.email = m.email
+		where jp.corp_no =
+		#{corpNo}
+		<choose>
+			<when test="postingStatus == 'progress'">
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &gt;=
+				sysdate
+			</when>
+			<when test="postingStatus == 'closed'">
+				and to_date(jp.posting_end_dt, 'yyyy-mm-dd') &lt;
+				sysdate
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<if test="postingTitle != 0">
+			and jp.job_posting_seq = #{postingTitle}
+		</if>
+		<if test="applicationStatus != 3">
+			and ja.application_status = #{applicationStatus}
+		</if>
+		<if test="passStage != 4">
+			and ja.pass_stage = #{passStage}
+		</if>
+		<if test="keyword != null and keyword.trim() != ''">
+			AND (
+			m.name LIKE '%' || #{keyword} || '%'
+			OR
+			jp.posting_title LIKE '%' || #{keyword} || '%'
+			OR r.title LIKE '%' ||
+			#{keyword} || '%'
+			)
+		</if>
+
 	</select>
 
 	<!-- 해당 회사의 진행중인 공고 불러오기 -->
@@ -94,25 +186,35 @@
 	</select>
 
 	<!-- 해당 지원서 가져오기 -->
-	<select id="selectOneApplicant" parameterType="corpApplicantDTO" resultType="corpApplicantDTO">
-		select JOB_APPLICATION_SEQ, RESUME_SEQ, JOB_POSTING_SEQ, APPLICATION_STATUS, APPLICATION_DATE, INTERVIEW_DATE, IS_READ, PASS_STAGE
+	<select id="selectOneApplicant" parameterType="corpApplicantDTO"
+		resultType="corpApplicantDTO">
+		select JOB_APPLICATION_SEQ, RESUME_SEQ, JOB_POSTING_SEQ,
+		APPLICATION_STATUS, APPLICATION_DATE, INTERVIEW_DATE, IS_READ,
+		PASS_STAGE
 		from job_application
-		where job_posting_seq = #{jobPostingSeq} and resume_seq = #{resumeSeq}
+		where job_posting_seq = #{jobPostingSeq}
+		and resume_seq = #{resumeSeq}
 	</select>
-	
+
 	<!-- 해당 지원서 읽음 처리 -->
-	<update id="updateResumeReadStatus" parameterType="corpApplicantDTO">
+	<update id="updateResumeReadStatus"
+		parameterType="corpApplicantDTO">
 		UPDATE job_application
-		SET application_status = 1, is_read = 'Y'
-		WHERE resume_seq = #{resumeSeq} AND is_read = 'N' AND job_posting_seq = #{jobPostingSeq}
+		SET application_status = 1,
+		is_read = 'Y'
+		WHERE resume_seq = #{resumeSeq} AND is_read = 'N' AND
+		job_posting_seq = #{jobPostingSeq}
 	</update>
 
 	<!-- 해당 지원서 지원 합격 상태 변경 -->
-	<update id="updateResumePassStage" parameterType="corpApplicantDTO">
+	<update id="updateResumePassStage"
+		parameterType="corpApplicantDTO">
 		UPDATE job_application
 		SET pass_stage = #{passStage}
 		WHERE resume_seq = #{resumeSeq} AND job_posting_seq = #{jobPostingSeq}
 	</update>
+
+
 
 
 </mapper>
