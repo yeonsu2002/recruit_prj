@@ -177,10 +177,12 @@ WHERE rs.corp_no = #{corpNo}
 ORDER BY r.resume_seq DESC
 </select>
 
+<!-- 전체인재 총 건수 --> 
 <select id="selectTalentTotalCount" resultType="int">
     SELECT COUNT(*) FROM RESUME WHERE is_public = 'Y'
 </select>
 
+<!-- 전체인재 리스트 -->
 <select id="selectPaginatedTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
 SELECT * FROM (
     SELECT inner_query.*, ROWNUM rn
@@ -302,7 +304,7 @@ WHERE rn &gt; #{offset}
 </select>
 
 
-
+<!-- 스크랩인재 리스트 -->
 <select id="selectPaginatedScrappedTalents" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
 SELECT * FROM (
     SELECT inner_query.*, ROWNUM rn
@@ -370,6 +372,7 @@ SELECT * FROM (
 WHERE rn > #{offset}
 </select>
 
+<!-- 스크랩한 인재 총 건수 -->
 <select id="countScrappedTalents" resultType="int">
     SELECT COUNT(*)
     FROM RESUME_SCRAP rs
@@ -378,7 +381,66 @@ WHERE rn > #{offset}
       AND rs.is_scrapped = 'Y'
 </select>
 
-<!--  -->
+<!-- 면접 제안 -->
+<insert id="insertInterviewProposal" parameterType="kr.co.sist.corp.dto.InterviewOfferDTO">
+    INSERT INTO MAIL (
+        mail_seq,
+        corp_no,
+        email,
+        mail_title,
+        mail_content,
+        created_at,
+        is_read,
+        readed_at,
+        mail_type
+    ) VALUES (
+        MAIL_SEQ.NEXTVAL,      -- 시퀀스 이름
+        #{corpNo},
+        #{email},
+        #{mailTitle},
+        #{mailContent},
+        TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'), -- created_at
+        'N',         -- 읽지 않음 상태
+        NULL,        -- 읽은 시각 없음
+        'OFFER'            -- 메일 유형: 예를 들어 면접 제안 = 1
+    )
+</insert>
+
+
+<!-- 이력서 열람 기록 존재 여부 확인 -->
+<select id="checkResumeViewExist" resultType="int">
+  SELECT COUNT(*) 
+  FROM open_resume 
+  WHERE RESUME_SEQ = #{resumeSeq}
+    AND CORP_NO = #{corpNo}
+</select>
+
+<!-- 이력서 열람 기록 삽입 -->
+<insert id="insertResumeViewLog">
+  INSERT INTO OPEN_RESUME (RESUME_SEQ, CORP_NO, READ_AT)
+  VALUES (#{resumeSeq}, #{corpNo}, TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'))
+</insert>
+
+<!-- 이력서 정보 -->
+<select id="selectResumeInfo" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+  SELECT M.EMAIL, M.NAME
+  FROM RESUME R
+  JOIN MEMBER M ON R.EMAIL = M.EMAIL
+  WHERE R.RESUME_SEQ = #{resumeSeq}
+</select>
+
+
+<insert id="insertMail" parameterType="kr.co.sist.corp.dto.MailDTO">
+  INSERT INTO MAIL (
+    CORP_NO, EMAIL, MAIL_TITLE, MAIL_CONTENT,
+    CREATED_AT, IS_READ, READED_AT, IS_OFFERED
+  )
+  VALUES (
+    #{corpNo}, #{email}, #{mailTitle}, #{mailContent},
+    #{createdAt}, #{isRead}, #{readedAt, jdbcType=VARCHAR}, #{isOffered}
+  )
+</insert>
+
 
 
 </mapper>
