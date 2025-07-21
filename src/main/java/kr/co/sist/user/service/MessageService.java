@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.MessageDTO;
+import kr.co.sist.user.dto.MessageSearchDTO;
 import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.entity.MessageEntity;
 import kr.co.sist.user.entity.UserEntity;
@@ -62,15 +63,22 @@ public class MessageService {
 
 	}//addMessage
 
-	//특정 유저의 모든 메일 목록 가져오기
-	public List<MessageDTO> searchMyMessage(String email) {
+	//특정 유저의 모든 메일 가져오기
+	public List<MessageDTO> searchMyAllMessage(String email){
+		
+		return messageMapper.selectMyAllMessage(email);
+	
+	}
+	
+	//특정 유저의 모든 메일 목록 가져오기(페이징 처리)
+	public List<MessageDTO> searchMyMessage(MessageSearchDTO searchDTO) {
 
-		List<MessageDTO> messageList = messageMapper.selectMyMessage(email);
+		List<MessageDTO> messageList = messageMapper.selectMyMessage(searchDTO);
 		for(MessageDTO message : messageList) {
 			
 			//날짜 가공
 			String raw = message.getCreatedAt(); // 예: "2025-07-15T23:20:14"
-      String formatted = raw.replace("T", " ").substring(0, 16); // "2025-07-15 23:20"
+      String formatted = raw.replace("T", " ").substring(2, 16); // "2025-07-15 23:20"
       message.setCreatedAt(formatted);
 		}
 		return messageList;
@@ -103,5 +111,24 @@ public class MessageService {
 		statistics.setPosition((int)offeredCnt);
 		
 		return statistics;
+	}
+	
+	//내 모든 메시지 개수
+	public int cntMyAllMesage(String eamil) {
+		
+		return messageMapper.cntMyAllMessage(eamil);
+	}
+	
+	//검색된 내 메시지 개수
+	public int cntMyMessage(MessageSearchDTO searchDTO) {
+		
+		return messageMapper.cntMyMessage(searchDTO);
+	}
+	
+	//messageSeq로 메시지 객체 한개 반환
+	public MessageDTO searchOneMessage(int messageSeq) {
+		
+		return messageMapper.selectOneMessage(messageSeq);
+		
 	}
 }

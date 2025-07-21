@@ -21,6 +21,7 @@ public class MessageDTO {
 	private String isOffered;
 	private String isRead;
 	private String readedAt;
-	
-	private String corpNm; //company
+
+	private String corpNm; // company
+
 }

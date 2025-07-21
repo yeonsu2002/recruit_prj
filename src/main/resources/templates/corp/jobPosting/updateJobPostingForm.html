@@ -136,6 +136,8 @@ function getStackList() {
 
 	/**
 	 * 기술스택 추가 함수
+	 * @param {string} stackName - 스택 이름
+	 * @param {number} stackSeq - 스택 시퀀스
 	 */
 	function addTechStack(stackName, stackSeq) {
 		// 중복 방지 체크
@@ -199,7 +201,6 @@ function getStackList() {
 			})
 			.then(data => {
 				suggestedList.innerHTML = "";
-				
 
 				// 검색어에 맞는 데이터 필터링
 				const filteredData = data.filter(item =>
@@ -237,6 +238,12 @@ function getStackList() {
 			});
 	});
 	
+	document.querySelector("#techStackSearch").addEventListener("blur", function () {
+		// 약간 딜레이를 줘야 클릭 이벤트가 먼저 발생한 뒤 사라지게 할 수 있음
+		setTimeout(() => {
+			suggestedList.style.display = 'none';
+		}, 100);
+	});
 }
 
 /**
@@ -298,9 +305,10 @@ function submitJobPostingForm() {
 	try {
 		// 폼 데이터 수집
 		const formData = collectFormData();
+		console.log(formData);
 		
 		// JSON 형태로 서버에 전송
-		fetch('/corp/uploadJobPosting', {
+		fetch('/corp/updateJobPosting', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json', //내가 보내는 요청의 형식 (예: JSON을 보내는 중)
@@ -316,14 +324,14 @@ function submitJobPostingForm() {
 			return response.text(); // 서버에서 문자열 응답을 받음
 		})
 		.then(data => {
-			console.log('공고 등록 성공:', data);
-			alert('채용공고가 성공적으로 등록되었습니다!');
+			console.log('공고 수정 성공:', data);
+			alert('채용공고가 성공적으로 수정되었습니다!');
 			// 성공 시 리다이렉트 또는 페이지 이동
 			location.href = "/corp/main";
 		})
 		.catch(error => {
-			console.error('공고 등록 에러:', error);
-			alert('공고 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+			console.error('공고 수정 에러:', error);
+			alert('공고 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
 		});
 		
 	} catch (error) {
@@ -339,13 +347,14 @@ function submitJobPostingForm() {
 function collectFormData() {
 	// 기본 폼 데이터 수집
 	const formData = {
+		jobPostingSeq : document.getElementById('jobPostingSeq').value,
 		postingTitle: document.getElementById('postingTitle').value,
 		positionSeq: document.getElementById('positionSeq').value,
 		expLevel: document.getElementById('expLevel').value,
 		eduLevel: document.getElementById('eduLevel').value,
 		employType: document.getElementById('employType').value,
 		recruitCnt: parseInt(document.getElementById('recruitCnt').value),
-		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value.replace( /,/g, '')) : 0,
+		salary: document.getElementById('salary').value ? parseInt(document.getElementById('salary').value.replace(/,/g, '')) : 0,
 		workday: document.getElementById('workday').value,
 		workStartTime: document.getElementById('workStartTime').value,
 		workEndTime: document.getElementById('workEndTime').value,
@@ -386,7 +395,7 @@ function getUserCorpNo() {
 }
 
 /**
- * 진행률 표시 기능 초기화 (클로드 선생 쎼쎼)
+ * 진행률 표시 기능 초기화
  */
 function initProgressTracking() {
 	const inputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
@@ -490,10 +499,9 @@ function initSalaryFormatting() {
 
 <div class="job-posting-container">
     <div class="job-posting-header">
-        <h1 class="job-posting-title">채용공고 등록</h1>
+        <h1 class="job-posting-title">채용공고 수정</h1>
         <p class="job-posting-subtitle">우수한 인재를 찾아보세요. 정확하고 상세한 정보로 더 많은 지원자를 만나보세요.</p>
     </div>
-
     <div class="job-posting-main">
         <div class="job-posting-form">
             <form id="frm" th:action="@{/corp/uplaodJobPosting}" method="post" enctype="application/x-www-form-urlencoded">
@@ -503,14 +511,15 @@ function initSalaryFormatting() {
                     <h2 class="section-title">📋 기본 정보</h2>
                     
                     <div class="form-group">
+                    	<input type="hidden" id="jobPostingSeq" name="jobPostingSeq" th:value="${posting.jobPostingSeq}">
                         <label class="form-label required">공고 제목</label>
-                        <input type="text" id="postingTitle" name="postingTitle" class="form-input" placeholder="예: [신입/경력] 백엔드 개발자 모집" required>
+                        <input type="text" id="postingTitle" name="postingTitle" class="form-input" placeholder="예: [신입/경력] 백엔드 개발자 모집" th:value="${posting.postingTitle}" required>
                         <div class="form-help">지원자들이 가장 먼저 보게 되는 제목입니다. 명확하고 매력적으로 작성해주세요.</div>
                     </div>
 
                     <div class="form-group position-box">
                         <label class="form-label required">포지션</label>
-                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
+                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;"  autocomplete="off">
                         <ul id="resultBox" class="list-group position-absolute" style="display: none" ></ul>
                         <input type="hidden" id="positionSeq"> <!-- hidden으로 -->
                     </div>
@@ -528,7 +537,7 @@ function initSalaryFormatting() {
 
                     <div class="form-group">
                         <label class="form-label required">경력 요구사항</label>
-                        <select name="expLevel" id="expLevel" class="form-select" required>
+                        <select name="expLevel" id="expLevel" class="form-select"  required>
                             <option value="none" selected readonly>경력 수준을 선택하세요</option>
                             <option value="전체">전체 (신입/경력 무관)</option>
                             <option value="신입">신입 (경력 없음)</option>
@@ -547,7 +556,7 @@ function initSalaryFormatting() {
 
                     <div class="form-group">
                         <label class="form-label required">학력 조건</label>
-                        <select name="eduLevel" id="eduLevel" class="form-select" required>
+                        <select name="eduLevel" id="eduLevel" class="form-select"  required>
                             <option value="">학력 조건을 선택하세요</option>
                             <option value="무관">학력 무관</option>
                             <option value="고졸이상">고등학교 졸업 이상</option>
@@ -575,13 +584,13 @@ function initSalaryFormatting() {
 
                     <div class="form-group">
                         <label class="form-label required">모집 인원</label>
-                        <input type="number" id="recruitCnt" name="recruitCnt" class="form-input" placeholder="모집 인원 수" min="1" required>
+                        <input type="number" id="recruitCnt" name="recruitCnt" class="form-input" placeholder="모집 인원 수" min="1" th:value="${posting.recruitCnt}" required>
                         <div class="form-help">채용 예정 인원 수를 입력해주세요.</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">급여</label>
-                        <input type="text" id="salary" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 원)" >
+                        <input type="text" id="salary" name="salary" class="form-input" placeholder="연봉을 입력하세요 (단위: 원)" th:value="${posting.salary}" >
                         <div class="salary-info">
                             <span>회사내규를 원하실 경우 0을 입력해주세요.</span>
                         </div>
@@ -589,16 +598,16 @@ function initSalaryFormatting() {
 
                     <div class="form-group">
                         <label class="form-label">근무 요일</label>
-                        <input type="text" id="workday" name="workday" class="form-input" placeholder="예: 월~금, 주 5일">
+                        <input type="text" id="workday" name="workday" class="form-input" placeholder="예: 월~금, 주 5일" th:value="${posting.workday}">
                         <div class="form-help">근무하는 요일을 입력해주세요.</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">근무 시간</label>
                         <div class="time-range">
-                            <input type="time" id="workStartTime" name="workStartTime" class="form-input" value="09:00">
+                            <input type="time" id="workStartTime" name="workStartTime" class="form-input" th:value="${posting.workStartTime}">
                             <span>~</span>
-                            <input type="time" id="workEndTime" name="workEndTime" class="form-input" value="18:00">
+                            <input type="time" id="workEndTime" name="workEndTime" class="form-input" th:value="${posting.workEndTime}">
                         </div>
                         <div class="form-help">근무 시작 시간과 종료 시간을 설정해주세요.</div>
                     </div>
@@ -621,14 +630,14 @@ function initSalaryFormatting() {
                     <div class="form-group">
                         <label class="form-label required">근무지 주소</label>
                         <div class="zipcode-box">
-                            <input type="text" id="zipcode" name="zipcode" class="form-input" placeholder="우편번호" readonly>
+                            <input type="text" id="zipcode" name="zipcode" class="form-input" placeholder="우편번호" th:value="${posting.zipcode}" readonly>
                             <button type="button" id="openKakaoMap" class="btn btn-secondary">우편번호 찾기</button>
                         </div>
-                        <input type="text" id="roadAddress" name="roadAddress" class="form-input" placeholder="도로명 주소" readonly style="margin-bottom: 10px;">
-                        <input type="text" id="detailAddress" name="detailAddress" class="form-input" placeholder="상세 주소 (건물명, 층수 등)">
+                        <input type="text" id="roadAddress" name="roadAddress" class="form-input" placeholder="도로명 주소" th:value="${posting.roadAddress}" readonly style="margin-bottom: 10px;">
+                        <input type="text" id="detailAddress" name="detailAddress" class="form-input" placeholder="상세 주소 (건물명, 층수 등)" th:value="${posting.detailAddress}">
                         <div class="form-help">정확한 근무지 정보는 지원자들의 지원 결정에 중요한 요소입니다.</div>
-                        <input type="hidden" id="region" name="region">
-                        <input type="hidden" id="district" name="district">
+                        <input type="hidden" id="region" name="region" th:value="${posting.region}">
+                        <input type="hidden" id="district" name="district" th:value="${posting.district}">
                     </div>
                 </div>
 
@@ -659,15 +668,18 @@ function initSalaryFormatting() {
 - 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요
 
 📋 채용 절차
-- 서류 전형부터 최종 면접까지의 과정을 안내해주세요" required></textarea>
+- 서류 전형부터 최종 면접까지의 과정을 안내해주세요"
+						th:text="${posting.postingDetail}"
+						 required>
+						</textarea>
                     </div>
 
                     <div class="form-group">
-                    	<input type="hidden" id="postingStartDt" name="postingStartDt" value="">
+                    	<input type="hidden" id="postingStartDt" name="postingStartDt" value="";>
                         <label class="form-label required">공고 마감일</label>
                         <div class="date-range">
                             <div style="flex: 1;">
-                                <input type="date" id="postingEndDt" name="postingEndDt" class="form-input" required>
+                                <input type="date" id="postingEndDt" name="postingEndDt" class="form-input" th:value="${posting.postingEndDt}" required>
                             </div>
                         </div>
                         <div class="form-help">공고가 게시될 기간을 설정해주세요.</div>
@@ -678,7 +690,7 @@ function initSalaryFormatting() {
 
         <div class="job-posting-sidebar">
             <div class="sidebar-card">
-                <h3 class="sidebar-title">🚀 공고 등록</h3>
+                <h3 class="sidebar-title">🚀 공고 수정</h3>
                 
                 <div class="progress-indicator">
                     <div class="progress-bar">
@@ -687,7 +699,7 @@ function initSalaryFormatting() {
                     <div class="progress-text">0% 완료</div>
                 </div>
 
-                <button type="button" form="frm" id="submitFormBtn"  class="submit-btn">채용공고 등록하기</button>
+                <button type="button" form="frm" id="submitFormBtn"  class="submit-btn">채용공고 수정하기</button>
                 
                 <div class="preview-section">
                     <button type="button" class="preview-btn">미리보기</button>

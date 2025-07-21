@@ -7,14 +7,16 @@ import org.apache.ibatis.annotations.Mapper;
 import kr.co.sist.corp.dto.ApplicantDTO;
 import kr.co.sist.corp.dto.ApplicantSearchDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
-import kr.co.sist.user.dto.JobApplicationDTO;
 
 @Mapper
 public interface ApplicantMapper {
 
-	public List<ApplicantDTO> selectAllApplicant(long corpNo);
+	public List<ApplicantDTO> selectAllApplicant(ApplicantSearchDTO searchDTO);
 	
 	public List<ApplicantDTO> selectApplicant(ApplicantSearchDTO searchDTO);
+	
+	public int selectAllApplicantCnt(long corpNo);
+	public int selectApplicantCnt(ApplicantSearchDTO searchDTO);
 	
 	public List<JobPostingDTO> selectPostingProgress(long corpNo);
 	public List<JobPostingDTO> selectPostingClosed(long corpNo);
@@ -23,4 +25,5 @@ public interface ApplicantMapper {
 	public ApplicantDTO selectOneApplicant(ApplicantDTO applicantDTO);
 	public int updateResumeReadStatus(ApplicantDTO applicantDTO);
 	public int updateResumePassStage(ApplicantDTO applicantDTO);
+	
 }

@@ -19,8 +19,6 @@ function hideSubmenu() {
 
 //Thymeleaf의 js에서 사용하는 `[[...]]` 문법은 HTML 주석처럼 무시되지 않고, 브라우저로 보내지기 전에 서버에서 먼저 처리되기 때문입니다. 객체가 전달안되면 오류남
 
-document.querySelector('')
-
 
 
 
@@ -33,11 +31,17 @@ document.querySelector('')
 <div class="corp-main-container">
     <!-- 대시보드 헤더 -->
     <div class="corp-dashboard-header">
-        <div class="corp-welcome-text">
-            안녕하세요, <span class="corp-company-name">[기업명]</span>님
-        </div>
+    	<div id="userInfo" sec:authorize="hasRole('ROLE_USER')" >
+    		<h2>환영합니다</h2>  
+    		<h3>기업회원으로 <span style="color: #c9fe02;">로그인</span> 후 이용해주세요!</h3>
+    	</div>
+    	<div id="userInfo" sec:authorize="hasRole('ROLE_CORP')" >
+	        <div class="corp-welcome-text">
+	            <h2>안녕하세요, [<span class="corp-company-name" th:text="${user.email}"></span>]님</h2>
+	            <h3>효율적인 채용 관리로 최고의 인재를 찾아보세요! </h3>
+	        </div>
+    	</div>
         <div class="corp-dashboard-subtitle">
-            효율적인 채용 관리로 최고의 인재를 찾아보세요 <br>
             <hr>
             로그인 정보: 
             <br>

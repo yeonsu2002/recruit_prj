@@ -20,9 +20,9 @@ public class ApplicantService {
 	private final TalentPoolMapper talentPoolMapper;
 
 	// 해당 회사의 모든 지원자 찾기
-	public List<ApplicantDTO> searchAllApplicant(long corpNo) {
+	public List<ApplicantDTO> searchAllApplicant(ApplicantSearchDTO searchDTO) {
 
-		List<ApplicantDTO> applicantDTO = applicantMapper.selectAllApplicant(corpNo);
+		List<ApplicantDTO> applicantDTO = applicantMapper.selectAllApplicant(searchDTO);
 
 		return manufactureApplicantDTO(applicantDTO);
 	}// searchAllApplicant
@@ -162,5 +162,18 @@ public class ApplicantService {
 		applicantMapper.updateResumePassStage(applicantDTO);
 
 	}// modifyPassStage
+	
+	//해당 회사의 모든 지원자 수 가져오기
+	public int searchAllApplicantCnt(long corpNo) {
+		
+		return applicantMapper.selectAllApplicantCnt(corpNo);
+
+	}
+	
+	//검색 조건에 맞는 지원자 수 가져오기
+	public int searchApplicantCnt(ApplicantSearchDTO searchDTO) {
+		
+		return applicantMapper.selectApplicantCnt(searchDTO);
+	}
 
 }// class
