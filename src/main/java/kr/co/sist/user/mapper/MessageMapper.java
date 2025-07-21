@@ -18,4 +18,6 @@ public interface MessageMapper {
 	
 	public int cntMyAllMessage(String email);
 	public int cntMyMessage(MessageSearchDTO searchDTO);
+	
+	public MessageDTO selectOneMessage(int messageSeq);
 }

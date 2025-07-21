@@ -124,4 +124,11 @@ public class MessageService {
 		
 		return messageMapper.cntMyMessage(searchDTO);
 	}
+	
+	//messageSeq로 메시지 객체 한개 반환
+	public MessageDTO searchOneMessage(int messageSeq) {
+		
+		return messageMapper.selectOneMessage(messageSeq);
+		
+	}
 }

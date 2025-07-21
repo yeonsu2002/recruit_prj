@@ -29,18 +29,25 @@ document.addEventListener('DOMContentLoaded', function() {
 			movePage(nextPage)
 		}
 	});
-	
+
 	//각 필터 버튼 클릭시
 	document.querySelectorAll('.stats-item').forEach(item => {
-		item.addEventListener('click', function(){
+		item.addEventListener('click', function() {
 			const type = item.dataset.filter;
 			movePage(1, type);
 		});
 	});
-	
+
 	//검색 버튼 및 enter 버튼 클릭시
-	document.getElementById('search').addEventListener('click', function(){
+	document.getElementById('search').addEventListener('click', function() {
 		movePage(1);
+	});
+
+	document.getElementById('keyword').addEventListener('keydown', function(e) {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			movePage(1);
+		}
 	});
 
 	//메일 클릭시 메일 상세내용 뜨기
@@ -108,8 +115,56 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 
+
+	//읽음 처리 버튼 클릭
+	/*document.getElementById('markReadBtn').addEventListener('click', async function() {
+		let selectedCheckboxes = getCheckedCheckboxes();
+		let unreadSeq = [];
+
+		// 선택된 체크박스들 중에서 안읽은 메일들만 선별
+		selectedCheckboxes.forEach(checkbox => {
+			const mailItem = checkbox.closest('.application-item');
+			if (!mailItem.classList.contains('read-mail')) {
+				unreadSeq.push(checkbox.value);
+			}
+		});
+
+		if (unreadSeq.length == 0) return;
+
+		try {
+			const response = await fetch('/mypage/messages/' + unreadSeq, {
+				method: "PUT"
+			});
+			if (response.ok) {
+				selectedCheckboxes.forEach(checkbox => {
+					const mailItem = checkbox.closest('.application-item');
+					if (!mailItem.classList.contains('read-mail')) {
+						mailItem.classList.add('read-mail');
+					}
+				});
+			} else {
+				alert("읽음 처리에 실패했습니다.");
+			}
+		} catch {
+			console.error("에러 발생:", error);
+			alert("서버 오류가 발생했습니다.");
+		}
+
+	});
+*/
+	//안읽음 처리 버튼 클릭
+	document.getElementById('markUnreadBtn').addEventListener('click', function() {
+
+	});
+
+	//삭제 버튼 클릭
+	document.getElementById('deleteBtn').addEventListener('click', function() {
+
+	});
+
 });
 
+//페이지 이동
 function movePage(currentPage, type) {
 	const keyword = document.querySelector('input[name="keyword"]').value
 	const params = new URLSearchParams(location.search);
@@ -122,6 +177,15 @@ function movePage(currentPage, type) {
 	}
 
 	location.href = "/user/mypage/mail_list?" + params.toString();
+}
+
+// 체크된 체크박스들을 반환하는 함수 (기존 getCheckedValue 함수 수정)
+function getCheckedCheckboxes() {
+	let selectedCheckboxes = [];
+	document.querySelectorAll('.mail-item-checkbox:checked').forEach(checkbox => {
+		selectedCheckboxes.push(checkbox);
+	});
+	return selectedCheckboxes;
 }
 
 //메일 통계 업데이트 함수

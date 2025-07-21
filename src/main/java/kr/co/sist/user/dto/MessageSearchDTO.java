@@ -22,7 +22,7 @@ public class MessageSearchDTO {
 	private String sortBy;
 
 	// 페이징 관련
-	private int size = 5;
+	private int size = 10;
 	private int page = 1;
 
 	// 페이지 버튼 관련

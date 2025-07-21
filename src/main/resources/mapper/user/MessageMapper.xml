@@ -86,4 +86,11 @@ c.corp_nm LIKE '%' || #{keyword} || '%'
 </if>
 </select>
 
+<!-- messageSeq로 해당 메시지 반환 -->
+<select id="selectOneMessage" parameterType="int" resultType="userMessageDTO">
+select MESSAGE_SEQ, CORP_NO, EMAIL, MESSAGE_TITLE, MESSAGE_CONTENT, CREATED_AT, IS_READ, READED_AT, IS_OFFERED
+from message
+where message_seq = #{messageSeq}
+</select>
+
 </mapper>
