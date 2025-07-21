@@ -245,7 +245,7 @@ function updatePostingTable(postList) {
     
     if (!postList || postList.length === 0) {
         const trEmpty = document.createElement('tr');
-        trEmpty.innerHTML = `<td colspan='5' style="text-align: center;">조회 목록이 존재하지 않습니다. 새로운 공고를 등록해보세요!</td>`;
+        trEmpty.innerHTML = `<td colspan='5' style="text-align: center;">조회 목록이 존재하지 않습니다.</td>`;
         tbody.appendChild(trEmpty);
     } else {
 	    postList.forEach(post => {
@@ -334,9 +334,9 @@ function updatePostingCounts(data) {
 		<div class="get-posting-orderby"> <!-- 상단의 정렬 순서 -->
 			<div> 
 				<!-- 전체는 최신 등록순 -->
-				<input type="button" class="posting-subStatus subSelected" value="전체" id="odbSd" > |
-				<input type="button" class="posting-subStatus" value="마감일순" id="odbEd" > |
-				<input type="button" class="posting-subStatus" value="조회수순" id="odbVc" >
+				<input type="button" class="posting-subStatus subSelected" value="최신순" id="odbSd" > |
+				<input type="button" class="posting-subStatus" value="마감순" id="odbEd" > |
+				<input type="button" class="posting-subStatus" value="조회순" id="odbVc" >
 			</div>
 		</div>
 	</div> <!-- 상단 끝 -->

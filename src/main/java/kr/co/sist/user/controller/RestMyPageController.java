@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,17 +78,26 @@ public class RestMyPageController {
 	public void readMessage(@PathVariable int messageSeq) {
 
 		// 메일 읽음 처리
-		messageServ.readMessage(messageSeq);
+		messageServ.toggleReadMessage(messageSeq);
 
 	}// readMessage
 
-	// 체크된 메일들 읽음 처리
+	// 체크된 메일들 읽음 여두 토글처리
 	@PutMapping("/mypage/messages/{selectedSeq}")
 	public void readMessages(@PathVariable List<Integer> selectedSeq) {
 
-		// 안읽은 메일들이면 읽음 처리
 		for (int messageSeq : selectedSeq) {
-			messageServ.readMessage(messageSeq);
+			messageServ.toggleReadMessage(messageSeq);
 		}
 	}// readMessages
-}//class
+	
+	//체크된 메일들 삭제
+	@DeleteMapping("/mypage/messages/{selectedSeq}")
+	public void removeMessages(@PathVariable List<Integer> selectedSeq) {
+		
+		for(int messageSeq : selectedSeq) {
+			messageServ.removeMessage(messageSeq);
+		}
+	}//deleteMessages
+	
+}// class

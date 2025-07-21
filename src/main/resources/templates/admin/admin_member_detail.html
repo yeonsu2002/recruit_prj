@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="shortcut icon" href="http://localhost/images/favicon.png"/>
+</head>
+<body>
+<table border="1">
+<tbody>
+<tr>
+<td>성명</td>
+<td th:text="${member.name}"></td>
+<td>이메일</td>
+<td th:text="${member.email}"></td>
+</tr>
+<tr>
+<td>역활</td>
+<td th:text="${member.role}"></td>
+<td>활동상태</td>
+<td th:text="${member.activeStatus}"></td>
+</tr>
+<tr>
+<td>가입일자</td>
+<td th:text="${member.regDt}"></td>
+<td>생일</td>
+<td th:text="${member.birth}"></td>
+</tr>
+<tr>
+<td>전화번호</td>
+<td th:text="${member.phone}"></td>
+<td>성별</td>
+<td th:text="${member.gender}"></td>
+</tr>
+
+<tr>
+<td>주소</td>
+<td colspan="3" th:text="${member.road_address}+' '+${member.detail_address}"></td>
+</tr>
+</tbody>
+</table>
+<a herf="/admin_member2" text="이력서">이력서보기</a>
+<!-- jquery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+
+});
+
+</script>
+</body>
+</html>

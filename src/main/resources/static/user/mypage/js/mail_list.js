@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				if (response.ok) {
 					item.classList.add('read-mail');
-					updateCounts();
+					updateCounts(1, 'toRead')
 				} else {
 					alert("서버 응답 오류")
 				}
@@ -117,22 +117,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 	//읽음 처리 버튼 클릭
-	/*document.getElementById('markReadBtn').addEventListener('click', async function() {
+	document.getElementById('markReadBtn').addEventListener('click', async function() {
 		let selectedCheckboxes = getCheckedCheckboxes();
-		let unreadSeq = [];
+		let selectedSeq = [];
 
 		// 선택된 체크박스들 중에서 안읽은 메일들만 선별
 		selectedCheckboxes.forEach(checkbox => {
 			const mailItem = checkbox.closest('.application-item');
 			if (!mailItem.classList.contains('read-mail')) {
-				unreadSeq.push(checkbox.value);
+				selectedSeq.push(checkbox.value);
 			}
 		});
 
-		if (unreadSeq.length == 0) return;
+		if (selectedSeq.length == 0) return;
 
 		try {
-			const response = await fetch('/mypage/messages/' + unreadSeq, {
+			const response = await fetch('/mypage/messages/' + selectedSeq, {
 				method: "PUT"
 			});
 			if (response.ok) {
@@ -142,6 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						mailItem.classList.add('read-mail');
 					}
 				});
+				
+				updateCounts(selectedSeq.length, 'toRead')
 			} else {
 				alert("읽음 처리에 실패했습니다.");
 			}
@@ -151,15 +153,70 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 	});
-*/
-	//안읽음 처리 버튼 클릭
-	document.getElementById('markUnreadBtn').addEventListener('click', function() {
 
+	//안읽음 처리 버튼 클릭
+	document.getElementById('markUnreadBtn').addEventListener('click', async function() {
+		let selectedCheckboxes = getCheckedCheckboxes();
+		let selectedSeq = [];
+
+		//읽은 메일들만 선별
+		selectedCheckboxes.forEach(checkbox => {
+			const mailItem = checkbox.closest('.application-item');
+			if (mailItem.classList.contains('read-mail')) {
+				selectedSeq.push(checkbox.value);
+			}
+		});
+
+		if (selectedSeq.length == 0) return;
+
+		try {
+			const response = await fetch('/mypage/messages/' + selectedSeq, {
+				method: "PUT"
+			});
+			if (response.ok) {
+				selectedCheckboxes.forEach(checkbox => {
+					const mailItem = checkbox.closest('.application-item');
+					if (mailItem.classList.contains('read-mail')) {
+						mailItem.classList.remove('read-mail');
+					}
+				});
+				
+				updateCounts(selectedSeq.length, 'unRead')
+			} else {
+				alert("안읽음 처리에 실패했습니다.");
+			}
+		} catch {
+			console.error("에러 발생:", error);
+			alert("서버 오류가 발생했습니다.");
+		}
 	});
 
 	//삭제 버튼 클릭
-	document.getElementById('deleteBtn').addEventListener('click', function() {
+	document.getElementById('deleteBtn').addEventListener('click', async function() {
+		let selectedSeq = getCheckedCheckboxes().map(checkbox => checkbox.value);
 
+		if (selectedSeq.length == 0) {
+			alert("삭제할 메일을 선택해주세요.")
+			return;
+		}
+
+		if (!confirm('선택한 메일을 정말 삭제하시겠습니까?')) return;
+
+		try {
+			const response = await fetch('/mypage/messages/' + selectedSeq, {
+				method: 'DELETE'
+			});
+
+			if (response.ok) {
+				location.reload();
+			}
+			else {
+				alert("삭제 실패")
+			}
+		} catch (error) {
+			console.error("에러 발생:", error);
+			alert("서버 오류 발생");
+		}
 	});
 
 });
@@ -169,8 +226,11 @@ function movePage(currentPage, type) {
 	const keyword = document.querySelector('input[name="keyword"]').value
 	const params = new URLSearchParams(location.search);
 	params.set("page", currentPage);
-	params.set("keyword", keyword);
 
+	if (keyword !== "") {
+		params.set("keyword", keyword);
+	}
+	
 	// type을 새로 전달했다면 반영, 아니면 기존 유지
 	if (type !== undefined && type !== "") {
 		params.set("type", type);
@@ -188,16 +248,26 @@ function getCheckedCheckboxes() {
 	return selectedCheckboxes;
 }
 
-//메일 통계 업데이트 함수
-/*function updateCounts() {
-	const total = document.querySelectorAll('.application-item').length;
-	const read = document.querySelectorAll('.application-item.read-mail').length;
-	const unread = total - read;
+function updateCounts(cnt, type) {
+	const unread = document.getElementById('unread-count');
+	const read = document.getElementById('read-count');
 
-	document.getElementById('total-count').textContent = total;
-	document.getElementById('read-count').textContent = read;
-	document.getElementById('unread-count').textContent = unread;
-}*/
+	// 문자열 → 숫자로 변환
+	let unreadCnt = parseInt(unread.textContent);
+	let readCnt = parseInt(read.textContent);
+
+	if (type === 'toRead') {
+		unreadCnt -= cnt;
+		readCnt += cnt;
+	} else if (type === 'unRead') {
+		readCnt -= cnt;
+		unreadCnt += cnt;
+	}
+
+	unread.textContent = unreadCnt;
+	read.textContent = readCnt;
+}
+
 
 
 //ajax로 메일 목록 갱신하기

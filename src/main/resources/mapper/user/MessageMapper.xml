@@ -93,4 +93,10 @@ from message
 where message_seq = #{messageSeq}
 </select>
 
+<!-- 해당 메시지 삭제 -->
+<delete id="deleteOneMessage" parameterType="int">
+delete message
+where message_seq = #{messageSeq}
+</delete>
+
 </mapper>

@@ -85,6 +85,14 @@ public class CustomUser implements UserDetails{
 		return userDTO.getRole();
 	}
 	
+	//계정 활동제한 여부 가져오기
+	public Integer getActiveStatus() {
+		if(userDTO.getActiveStatus() == null) {
+			return null;
+		}
+		return userDTO.getActiveStatus();
+	}
+	
 	//이정도만 가져올까?
 	
 	

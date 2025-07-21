@@ -20,4 +20,5 @@ public interface MessageMapper {
 	public int cntMyMessage(MessageSearchDTO searchDTO);
 	
 	public MessageDTO selectOneMessage(int messageSeq);
+	
 }
