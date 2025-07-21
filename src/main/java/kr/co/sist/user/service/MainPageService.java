@@ -31,4 +31,8 @@ public class MainPageService {
     	
     	return mainPageMapper.searchJobPostings(keyword);
     }
+    
+    public List<String> getAutoCompleteSuggestions(String term){
+    	 return mainPageMapper.getAutoCompleteSuggestions(term);
+    }
 }

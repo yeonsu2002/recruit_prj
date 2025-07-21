@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
@@ -72,8 +73,14 @@ public class MainPageController {
     	return "user/searchResult";
     	
     }//search
-    
-    
+
+
+    @ResponseBody
+    @GetMapping("/autocomplete")
+    public List<String> autoComplete(@RequestParam("term") String term){
+    	
+      return mainPageService.getAutoCompleteSuggestions(term);
+    }
     
  
     

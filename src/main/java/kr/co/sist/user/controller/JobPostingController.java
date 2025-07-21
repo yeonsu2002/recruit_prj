@@ -99,12 +99,7 @@ public class JobPostingController {
     }
     
     
-    //기업정보
-    @GetMapping("/user/job_posting/company_info")
-    public String companyInfo() {
-        return "user/job_posting/company_info";
-    }
-    
+   
     
     //기업리뷰
     @GetMapping("/user/job_posting/review")

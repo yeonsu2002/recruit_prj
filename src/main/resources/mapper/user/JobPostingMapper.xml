@@ -23,12 +23,15 @@
     <result property="corpNm" column="corpNm"/>
     <result property="corpInfo" column="corpInfo"/>
     <result property="corpUrl" column="corpUrl"/>
+    <result property="corpNo" column="corpNo"/>
     <result property="positionName" column="positionName"/>
     <result property="positionSeq" column="positionSeq"/>
     <result property="stackName" column="stackName"/>
+    <result property="daysRemaining" column="daysRemaining"/>
+    <result property="eduLevel" column="eduLevel"/>
 </resultMap>
 
-<!-- 전체 공고 조회 -->
+<!-- 전체 공고 조회 (마감일 지나지 않은 것만) -->
 <select id="selectAllJobPostings" resultMap="jobPostResultMap">
    SELECT
     jp.job_posting_seq AS jobPostingSeq,
@@ -51,12 +54,14 @@
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
     pc.position_name AS positionName,
-    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName  -- null일 경우 기본값 처리
+    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName,
+    TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining
 FROM JOB_POSTING jp
 JOIN COMPANY c ON jp.corp_no = c.corp_no
 JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+WHERE jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
 ORDER BY jp.job_posting_seq, ts.stack_name
 </select>
 
@@ -80,17 +85,21 @@ ORDER BY jp.job_posting_seq, ts.stack_name
         jp.road_address AS roadAddress,
         jp.detail_address AS detailAddress,
         jp.position_seq AS positionSeq,
+        jp.edu_level AS eduLevel,
         c.corp_nm AS corpNm,
         c.corp_info AS corpInfo,
         c.corp_url AS corpUrl,
+        c.corp_no AS corpNo,
         pc.position_name AS positionName,
-        ts.stack_name AS stackName
+        ts.stack_name AS stackName,
+        TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining
     FROM JOB_POSTING jp
     JOIN COMPANY c ON jp.corp_no = c.corp_no
     JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
     LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
     LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
     WHERE jp.job_posting_seq = #{jobPostingSeq}
+    AND jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
     ORDER BY ts.stack_name
 </select>
 
@@ -103,7 +112,7 @@ ORDER BY jp.job_posting_seq, ts.stack_name
     ORDER BY ts.stack_name
 </select>
 
-<!-- 조회수 -->
+<!-- 조회수 업데이트 -->
 <update id="updateJobPostingViewCount" parameterType="map">
     UPDATE JOB_POSTING
     SET view_cnt = #{viewCount}
@@ -133,16 +142,16 @@ ORDER BY jp.job_posting_seq, ts.stack_name
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
     pc.position_name AS positionName,
-    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName  -- null일 경우 기본값 처리
+    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName,
+    TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining
 FROM JOB_POSTING jp
 JOIN COMPANY c ON jp.corp_no = c.corp_no
 JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
-WHERE jp.posting_end_dt >= SYSDATE
+WHERE jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
 ORDER BY jp.view_cnt DESC
 FETCH FIRST 8 ROWS ONLY
 </select>
-
 
 </mapper>

@@ -1,5 +1,6 @@
 package kr.co.sist.user.dto;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,9 @@ public class JobPostDTO {
     private String corpInfo;         // corp_info
     private String corpUrl;       
     
+    // D-day 계산을 위한 필드 추가
+    private Integer daysRemaining;
+    
     
     public void addTechStack(String stackName) {
       if (this.techStacks == null) {
@@ -50,4 +54,34 @@ public class JobPostDTO {
           this.techStacks.add(stackName);
       }
   }
+    
+    // D-day 문자열 반환 메소드
+    public String getDdayDisplay() {
+        if (daysRemaining == null) {
+            return "";
+        }
+        if (daysRemaining == 0) {
+            return "D-day";
+        } else if (daysRemaining > 0) {
+            return "D-" + daysRemaining;
+        } else {
+            return "마감";
+        }
+    }
+    
+    
+    // postingEndDt 기준 마감 여부 확인 메소드
+    public boolean isExpired() {
+        if (postingEndDt == null || postingEndDt.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            LocalDate endDate = LocalDate.parse(postingEndDt);
+            LocalDate today = LocalDate.now();
+            return today.isAfter(endDate);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

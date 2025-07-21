@@ -933,3 +933,10 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        .content-detail {
+    font-size: 15px;
+    white-space: pre-wrap; /* 줄바꿈 처리 */
+    line-height: 1.6;       /* 줄 간격 조절 */
+    color: #2c3e50;         /* 폰트 색상 (선택) */
+}

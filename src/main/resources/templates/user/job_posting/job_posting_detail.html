@@ -16,13 +16,21 @@ $(document).ready(function () {
     const $modal = $('#applyModal');
     let selectedResumeId = null;
 
-    // 모달 열기
+    // 모달 열기 - 마감일 체크 추가
     $('#applyBtn').on('click', function (e) {
         e.preventDefault();
+        
+        // 버튼이 비활성화되어 있으면 모달을 열지 않음
+        if ($(this).hasClass('disabled') || $(this).prop('disabled')) {
+            alert('마감된 공고입니다.');
+            return;
+        }
+        
         $modal.show().addClass('show');
         fetchUserResumes();
         $('#attachmentList').empty(); // 첨부파일 리스트 초기화
     });
+
 
     // 모달 닫기
     function closeModal() {
@@ -149,25 +157,38 @@ $(document).ready(function () {
     });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-//공고 스크랩
-const scrapBtn = document.getElementById('scrapBtn');
-const heartIcon = document.getElementById('heartIcon');
+$(document).ready(function () {
+    $("#scrapBtn").click(function () {
+        const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();  // ID가 바뀐 input에서 값 읽기
+        console.log("jobPostingSeqStr:", jobPostingSeqStr);
+        if (!jobPostingSeqStr || isNaN(jobPostingSeqStr)) {
+            alert("유효한 공고 번호가 없습니다.");
+            return;
+        }
 
-// 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
-scrapBtn.addEventListener('click', function() {
-	
-  if (heartIcon.textContent === '🤍') {
-    heartIcon.textContent = '❤️';  // 빨간 하트로 변경
-    heartIcon.classList.add('liked');  // 빨간색 적용
-    
-  } else {
-    heartIcon.textContent = '🤍';  // 빈 하트로 변경
-    heartIcon.classList.remove('liked');  // 빨간색 제거
-  }
-});
-});
+        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);  // 문자열을 정수로 변환
+        const heartIcon = $("#heartIcon");
+        const isScrapped = heartIcon.text() === "❤️";
+        const url = isScrapped ? "/scrap/remove" : "/scrap/add";
 
+        $.ajax({
+            url: url,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+            success: function (data) {
+                alert(data.message);
+                if (data.success) {
+                    heartIcon.text(isScrapped ? "🤍" : "❤️");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("스크랩 처리 중 오류:", error);
+                alert("스크랩 처리 중 오류가 발생했습니다.");
+            }
+        });
+    });
+});
 </script>
 
 </head>
@@ -195,8 +216,7 @@ scrapBtn.addEventListener('click', function() {
 
             <div class="job-section">
                <h2 style="font-size: 20px;">주요내용</h2>
-               <p th:text="${jDto.postingDetail}" style="font-size: 15px;"></p>
-            
+            <div class="content-detail" th:text="${jDto.postingDetail}"></div>
             </div>
 
             <div class="job-info-box">
@@ -207,7 +227,7 @@ scrapBtn.addEventListener('click', function() {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">학력</h2>
-                    <p style="font-size: 15px;">무관</p>
+                    <p th:text="${jDto.eduLevel}" style="font-size: 15px;">무관</p>
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">마감일 </h2>
@@ -251,36 +271,48 @@ scrapBtn.addEventListener('click', function() {
     </div>
 
     <!-- 플로팅 사이드바 -->
-    <div class="floating-sidebar">
-        <div class="company-floating-card">
-            <div class="company-logo-section">
-                <div class="logo-placeholder">
-                    <span>🏢</span>
-                </div>
-                <div class="company-title">
-                    <h4 th:text="${jDto.corpNm}">기업이름</h4>
-                    <span><a th:href="@{/user/job_posting/company_info}">기업정보 보기 &gt;</a></span>
-                </div>
+  <div class="floating-sidebar">
+    <div class="company-floating-card">
+        <div class="company-logo-section">
+            <div class="logo-placeholder">
+                <span>🏢</span>
             </div>
-
-            <div class="company-info-section">
-                <div class="info-item">
-                    <span class="label">업력</span>
-                    <span class="value">5년차 (2021년 설립)</span>
-                </div>
-            </div>
-
-            <button class="floating-apply-btn" id="applyBtn">지원하기</button>
-
-            <div class="floating-actions">
-                <button class="floating-action-btn" id="scrapBtn">
-                    <span class="icon" id="heartIcon">🤍</span>
-                    <span class="text">스크랩</span>
-                </button>
+            <div class="company-title">
+                <h4 th:text="${jDto.corpNm}">기업이름</h4>
+              <a th:href="@{/user/job_posting/company_info(corpNo=${jDto.corpNo})}">
+			  기업정보 보기 &gt;
+			</a>
             </div>
         </div>
-    </div>
 
+        <div class="company-info-section">
+            <div class="info-item">
+                <span class="label">업력</span>
+                <span class="value">5년차 (2021년 설립)</span>
+            </div>
+        </div>
+
+        <!-- 마감일 체크해서 지원 버튼 비활성화 -->
+        <button class="floating-apply-btn" 
+                id="applyBtn" 
+                th:disabled="${jDto.expired}" 
+                th:text="${jDto.expired ? '마감된 공고' : '지원하기'}"
+                th:classappend="${jDto.expired ? ' disabled' : ''}">
+            지원하기
+        </button>
+
+     <div class="floating-actions">
+	    <!-- id만 다른 이름으로 변경 -->
+	    <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}" />
+	
+	    <button class="floating-action-btn" id="scrapBtn">
+	        <span class="icon" id="heartIcon">🤍</span>
+	        <span class="text">스크랩</span>
+	    </button>
+	</div>
+    </div>
+</div>
+c
 <!-- 모달창 -->
  <div id="applyModal" class="modal">
         <div class="modal-content">

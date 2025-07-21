@@ -12,4 +12,6 @@ public interface MainPageMapper {
 
 	//검색
 	List<JobPostDTO> searchJobPostings(@Param("keyword") String keyword);
+	
+	 List<String> getAutoCompleteSuggestions(@Param("term") String term);
 }
