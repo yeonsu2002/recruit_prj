@@ -18,7 +18,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
     
     @Override
-    public List<Map<String, Object>> getCorpCountByIndustry() {
+    public List<Map<String, Object>> getCorpCountByResume() {
     	return dashboardMapper.selectCorpCnt();
+    }
+    
+    @Override
+    public List<Map<String, Object>> getCorpCountByIndustry() {
+    	return dashboardMapper.selectIndCnt();
     }
 }

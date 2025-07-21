@@ -9,4 +9,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface DashboardMapper {
     List<Map<String, Object>> selectUserCnt();
     List<Map<String, Object>> selectCorpCnt();
+    List<Map<String, Object>> selectIndCnt();
 }
