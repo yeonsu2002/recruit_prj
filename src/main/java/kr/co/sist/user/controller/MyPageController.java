@@ -16,6 +16,7 @@ import kr.co.sist.user.dto.MessageDTO;
 import kr.co.sist.user.dto.MessageSearchDTO;
 import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
+import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
 import kr.co.sist.user.service.MyPageService;
@@ -40,7 +41,7 @@ public class MyPageController {
 		userEntity.setPhone(cu.decryptText(userEntity.getPhone()));
 
 		// 전체 지원목록 가져오기
-		List<MyApplicantDTO> applicantDTO = myPageServ.searchMyApplicant(userEntity.getEmail());
+		List<MyApplicantDTO> applicantDTO = myPageServ.searchMyAllApplicant(userEntity.getEmail());
 
 		// 지원 통계 가져오기
 		ApplicantStatisticsDTO statistics = myPageServ.getApplicantStatistics(applicantDTO);
@@ -59,18 +60,23 @@ public class MyPageController {
 
 	// 지원 목록으로 이동
 	@GetMapping("/user/mypage/apply_list")
-	public String applyList(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+	public String applyList(@ModelAttribute MyApplicantSearchDTO searchDTO, @AuthenticationPrincipal CustomUser userInfo, Model model) {
 
 		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
 
-		// 전체 지원목록 가져오기
-		List<MyApplicantDTO> applicantDTO = myPageServ.searchMyApplicant(userEntity.getEmail());
+		searchDTO.setEmail(userEntity.getEmail());
+		
+		//페이징된 지원 목록 가져오기
+		List<MyApplicantDTO> applicantDTO = myPageServ.searchMyApplicant(searchDTO);
 
+		//전체 지원 목록 가져오기
+		List<MyApplicantDTO> allApplicantDTO = myPageServ.searchMyAllApplicant(userEntity.getEmail());
 		// 지원 통계 가져오기
-		ApplicantStatisticsDTO statistics = myPageServ.getApplicantStatistics(applicantDTO);
-
+		ApplicantStatisticsDTO statistics = myPageServ.getApplicantStatistics(allApplicantDTO);
+		
 		model.addAttribute("statistics", statistics);
 		model.addAttribute("applicants", applicantDTO);
+		model.addAttribute("search", searchDTO);
 
 		return "/user/mypage/apply_list";
 	}

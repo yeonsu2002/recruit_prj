@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import kr.co.sist.user.dto.JobPostingScrapDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
+import kr.co.sist.user.dto.MyApplicantSearchDTO;
 
 @Mapper
 public interface MyPageMapper {
@@ -13,6 +14,7 @@ public interface MyPageMapper {
 	public List<JobPostingScrapDTO> selectScrapPosting(String email);
 	
 	public List<MyApplicantDTO> selectMyApplicant(String email);
+	public List<MyApplicantDTO> selectMyAllApplicant(MyApplicantSearchDTO searchDTO);
 	
 	public int updateApplicationCancel(int jobApplicationSeq);
 	
