@@ -42,14 +42,13 @@
 		      	th:classappend="${talent.isScrapped == 'Y'} ? 'filled'" 
 		      	th:text="${talent.isScrapped == 'Y'} ? '★' : '☆'"></span>스크랩
 				</button>
-                   <a th:href="@{/corp/talentPool/resume_detail}">
-                   <button class="action-btn resume-btn">이력서 확인</button></a>
-                   <button class="action-btn interview-btn openInterviewModalBtn">
-                   면접 제안</button>
+                <a th:href="@{/corp/talentPool/resume_detail(resumeNo=${talent.resumeSeq})}">
+					<button class="action-btn resume-btn">이력서 확인</button></a>
+				<button class="action-btn interview-btn openInterviewModalBtn"
+						th:data-resume-seq="${talent.resumeSeq}">면접 제안</button>
                </div>
             </div>
        	</div>
-      	
       	
      </div>
 </th:block>
