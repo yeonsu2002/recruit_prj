@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="shortcut icon" href="http://localhost/images/favicon.png"/>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+  }
+
+  form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    font-weight: bold;
+    color: #333;
+    width: 120px;
+    background-color: #f0f0f0;
+  }
+
+  input[type="textarea"],
+  input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  input[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #2d6cdf;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+    transition: background-color 0.3s ease;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #1e50aa;
+  }
+</style>
+</head>
+<body>
+<th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
+
+<form action="/send_sanction">
+<table>
+<tr>
+<td>이름</td>
+<td th:text="${member.name}"></td>
+<input type="hidden" name="name" th:value="${member.name}"/>
+</tr>
+<tr>
+<td>제재사유</td>
+<td><input type="textarea" name="content"/></td>
+</tr>
+<input type="submit" id="test" value="이메일 보내기"/>
+</table>
+</form>
+
+<!-- jquery CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+});
+
+</script>
+</body>
+</html>

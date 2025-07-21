@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 /* 공통 차트 컨테이너 */
 .chart-wrapper {
@@ -36,6 +37,8 @@
 
 </head>
 <body>
+
+<!-- ------------------------------------------------------------------------------------ -->
 <th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
 
 <div class="chart-wrapper">
@@ -45,7 +48,24 @@
   <div class="chart-box">
     <canvas id="corpChart"></canvas>
   </div>
+  <div class="chart-box">
+    <canvas id="indChart"></canvas>
+  </div>
+  <div class="chart-box">
+  	<table class="table table-bordered">
+  		<tr>
+  		<th>답변처리 대기중</th>
+  		<th>(답변상태 0개수)(...버튼으로 고객센터 페이지)</th>
+  		</tr>
+  		<tr>
+  		<td rowspan="2">전체</td>
+  		<td rowspan="2">(답변0상태 고객센터)</td>
+  		</tr>
+  	</table>
+  </div>
 </div>
+
+<!-- ------------------------------------------------------------------------------------------ -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:inline="javascript">
@@ -62,11 +82,11 @@
 	  '#9966FF', '#FF9F40', '#C9CBCF'
 	]
   new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: '일별 회원 가입 수',
+        label: '일별 회원수',
         data: counts,
         backgroundColor: 'rgba(54, 162, 235, 0.7)',
         borderColor: 'rgba(54, 162, 235, 1)',
@@ -74,16 +94,25 @@
       }]
     },
     options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1 }
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: '일별 누적 회원 수'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true, // ⬅️ 이 옵션이 Y축을 0부터 시작하게 합니다.
+          }
         }
       }
-    }
-  });
-/*]]>*/
-</script>
+    });
+  /*]]>*/
+  </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script th:inline="javascript">
@@ -111,6 +140,7 @@
   console.log('counts2:', counts2);
   console.log('backgroundColors length:', backgroundColors.length);
 
+  
   new Chart(corpCtx, {
 	  type: 'doughnut',
 	  data: {
@@ -128,8 +158,9 @@
 	        position: 'right'
 	      },
 	      title: {
-	        display: false
-	      },
+	           display: true,
+	           text: '산업별 공고수'
+	        },
 	      datalabels: {
 	        color: '#000',
 	        font: {
@@ -146,6 +177,44 @@
 	});
 /*]]>*/
 </script>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const indCount = /*[[${indCount}]]*/ [];
+  console.log(indCount);
+
+  const labels3 = indCount.map(item => item.INDUSTRY); 
+  const counts3 = indCount.map(item => parseInt(item.COUNT));
+
+  const ctx3 = document.getElementById('indChart').getContext('2d');
+  backgroundColor: [
+	  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+	  '#9966FF', '#FF9F40', '#C9CBCF'
+	]
+  new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: labels3,
+      datasets: [{
+        label: '산업별 기업수',
+        data: counts3,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+/*]]>*/
+</script>
+
 
 
 

@@ -1,5 +1,7 @@
 package kr.co.sist.admin.Member;
 
+import java.sql.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -34,7 +36,7 @@ public class MemberEntity {
 	private String phone;
 	
 	@Column(name="REG_DT")
-	private String reg_dt;
+	private String regDt;
 	
 	@Column(name="LOGIN_FAIL_CNT")
 	private Integer login_fail_cnt;

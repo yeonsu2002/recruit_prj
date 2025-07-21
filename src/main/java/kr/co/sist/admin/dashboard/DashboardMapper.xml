@@ -7,12 +7,26 @@
 <mapper namespace="kr.co.sist.admin.dashboard.DashboardMapper">
 
 	<select id="selectUserCnt" resultType="map">
+	<!-- 
 		SELECT TO_CHAR(TO_DATE(reg_dt, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD') AS
 		regDate,
 		COUNT(*) AS count
 		FROM member
 		GROUP BY TO_CHAR(TO_DATE(reg_dt, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD')
 		ORDER BY TO_CHAR(TO_DATE(reg_dt, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD')
+		-->
+		
+		SELECT
+		regDate,
+		SUM(daily_count) OVER (ORDER BY regDate) AS count
+	FROM (
+		SELECT
+			TO_CHAR(TO_DATE(reg_dt, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD') AS regDate,
+			COUNT(*) AS daily_count
+		FROM member
+		GROUP BY TO_CHAR(TO_DATE(reg_dt, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD')
+	)
+	ORDER BY regDate
 	</select>
 	
 	<select id="selectCorpCnt" resultType="map">
@@ -20,5 +34,11 @@
 		FROM job_posting j
 		JOIN company c ON j.corp_no = c.corp_no
 		GROUP BY c.industry
+	</select>
+	
+	<select id="selectIndCnt" resultType="map">
+		select industry, COUNT(*) as count
+		from company
+		group by industry
 	</select>
 </mapper>
