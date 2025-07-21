@@ -212,4 +212,5 @@ ORDER BY jp.view_cnt DESC
 FETCH FIRST 8 ROWS ONLY
 </select>
 
+
 </mapper>

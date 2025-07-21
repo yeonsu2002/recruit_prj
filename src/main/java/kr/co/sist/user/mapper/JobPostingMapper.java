@@ -24,5 +24,7 @@ public interface JobPostingMapper {
   
   // 인기순 공고 가져오기 (조회수 기준)
   List<JobPostDTO> getPopularJobPostings();
+  
+  //List<JobPostDTO> selectJobPostingsByCorpNo(long corpNo);
 
 }

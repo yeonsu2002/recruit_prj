@@ -85,4 +85,9 @@ public class JobPostingService {
     public List<JobPostDTO> getPopularJobPostings() {
         return jpm.getPopularJobPostings();
     }
+    
+		/*
+		 * public List<JobPostDTO> getJobPostsByCorpNo(long corpNo) { return
+		 * jpm.selectJobPostingsByCorpNo(corpNo); }
+		 */ 
 }
