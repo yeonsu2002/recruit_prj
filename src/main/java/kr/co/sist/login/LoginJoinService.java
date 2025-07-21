@@ -3,6 +3,7 @@ package kr.co.sist.login;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +18,7 @@ import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.util.CipherUtil;
 
 @Service
-public class loginJoinService {
+public class LoginJoinService {
 
     private final UserRepository ur;
     private final CorpRepository cr;
@@ -26,7 +27,7 @@ public class loginJoinService {
     @Autowired
     private final BCryptPasswordEncoder passwordEncoder; 
 
-    public loginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, BCryptPasswordEncoder passwordEncoder) {
+    public LoginJoinService(UserRepository ur, CorpRepository cr, CipherUtil cu, BCryptPasswordEncoder passwordEncoder) {
         this.ur = ur;
         this.cr = cr;
         this.cu = cu;
@@ -276,6 +277,37 @@ public class loginJoinService {
     //이메일 중복 체크
     public boolean chkEmailDupl(String email) {
     	return ur.existsById(email);
+    }
+    
+    public AccountRecoveryDTO findByNameAndPhone(String name, String phone) {
+      // UserRepository에서 이름과 전화번호로 조회 (암호화된 phone 처리 필요할 수 있음)
+      Optional<UserEntity> userOpt = ur.findByNameAndPhone(name, phone);
+
+      if (userOpt.isPresent()) {
+          UserEntity user = userOpt.get();
+          AccountRecoveryDTO dto = new AccountRecoveryDTO();
+          dto.setEmail(user.getEmail());
+          // 필요한 필드 추가 설정
+          return dto;
+      }
+      return null;
+  }
+    @Transactional
+    public UserEntity updatePassword(UserDTO uDTO) {
+        // 이메일로 유저 조회
+        UserEntity user = ur.findById(uDTO.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        // 새 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(uDTO.getPassword());
+
+        // 비밀번호 업데이트
+        user.setPassword(encodedPassword);
+
+        // 필요 시 pwChangeDt 등 다른 필드도 갱신 가능
+
+        // 저장
+        return ur.save(user);
     }
     
 }

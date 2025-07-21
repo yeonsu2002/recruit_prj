@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.util.Map;
 
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.user.dto.InquiryRequestDTO;
 import kr.co.sist.user.dto.InquiryResponseDTO;
 import kr.co.sist.user.service.InquiryService;
@@ -35,7 +37,6 @@ public class InquiryController {
     @ResponseBody
     public String setTestSession(HttpSession session) {
         session.setAttribute("userEmail", "testuser@example.com");
-        session.setAttribute("adminId", "acs0705@naver.com");
         return "세션에 임시 이메일과 adminId가 설정되었습니다.";
     }
 
@@ -47,10 +48,11 @@ public class InquiryController {
             @RequestParam("inquiryTitle") String title,
             @RequestParam("inquiryContent") String content,
             @RequestParam(value = "attachFile", required = false) MultipartFile file,
-            HttpSession session) {   // HttpSession 직접 주입
+            @AuthenticationPrincipal CustomUser user
+            ) {   // HttpSession 직접 주입
 
         try {
-            String userEmail = (String) session.getAttribute("userEmail"); // 로그인한 사용자 이메일
+            String userEmail = user.getEmail(); // 로그인한 사용자 이메일
 
             System.out.println("=== 디버깅 정보 ===");
             System.out.println("userEmail: " + userEmail);
@@ -65,14 +67,8 @@ public class InquiryController {
                         .body(Map.of("success", false, "message", "로그인이 필요합니다."));
             }
 
-            String adminId = (String) session.getAttribute("adminId");
-            if (adminId == null || adminId.trim().isEmpty()) {
-                adminId = "acs0705@naver.com";
-            }
-
             InquiryRequestDTO inquiryRequest = new InquiryRequestDTO();
             inquiryRequest.setEmail(userEmail.trim());
-            inquiryRequest.setAdminId(adminId.trim());
             inquiryRequest.setTitle(title != null ? title.trim() : "");
             inquiryRequest.setContent(content != null ? content.trim() : "");
             inquiryRequest.setCategory(category != null ? category.trim() : "");
