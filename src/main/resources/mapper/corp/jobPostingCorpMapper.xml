@@ -94,7 +94,7 @@ WHERE jp.corp_no = #{corpNo}
 	GROUP BY jp.CORP_NO, jp.JOB_POSTING_SEQ, jp.POSTING_TITLE, c.CORP_NM, pc.position_name, jp.posting_start_dt, jp.posting_end_dt, jp.employ_type, jp.exp_level, jp.view_cnt, jp.is_ended
   <choose>
   	<when test="orderBy == 'start'">
-   	ORDER BY jp.posting_start_dt DESC <!-- 전체(시작순) -->
+   	ORDER BY jp.posting_start_dt DESC <!-- 최신순 -->
   	</when>
   	<when test="orderBy == 'end'">
     ORDER BY jp.posting_end_dt ASC <!-- 마감빠른순 -->
