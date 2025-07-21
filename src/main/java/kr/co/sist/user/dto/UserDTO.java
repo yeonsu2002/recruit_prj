@@ -99,12 +99,11 @@ public class UserDTO {
     		e.printStackTrace(); // 필요에 따라 예외 처리
     		this.birth = null;
     	}
-    	this.gender = userEntity.getGender();
-    	this.pwResetRequired = userEntity.getPwResetRequired();
-    	this.profileImage = userEntity.getProfileImage();
-    	this.activeStatus = userEntity.getActiveStatus();
     }
-    
+    this.gender = userEntity.getGender();
+    this.pwResetRequired = userEntity.getPwResetRequired();
+    this.profileImage = userEntity.getProfileImage();
+    this.activeStatus = userEntity.getActiveStatus();
   }
   
   
