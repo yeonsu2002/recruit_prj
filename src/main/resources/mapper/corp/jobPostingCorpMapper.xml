@@ -71,9 +71,9 @@ WHERE jp.corp_no = #{corpNo}
 			c.CORP_NM AS corp_nm, 
 			pc.position_name AS position_name, 
 			LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.TECH_STACK_SEQ) AS tech_names,
-	        count(DISTINCT ja.RESUME_SEQ) AS app_cnt, 
-	        jp.view_cnt AS view_cnt,
-	        jp.is_ended AS is_ended
+      count(DISTINCT ja.RESUME_SEQ) AS app_cnt, 
+      jp.view_cnt AS view_cnt,
+      jp.is_ended AS is_ended
 	FROM job_posting jp 
 	INNER JOIN company c on jp.corp_no = c.corp_no
 	INNER JOIN job_posting_tech_stack jpts on jp.job_posting_seq = jpts.job_posting_seq
