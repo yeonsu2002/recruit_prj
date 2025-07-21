@@ -34,7 +34,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     
     // 쿠키로 내려줌
     ResponseCookie cookie = ResponseCookie.from("Authorization", token)
-	    .httpOnly(true)//js접근불가 
+	    .httpOnly(true)//js접근불가 (document.cookie 불가하게됨) 
 	    .secure(false) //HTTPS에서만 동작 (개발시 false)
 	    .sameSite("Strict") //CSRF방지 
 	    .path("/") //전체경로에 대해 쿠키 전송 
@@ -47,10 +47,9 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     boolean hasRoleCorp = customUser.getAuthorities().stream()
     												.anyMatch(auth -> auth.getAuthority().equals("ROLE_CORP"));
     
+    //일반회원 로그인 성공시, 유저메인페이지로 이동 
     boolean hasRoleUser = customUser.getAuthorities().stream()
     												.anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
-    
-    System.out.println(hasRoleCorp);
     
     //원하는 대로 리다이렉트 
     if(hasRoleCorp) {

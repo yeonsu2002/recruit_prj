@@ -1,5 +1,6 @@
 package kr.co.sist.login;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,8 @@ import kr.co.sist.user.entity.UserEntity;
 /**
  *  http.formLogin().loginProcessingUrl(...)에 의해 로그인 요청이 들어오면,
  *  AuthenticationManager가 UserDetailsService.loadUserByUsername()를 자동 호출해서 사용자 정보를 로드합니다.
+ *  
+ *  정확히 여기서 로그인 정보를 받아서 걸러낸다. 
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -30,7 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		UserDTO userDTO = UserDTO.from(userEntity);
 		
-		
+		//운영자에 의해 제재당하였을 때. 
+		if(userDTO.getActiveStatus() == 1) {
+			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다. /n고객센터에 문의해주세요.");
+		}
 		
 		return new CustomUser(userDTO); //CustomUser를 Entity로 만들면 형변환은 필요없지만..
 	}
