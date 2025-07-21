@@ -33,9 +33,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		UserDTO userDTO = UserDTO.from(userEntity);
 		
+		System.out.println("loadUserByUsername 디버깅 : " + userDTO.getActiveStatus());
 		//운영자에 의해 제재당하였을 때. 
 		if(userDTO.getActiveStatus() == 1) {
-			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다. /n고객센터에 문의해주세요.");
+			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다.");
 		}
 		
 		return new CustomUser(userDTO); //CustomUser를 Entity로 만들면 형변환은 필요없지만..
