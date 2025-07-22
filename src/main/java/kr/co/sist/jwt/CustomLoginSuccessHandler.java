@@ -34,7 +34,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     
     // 쿠키로 내려줌
     ResponseCookie cookie = ResponseCookie.from("Authorization", token)
-	    .httpOnly(true)//js접근불가 (document.cookie 불가하게됨) 
+	    .httpOnly(true)//js접근불가 (document.cookie 불가하게됨) -> xss공격을 방어 
 	    .secure(false) //HTTPS에서만 동작 (개발시 false)
 	    .sameSite("Strict") //CSRF방지 
 	    .path("/") //전체경로에 대해 쿠키 전송 
