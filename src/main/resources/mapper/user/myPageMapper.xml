@@ -6,32 +6,93 @@
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
 <mapper namespace="kr.co.sist.user.mapper.MyPageMapper">
 
-<!-- 공고관련 -->
-<select id="selectScrapPosting" parameterType="String" resultType="userJobPostingScrapDTO">
-select SCRAP_SEQ, JOB_POSTING_SEQ, EMAIL, SCRAP_DATE
-from JOB_POSTING_SCRAP
-where email = #{email}
-ORDER BY TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
-</select>
+	<!-- 공고관련 -->
+	<select id="selectScrapPosting" parameterType="String"
+		resultType="userJobPostingScrapDTO">
+		select SCRAP_SEQ, JOB_POSTING_SEQ, EMAIL, SCRAP_DATE
+		from
+		JOB_POSTING_SCRAP
+		where email = #{email}
+		ORDER BY
+		TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
+	</select>
 
-<!-- 지원 회사 목록 가져오기 -->
-<select id="selectMyApplicant" parameterType="String" resultType="userMyApplicantDTO">
-select ja.job_application_seq, ja.application_date, ja.application_status, ja.resume_seq, ja.pass_stage,
-jp.corp_no, jp.posting_title, jp.job_posting_seq, jp.posting_end_dt, c.corp_nm
-from job_application ja
-join job_posting jp on jp.job_posting_seq = ja.job_posting_seq
-join company c on jp.corp_no = c.corp_no
-join resume r on r.resume_seq = ja.resume_seq
-join member m on m.email = r.email
-where m.email = #{email}
-ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
-</select>
+	<!-- 지원 회사 목록 가져오기 -->
+	<select id="selectMyApplicant" parameterType="String"
+		resultType="userMyApplicantDTO">
+		select ja.job_application_seq, ja.application_date,
+		ja.application_status,
+		ja.resume_seq, ja.pass_stage,
+		jp.corp_no,
+		jp.posting_title, jp.job_posting_seq, jp.posting_end_dt, c.corp_nm
+		from job_application ja
+		join job_posting jp on jp.job_posting_seq =
+		ja.job_posting_seq
+		join company c on jp.corp_no = c.corp_no
+		join resume
+		r on r.resume_seq = ja.resume_seq
+		join member m on m.email = r.email
+		where m.email = #{email}
+		ORDER BY TO_DATE(ja.application_date,
+		'YYYY-MM-DD HH24:MI:SS') desc
+	</select>
 
-<!-- 지원 취소 -->
-<update id="updateApplicationCancel" parameterType="int">
-update job_application
-set application_status = 2
-where job_application_seq = #{jobApplicationSeq}
-</update>
+	<!-- 지원 회사 목록 필터링 해서 가져오기 -->
+	<select id="selectMyAllApplicant"
+		parameterType="userMyApplicantSearchDTO"
+		resultType="userMyApplicantDTO">
+		select ja.job_application_seq, ja.application_date,
+		ja.application_status, ja.resume_seq, ja.pass_stage,
+		jp.corp_no,
+		jp.posting_title, jp.job_posting_seq, jp.posting_end_dt, c.corp_nm
+		from job_application ja
+		join job_posting jp on jp.job_posting_seq =
+		ja.job_posting_seq
+		join company c on jp.corp_no = c.corp_no
+		join resume
+		r on r.resume_seq = ja.resume_seq
+		join member m on m.email = r.email
+		where m.email = #{email}
+		<choose>
+			<when test="type == 'passed'">
+				and ja.pass_stage = 1
+			</when>
+			<when test="type == 'hired'">
+				and ja.pass_stage = 2
+			</when>
+			<when test="type == 'rejected'">
+				and ja.pass_stage = 3
+			</when>
+		</choose>
+		<if test="includeCanceled =='false'">
+			and ja.application_status != 2
+		</if>
+
+		<choose>
+			<!-- 대체 왜 아래 12나 24는 저거로 해도 잘만 타면서 6은 이따구로 해야 작동되는거? -->
+			<when test='period != null and "6".equals(period)'>
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -6)
+			</when>
+			<when test="period == '12'">
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -12)
+			</when>
+			<when test="period == '24'">
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -24)
+			</when>
+			<otherwise>
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -1)
+			</otherwise>
+		</choose>
+		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
+	</select>
+
+	<!-- 지원 취소 -->
+	<update id="updateApplicationCancel" parameterType="int">
+		update
+		job_application
+		set application_status = 2
+		where job_application_seq =
+		#{jobApplicationSeq}
+	</update>
 
 </mapper>

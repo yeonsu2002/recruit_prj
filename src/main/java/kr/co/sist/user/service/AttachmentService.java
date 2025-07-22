@@ -25,6 +25,7 @@ public class AttachmentService {
 
 	private final AttachmentRepository attachmentRepos;
 	private final ResumeMapper resumeMapper;
+
 	/**
 	 * 첨부파일 업로드
 	 * 
@@ -52,11 +53,17 @@ public class AttachmentService {
 		attachment.setFileType(extension);
 		attachment.setCreatedAt(now.toString());
 
+		//상대 경로 위해 사용
+		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
+		String resourcePath = projectPath + "/src/main/resources/static/attachment";
+		//--------------------
+		
 		attachmentRepos.save(attachment);
 		attachment.setCreatedAt(attachment.getCreatedAt().substring(0, 10));
 
 		// 4. 파일 저장 경로 설정 및 실제 파일 저장
-		File uploadDir = new File(fileDir);
+		//File uploadDir = new File(fileDir);
+		File uploadDir = new File(resourcePath);
 		if (!uploadDir.exists())
 			uploadDir.mkdir(); // 하위 폴더까지 생성
 

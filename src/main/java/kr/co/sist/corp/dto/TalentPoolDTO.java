@@ -10,6 +10,7 @@ public class TalentPoolDTO {
     private String isScrapped;
     
     private String name;
+    private String email;
     private String gender;
     private String birthYear;
     private String shortAddress;
@@ -19,6 +20,7 @@ public class TalentPoolDTO {
     private String techStacks;
     private String certifications;
     private String latestDate;
+		public String ProfileImg;
     
     
     

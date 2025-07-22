@@ -52,7 +52,6 @@ a.tab:hover {
 
 /* 선택된 필터 영역 스타일 */
 .selected-filters {
-    margin-top: 15px;
     padding: 15px;
     background: #f8f9fa;
     border-radius: 6px;
@@ -61,9 +60,8 @@ a.tab:hover {
 
 .filter-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
 .reset-btn {
@@ -76,7 +74,7 @@ a.tab:hover {
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -105,7 +103,7 @@ a.tab:hover {
     color: white;
     padding: 6px 10px;
     border-radius: 16px;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -344,17 +342,22 @@ a.tab:hover {
 .bookmark-star.filled {
     color: gold;
 }
-
-
         .pagination {
             display: flex;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 10px;
             gap: 5px;
         }
-
+        .page-numbers {
+		    display: flex;
+		    gap: 6px;
+		    align-items: center;
+		    justify-content: center;
+		    margin: 0 10px;
+		}
+        
         .page-btn {
-            padding: 8px 12px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
             background: white;
             cursor: pointer;
@@ -408,13 +411,6 @@ a.tab:hover {
             background-color: #f8f9fa;
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-            gap: 5px;
-        }
-
         .page-btn {
             padding: 8px 12px;
             border: 1px solid #ddd;
@@ -460,6 +456,4 @@ a.tab:hover {
                 flex-direction: column;
                 align-items: stretch;
             }
-
         }
-        

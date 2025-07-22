@@ -93,7 +93,12 @@ public class InquiryService {
         inquiryRepository.save(inquiry);
     }
     
-    // 문의 목록 조회 (페이징, 필터링)
+    private String getDefaultAdminId() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		// 문의 목록 조회 (페이징, 필터링)
     @Transactional(readOnly = true)
     public Page<InquiryResponseDTO> getInquiries(PageRequest pageRequest, String category, String answerStat) {
         Specification<InquiryEntity> spec = Specification.where(null);
@@ -192,9 +197,10 @@ public class InquiryService {
         return response;
     }
     
-    // 기본 관리자 ID 반환
-    private String getDefaultAdminId() {
-        // 기본 관리자 ID 반환 또는 사용 가능한 관리자 찾기
-        return "1"; // 예시 - 실제 존재하는 관리자 ID로 변경
+
+ // 서비스에서 사용자 타입 조회
+    private String getUserType(String email) {
+        // UserService나 Repository를 통해 사용자 타입 조회
+        return userService.getUserTypeByEmail(email);
     }
 }

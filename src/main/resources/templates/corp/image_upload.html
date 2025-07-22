@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>민기인력 - 이미지 등록</title>
     <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
     <link rel="stylesheet" th:href="@{/corp/mainCss/main_page.css}" />
@@ -11,13 +11,15 @@
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
 
     <div class="container">
-        <form id="corpImageForm" th:action="@{/corp/info/image/upload}" method="post" enctype="multipart/form-data">
-             <input type="hidden" name="corpNo" th:value="${corpInfo != null} ? ${corpInfo.corpNo} : 'TEST_CORP_NO'" />
-            
+        <form id="corpImageForm" th:action="@{/corp/image/upload}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="corpNo" id="corpNo"
+       th:value="${corpInfo != null and corpInfo.corpNo != null ? corpInfo.corpNo : ''}" />
+
+
             <div class="form-container">
                 <h1>이미지 등록</h1>
                 <p>회사로고와 기업 이미지를 등록해주세요</p>
-                
+
                 <!-- 회사로고 등록 -->
                 <div class="upload-section">
                     <div class="section-title">회사로고 등록</div>
@@ -25,19 +27,26 @@
                         <div class="upload-icon">🏢</div>
                         <div class="upload-text">회사로고를 업로드하세요</div>
                         <div class="upload-subtext">파일을 여기에 드래그하거나 클릭하여 선택하세요</div>
-                        <input type="file" id="logoInput" name="logoFile" class="file-input" accept="image/*">
-                        <button type="button" class="upload-btn" onclick="document.getElementById('logoInput').click()">
-                            파일 선택
-                        </button>
+                        <input type="file" id="logoInput" name="logoFile" class="file-input" accept="image/*" style="display: none;" />
+                        <button type="button" class="upload-btn" onclick="openFileDialog(event, 'logoInput')">파일 선택</button>
                     </div>
-                    <div class="preview-container" id="logoPreview"></div>
-                    
+                    <div class="preview-container" id="logoPreview">
+                        <th:block th:if="${corpInfo != null and corpInfo.corpLogo != null}">
+                            <div class="preview-item logo">
+                                <img th:src="@{/corp_logo/{corpLogo}(corpLogo=${corpInfo.corpLogo})}" alt="로고 미리보기" />
+                                <button type="button" class="remove-btn" onclick="removeLogo()">×</button>
+                                <div class="image-info">
+                                    <span>기존 로고: <span th:text="${corpInfo.corpLogo}"></span></span>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
                     <div class="requirements">
                         <h4>로고 업로드 요구사항</h4>
                         <ul>
                             <li>파일 형식: JPG, PNG, SVG</li>
                             <li>파일 크기: 최대 5MB</li>
-                            <li>권장 비율: 2:1 (가로:세로)</li>
+                            <li>권장 비율: 2:1</li>
                             <li>최소 해상도: 300x150px</li>
                         </ul>
                     </div>
@@ -50,18 +59,25 @@
                         <div class="upload-icon">🖼️</div>
                         <div class="upload-text">기업 이미지를 업로드하세요</div>
                         <div class="upload-subtext">파일을 여기에 드래그하거나 클릭하여 선택하세요 (최대 5개)</div>
-                        <input type="file" id="imageInput" name="imageFiles" class="file-input" accept="image/*" multiple>
-                        <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
-                            파일 선택
-                        </button>
+                        <input type="file" id="imageInput" name="imageFiles" class="file-input" accept="image/*" multiple style="display: none;" />
+                        <button type="button" class="upload-btn" onclick="openFileDialog(event, 'imageInput')">파일 선택</button>
                     </div>
-                    <div class="preview-container" id="imagePreview"></div>
-                    
+                    <div class="preview-container" id="imagePreview">
+                        <th:block th:if="${corpInfo != null and corpInfo.corpImg != null}">
+                            <div class="preview-item">
+                                <img th:src="@{/corp_image/{corpImg}(corpImg=${corpInfo.corpImg})}" alt="이미지 미리보기" />
+                                <button type="button" class="remove-btn" onclick="removeImage()">×</button>
+                                <div class="image-info">
+                                    <span>기존 이미지: <span th:text="${corpInfo.corpImg}"></span></span>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
                     <div class="requirements">
                         <h4>이미지 업로드 요구사항</h4>
                         <ul>
                             <li>파일 형식: JPG, PNG, GIF</li>
-                            <li>파일 크기: 각 파일 최대 10MB</li>
+                            <li>각 파일 최대 크기: 10MB</li>
                             <li>최대 개수: 5개</li>
                             <li>권장 비율: 16:9 또는 4:3</li>
                             <li>최소 해상도: 800x600px</li>
@@ -76,6 +92,7 @@
                 <button type="submit" class="btn btn-primary">저장</button>
             </div>
         </form>
+
     </div>
 
     <th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
@@ -85,36 +102,43 @@
         let logoFile = null;
         let imageFiles = [];
 
-        $(function(){
-            // 폼 제출 시 처리
-            $('#corpImageForm').on('submit', function(e) {
+        function openFileDialog(event, inputId) {
+            event.stopPropagation();
+            document.getElementById(inputId).click();
+        }
+
+        $("#test").on("click", function(e){
+            let a = $("#corpNo").val();
+            console.log(a);
+        });
+
+        $(function () {
+            $('#corpImageForm').on('submit', function (e) {
                 e.preventDefault();
-                
                 if (!logoFile && imageFiles.length === 0) {
                     alert('최소 하나의 이미지를 업로드해주세요.');
                     return;
                 }
-                
-                // 확인 메시지
+
                 if (confirm('이미지를 저장하시겠습니까?')) {
                     const formData = new FormData();
                     formData.append('corpNo', $('input[name="corpNo"]').val());
-                    
+
                     if (logoFile) {
                         formData.append('logoFile', logoFile);
                     }
-                    
-                    imageFiles.forEach((file, index) => {
+
+                    imageFiles.forEach(file => {
                         formData.append('imageFiles', file);
                     });
-                    
+
                     $.ajax({
                         url: $(this).attr('action'),
                         type: 'POST',
                         data: formData,
                         processData: false,
                         contentType: false,
-                        success: function(response) {
+                        success: function (response) {
                             if (response.success) {
                                 alert('이미지가 성공적으로 저장되었습니다.');
                                 location.href = '/corp/main';
@@ -122,7 +146,7 @@
                                 alert('저장 중 오류가 발생했습니다: ' + response.message);
                             }
                         },
-                        error: function() {
+                        error: function () {
                             alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
                         }
                     });
@@ -130,7 +154,6 @@
             });
         });
 
-        // 드래그 앤 드롭 이벤트
         function setupDragAndDrop(uploadArea, fileInput, isLogo = false) {
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -144,7 +167,6 @@
             uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
                 uploadArea.classList.remove('dragover');
-                
                 const files = e.dataTransfer.files;
                 if (isLogo) {
                     handleLogoUpload(files);
@@ -158,88 +180,68 @@
             });
         }
 
-        // 로고 업로드 처리
         function handleLogoUpload(files) {
-            if (files.length === 0) return;
-            
             const file = files[0];
             if (!file.type.startsWith('image/')) {
                 alert('이미지 파일만 업로드 가능합니다.');
                 return;
             }
-            
             if (file.size > 5 * 1024 * 1024) {
                 alert('파일 크기는 5MB 이하여야 합니다.');
                 return;
             }
-            
             logoFile = file;
             displayLogoPreview(file);
         }
 
-        // 이미지 업로드 처리
         function handleImageUpload(files) {
-            if (imageFiles.length + files.length > 5) {
-                alert('최대 5개의 이미지만 업로드 가능합니다.');
-                return;
-            }
-            
             for (let file of files) {
                 if (!file.type.startsWith('image/')) {
                     alert(`${file.name}은 이미지 파일이 아닙니다.`);
                     continue;
                 }
-                
                 if (file.size > 10 * 1024 * 1024) {
                     alert(`${file.name}의 파일 크기는 10MB 이하여야 합니다.`);
                     continue;
                 }
-                
+                if (imageFiles.length >= 5) {
+                    alert('최대 5개의 이미지만 업로드 가능합니다.');
+                    break;
+                }
                 imageFiles.push(file);
             }
-            
             displayImagePreviews();
         }
 
-        // 로고 미리보기 표시
         function displayLogoPreview(file) {
             const preview = document.getElementById('logoPreview');
             preview.innerHTML = '';
-            
             const reader = new FileReader();
             reader.onload = (e) => {
                 const previewItem = document.createElement('div');
                 previewItem.className = 'preview-item logo';
                 previewItem.innerHTML = `
-                    <img src="${e.target.result}" alt="로고 미리보기">
+                    <img src="${e.target.result}" alt="로고 미리보기" />
                     <button class="remove-btn" onclick="removeLogo()">&times;</button>
-                    <div class="image-info">
-                        ${file.name}<br>
-                        ${(file.size / 1024 / 1024).toFixed(2)}MB
-                    </div>
+                    <div class="image-info">${file.name}<br>${(file.size / 1024 / 1024).toFixed(2)}MB</div>
                 `;
                 preview.appendChild(previewItem);
             };
             reader.readAsDataURL(file);
         }
 
-        // 이미지 미리보기 표시
         function displayImagePreviews() {
             const preview = document.getElementById('imagePreview');
             preview.innerHTML = '';
-            
             imageFiles.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const previewItem = document.createElement('div');
                     previewItem.className = 'preview-item';
                     previewItem.innerHTML = `
-                        <img src="${e.target.result}" alt="이미지 미리보기">
+                        <img src="${e.target.result}" alt="이미지 미리보기" />
                         <button class="remove-btn" onclick="removeImage(${index})">&times;</button>
-                        <div class="image-info">
-                            ${file.name}<br>
-                            ${(file.size / 1024 / 1024).toFixed(2)}MB
-                        </div>
+                        <div class="image-info">${file.name}<br>${(file.size / 1024 / 1024).toFixed(2)}MB</div>
                     `;
                     preview.appendChild(previewItem);
                 };
@@ -247,35 +249,27 @@
             });
         }
 
-        // 로고 제거
         function removeLogo() {
             logoFile = null;
             document.getElementById('logoPreview').innerHTML = '';
         }
 
-        // 이미지 제거
         function removeImage(index) {
             imageFiles.splice(index, 1);
             displayImagePreviews();
         }
 
-        // 이벤트 리스너 설정
         document.addEventListener('DOMContentLoaded', () => {
-            const logoUploadArea = document.getElementById('logoUploadArea');
+            const logoArea = document.getElementById('logoUploadArea');
             const logoInput = document.getElementById('logoInput');
-            const imageUploadArea = document.getElementById('imageUploadArea');
+            const imageArea = document.getElementById('imageUploadArea');
             const imageInput = document.getElementById('imageInput');
-            
-            setupDragAndDrop(logoUploadArea, logoInput, true);
-            setupDragAndDrop(imageUploadArea, imageInput, false);
-            
-            logoInput.addEventListener('change', (e) => {
-                handleLogoUpload(e.target.files);
-            });
-            
-            imageInput.addEventListener('change', (e) => {
-                handleImageUpload(e.target.files);
-            });
+
+            setupDragAndDrop(logoArea, logoInput, true);
+            setupDragAndDrop(imageArea, imageInput, false);
+
+            logoInput.addEventListener('change', (e) => handleLogoUpload(e.target.files));
+            imageInput.addEventListener('change', (e) => handleImageUpload(e.target.files));
         });
     </script>
 </body>
