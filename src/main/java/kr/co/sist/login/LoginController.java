@@ -1,11 +1,20 @@
 package kr.co.sist.login;
+import kr.co.sist.corp.mapper.JobPostingCorpMapper;
+import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
+import kr.co.sist.user.dto.ResumeRequestDTO;
+import kr.co.sist.user.dto.ResumeResponseDTO;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
+import kr.co.sist.user.service.AttachmentService;
+import kr.co.sist.user.service.PositionCodeService;
+import kr.co.sist.user.service.ResumeService;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,26 +34,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-//@RequiredArgsConstructor -> 생성자주입방식 생성자 코드 대신 어노테이션
+@RequiredArgsConstructor //-> 생성자주입방식 생성자 코드 대신 어노테이션
 @Controller
 public class LoginController {
-
 
 	private final LoginJoinService ljs; 
 	private final JWTUtil jwtUtil;
 	private final Environment env;
 	
-	//생성자주입방식
-	public LoginController(LoginJoinService ljs, Environment env, JWTUtil jwtUtil) {
-		this.ljs = ljs;
-		this.env = env;
-		this.jwtUtil = jwtUtil;
-	}
+	private final JobPostingCorpMapper jpm;
+	private final ResumeService rServ;
+	private final AttachmentService aServ;
+	private final PositionCodeService pcs;
+
+	private final UserRepository userRepos;
 	
+	private final ObjectMapper objMapper;
+
   /**
    * 회원 로그인 페이지로 이동
    * @return
@@ -240,7 +252,94 @@ public class LoginController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
-    
   }
+//===============================
+//랜덤 이력서 생성용 새로운 메서드들
+//===============================
+
+//랜덤 이력서 생성을 위한 신규 이력서 생성 (userEmail 파라미터 받음)
+@PostMapping("/user/tempresume/resumeSubmit")
+@ResponseBody
+public Map<String, String> tempResumeSubmit(@RequestParam("resumeData") String resumeDataJson,
+                                         @RequestParam("userEmail") String userEmail) {
+   Map<String, String> result = new HashMap<>();
+   
+   try {
+       // 해당 이메일의 유저가 존재하는지 확인
+       UserEntity user = userRepos.findById(userEmail).orElse(null);
+       if (user == null) {
+           result.put("result", "user_not_found");
+           return result;
+       }
+       
+       // ResumeRequestDTO로 변환
+       ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
+       
+       // 신규 이력서 생성 (resumeSeq가 없으므로)
+       int newResumeSeq = rServ.addResume(user);
+       
+       // basicInfo에 새로 생성된 resumeSeq 설정
+       rdd.getBasicInfo().setResumeSeq(newResumeSeq);
+       
+       // 이력서 데이터 저장 (프로필 이미지는 null로 처리)
+       rServ.modifyResume(rdd, null, newResumeSeq);
+       
+       result.put("result", "success");
+       result.put("resumeSeq", String.valueOf(newResumeSeq));
+       
+   } catch (Exception e) {
+       e.printStackTrace();
+       result.put("result", "error");
+       result.put("message", e.getMessage());
+   }
+   
+   return result;
+}  
+//대량 랜덤 이력서 생성을 위한 배치 처리 메서드 (선택사항)
+@PostMapping("/user/tempresume/batchCreate")
+@ResponseBody
+public Map<String, Object> batchCreateTempResumes(@RequestParam("startIndex") int startIndex,
+                                               @RequestParam("endIndex") int endIndex) {
+   Map<String, Object> result = new HashMap<>();
+   List<String> successList = new ArrayList<>();
+   List<String> failList = new ArrayList<>();
+   
+   try {
+       for (int i = startIndex; i <= endIndex; i++) {
+           String email = "testuser" + i + "@test.com";
+           
+           // 유저가 존재하는지 확인
+           UserEntity user = userRepos.findById(email).orElse(null);
+           if (user == null) {
+               failList.add(email + " - 유저가 존재하지 않음");
+               continue;
+           }
+           
+           try {
+               // 신규 이력서 생성
+               int newResumeSeq = rServ.addResume(user);
+               successList.add(email + " - Resume SEQ: " + newResumeSeq);
+               
+           } catch (Exception e) {
+               failList.add(email + " - " + e.getMessage());
+           }
+       }
+       
+       result.put("result", "completed");
+       result.put("successCount", successList.size());
+       result.put("failCount", failList.size());
+       result.put("successList", successList);
+       result.put("failList", failList);
+       
+   } catch (Exception e) {
+       e.printStackTrace();
+       result.put("result", "error");
+       result.put("message", e.getMessage());
+   }
+   
+   return result;
+}
+  
+  
   
 }
