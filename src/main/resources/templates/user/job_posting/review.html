@@ -20,83 +20,57 @@
 <div th:replace="~{fragments/header :: header}"></div>
 </header>
 <main>
-<div class="main-container">
-<div class="review-section">
-  <h4 id="simple-list-item-5">기업 후기</h4>
-
- <div class="company_info_wrap">
-  <div class="left_box">
-    <div class="company_info">
-      <img alt="기업 로고" src="/images/samsung.jpg" style="width:80px" height="auto"/>
-      <div class="info_box">
-        <p>업종: 응용 소프트웨어 개발 및 공급업</p>
-        <p>대표자명: 안종오</p>
-        <p>업력: 9년차 (2017년 7월 설립)</p>
-        <p>대표주소: 서울 강남구 학동로25길 37</p>
-        <p>사업내용: 모바일 어플리케이션 개발, 공급</p>
-        <p>홈페이지: <a href="http://www.dear-u.co/" target="_blank">http://www.dear-u.co/</a></p>
-      </div>
-    </div>
-  </div>
-
-  <div class="right_box">
-    <div class="company_review_summary">
-      <p class="total_review">전체 리뷰 통계 (18명)</p>
-      <div class="score_box">
-        <span class="score_number">3.9</span>
-        <span class="stars">⭐⭐⭐⭐☆</span>
-      </div>
-      <a th:href="@{/user/job_posting/review_write}" class="write_review_btn">리뷰 작성</a>
-    </div>
-  </div>
-</div>
-
-  <div class="review-list">
-  <div class="review-item">
-    <div class="review-profile">
-      <img src="/images/default_img.png" alt="프로필 이미지">
-    </div>
-    <div class="review-content">
-      <p class="review-title">"짧은 기간동안 급성장한 기업으로 성장가능성이 높았다."</p>
-      <p class="review-subtitle"><strong>장점</strong><br>스타트업인데도 불구하고...</p>
-      <p class="review-subtitle"><strong>단점</strong><br>스타트업이다 보니 아직...</p>
-    </div>
-  </div>
-  
-  <div class="review-item">
-    <div class="review-profile">
-      <img src="/images/default_img.png" alt="프로필 이미지">
-    </div>
-    <div class="review-content">
-      <p class="review-title">"쉬운 업무 부담 없는 업무 모두 함께 역량을 펼칠 수 있는 회사"</p>
-      <p class="review-subtitle"><strong>장점</strong><br>서로 서로 도와주면서...</p>
-      <p class="review-subtitle"><strong>단점</strong><br>아직 더 기계화 되는 과정...</p>
-    </div>
-  </div>
-  
-  <div class="review-item">
-    <div class="review-profile">
-      <img src="/images/default_img.png" alt="프로필 이미지">
-    </div>
-    <div class="review-content">
-      <p class="review-title">"성장 중인 기업에서 다양한 경험을 쌓을 수 있는 곳"</p>
-      <p class="review-subtitle"><strong>장점</strong><br>젊은 분위기에서 자유롭게...</p>
-      <p class="review-subtitle"><strong>단점</strong><br>체계적인 프로세스가...</p>
-    </div>
-  </div>
-</div>
-
-  <div class="pagination">
-    <a href="#">«</a>
-    <a href="#" class="active">1</a>
-    <a href="#">2</a>
-    <a href="#">3</a>
-    <span>...</span>
-    <a href="#">10</a>
-    <a href="#">»</a>
-  </div>
-</div>
-</div>
+   <div class="container">
+            <div class="review-section">
+                <h1>기업 후기</h1>
+                
+                <div class="company-stats">
+                    <p class="total-review">전체 리뷰 통계 (18명)</p>
+                    <div class="score-display">
+                        <!-- <span class="score-number" th:text="${reviewList.rating ?: '4.2'}">4.2</span> -->
+                        <span class="stars">⭐⭐⭐⭐☆</span>
+                    </div>
+                </div>
+                
+                <div class="review-list">
+                
+                    <div th:if="${reviewList == null or #lists.isEmpty(reviewList)}" class="empty-message">
+                        <p>리뷰가 없습니다.</p>
+                        <a th:href="@{/user/job_posting/review_write}" class="write-review-btn">리뷰 작성</a>
+                    </div>
+                    
+                    <div th:unless="${reviewList == null or #lists.isEmpty(reviewList)}">
+                        <div class="review-item" th:each="review : ${reviewList}">
+                            <div class="review-content">
+                                <div class="review-title" th:text="${review.summary}"></div>
+                                
+                                <div class="review-section-item">
+                                    <strong>장점</strong>
+                                    <div class="review-text" th:text="${review.pros}"></div>
+                                </div>
+                                
+                                <div class="review-section-item">
+                                    <strong>단점</strong>
+                                    <div class="review-text" th:text="${review.cons}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a th:href="@{/user/job_posting/review_write}" class="write-review-btn">리뷰 작성</a>
+                    </div>
+                </div>
+                
+                <div class="pagination" th:unless="${reviewList == null or #lists.isEmpty(reviewList)}">
+                    <a href="#">«</a>
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <span>...</span>
+                    <a href="#">10</a>
+                    <a href="#">»</a>
+                </div>
+            </div>
+        </div>
 </main>
 <footer>
 <div th:replace="~{fragments/footer :: footer}"></div>
