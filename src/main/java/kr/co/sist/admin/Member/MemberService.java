@@ -25,6 +25,9 @@ public class MemberService {
 	public MemberEntity searchNameMember(String name) {
 		return mer.findByName(name);
 	}
+	public MemberEntity searchEmailMember(String email) {
+		return mer.findByEmail(email);
+	}
 	
 	public List<MemberEntity> searchGenderMember(String gender) {
 		return mer.findByGender(gender);
@@ -38,8 +41,8 @@ public class MemberService {
 		return memberMapper.selectMember();
 	}
 	
-	public List<MemberEntity> searchMember(String name, String gender, Integer status) {
-		return memberMapper.searchMember(name, gender, status);
+	public List<MemberEntity> searchMember(String name, String gender, Integer status,String type) {
+		return memberMapper.searchMember(name, gender, status,type);
 	}
 	
 	public void sanctionMember(String name) {

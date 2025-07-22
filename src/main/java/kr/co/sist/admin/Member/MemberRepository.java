@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberRepository extends JpaRepository<MemberEntity, String>{
 	MemberEntity findByName(String name);
 	List<MemberEntity> findByNameContaining(String name);
+	MemberEntity findByEmail(String email);
 	List<MemberEntity> findByGender(String gender);
 	List<MemberEntity> findByactiveStatus(Integer status);
 }

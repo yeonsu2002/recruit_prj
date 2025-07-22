@@ -33,9 +33,9 @@ public class HjsController {
 	
 	
 	@GetMapping("/admin_member_detail")
-	public String SearchMember(@RequestParam String name,
+	public String SearchMember(@RequestParam String email,
 												Model model) {
-		MemberEntity member=ms.searchNameMember(name);
+		MemberEntity member=ms.searchEmailMember(email);
 			try {
        if (member.getPhone() != null) {
            member.setPhone(cipherUtil.decryptText(member.getPhone()));
@@ -103,9 +103,10 @@ public class HjsController {
 	public String SearchMember2(  @RequestParam(required = false) String name,
       @RequestParam(required = false) String gender,
       @RequestParam(required = false) Integer status,
+      @RequestParam(required = false) String type,
       Model model) {
 		
-		List<MemberEntity> member=ms.searchMember(name,gender,status);
+		List<MemberEntity> member=ms.searchMember(name,gender,status,type);
 		List<MemberEntity> filtered = new ArrayList();
 		for (MemberEntity m : member) {
 			try {
