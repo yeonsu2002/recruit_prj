@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기인력 - 관리자 FAQ</title>
+<link rel="stylesheet" th:href="@{/admin/css/admin_board.css}"/>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+  function loadFaqList() {
+    $.ajax({
+      url: '/admin/faq',
+      method: 'GET',
+      success: function(data) {
+        const tbody = $('#faqTable tbody');
+        tbody.empty();
+
+        if (!data || data.length === 0) {
+          tbody.append('<tr><td colspan="8">등록된 FAQ가 없습니다.</td></tr>');
+          return;
+        }
+
+        data.forEach(function(faq, index) {
+          const num = data.length - index;
+          const content = faq.content || "";
+          const shortContent = content.length > 50 ? content.substring(0, 50) + '...' : content;
+
+          const row = `
+            <tr>
+              <td><input type="checkbox" class="chk" value="${faq.faqSeq}"></td>
+              <td>${num}</td>
+              <td>${faq.adminId}</td>
+              <td><a href="/admin/admin_faq/save?faqSeq=${faq.faqSeq}">${faq.title}</a></td>
+              <td colspan="4">${shortContent}</td>
+            </tr>
+          `;
+          tbody.append(row);
+        });
+
+        $('#selectAll').prop('checked', false);
+        $('#deleteBtn').prop('disabled', true);
+        $('#createBtn').prop('disabled', false);
+      },
+      error: function() {
+        alert('FAQ 목록을 불러오는 데 실패했습니다.');
+      }
+    });
+  }
+
+  loadFaqList();
+
+  // 전체 선택/해제
+  $('#selectAll').on('change', function() {
+    $('.chk').prop('checked', $(this).prop('checked'));
+    $('#deleteBtn').prop('disabled', !$(this).prop('checked'));
+  });
+
+  // 삭제 버튼 클릭
+  $('#deleteBtn').on('click', function() {
+    let checked = $('.chk:checked').map(function() {
+      return parseInt($(this).val());
+    }).get();
+
+    if (checked.length === 0) {
+      alert("삭제할 FAQ를 선택하세요.");
+      return;
+    }
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
+    let deleteCount = 0;
+    checked.forEach(function(faqSeq) {
+      $.ajax({
+        url: '/admin/faq/' + faqSeq,
+        type: 'DELETE',
+        success: function() {
+          deleteCount++;
+          if (deleteCount === checked.length) {
+            alert("삭제가 완료되었습니다.");
+            loadFaqList();
+          }
+        },
+        error: function() {
+          alert("삭제 중 오류가 발생했습니다.");
+        }
+      });
+    });
+  });
+
+  // 개별 체크박스 변경 시 삭제 버튼 활성화 제어
+  $(document).on('change', '.chk', function() {
+    const totalChk = $('.chk').length;
+    const checkedChk = $('.chk:checked').length;
+
+    $('#selectAll').prop('checked', totalChk === checkedChk);
+    $('#deleteBtn').prop('disabled', checkedChk === 0);
+  });
+
+  // 작성 버튼 클릭
+  $('#createBtn').on('click', function() {
+    window.location.href = '/admin/admin_faq/save';
+  });
+});
+</script>
+
+<style type="text/css">
+  a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: default;
+    color: gray;
+    text-decoration: none;
+  }
+  
+  .button-container {
+    text-align: right;
+    margin-top: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 사이드바 포함 -->
+<th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+
+<!-- 콘텐츠 영역 -->
+<div class="admin-container">
+  <section class="review-wrapper">
+    <h2 class="review-title">FAQ 관리</h2>
+
+    <div class="review-table-wrapper">
+
+      <table id="faqTable" class="admin-table" summary="FAQ 목록 테이블">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll" /></th>
+            <th>번호</th>
+            <th>작성자(관리자 ID)</th>
+            <th>제목</th>
+            <th colspan="4">내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- AJAX로 FAQ 리스트 동적 생성 -->
+        </tbody>
+      </table>
+      <div class="button-container">
+        <button id="deleteBtn" class="delete-btn" type="button" disabled>삭제</button>
+        <button id="createBtn" class="delete-btn" type="button" style="background-color: green">작성</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>
