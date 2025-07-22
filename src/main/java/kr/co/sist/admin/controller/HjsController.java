@@ -207,9 +207,9 @@ public class HjsController {
 		}
 	 
 	 @GetMapping("/admin_sanction")
-		public String SearchResume(@RequestParam(required = false) String name,
+		public String SearchResume(@RequestParam String email,
 				Model model) {
-			MemberEntity member=ms.searchNameMember(name);
+			MemberEntity member=ms.searchEmailMember(email);
 			
 				try {
 	       if (member.getPhone() != null) {
@@ -223,6 +223,25 @@ public class HjsController {
 			model.addAttribute("member", member);
 			return "admin/admin_sanction";
 		}
+	 
+	 @GetMapping("/admin_sanction_cancel")
+		public String sanctionCancel(@RequestParam String email,
+				Model model) {
+		 ms.sanctionCancel(email);
+		 MemberEntity member=ms.searchEmailMember(email);
+			
+				try {
+	       if (member.getPhone() != null) {
+	           member.setPhone(cipherUtil.decryptText(member.getPhone()));
+	       }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}  // 복호화
+
+			// filtered 리스트를 모델에 추가해서 뷰에 전달
+			model.addAttribute("member", member);
+			return "admin/admin_member_detail";
+		}
 
 		@Autowired
 		private EmailService es;
@@ -230,8 +249,8 @@ public class HjsController {
 		public String SendSaction(@RequestParam(required = false) String email,
 				@RequestParam String name,
 				@RequestParam String content) {
-		 ms.sanctionMember(name);
-		 es.sendSanctionEmail("mogiyi1147@forexru.com",name,content);
+		 ms.sanctionMember(email);
+		 es.sendSanctionEmail(email,name,content);
 			return "redirect:/admin_member2";
 		}
 	 

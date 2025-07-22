@@ -45,8 +45,12 @@ public class MemberService {
 		return memberMapper.searchMember(name, gender, status,type);
 	}
 	
-	public void sanctionMember(String name) {
-		memberMapper.sanctionMember(name);
+	public void sanctionMember(String email) {
+		memberMapper.sanctionMember(email);
+		return;
+	}
+	public void sanctionCancel(String email) {
+		memberMapper.sanctionCancel(email);
 		return;
 	}
 }

@@ -32,6 +32,10 @@
     </select>
     
     <select id="sanctionMember" parameterType="String">
-    update member set active_status=1 where name=#{name} 
+    update member set active_status=1 where email=#{email} 
+    </select>
+    
+    <select id="sanctionCancel" parameterType="String">
+    update member set active_status=0 where email=#{email}
     </select>
 </mapper>
