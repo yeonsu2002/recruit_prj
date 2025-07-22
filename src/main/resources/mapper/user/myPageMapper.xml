@@ -7,7 +7,7 @@
 <mapper namespace="kr.co.sist.user.mapper.MyPageMapper">
 
 	<!-- 공고관련 -->
-	<select id="selectScrapPosting" parameterType="String"
+	<!-- <select id="selectScrapPosting" parameterType="String"
 		resultType="userJobPostingScrapDTO">
 		select SCRAP_SEQ, JOB_POSTING_SEQ, EMAIL, SCRAP_DATE
 		from
@@ -15,7 +15,7 @@
 		where email = #{email}
 		ORDER BY
 		TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
-	</select>
+	</select> -->
 
 	<!-- 지원 회사 목록 가져오기 -->
 	<select id="selectMyApplicant" parameterType="String"
@@ -70,17 +70,19 @@
 
 		<choose>
 			<!-- 대체 왜 아래 12나 24는 저거로 해도 잘만 타면서 6은 이따구로 해야 작동되는거? -->
-			<when test='period != null and "6".equals(period)'>
+			<!-- <when test='period != null and "6".equals(period)'> -->
+			<when test='"6".equals(period)'>
 				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -6)
 			</when>
-			<when test="period == '12'">
+			<when test='period == "12"'>
 				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -12)
 			</when>
 			<when test="period == '24'">
 				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -24)
 			</when>
 			<otherwise>
-				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -1)
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS')
+				&gt;= ADD_MONTHS(SYSDATE, -1)
 			</otherwise>
 		</choose>
 		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
@@ -94,5 +96,48 @@
 		where job_application_seq =
 		#{jobApplicationSeq}
 	</update>
+
+	<!-- 지원 삭제 -->
+	<delete id="deleteApplication" parameterType="int">
+		delete from
+		job_application
+		where job_application_seq = #{jobApplicationSeq}
+	</delete>
+
+	<!-- 스크랩한 공고 가져오기 -->
+	<select id="selectMyScrapPosting" parameterType="String" resultType="userMyPostingDTO">
+		SELECT
+		jp.job_posting_seq AS jobPostingSeq,
+		jp.posting_title AS postingTitle,
+		jp.exp_level AS expLevel,
+		jp.district AS district,
+		jp.region AS region,
+		c.corp_nm AS corpNm,
+		c.corp_img as corpImg,
+		pc.position_name AS positionName,
+		jp.POSTING_END_DT as postingEndDt,
+		NVL(ts.stack_names, '기술 스택 없음') AS stackName
+		FROM JOB_POSTING jp
+		JOIN COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
+		JOIN JOB_POSTING_SCRAP js ON js.job_posting_seq = jp.job_posting_seq
+		LEFT JOIN (
+		SELECT
+		jpts.job_posting_seq,
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name) AS stack_names
+		FROM JOB_POSTING_TECH_STACK jpts
+		JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY jpts.job_posting_seq
+		) ts ON jp.job_posting_seq = ts.job_posting_seq
+		WHERE js.email = #{email}
+		ORDER BY js.scrap_date desc
+	</select>
+	
+	<!-- 스크랩한 공고 개수 -->
+	<select id="cntMyScrapPosting" parameterType="String" resultType="int">
+		select count(*)
+		from job_posting_scrap
+		where email = #{email}
+	</select>
 
 </mapper>

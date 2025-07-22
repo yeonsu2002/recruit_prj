@@ -11,13 +11,12 @@
         FROM FAVORITE_COMPANY
         WHERE corp_no = #{corpNo}
           AND email = #{email}
-          AND scrap_date=#{scrapDate}
     </select>
     
     <!-- 스크랩 추가 -->
     <insert id="insertScrap" parameterType="kr.co.sist.user.dto.CorpScrapDTO">
-        INSERT INTO FAVORITE_COMPANY (corp_no, email,)
-        VALUES (#{corpNo}, #{email}, #{scrapDate})
+           INSERT INTO FAVORITE_COMPANY (corp_no, email, scrap_date)
+  		   VALUES (#{corpNo}, #{email}, #{scrapDate})
     </insert>
     
     <!-- 스크랩 삭제 -->
@@ -25,7 +24,6 @@
         DELETE FROM FAVORITE_COMPANY
         WHERE corp_no = #{corpNo}
           AND email = #{email}
-          AND scrap_date=#{scrapDate}
     </delete>
     
 </mapper>

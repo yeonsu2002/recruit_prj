@@ -1,5 +1,8 @@
 package kr.co.sist.user.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,13 @@ public class CorpScrapService {
     
     // 기업 스크랩 추가
     public void addCorpScrap(CorpScrapDTO corpScrapDTO) {
+    	
+      String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+      
+      // DTO에 세팅
+      corpScrapDTO.setScrapDate(now);
+
+	 
         corpScrapMapper.insertScrap(corpScrapDTO);
     }
     
