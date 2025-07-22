@@ -21,11 +21,11 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
 		
+		Throwable cause = exception.getCause();
 		String errorMsg = "알 수 없는 로그인 오류가 발생하였습니다.";
 		
 		//UserDetailsService 안에서 발생하는 예외는
 		//Spring Security 내부적으로 InternalAuthenticationServiceException으로 감싸서 던집니다.
-		Throwable cause = exception.getCause();
 		
 		if(cause instanceof UsernameNotFoundException) { //스프링 시큐리티 보안정책으로 인해 UsernameNotFoundException는 BadCredentialsException로 덮어씌워짐
 			errorMsg = "등록되지 않은 이메일입니다.";

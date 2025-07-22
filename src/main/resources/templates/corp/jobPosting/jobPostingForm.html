@@ -78,10 +78,19 @@ function openKakaoMap(){
  * 포지션 리스트 비동기 검색 기능
  */
 function getPositionList() {
-	// 포지션 입력 필드 클릭 시 초기화
+	
+	// 클릭시 값이 있다면 결과리스트 보여주기
 	document.querySelector('#positionName').addEventListener('click', function(){
-		document.querySelector('#positionName').value = "";
-		document.querySelector('#positionSeq').value = "";
+		console.log('click 발생');
+		if(document.querySelector('#positionName').value !== ""){
+			document.querySelector('#resultBox').style.display = 'block';
+		}
+	});
+	
+	// 외부 클릭시 결과리스트 숨기기
+	document.querySelector('#positionName').addEventListener('focusout', function(){
+		console.log('focusout 발생');
+		document.querySelector('#resultBox').style.display = 'none';
 	});
 	  
 	// 포지션 검색 자동완성
@@ -89,7 +98,7 @@ function getPositionList() {
 		const keyword = document.getElementById('positionName').value.trim();
 		const resultBox = document.querySelector('#resultBox');
 
-		// 검색어가 없을때는 결과 박스 숨기기.. 이거 왜 안먹히냐고
+		// 검색어가 없을때는 결과 박스 숨기기.. 
 		if (keyword === '') {
 			resultBox.style.display = 'none';
 			return;
@@ -438,7 +447,7 @@ function initPreviewFeature() {
 	document.querySelector('.preview-btn').addEventListener('click', function() {
 		const formData = collectFormData();
 		
-		alert('미리보기 기능을 준비중입니다!\n\n현재 입력된 데이터를 콘솔에서 확인할 수 있습니다.');
+		alert('미리보기 기능을 준비중.. \n\n입력된 데이터는 콘솔에서 확인..');
 	});
 }
 
@@ -471,7 +480,7 @@ function setPostingStartDate() {
 function initSalaryFormatting() {
 	const salaryInput = document.querySelector('input[name="salary"]');
 	if (salaryInput) {
-		salaryInput.addEventListener('blur', function() {
+		salaryInput.addEventListener('input', function() {
 			let value = this.value;
 			value = value.replace(/[^0-9]/g, ''); //숫자 이외의 문자 제거
 			this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -551,7 +560,7 @@ function isValidStdEdd(){
 
                     <div class="form-group position-box">
                         <label class="form-label required">포지션</label>
-                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
+                        <input type="text" id="positionName" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
                         <ul id="resultBox" class="list-group position-absolute" style="display: none" ></ul>
                         <input type="hidden" id="positionSeq"> <!-- hidden으로 -->
                     </div>
@@ -560,11 +569,11 @@ function isValidStdEdd(){
                         <label class="form-label">주요 기술스택 <span style="color: red">*</span> </label>
                         <input type="text" id="techStackSearch" name="techStackSearch" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">
                         <!-- 검색 리스트 (비동기로 ul > li) -->
-						<ul id="suggestedStackList" class="list-group mt-1 position-absolute" style="z-index:1000; display: none;"></ul>
-						<!-- 선택된 스택들 -->
-						<div id="techStack-list" class="mt-3"></div>
-						<!-- 스택 seq담을 input -->
-						<div id="hiddenInputsArea"></div>
+												<ul id="suggestedStackList" class="list-group mt-1 position-absolute" style="z-index:1000; display: none;"></ul>
+												<!-- 선택된 스택들 -->
+												<div id="techStack-list" class="mt-3"></div>
+												<!-- 스택 seq담을 input -->
+												<div id="hiddenInputsArea"></div>
                     </div>
 
                     <div class="form-group">
@@ -687,22 +696,10 @@ function isValidStdEdd(){
                     
                     <div class="form-group">
                         <label class="form-label required">채용공고 상세 내용</label>
-                        <textarea name="postingDetail" id="postingDetail" class="form-textarea" rows="12" wrap="on" placeholder="📌 주요 업무
-- 담당하게 될 구체적인 업무 내용을 작성해주세요
-- 프로젝트 성격, 사용 기술, 협업 방식 등을 포함해주세요
-
-🎯 자격 요건
-- 필수 요구사항을 명확히 작성해주세요
-- 우대사항도 함께 작성하시면 좋습니다
-
-🎁 복지 및 혜택
-- 급여 외 복리후생을 상세히 작성해주세요
-- 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요
-
-📋 채용 절차
-- 서류 전형부터 최종 면접까지의 과정을 안내해주세요" required></textarea>
+                        <textarea name="postingDetail" id="postingDetail" class="form-textarea" rows="12" wrap="on"
+												placeholder="📌 주요 업무&#10;- 담당하게 될 구체적인 업무 내용을 작성해주세요&#10;- 프로젝트 성격, 사용 기술, 협업 방식 등을 포함해주세요&#10;&#10;🎯 자격 요건&#10;- 필수 요구사항을 명확히 작성해주세요&#10;- 우대사항도 함께 작성하시면 좋습니다&#10;&#10;🎁 복지 및 혜택&#10;- 급여 외 복리후생을 상세히 작성해주세요&#10;- 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요&#10;&#10;📋 채용 절차&#10;- 서류 전형부터 최종 면접까지의 과정을 안내해주세요"
+												required></textarea>
                     </div>
-
                     <div class="form-group">
                     	<input type="hidden" id="postingStartDt" name="postingStartDt" value="">
                         <label class="form-label required">공고 마감일</label>
