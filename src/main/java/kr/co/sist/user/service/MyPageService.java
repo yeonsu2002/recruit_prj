@@ -3,7 +3,9 @@ package kr.co.sist.user.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -22,21 +24,33 @@ public class MyPageService {
 	private final MyPageMapper mpMapper;
 	private final MessageMapper messageMapper;
 
-	// 내가 스크랩한 공고 가져오기
-	public List<MyPostingDTO> searchMyScrapPosting(String email){
+	// 내가 스크랩한 첫 공고 9개 가져오기
+	public List<MyPostingDTO> searchMyScrapPosting(String email) {
 
 		return mpMapper.selectMyScrapPosting(email);
 	}
-	
+
+	// 내가 스크랩한 다음 공고 9개 가져오기
+	public List<MyPostingDTO> searchMyNextScrapPosting(String email, int currentPage) {
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("email", email);
+		map.put("offset", (currentPage - 1) * 9);
+
+		return mpMapper.selectMyNextScrapPosting(map);
+	}
+
 	// 내가 스크랩한 공고 개수
 	public int cntMyScrapPosting(String email) {
-		
+
 		return mpMapper.cntMyScrapPosting(email);
 	}
-	
+
 	// 내 모든 지원 목록
 	public List<MyApplicantDTO> searchMyAllApplicant(String email) {
+
 		return mpMapper.selectMyApplicant(email);
+
 	}
 
 	// 내 지원 목록

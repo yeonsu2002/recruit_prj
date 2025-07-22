@@ -87,6 +87,7 @@
 		</choose>
 		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
 	</select>
+	
 
 	<!-- 지원 취소 -->
 	<update id="updateApplicationCancel" parameterType="int">
@@ -104,7 +105,7 @@
 		where job_application_seq = #{jobApplicationSeq}
 	</delete>
 
-	<!-- 스크랩한 공고 가져오기 -->
+	<!-- 스크랩한 공고 처음 9개 가져오기 -->
 	<select id="selectMyScrapPosting" parameterType="String" resultType="userMyPostingDTO">
 		SELECT
 		jp.job_posting_seq AS jobPostingSeq,
@@ -131,6 +132,37 @@
 		) ts ON jp.job_posting_seq = ts.job_posting_seq
 		WHERE js.email = #{email}
 		ORDER BY js.scrap_date desc
+		offset 0 rows fetch next 9 rows only
+	</select>
+	
+	<!-- 스크랩한 공고 무한스크롤로 가져오기 -->
+	<select id="selectMyNextScrapPosting" parameterType="map" resultType="userMyPostingDTO">
+		SELECT
+		jp.job_posting_seq AS jobPostingSeq,
+		jp.posting_title AS postingTitle,
+		jp.exp_level AS expLevel,
+		jp.district AS district,
+		jp.region AS region,
+		c.corp_nm AS corpNm,
+		c.corp_img as corpImg,
+		pc.position_name AS positionName,
+		jp.POSTING_END_DT as postingEndDt,
+		NVL(ts.stack_names, '기술 스택 없음') AS stackName
+		FROM JOB_POSTING jp
+		JOIN COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
+		JOIN JOB_POSTING_SCRAP js ON js.job_posting_seq = jp.job_posting_seq
+		LEFT JOIN (
+		SELECT
+		jpts.job_posting_seq,
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name) AS stack_names
+		FROM JOB_POSTING_TECH_STACK jpts
+		JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY jpts.job_posting_seq
+		) ts ON jp.job_posting_seq = ts.job_posting_seq
+		WHERE js.email = #{email}
+		ORDER BY js.scrap_date desc
+		offset #{offset} rows fetch next 9 rows only
 	</select>
 	
 	<!-- 스크랩한 공고 개수 -->

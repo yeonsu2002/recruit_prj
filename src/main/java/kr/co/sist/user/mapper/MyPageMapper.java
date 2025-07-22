@@ -1,10 +1,10 @@
 package kr.co.sist.user.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.co.sist.user.dto.JobPostingScrapDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
@@ -20,6 +20,7 @@ public interface MyPageMapper {
 	public int deleteApplication(int jobApplicationSeq);
 	
 	public List<MyPostingDTO> selectMyScrapPosting(String email);
+	public List<MyPostingDTO> selectMyNextScrapPosting(Map<String, Object> map);
 	
 	public int cntMyScrapPosting(String email);
 	

@@ -26,7 +26,7 @@
 						스크랩 공고(<span th:text="${totalCnt}"></span>)
 					</div>
 					<div class="announcement-section">
-						<div class="announcement-list">
+						<div class="announcement-list" id="announcement-list">
 							<th:block th:each="posting : ${postings}">
 								<div class="announcement-card"
 									th:attr="data-posting-seq=${posting.jobPostingSeq}"
@@ -54,7 +54,6 @@
 										개발</div>
 								</div>
 							</th:block>
-
 						</div>
 					</div>
 				</div>
