@@ -46,9 +46,6 @@ public class AttachmentRestController {
 
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
 		
-//		String token = jwtUtil.resolveToken(request);
-//		UserDTO user = jwtUtil.validateToken(token);
-
 		AttachmentEntity attachment = attachmentServ.addAttachment(file, user);
 
 		if (attachment != null) {
@@ -86,7 +83,12 @@ public class AttachmentRestController {
 	        AttachmentEntity attachment = attachmentServ.searchOneAttachment(attachmentSeq);
 	        String fileName = attachment.getFileName();
 	        
-	        File file = new File(fileDir, fileName);
+	        //상대 경로 위해 사용
+	    		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
+	    		String resourcePath = projectPath + "/src/main/resources/static/attachment";
+	    		//--------------------
+	        
+	    		File file = new File(resourcePath, fileName);
 
 	        if (!file.exists()) {
 	            return ResponseEntity.notFound().build();

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>민기인력 - 공지사항 관리</title>
+<link rel="stylesheet" th:href="@{/admin/css/admin_board.css}"/>
+<th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    // 공지사항 목록 불러오기
+    function loadNoticeList() {
+        $.ajax({
+            url: '/admin/api/notice_list',
+            method: 'GET',
+            success: function(data) {
+                const tbody = $('#noticeTable tbody');
+                tbody.empty();
+
+                if (!data || data.length === 0) {
+                    tbody.append('<tr><td colspan="4">등록된 공지사항이 없습니다.</td></tr>');
+                    return;
+                }
+
+                data.forEach(function(notice, index) {
+                    const num = data.length - index;
+                    const row = `
+                    <tr>
+                        <td><input type="checkbox" class="chk" value="${notice.noticeSeq}"></td>
+                        <td>${num}</td>
+                        <td><a href="/admin/notice_write/${notice.noticeSeq}">${notice.title}</a></td>
+                        <td>${notice.regsDate}</td>
+                    </tr>
+                    `;
+                    tbody.append(row);
+                });
+            },
+            error: function() {
+                alert('공지사항 목록을 불러오는 데 실패했습니다.');
+            }
+        });
+    }
+
+    // 전체 선택/해제 기능
+    $('#selectAll').change(function() {
+        $('.chk').prop('checked', this.checked);
+    });
+
+    // 개별 체크박스 변경시 전체선택 체크박스 상태 변경
+    $(document).on('change', '.chk', function() {
+        const totalCheckboxes = $('.chk').length;
+        const checkedCheckboxes = $('.chk:checked').length;
+        
+        if (totalCheckboxes === checkedCheckboxes) {
+            $('#selectAll').prop('checked', true);
+        } else {
+            $('#selectAll').prop('checked', false);
+        }
+    });
+
+    // 선택 삭제 기능
+    $('#btnDelete').click(function() {
+        const checkedItems = $('.chk:checked');
+        
+        if (checkedItems.length === 0) {
+            alert('삭제할 공지사항을 선택해주세요.');
+            return;
+        }
+
+        if (!confirm(checkedItems.length + '개의 공지사항을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        const noticeSeqs = [];
+        checkedItems.each(function() {
+            noticeSeqs.push($(this).val());
+        });
+
+        $.ajax({
+            url: '/admin/notice_delete',
+            method: 'POST',
+            data: {
+                noticeSeqs: noticeSeqs
+            },
+            traditional: true, // 배열 전송을 위해 필요
+            success: function(response) {
+                alert('선택한 공지사항이 삭제되었습니다.');
+                loadNoticeList(); // 목록 새로고침
+                $('#selectAll').prop('checked', false); // 전체선택 해제
+            },
+            error: function() {
+                alert('삭제 처리 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 페이지 로드시 목록 불러오기
+    loadNoticeList();
+});
+</script>
+</head>
+<body>
+
+<!-- 사이드바 포함 -->
+<th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+
+<!-- 콘텐츠 영역 -->
+<div class="admin-container">
+<section class="review-wrapper">
+<h2 class="review-title">공지사항 목록</h2>
+
+<!-- 검색 form -->
+<form th:action="@{/admin/notice_list}" method="get">
+<div class="search-area">
+<div class="search-group">
+<select name="searchType" aria-label="검색 조건 선택">
+<option th:value="전체" th:selected="${searchType == '전체'}">전체</option>
+<option th:value="제목" th:selected="${searchType == '제목'}">제목</option>
+<option th:value="내용" th:selected="${searchType == '내용'}">내용</option>
+</select>
+</div>
+<div class="search-group">
+<input type="text" name="keyword" th:value="${keyword}" placeholder="검색어 입력" aria-label="검색어 입력"/>
+</div>
+<button class="search-btn" type="submit">검색</button>
+</div>
+</form>
+
+<!-- 테이블 -->
+<div class="review-table-wrapper">
+<table id="noticeTable" class="admin-table" summary="공지사항 목록 테이블">
+<thead>
+<tr>
+<th><input type="checkbox" id="selectAll" /></th>
+<th>번호</th>
+<th>제목</th>
+<th>작성일</th>
+</tr>
+</thead>
+<tbody>
+<!-- AJAX로 공지사항 목록 동적 생성 -->
+</tbody>
+</table>
+</div>
+
+<!-- 하단 버튼 -->
+<div class="pagination-wrapper">
+<button id="btnDelete" class="delete-btn" type="button" style="background-color: red;">선택 삭제</button>
+<button id="btnWrite" class="delete-btn" type="button" style="background-color: green" th:onclick="|window.location.href='/admin/notice_write'|">공지사항 작성</button>
+</div>
+</section>
+</div>
+
+</body>
+</html>

@@ -20,6 +20,10 @@
     <if test="gender != null and gender != ''">
       AND gender = #{gender}
     </if>
+    
+      <if test="type != null and type != ''">
+      AND role = #{type}
+    </if>
 
      <if test="status != null">
       and active_status = #{status}

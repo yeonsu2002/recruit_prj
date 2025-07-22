@@ -3,24 +3,21 @@ package kr.co.sist.admin;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.catalina.valves.rewrite.InternalRewriteMap.UpperCase;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import kr.co.sist.admin.resister.Dept;
-import kr.co.sist.admin.resister.Job;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name="ADMIN")
 public class AdminEntity {
@@ -31,12 +28,10 @@ public class AdminEntity {
 	private String password;
 	@Column(name="NAME")
 	private String name;
-	@Enumerated(EnumType.STRING)
 	@Column(name="DEPT")
-	private Dept dept;
-	@Enumerated(EnumType.STRING)
+	private String dept;
 	@Column(name="JOB")
-	private Job job;	
+	private String job;
 	@Column(name="APPROVAL_DATE")
 	private String approvalDate;
 	@Column(name="APPROVAL_REQUEST_DATE")
@@ -65,10 +60,10 @@ public class AdminEntity {
 	        stat = "승인대기";
 	    }
 	    if (deptRole == null && dept != null) {
-	        deptRole = "ROLE_" + dept.name();  // ✅ name()은 enum의 순수 이름, 안전함
+	      deptRole = "ROLE_" + dept.toUpperCase();
 	    }
 	    if (jobRole == null && job != null) {
-	        jobRole = "ROLE_" + job.name();  // ✅ name() 사용
+	        jobRole = "ROLE_" + job.toUpperCase();   
 	    }
 	}
 
@@ -79,8 +74,8 @@ public static AdminEntity from(AdminDTO dto, BCryptPasswordEncoder encoder) {
    entity.setAdminId(dto.getAdminId());
    entity.setPassword(encoder.encode(dto.getPassword()));  // 비밀번호 암호화 포함
    entity.setName(dto.getName());
-   entity.setDept(Dept.valueOf(dto.getDept()));
-   entity.setJob(Job.valueOf(dto.getJob()));
+   entity.setDept(dto.getDept());
+   entity.setJob(dto.getJob());
    entity.setTel(dto.getTel());
    return entity;
 }

@@ -16,13 +16,21 @@ $(document).ready(function () {
     const $modal = $('#applyModal');
     let selectedResumeId = null;
 
-    // 모달 열기
+    // 모달 열기 - 마감일 체크 추가
     $('#applyBtn').on('click', function (e) {
         e.preventDefault();
+        
+        // 버튼이 비활성화되어 있으면 모달을 열지 않음
+        if ($(this).hasClass('disabled') || $(this).prop('disabled')) {
+            alert('마감된 공고입니다.');
+            return;
+        }
+        
         $modal.show().addClass('show');
         fetchUserResumes();
         $('#attachmentList').empty(); // 첨부파일 리스트 초기화
     });
+
 
     // 모달 닫기
     function closeModal() {
@@ -149,6 +157,38 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+    $("#scrapBtn").click(function () {
+        const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();  // ID가 바뀐 input에서 값 읽기
+        console.log("jobPostingSeqStr:", jobPostingSeqStr);
+        if (!jobPostingSeqStr || isNaN(jobPostingSeqStr)) {
+            alert("유효한 공고 번호가 없습니다.");
+            return;
+        }
+
+        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);  // 문자열을 정수로 변환
+        const heartIcon = $("#heartIcon");
+        const isScrapped = heartIcon.text() === "❤️";
+        const url = isScrapped ? "/scrap/remove" : "/scrap/add";
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+            success: function (data) {
+                alert(data.message);
+                if (data.success) {
+                    heartIcon.text(isScrapped ? "🤍" : "❤️");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("스크랩 처리 중 오류:", error);
+                alert("스크랩 처리 중 오류가 발생했습니다.");
+            }
+        });
+    });
+});
 </script>
 
 </head>
@@ -167,17 +207,14 @@ $(document).ready(function () {
             <div class="stack">
                 <h3 class="section-title" style="font-size: 20px;">기술스택</h3>
                 <div class="tech-stack-container">
-                    <th:block th:each="stack : ${jDto.techStacks}">
-                        <span class="tech-stack-tag" th:text="${stack}"></span>
-                    </th:block>
+                       <span class="tech-stack-tag" th:text="${jDto != null} ? ${jDto.techNames} : ''"></span>
                 </div>
             </div>
 
 
             <div class="job-section">
                <h2 style="font-size: 20px;">주요내용</h2>
-               <p th:text="${jDto.postingDetail}" style="font-size: 15px;"></p>
-            
+            <div class="content-detail" th:text="${jDto.postingDetail}"></div>
             </div>
 
             <div class="job-info-box">
@@ -188,7 +225,7 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">학력</h2>
-                    <p style="font-size: 15px;">무관</p>
+                    <p th:text="${jDto.eduLevel}" style="font-size: 15px;">무관</p>
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">마감일 </h2>
@@ -211,57 +248,60 @@ $(document).ready(function () {
             </div>
 
            <div class="company-intro">
-    <h2 th:utext="${jDto.corpInfo}"><strong>기업소개</strong></h2>
+    <h2><strong>기업소개</strong></h2><br><br>
+    <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2>
     
     <div class="company-content">
-        <img src="/img/company_sample.jpg" class="company-image" />
+       <img th:if="${jDto != null}" th:src="@{${jDto.corpImg}}" alt="회사 이미지"/>
         
-        <div class="company-description">
-            저희 테크노베이션은 혁신적인 기술과 창의적인 아이디어로 디지털 혁신을 이끌어가는 IT 기업입니다. 
-            2021년 설립 이후 지속적인 성장을 이어가고 있으며, 고객의 니즈를 정확히 파악하고 최적의 솔루션을 제공하기 위해 끊임없이 노력하고 있습니다.
-            <br><br>
-            직원들의 성장과 발전을 위한 다양한 프로그램을 운영하며, 자유롭고 수평적인 조직문화를 추구합니다. 
-            개발자들이 최고의 퍼포먼스를 발휘할 수 있도록 최신 개발 환경과 도구를 제공하고 있으며, 
-            지속적인 학습과 성장을 지원하는 교육 프로그램도 운영하고 있습니다.
-            <br><br>
-            함께 성장하며 더 나은 미래를 만들어갈 동료를 찾고 있습니다.
-        </div>
+        <div class="company-description" th:text="${jDto.corpInfo}"></div>
     </div>
 </div>
         </div>
     </div>
 
     <!-- 플로팅 사이드바 -->
-    <div class="floating-sidebar">
-        <div class="company-floating-card">
-            <div class="company-logo-section">
-                <div class="logo-placeholder">
-                    <span>🏢</span>
-                </div>
-                <div class="company-title">
-                    <h4 th:text="${jDto.corpNm}">기업이름</h4>
-                    <span><a th:href="@{/user/job_posting/company_info}">기업정보 보기 &gt;</a></span>
-                </div>
+  <div class="floating-sidebar">
+    <div class="company-floating-card">
+        <div class="company-logo-section">
+            <div class="logo-placeholder">
+                <span>🏢</span>
             </div>
-
-            <div class="company-info-section">
-                <div class="info-item">
-                    <span class="label">업력</span>
-                    <span class="value">5년차 (2021년 설립)</span>
-                </div>
-            </div>
-
-            <button class="floating-apply-btn" id="applyBtn">지원하기</button>
-
-            <div class="floating-actions">
-                <button class="floating-action-btn" id="scrapBtn">
-                    <span class="icon" id="heartIcon">🤍</span>
-                    <span class="text">스크랩</span>
-                </button>
+            <div class="company-title">
+                <h4 th:text="${jDto.corpNm}">기업이름</h4>
+              <a th:href="@{/user/job_posting/company_info(corpNo=${jDto.corpNo})}">
+			  기업정보 보기 &gt;
+			</a>
             </div>
         </div>
-    </div>
 
+        <div class="company-info-section">
+            <div class="info-item">
+                <span class="label">업력</span>
+                <span class="value" th:text="${jDto.corpCreatedAt}"></span>
+            </div>
+        </div>
+
+        <!-- 마감일 체크해서 지원 버튼 비활성화 -->
+       <button class="floating-apply-btn" 
+        id="applyBtn" 
+        th:disabled="${jDto.isEnded == 'Y'}" 
+        th:text="${jDto.isEnded == 'Y' ? '마감된 공고' : '지원하기'}"
+        th:classappend="${jDto.isEnded == 'Y' ? ' disabled' : ''}">
+		    지원하기
+		</button>
+		
+     <div class="floating-actions">
+	    <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}" />
+	
+	    <button class="floating-action-btn" id="scrapBtn">
+	        <span class="icon" id="heartIcon">🤍</span>
+	        <span class="text">스크랩</span>
+	    </button>
+	</div>
+    </div>
+</div>
+c
 <!-- 모달창 -->
  <div id="applyModal" class="modal">
         <div class="modal-content">

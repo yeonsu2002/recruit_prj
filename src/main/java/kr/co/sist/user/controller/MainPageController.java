@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
@@ -32,8 +33,9 @@ public class MainPageController {
     @GetMapping("/user/main_page")
     public String MainPage(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 
+    		// 로그인 페이지로 리다이렉트
         if (userInfo == null) {
-            return "redirect:/login";  // 로그인 페이지로 리다이렉트
+            return "redirect:/login";  
         }
 
         // 사용자 정보 가져오기
@@ -45,7 +47,7 @@ public class MainPageController {
         
         // 기업회원이면 사용자 메인페이지 접근 차단
         if (userEntity.getCorpEntity() != null) {
-            return "redirect:/corp/login-block";
+            return "redirect:/corp/main";
         }
 
         
@@ -59,6 +61,7 @@ public class MainPageController {
     }//MainPage
     
     
+    //검색
     @GetMapping("/search")
     public String search(@RequestParam("keyword") String keyword, Model model) {
     	
@@ -70,8 +73,14 @@ public class MainPageController {
     	return "user/searchResult";
     	
     }//search
-    
-    
+
+
+    @ResponseBody
+    @GetMapping("/autocomplete")
+    public List<String> autoComplete(@RequestParam("term") String term){
+    	
+      return mainPageService.getAutoCompleteSuggestions(term);
+    }
     
  
     

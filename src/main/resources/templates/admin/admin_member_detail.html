@@ -4,8 +4,69 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="shortcut icon" href="http://localhost/images/favicon.png"/>
+
+  <style>
+    body {
+      background-color: #f5f6fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      width: 1400px;
+      height:800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      height:90%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #dee2e6;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    td:first-child {
+      font-weight: 600;
+      width: 120px;
+      background-color: #f1f3f5;
+    }
+
+    input[type="submit"] {
+      padding: 10px 20px;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0b5ed7;
+    }
+  </style>
 </head>
 <body>
+<th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
+
+<div class="container">
 <table border="1">
 <tbody>
 <tr>
@@ -39,7 +100,12 @@
 </tr>
 </tbody>
 </table>
-<a herf="/admin_member2" text="이력서">이력서보기</a>
+<form action="/admin_sanction">
+<input type="hidden" name="name" th:value="${member.name}"/>
+<input type="button" value="제재하기" onclick="submit();"/>
+<input type="button" value="뒤로가기" onclick="history.back();">
+</form>
+</div>
 <!-- jquery CDN -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript">
