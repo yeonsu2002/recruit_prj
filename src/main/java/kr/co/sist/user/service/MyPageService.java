@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import kr.co.sist.user.dto.ApplicantStatisticsDTO;
 import kr.co.sist.user.dto.JobPostingScrapDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
+import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.mapper.MyPageMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,15 @@ public class MyPageService {
 		return mpMapper.selectScrapPosting(email);
 	}
 
+	//내 모든 지원 목록
+	public List<MyApplicantDTO> searchMyAllApplicant(String email){
+		return mpMapper.selectMyApplicant(email);
+	}
+	
 	// 내 지원 목록
-	public List<MyApplicantDTO> searchMyApplicant(String email) {
+	public List<MyApplicantDTO> searchMyApplicant(MyApplicantSearchDTO searchDTO) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		List<MyApplicantDTO> applicants = mpMapper.selectMyApplicant(email);
-
+		List<MyApplicantDTO> applicants = mpMapper.selectMyAllApplicant(searchDTO);
 		for (MyApplicantDTO applicant : applicants) {
 
 			// 디데이 추가
@@ -68,14 +73,14 @@ public class MyPageService {
 		
 		//모든 내 지원 내역을 돌며 각각의 상태 수 설정
 		for (MyApplicantDTO dto : applicantDTO) {
-      if (dto.getApplicationStatus() == 2) continue; // 지원취소는 제외
 
       switch (dto.getPassStage()) {
-          case 0: statistics.setCompleted(statistics.getCompleted()+1); break;
           case 1: statistics.setDocPassed(statistics.getDocPassed()+1); break;
           case 2: statistics.setPassed(statistics.getPassed()+1); break;
           case 3: statistics.setFailed(statistics.getFailed()+1); break;
       }
+      
+      statistics.setCompleted(statistics.getCompleted() + 1);
   }
 		
 		return statistics;

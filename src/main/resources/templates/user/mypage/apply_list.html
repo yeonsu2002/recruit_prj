@@ -27,19 +27,19 @@
 					<div class="page-title">입사지원 현황</div>
 					<!-- 통계 그리드 -->
 					<div class="stats-grid">
-						<div class="stats-item">
+						<div class="stats-item" data-filter="all">
 							<div class="stats-label">지원완료</div>
 							<div class="stats-number" th:text="${statistics.completed}">1</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="passed">
 							<div class="stats-label">서류 통과</div>
 							<div class="stats-number" th:text="${statistics.docPassed}">0</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="hired">
 							<div class="stats-label">최종합격</div>
 							<div class="stats-number" th:text="${statistics.passed}">0</div>
 						</div>
-						<div class="stats-item">
+						<div class="stats-item" data-filter="rejected">
 							<div class="stats-label">불합격</div>
 							<div class="stats-number" th:text="${statistics.failed}">0</div>
 						</div>
@@ -48,22 +48,15 @@
 					<!-- 필터 버튼 - 개선된 디자인 -->
 					<div class="filter-buttons">
 						<div class="filter-checkbox">
-							<input type="checkbox" id="exclude-canceled"> <label
+							<input type="checkbox" th:checked="${search.includeCanceled =='false'}" id="exclude-canceled"> <label
 								for="exclude-canceled">지원취소 제외</label>
 						</div>
 						<div class="filter-select">
-							<select>
-								<option>지난 1개월</option>
-								<option>지난 6개월</option>
-								<option>지난 1년</option>
-								<option>전체</option>
-							</select>
-						</div>
-						<div class="filter-select">
-							<select>
-								<option>열람여부 전체</option>
-								<option>열람</option>
-								<option>미열람</option>
+							<select id="period">
+								<option th:selected="${search.period == '1'}" value="1">지난 1개월</option>
+								<option th:selected="${search.period == '6'}" value="6">지난 6개월</option>
+								<option th:selected="${search.period == '12'}" value="12">지난 1년</option>
+								<option th:selected="${search.period == '24'}" value="24">지난 2년</option>
 							</select>
 						</div>
 					</div>
@@ -82,7 +75,7 @@
 											th:data-resumeSeq="${applicant.resumeSeq}">지원이력서</span> | <span
 											th:text="|지원일시 : ${applicant.applicationDate}|"></span> |<span
 											class="cancel-applicant"
-											th:data-applicantSeq="${applicant.jobApplicationSeq}">지원취소</span>
+											th:data-applicantSeq="${applicant.jobApplicationSeq}" th:text="${applicant.applicationStatus == 2}?'삭제':'지원취소'">지원취소</span>
 									</div>
 								</div>
 								<div class="application-actions">

@@ -8,6 +8,31 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 
+	//각 필터 버튼 클릭시
+	document.querySelectorAll('.stats-item').forEach(item => {
+		item.addEventListener('click', function() {
+			const type = item.dataset.filter;
+			movePage(type, "");
+			
+		});
+	});
+	
+	//체크박스 클릭시
+	const checkbox = document.getElementById('exclude-canceled');
+	
+	checkbox.addEventListener('change', function(){
+		if(checkbox.checked){
+			movePage("", "false")
+		} else{
+			movePage("", "true")
+		}
+	});
+	
+	//날짜 옵션 변경시
+	document.getElementById('period').addEventListener('change', function(){
+		movePage("", "")
+	});
+
 	//지원 취소 클릭시
 	document.querySelectorAll('.cancel-applicant').forEach(function(element) {
 		element.addEventListener('click', async function(e) {
@@ -19,22 +44,22 @@ document.addEventListener('DOMContentLoaded', function() {
 				const response = await fetch('/mypage/application/' + jobApplicationSeq, {
 					method: "PUT"
 				});
-				
+
 				const result = await response.text();
-				
+
 				if (response.ok) {
-					if(result == "success"){
+					if (result == "success") {
 						alert("지원 취소 완료")
 						const applicationItem = e.target.closest(".application-item")
 						applicationItem.classList.add('read-mail');
-						
+
 						const badge = applicationItem.querySelector(".badge");
 						badge.classList.add('status-canceled');
 						badge.textContent = "지원취소";
-					} else{
+					} else {
 						alert("지원 취소 실패")
 					}
-				} else{
+				} else {
 					alert("서버 응답 오류")
 				}
 			} catch (error) {
@@ -43,3 +68,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	});
 });
+
+function movePage(type, includeCanceled) {
+	const params = new URLSearchParams(location.search);
+	params.set("period", document.getElementById('period').value);
+
+	if (type !== undefined && type !== "") {
+		params.set("type", type);
+	}
+	
+	if(includeCanceled != undefined && includeCanceled != ""){
+		params.set("includeCanceled", includeCanceled);
+	}
+	
+	location.href = "/user/mypage/apply_list?" + params.toString();
+}

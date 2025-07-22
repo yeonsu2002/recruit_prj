@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import kr.co.sist.corp.dto.InterviewOfferDTO;
+import kr.co.sist.corp.dto.MailDTO;
 import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.dto.TalentPoolDTO;
 
@@ -51,5 +53,23 @@ public interface TalentPoolMapper {
       @Param("offset") int offset,
       @Param("size") int size,
       @Param("corpNo") Long corpNo);
-	
+  
+  void insertInterviewProposal(InterviewOfferDTO proposalDto);
+  
+  //이력서 상세
+  TalentPoolDTO selectResumeDetail(int resumeNo);
+  
+  //이력서 열람 확인
+  int checkResumeViewExist(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
+  //이력서 열람 기록
+  void insertResumeViewLog(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
+  //이력서 정보
+  TalentPoolDTO selectResumeInfo(@Param("resumeSeq") Long resumeSeq);
+
+  
+  //메일 알림
+  void insertMail(MailDTO mail);
+
+  
+
 }

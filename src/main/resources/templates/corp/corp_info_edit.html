@@ -27,7 +27,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="business-number" class="required">사업자등록번호</label>
-                        <input type="text" id="business-number" name="bizCert" th:value="${corpInfo.bizCert}" readonly>
+                        <input type="text" id="business-number" name="bizCert" th:value="${corpInfo.corpNo}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="ceo-name" class="required">대표자명</label>
@@ -106,6 +106,7 @@
 
             <div class="btn-group">
                 <button type="button" class="btn btn-secondary" onclick="history.back()">취소</button>
+                 <button type="button" class="btn btn-info" onclick="location.href='/corp/image-upload'">기업 이미지 수정</button>
                 <button type="submit" class="btn btn-primary">수정완료</button>
             </div>
         </form>

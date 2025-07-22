@@ -11,7 +11,7 @@
 </div>
 
         <div class="search-section">
-            <form id="searchForm" action="/jobs" method="get">
+            <form id="searchForm" method="get" th:action="@{/corp/talentPool}" >
                 <div id="hiddenInputs"></div>
 
                 <div class="search-row">
@@ -80,6 +80,7 @@
 
             <div class="selected-filters" id="selectedFilters">
                 <div class="filter-header">
+                <div class="filter-tags" id="filterTags"></div>
                     <button type="button" class="reset-btn" id="resetFilters">
                         <span>초기화</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -88,7 +89,7 @@
                         </svg>
                     </button>
                 </div>
-                <div class="filter-tags" id="filterTags"></div>
             </div>
         </div>
+
         </th:block>

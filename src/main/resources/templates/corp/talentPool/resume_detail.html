@@ -6,261 +6,153 @@
     <title>이력서 상세보기</title>
         <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
         <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
+        <link rel="stylesheet" th:href="@{/corp/talentPool/resume_detail.css}"/>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
-            background: #f8f9fa;
-            min-height: 100vh; 
-            color: #333;
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-            gap: 20px;
-            max-width: 1230px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* 왼쪽 이력서 영역 */
-        .resume-section {
-            flex: 1;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            padding: 40px;
-            height: fit-content;
-        }
-
-        .resume-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 700px;
-            border: 2px dashed #dee2e6;
-            border-radius: 12px;
-            background: #f8f9fa;
-            color: #6c757d;
-            font-size: 18px;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        /* 오른쪽 고정 사이드바 */
-        .sidebar {
-            width: 250px;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        .sidebar-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .sidebar-btn {
-            width: 100%;
-            height: 50px;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            background: white;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .sidebar-btn:hover {
-            border-color: #007bff;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
-        }
-
-        .sidebar-btn:active {
-            transform: translateY(1px);
-        }
-
-        /* 포지션 제안 버튼 */
-        .position-btn {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        .position-btn:hover {
-            background: #0056b3;
-            border-color: #0056b3;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        /* 스크랩 버튼 */
-       .bookmark-btn.active {
-		    /* border-color 삭제, 버튼 텍스트 색은 기본 유지 */
-		}
-		
-		/* ⭐ 별 기본 색상 (회색) */
-		.bookmark-btn .btn-icon {
-		    color: #bbb; /* 회색 */
-		    transition: color 0.3s ease;
-		}
-		
-		/* ⭐ 별이 클릭되어 active 상태일 때 노란색으로 */
-		.bookmark-btn.active .btn-icon {
-		    color: #ffc107; /* 노란색 */
-		}
-
-        /* 기본 호버 효과는 그대로 유지 */
-
-        .btn-icon {
-            font-size: 16px;
-        }
-
-        .btn-text {
-            font-size: 14px;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                padding: 15px;
-                gap: 15px;
-            }
-            
-            .resume-section {
-                padding: 25px;
-            }
-            
-            .resume-placeholder {
-                min-height: 400px;
-                font-size: 16px;
-            }
-            
-            .sidebar {
-                width: 100%;
-                position: static;
-            }
-            
-            .sidebar-buttons {
-                flex-direction: row;
-                padding: 20px;
-            }
-            
-            .sidebar-btn {
-                height: 45px;
-                font-size: 13px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar-buttons {
-                flex-direction: column;
-            }
-        }
-
-        /* 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .resume-section {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .sidebar {
-            animation: fadeInRight 0.6s ease-out 0.2s both;
-        }
-
-        /* 로딩 애니메이션 */
-        .btn-loading {
-            position: relative;
-            color: transparent !important;
-        }
-
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            top: 50%;
-            left: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-            border: 2px solid transparent;
-            border-top-color: currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            color: white;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 스크롤바 스타일링 */
-        .resume-section::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .resume-section::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .resume-section::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .resume-section::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
+       
     </style>
 </head>
 <body>
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
     <div class="container">
         <!-- 왼쪽: 이력서 내용 영역 -->
-        <div class="resume-section">
-            <div class="resume-placeholder">
-                📄<br>
-                <strong>이력서 내용</strong><br>
+		<div class="resume-section">
+		    <!-- 플레이스홀더는 내용 없을 때만 보여줌 -->
+		    <div class="resume-placeholder" th:if="${resume == null}">
+		        이력서가 없습니다.
+		    </div>
+		    	
+		    	<div th:if="${resume != null}">
+              	<div class="section">
+				<div class="section-title">기본정보</div>
+				<div class="basic-info">
+					<div class="profile-image">
+<!-- 						<img th:src="@{/images/profileImg/{img}(img=${resume.image})}" alt="프로필 사진">
+ -->
+<img th:src="|${resume.image != null and !#strings.isEmpty(resume.image) ? '/images/profileImg/' + resume.image : '/images/default_img.png'}|">
+ 
+ 					</div>
+					<div class="info-details">
+						<div class="name" th:text="${resumeUser.name}"></div>
+						<div class="contact-info">
+							<div class="contact-item" th:text="|✉ ${resumeUser.email}|"></div>
+							<div class="phone-birth">
+								<span th:text="|📞 ${resumeUser.phone}|"></span> 
+								<span th:text="|📅 ${resumeUser.birth}|"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div>
+					<div class="intro-question" th:if="${resume.introduction}" th:text="${resume.introduction}"></div>
+					<div class="skills-interests" th:if="${!#lists.isEmpty(positions)}">
+						<div class="skill-item">
+							<h4>개발 직무</h4>
+							<th:block th:each="position : ${positions}">
+								<span class="tag" th:text="${position.positionName}"></span>
+							</th:block>
+						</div>
+					</div>
+					<br>
+					<div class="skills-interests">
+						<div class="skill-item" th:if="${!#lists.isEmpty(skills)}">
+							<h4>기술 스택</h4>
+							<th:block th:each="skill : ${skills}">
+								<span class="tag" th:text="${skill.stackName}"></span>
+							</th:block>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${!#lists.isEmpty(educations)}">
+				<div class="section-title">학력</div>
+				<div class="timeline-item" th:each="education : ${educations}">
+					<div class="timeline-date" th:text="|${education.graduateDate} 졸업|"></div>
+					<div class="timeline-content">
+						<h4 th:text="${education.schoolName}"></h4>
+						<p>
+							<span th:text="${education.educationType}"></span> | <span th:text="${education.department}"></span>
+						</p>
+						<p class="sub-info">
+							<span th:text="${education.grade}"></span> / <span th:text="${education.standardGrade}"></span>
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${!#lists.isEmpty(careers)}">
+				<div class="section-title">경력(업무경험)</div>
+				<div class="timeline-item" th:each="career : ${careers}">
+					<div class="timeline-date" th:text="|${career.startDate} - ${career.endDate}|"></div>
+					<div class="timeline-content">
+						<h4 th:text="${career.companyName}"></h4>
+						<p th:text="${career.position}"></p>
+						<p th:text="${career.careerDescription}"></p>
+					</div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${!#lists.isEmpty(projects)}">
+				<div class="section-title">프로젝트</div>
+				<div class="timeline-item" th:each="project : ${projects}">
+					<div class="timeline-date" th:text="|${project.startDate} - ${project.endDate}|"></div>
+					<div class="timeline-content">
+						<h4 th:text="${project.projectName}"></h4>
+						<div class="project-details">
+							<p>
+							<th:block th:each="skills : ${project.projectSkills}">
+								<span class="tag" th:text="${skills.stackName}"></span>
+							</th:block>
+							</p>
+							<h5>상세내용</h5>
+							<p th:text="${project.projectContent}"></p>
+							<h5>저장소 링크</h5>
+							<p th:text="${project.repositoryLink}"></p>
+							<h5 th:if="${project.releaseStatus == 'Y'}">배포 완료</h5>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${!#lists.isEmpty(additionals)}">
+				<div class="section-title">기타사항</div>
+				<div class="timeline-item" th:each="additional : ${additionals}">
+					<div class="timeline-date" th:text="${additional.endDate}"></div>
+					<div class="timeline-content">
+						<h4 th:text="${additional.activityName}"></h4>
+						<p>
+							<span th:text="${additional.recordType}"></span> | <span th:text="${additional.relatedAgency}"></span>
+						</p>
+						<h4>상세 내용</h4>
+						<p th:text="${additional.detailContent}"></p>
+					</div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${!#lists.isEmpty(introductions)}">
+				<div class="section-title">자기소개서</div>
+				<div class="timeline-item" th:each="intro : ${introductions}">
+					<div class="timeline-date" th:text="${intro.title}"></div>
+					<br>
+					<div th:text="${intro.content}"></div>
+				</div>
+			</div>
+
+			<div class="section" th:if="${links != null and ((links.githubUrl != null and links.githubUrl != '') or (links.notionUrl != null and links.notionUrl != '') or (links.blogUrl != null and links.blogUrl != ''))}">
+				<div class="section-title">링크</div>
+				<div class="links-section">
+					<div th:if="${links.githubUrl != null and links.githubUrl != ''}" style="margin-bottom: 20px;">
+						<strong>Github</strong> <span th:text="${links.githubUrl}" style="margin-left: 50px;"></span>
+					</div>
+					<div th:if="${links.notionUrl != null and links.notionUrl != ''}" style="margin-bottom: 20px;">
+						<strong>Notion</strong> <span th:text="${links.notionUrl}" style="margin-left: 50px;"></span>
+					</div>
+					<div th:if="${links.blogUrl != null and links.blogUrl != ''}" style="margin-bottom: 20px;">
+						<strong>BLOG</strong> <span th:text="${links.blogUrl}" style="margin-left: 50px;"></span>
+					</div>
+				</div>
+			</div>
             </div>
         </div>
 

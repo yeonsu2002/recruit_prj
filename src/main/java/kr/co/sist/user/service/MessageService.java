@@ -84,16 +84,21 @@ public class MessageService {
 		return messageList;
 	}//searchMyMessage
 	
-	//특정 메시지 읽음 처리
+	//특정 메시지 읽음 상태 토글
 	@Transactional
-	public void readMessage(int messageSeq) {
+	public void toggleReadMessage(int messageSeq) {
 		
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 		 
 		//트랜잭션이 끝나면 JPA가 자동으로 Dirty Checking 후 Update
 		MessageEntity messageEntity = messageRepos.findById(messageSeq).orElse(null);
-		messageEntity.setIsRead("Y");
-		messageEntity.setReadedAt(now.toString());
+		if(messageEntity.getIsRead() == null || "N".equals(messageEntity.getIsRead())) {
+			messageEntity.setIsRead("Y");
+			messageEntity.setReadedAt(now.toString());
+		} else {
+			messageEntity.setIsRead("N");
+			messageEntity.setReadedAt(null);
+		}
 		
 	}//readMessage
 	
@@ -130,5 +135,11 @@ public class MessageService {
 		
 		return messageMapper.selectOneMessage(messageSeq);
 		
+	}
+	
+	//해당 메시지 삭제
+	public void removeMessage(int messageSeq) {
+		
+		messageRepos.deleteById(messageSeq);
 	}
 }

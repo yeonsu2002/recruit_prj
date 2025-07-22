@@ -34,12 +34,12 @@ import jakarta.servlet.http.Part;
 public class LoginController {
 
 
-	private final loginJoinService ljs; 
+	private final LoginJoinService ljs; 
 	private final JWTUtil jwtUtil;
 	private final Environment env;
 	
 	//생성자주입방식
-	public LoginController(loginJoinService ljs, Environment env, JWTUtil jwtUtil) {
+	public LoginController(LoginJoinService ljs, Environment env, JWTUtil jwtUtil) {
 		this.ljs = ljs;
 		this.env = env;
 		this.jwtUtil = jwtUtil;
