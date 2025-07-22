@@ -28,23 +28,23 @@
 							<div class="stats-label">전체 메일</div>
 							<div class="stats-number" id="total-count"
 								th:attr="data-total=${statistics.total}"
-								th:text="${statistics.total}">7</div>
+								th:text="${statistics.total}" th:classappend="${search.type=='all' or search.type==null}?' highlight'">7</div>
 						</div>
 						<div class="stats-item" data-filter="unread">
 							<div class="stats-label">안읽은 메일</div>
 							<div class="stats-number" id="unread-count"
 							th:attr="data-total=${statistics.unread}"
-								th:text="${statistics.unread}">5</div>
+								th:text="${statistics.unread}" th:classappend="${search.type=='unread'}?' highlight'">5</div>
 						</div>
 						<div class="stats-item" data-filter="read">
 							<div class="stats-label">읽은 메일</div>
 							<div class="stats-number" id="read-count"
 							th:attr="data-total=${statistics.read}"
-								th:text="${statistics.read}">2</div>
+								th:text="${statistics.read}" th:classappend="${search.type=='read'}?' highlight'">2</div>
 						</div>
 						<div class="stats-item" data-filter="offered">
 							<div class="stats-label">포지션 제안</div>
-							<div class="stats-number" th:text="${statistics.position}">2</div>
+							<div class="stats-number" th:text="${statistics.position}" th:classappend="${search.type=='offered'}?' highlight'">2</div>
 						</div>
 					</div>
 

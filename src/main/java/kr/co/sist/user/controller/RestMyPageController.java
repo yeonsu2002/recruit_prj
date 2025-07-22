@@ -30,9 +30,9 @@ public class RestMyPageController {
 
 	private final UserRepository userRepos;
 
-	// 지원한 이력서 지원 취소
+	// 지원한 공고 지원 취소
 	@PutMapping("/mypage/application/{jobApplicationSeq}")
-	public String deleteApplication(@PathVariable int jobApplicationSeq) {
+	public String cancelApplication(@PathVariable int jobApplicationSeq) {
 
 		int result = myPageServ.cancelApplication(jobApplicationSeq);
 
@@ -43,6 +43,14 @@ public class RestMyPageController {
 		return "fail";
 
 	}// deleteApplication
+	
+	//지원취소한 지원내역 삭제
+	@DeleteMapping("/mypage/application/{jobApplicationSeq}")
+	public void deleteApplication(@PathVariable int jobApplicationSeq) {
+		
+		myPageServ.removeApplication(jobApplicationSeq);
+		
+	}
 
 	// 검색 & 페이징 된 메일 목록 가져오기
 	@GetMapping("/mypage/messages")

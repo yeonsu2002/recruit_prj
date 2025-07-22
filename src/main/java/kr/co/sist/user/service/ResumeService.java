@@ -130,6 +130,8 @@ public class ResumeService {
 		ResumeEntity re = searchOneResume(resumeSeq); // 기존 이력서 레코드 가져오기
 		ResumeEntity rEntity = rdd.getBasicInfo();
 
+
+		
 		// 이미지 업로드
 		if (profileImage != null && !profileImage.isEmpty()) {
 			try {
@@ -278,9 +280,14 @@ public class ResumeService {
 	public void uploadImg(MultipartFile mf, ResumeEntity re) throws IOException {
 
 		re.setImage(mf.getOriginalFilename());
+		
+		// 상대 경로 위해 사용
+		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
+		String resourcePath = projectPath + "/src/main/resources/static/images/profileImg";
+		// --------------------
 
 		String originalFilename = mf.getOriginalFilename();
-		File dir = new File(saveDir);
+		File dir = new File(resourcePath);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
@@ -290,5 +297,4 @@ public class ResumeService {
 		mf.transferTo(uploadFile);
 	}
 
-	
 }// class

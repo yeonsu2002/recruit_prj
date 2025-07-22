@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.ApplicantStatisticsDTO;
@@ -17,6 +16,7 @@ import kr.co.sist.user.dto.MessageSearchDTO;
 import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
+import kr.co.sist.user.dto.MyPostingDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
 import kr.co.sist.user.service.MyPageService;
@@ -128,9 +128,18 @@ public class MyPageController {
 		return "/user/mypage/recent_posting";
 	}
 
+	//스크랩한 공고 페이지로 이동
 	@GetMapping("/user/mypage/scrap_posting")
-	public String scrapPosting(HttpServletRequest request, Model model) {
+	public String scrapPosting(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 
+		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
+		
+		List<MyPostingDTO> postings = myPageServ.searchMyScrapPosting(userEntity.getEmail());
+		int totalCnt = myPageServ.cntMyScrapPosting(userEntity.getEmail());
+		
+		model.addAttribute("postings",postings);
+		model.addAttribute("totalCnt", totalCnt);
+		
 		return "/user/mypage/scrap_posting";
 	}
 }
