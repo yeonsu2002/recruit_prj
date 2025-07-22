@@ -16,6 +16,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleDropdown(button, dropdown, mode = 'block') {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
+            
+            // 다른 드롭다운들 닫기
+            const allDropdowns = [
+                document.getElementById('techStackDropdown'),
+                document.getElementById('historyDropdown'),
+                document.getElementById('areaDropdown')
+            ];
+            
+            allDropdowns.forEach(dd => {
+                if (dd && dd !== dropdown) {
+                    dd.style.display = 'none';
+                }
+            });
+            
             dropdown.style.display = (dropdown.style.display === mode) ? 'none' : mode;
         });
 
@@ -60,29 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let showJob = true;
 
-	  // 경력 초기화 버튼 이벤트
-	  const resetBtn = historyDropdown.querySelector('.reset-btn');
-	  if (resetBtn) {
-	    resetBtn.addEventListener('click', function() {
-	      document.getElementById('careerAll').checked = true;
-	      selectedCareer = '전체';
-	      historyBtn.textContent = '전체 ▾';
-	      historyDropdown.style.display = 'none';
-	      filterJobsByCareer();
-	    });
-	  }
-	  
-	  function filterJobsByCareer() {
-		    jobItems.forEach(job => {
-		      const jobCareer = job.dataset.expLevel;  // ← data-exp-level 값 읽기
-		      if (selectedCareer === '전체' || selectedCareer === jobCareer) {
-		        job.style.display = 'block';
-		      } else {
-		        job.style.display = 'none';
-		      }
-		    });
-		  }
-/* ---------------------------------지역------------------------------------ */
             // 1. 직무 필터링
             if (!filterState.selectedPositions.includes('전체') && filterState.selectedPositions.length > 0) {
                 if (!filterState.selectedPositions.includes(jobPositionName)) {
@@ -179,139 +170,195 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ============== 지역 필터링 ==============
-    const subRegions = {
-        seoul: ['서울전체', '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
-        busan: ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'],
-        daegu: ['대구전체', '중구', '동구', '서구', '남구', '북구', '수성구', '달서구', '달성군'],
-        incheon: ['인천전체', '중구', '동구', '미추홀구', '연수구', '남동구', '부평구', '계양구', '서구', '강화군', '옹진군'],
-        gwangju: ['광주전체', '동구', '서구', '남구', '북구', '광산구'],
-        daejeon: ['대전전체', '동구', '중구', '서구', '유성구', '대덕구'],
-        ulsan: ['울산전체', '중구', '남구', '동구', '북구', '울주군'],
-        sejong: ['세종전체', '세종특별자치시'],
-        gyeonggi: ['경기전체', '수원시 장안구', '수원시 권선구', '수원시 팔달구', '수원시 영통구', '성남시 수정구', '성남시 중원구', '성남시 분당구', '의정부시', '안양시 만안구', '안양시 동안구', '부천시', '광명시', '평택시', '동두천시', '안산시 상록구', '안산시 단원구', '고양시 덕양구', '고양시 일산동구', '고양시 일산서구', '과천시', '구리시', '남양주시', '오산시', '시흥시', '군포시', '의왕시', '하남시', '용인시 처인구', '용인시 기흥구', '용인시 수지구', '파주시', '이천시', '안성시', '김포시', '화성시', '광주시', '포천시', '여주시', '연천군', '가평군', '양평군'],
-        gangwon: ['강원전체', '춘천시', '원주시', '강릉시', '동해시', '태백시', '속초시', '삼척시', '홍천군', '횡성군', '영월군', '평창군', '정선군', '철원군', '화천군', '양구군', '인제군', '고성군', '양양군'],
-        chungbuk: ['충북전체', '청주시 상당구', '청주시 흥덕구', '청주시 서원구', '청주시 청원구', '충주시', '제천시', '보은군', '옥천군', '영동군', '진천군', '괴산군', '음성군', '단양군'],
-        chungnam: ['충남전체', '천안시 동남구', '천안시 서북구', '공주시', '보령시', '아산시', '서산시', '논산시', '계룡시', '당진시', '금산군', '부여군', '서천군', '청양군', '홍성군', '예산군', '태안군'],
-        jeonbuk: ['전북전체', '전주시 완산구', '전주시 덕진구', '군산시', '익산시', '정읍시', '남원시', '김제시', '완주군', '진안군', '무주군', '장수군', '임실군', '순창군', '고창군', '부안군'],
-        jeonnam: ['전남전체', '목포시', '여수시', '순천시', '나주시', '광양시', '담양군', '곡성군', '구례군', '고흥군', '보성군', '화순군', '장흥군', '강진군', '해남군', '영암군', '무안군', '함평군', '영광군', '장성군', '완도군', '진도군', '신안군'],
-        gyeongbuk: ['경북전체', '포항시 남구', '포항시 북구', '경주시', '김천시', '안동시', '구미시', '영주시', '영천시', '상주시', '문경시', '경산시', '군위군', '의성군', '청송군', '영양군', '영덕군', '청도군', '고령군', '성주군', '칠곡군', '예천군', '봉화군', '울진군', '울릉군'],
-        gyeongnam: ['경남전체', '창원시 의창구', '창원시 성산구', '창원시 마산합포구', '창원시 마산회원구', '창원시 진해구', '진주시', '통영시', '사천시', '김해시', '밀양시', '거제시', '양산시', '의령군', '함안군', '창녕군', '고성군', '남해군', '하동군', '산청군', '함양군', '거창군', '합천군'],
-        jeju: ['제주전체', '제주시', '서귀포시']
-    };
+ const subRegions = {
+    seoul: ['서울전체', '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
+    busan: ['부산전체', '중구', '서구', '동구', '영도구', '부산진구', '동래구', '남구', '북구', '해운대구', '사하구', '금정구', '강서구', '연제구', '수영구', '사상구', '기장군'],
+    daegu: ['대구전체', '중구', '동구', '서구', '남구', '북구', '수성구', '달서구', '달성군'],
+    incheon: ['인천전체', '중구', '동구', '미추홀구', '연수구', '남동구', '부평구', '계양구', '서구', '강화군', '옹진군'],
+    gwangju: ['광주전체', '동구', '서구', '남구', '북구', '광산구'],
+    daejeon: ['대전전체', '동구', '중구', '서구', '유성구', '대덕구'],
+    ulsan: ['울산전체', '중구', '남구', '동구', '북구', '울주군'],
+    sejong: ['세종전체', '세종특별자치시'],
+    gyeonggi: ['경기전체', '수원시 장안구', '수원시 권선구', '수원시 팔달구', '수원시 영통구', '성남시 수정구', '성남시 중원구', '성남시 분당구', '의정부시', '안양시 만안구', '안양시 동안구', '부천시', '광명시', '평택시', '동두천시', '안산시 상록구', '안산시 단원구', '고양시 덕양구', '고양시 일산동구', '고양시 일산서구', '과천시', '구리시', '남양주시', '오산시', '시흥시', '군포시', '의왕시', '하남시', '용인시 처인구', '용인시 기흥구', '용인시 수지구', '파주시', '이천시', '안성시', '김포시', '화성시', '광주시', '포천시', '여주시', '연천군', '가평군', '양평군'],
+    gangwon: ['강원전체', '춘천시', '원주시', '강릉시', '동해시', '태백시', '속초시', '삼척시', '홍천군', '횡성군', '영월군', '평창군', '정선군', '철원군', '화천군', '양구군', '인제군', '고성군', '양양군'],
+    chungbuk: ['충북전체', '청주시 상당구', '청주시 흥덕구', '청주시 서원구', '청주시 청원구', '충주시', '제천시', '보은군', '옥천군', '영동군', '진천군', '괴산군', '음성군', '단양군'],
+    chungnam: ['충남전체', '천안시 동남구', '천안시 서북구', '공주시', '보령시', '아산시', '서산시', '논산시', '계룡시', '당진시', '금산군', '부여군', '서천군', '청양군', '홍성군', '예산군', '태안군'],
+    jeonbuk: ['전북전체', '전주시 완산구', '전주시 덕진구', '군산시', '익산시', '정읍시', '남원시', '김제시', '완주군', '진안군', '무주군', '장수군', '임실군', '순창군', '고창군', '부안군'],
+    jeonnam: ['전남전체', '목포시', '여수시', '순천시', '나주시', '광양시', '담양군', '곡성군', '구례군', '고흥군', '보성군', '화순군', '장흥군', '강진군', '해남군', '영암군', '무안군', '함평군', '영광군', '장성군', '완도군', '진도군', '신안군'],
+    gyeongbuk: ['경북전체', '포항시 남구', '포항시 북구', '경주시', '김천시', '안동시', '구미시', '영주시', '영천시', '상주시', '문경시', '경산시', '군위군', '의성군', '청송군', '영양군', '영덕군', '청도군', '고령군', '성주군', '칠곡군', '예천군', '봉화군', '울진군', '울릉군'],
+    gyeongnam: ['경남전체', '창원시 의창구', '창원시 성산구', '창원시 마산합포구', '창원시 마산회원구', '창원시 진해구', '진주시', '통영시', '사천시', '김해시', '밀양시', '거제시', '양산시', '의령군', '함안군', '창녕군', '고성군', '남해군', '하동군', '산청군', '함양군', '거창군', '합천군'],
+    jeju: ['제주전체', '제주시', '서귀포시']
+};
 
-    // 지역별 클릭 이벤트
-    document.querySelectorAll('.region-item').forEach(region => {
-        region.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            if (this.dataset.region === 'all') {
-                filterState.selectedRegions = [];
-                updateSelectedTags();
-                updateAreaButton();
-                document.getElementById('areaDropdown').style.display = 'none';
-                applyAllFilters();
-                return;
-            }
-            
+// 지역별 클릭 이벤트 (중복 제거하고 하나로 통합)
+document.querySelectorAll('.region-item').forEach(region => {
+    region.addEventListener('click', function(e) {
+        e.stopPropagation();
+        
+        // "전체" 옵션 처리
+        if (this.dataset.region === 'all') {
+            filterState.selectedRegions = [];
+            // 모든 체크박스 해제
+            document.querySelectorAll('#subRegionPopup input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            // 모든 지역 선택 상태 해제
             document.querySelectorAll('.region-item').forEach(item => {
                 item.classList.remove('selected');
             });
-            this.classList.add('selected');
-            
-            const regionKey = this.dataset.region;
-            const subs = subRegions[regionKey];
-
-            if (subs) {
-                subRegionPopup.innerHTML = subs.map(sub => 
-                    `<div class="sub-region-item">
-                        <input type="checkbox" id="sub_${sub}" value="${sub}" ${filterState.selectedRegions.includes(sub) ? 'checked' : ''}>
-                        <label for="sub_${sub}">${sub}</label>
-                     </div>`
-                ).join('');
-                
-                subRegionPopup.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const value = this.value;
-                        
-                        if (this.checked) {
-                            if (!filterState.selectedRegions.includes(value)) {
-                                filterState.selectedRegions.push(value);
-                            }
-                        } else {
-                            const index = filterState.selectedRegions.indexOf(value);
-                            if (index > -1) {
-                                filterState.selectedRegions.splice(index, 1);
-                            }
-                        }
-                        
-                        updateSelectedTags();
-                        updateAreaButton();
-                        applyAllFilters();
-                    });
-                });
-                
-                subRegionPopup.style.display = 'block';
-            } else {
-                subRegionPopup.style.display = 'none';
-            }
-        });
-    });
-
-    function updateSelectedTags() {
-        const selectedTags = document.getElementById('selectedTags');
-        selectedTags.innerHTML = '';
-
-        filterState.selectedRegions.forEach(region => {
-            const tag = document.createElement('span');
-            tag.className = 'region-tag';
-            tag.innerHTML = `${region} <button type="button" class="remove-tag" onclick="removeRegionTag('${region}')">×</button>`;
-            selectedTags.appendChild(tag);
-        });
-    }
-
-    function updateAreaButton() {
-        const areaBtn = document.getElementById('areaBtn');
-        if (filterState.selectedRegions.length === 0) {
-            areaBtn.textContent = '지역 ▾';
-        } else if (filterState.selectedRegions.length === 1) {
-            areaBtn.textContent = filterState.selectedRegions[0] + ' ▾';
-        } else {
-            areaBtn.textContent = `${filterState.selectedRegions[0]} 외 ${filterState.selectedRegions.length - 1}개 ▾`;
+            updateSelectedTags();
+            updateAreaButton();
+            // 드롭다운 닫기
+            document.getElementById('areaDropdown').style.display = 'none';
+            applyAllFilters();
+            return;
         }
-    }
-
-    // 전역 함수로 정의 (HTML에서 onclick으로 사용)
-    window.removeRegionTag = function(regionToRemove) {
-        const index = filterState.selectedRegions.indexOf(regionToRemove);
-        if (index > -1) {
-            filterState.selectedRegions.splice(index, 1);
-        }
-
-        const checkbox = document.getElementById(`sub_${regionToRemove}`);
-        if (checkbox) {
-            checkbox.checked = false;
-        }
-
-        updateSelectedTags();
-        updateAreaButton();
-        applyAllFilters();
-    };
-
-    // 지역 초기화
-    document.getElementById('resetBtn').addEventListener('click', function() {
-        filterState.selectedRegions = [];
-        document.querySelectorAll('#subRegionPopup input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
+        // 다른 지역 아이템들의 선택 상태 초기화
         document.querySelectorAll('.region-item').forEach(item => {
             item.classList.remove('selected');
         });
-        updateSelectedTags();
-        updateAreaButton();
-        document.getElementById('areaDropdown').style.display = 'none';
-        applyAllFilters();
-    });
+        this.classList.add('selected');
+        
+        const regionKey = this.dataset.region;
+        const subs = subRegions[regionKey];
 
+        if (subs) {
+            // 서브 지역 팝업 생성
+            subRegionPopup.innerHTML = subs.map(sub => 
+                `<div class="sub-region-item">
+                    <input type="checkbox" id="sub_${sub}" value="${sub}" ${filterState.selectedRegions.includes(sub) ? 'checked' : ''}>
+                    <label for="sub_${sub}">${sub}</label>
+                 </div>`
+            ).join('');
+            
+            // 서브 지역 체크박스 이벤트
+            subRegionPopup.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const value = this.value;
+                    
+                    if (this.checked) {
+                        // "전체" 선택시 해당 지역의 다른 선택 해제
+                        if (value.includes('전체')) {
+                            const regionPrefix = value.replace('전체', '');
+                            filterState.selectedRegions = filterState.selectedRegions.filter(r => 
+                                !r.startsWith(regionPrefix) || r === value
+                            );
+                            // 같은 지역의 다른 체크박스들 해제
+                            subRegionPopup.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                                if (cb !== this && cb.value.startsWith(regionPrefix)) {
+                                    cb.checked = false;
+                                }
+                            });
+                        } else {
+                            // 세부 지역 선택시 "전체" 해제
+                            const regionName = Object.keys(subRegions).find(key => 
+                                subRegions[key].includes(value)
+                            );
+                            if (regionName) {
+                                const regionPrefix = subRegions[regionName][0].replace('전체', '');
+                                filterState.selectedRegions = filterState.selectedRegions.filter(r => 
+                                    r !== regionPrefix + '전체'
+                                );
+                                const wholeRegionCheckbox = subRegionPopup.querySelector(`input[value="${regionPrefix}전체"]`);
+                                if (wholeRegionCheckbox) {
+                                    wholeRegionCheckbox.checked = false;
+                                }
+                            }
+                        }
+                        
+                        if (!filterState.selectedRegions.includes(value)) {
+                            filterState.selectedRegions.push(value);
+                        }
+                    } else {
+                        const index = filterState.selectedRegions.indexOf(value);
+                        if (index > -1) {
+                            filterState.selectedRegions.splice(index, 1);
+                        }
+                    }
+                    
+                    updateSelectedTags();
+                    updateAreaButton();
+                    applyAllFilters();
+                });
+            });
+            
+            subRegionPopup.style.display = 'block';
+        } else {
+            subRegionPopup.style.display = 'none';
+        }
+    });
+});
+
+function updateSelectedTags() {
+    const selectedTags = document.getElementById('selectedTags');
+    selectedTags.innerHTML = '';
+
+    filterState.selectedRegions.forEach(region => {
+        const tag = document.createElement('span');
+        tag.className = 'region-tag';
+        tag.innerHTML = `${region} <button type="button" class="remove-tag" onclick="removeRegionTag('${region}')">×</button>`;
+        selectedTags.appendChild(tag);
+    });
+}
+
+function updateAreaButton() {
+    const areaBtn = document.getElementById('areaBtn');
+    if (filterState.selectedRegions.length === 0) {
+        areaBtn.textContent = '지역 ▾';
+    } else if (filterState.selectedRegions.length === 1) {
+        areaBtn.textContent = filterState.selectedRegions[0] + ' ▾';
+    } else {
+        areaBtn.textContent = `${filterState.selectedRegions[0]} 외 ${filterState.selectedRegions.length - 1}개 ▾`;
+    }
+}
+
+// 전역 함수로 정의 (HTML에서 onclick으로 사용)
+window.removeRegionTag = function(regionToRemove) {
+    const index = filterState.selectedRegions.indexOf(regionToRemove);
+    if (index > -1) {
+        filterState.selectedRegions.splice(index, 1);
+    }
+
+    const checkbox = document.getElementById(`sub_${regionToRemove}`);
+    if (checkbox) {
+        checkbox.checked = false;
+    }
+
+    updateSelectedTags();
+    updateAreaButton();
+    applyAllFilters();
+};
+
+// 지역 초기화
+document.getElementById('resetBtn').addEventListener('click', function() {
+    filterState.selectedRegions = [];
+    document.querySelectorAll('#subRegionPopup input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.querySelectorAll('.region-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    updateSelectedTags();
+    updateAreaButton();
+    document.getElementById('areaDropdown').style.display = 'none';
+    applyAllFilters();
+});
+
+// 지역 매칭 함수 - 간단한 버전
+function checkRegionMatch(jobAddress, selectedRegions) {
+    return selectedRegions.some(region => {
+        console.log('매칭 확인:', region, 'vs', jobAddress); // 디버깅용
+        
+        if (region.includes('전체')) {
+            // "서울전체" → "서울", "경기전체" → "경기"
+            const regionName = region.replace('전체', '');
+            return jobAddress.includes(regionName);
+        } else {
+            // 세부 지역은 정확히 매칭
+            return jobAddress.includes(region);
+        }
+    });
+}
     // ============== 기술스택 필터링 ==============
     document.getElementById('techStackSearchInput').addEventListener('keyup', function() {
         let keyword = this.value;
@@ -425,8 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 const totalButton = document.querySelector('.position-button[data-position="전체"]');
                 if (totalButton.classList.contains('active')) {
-                    alert('전체를 선택한 경우 다른 직무는 선택할 수 없습니다.');
-                    return;
+                    totalButton.classList.remove('active');
                 }
 
                 if (selectedCount >= maxSelected && !button.classList.contains('active')) {
@@ -474,6 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.position-button[data-position="전체"]').classList.add('active');
 
 });
+
 </script>
 </head>
 <body>
@@ -521,6 +568,11 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="dropdown" id="techStackDropdown" style="display: none;">
     <!-- 검색 입력창 -->
     <input type="text" class="form-control" id="techStackSearchInput" placeholder="ex) javascript">
+    <ul class="custom-options" id="skillsList">
+	  <li th:each="techStack : ${techStackList}">
+	    <span th:text="${techStack.stackName}"></span> <!-- 기술 스택 이름 표시 -->
+	  </li>
+	</ul>
     <br>
     
     <h2 style="font-size: 13px;">추천기술스택</h2>
@@ -530,15 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <span class="recommended-stack">JavaScript</span>
     <span class="recommended-stack">C++</span>
 </div>
-    
-    
-    
-    <!-- 검색 결과 목록 -->
-    <ul class="custom-options" id="skillsList">
-	  <li th:each="techStack : ${techStackList}">
-	    <span th:text="${techStack.stackName}"></span> <!-- 기술 스택 이름 표시 -->
-	  </li>
-	</ul>
   </div>
 </div>
   <!-- -------------------------경력-------------------------------- -->
@@ -656,7 +699,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- 기업 이미지 -->
                     <img th:src="@{'/images/' + ${job.corpNm} + '.jpg'}" alt="기업 이미지">
                 </div>   
-                
+             <div class="dday-badge" 
+			     th:classappend="${job.daysRemaining != null and job.daysRemaining == 0} ? 'dday' : 
+			                    (${job.daysRemaining != null and job.daysRemaining < 0} ? 'expired' : 
+			                    (${job.daysRemaining != null and job.daysRemaining <= 3 and job.daysRemaining > 0} ? 'urgent' : 'normal'))">
+			<span th:text="${job.ddayDisplay}">D-day</span>
+			</div>
                 <!-- 기업 이름 -->
                 <div class="company-name" th:text="${job.corpNm}">회사명</div>
                 
@@ -674,12 +722,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <!-- 기술 스택 출력 -->
                 <div class="stack-name">
-                    <span th:if="${job.techStacks != null and !job.techStacks.isEmpty()}">
-                        <span th:each="stack, iterStat : ${job.techStacks}">
-                            <span th:text="${stack}"></span>
-                        </span>
-                    </span>
-                    <span th:if="${job.techStacks == null or job.techStacks.isEmpty()}">기술스택 없음</span>
+                  <span th:text="${job != null} ? ${job.techNames} : ''"></span>
                 </div>
                 
                 <div class="position-name" th:text="${job.positionName}">직무</div>

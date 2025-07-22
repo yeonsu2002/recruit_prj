@@ -9,13 +9,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.sist.jwt.CustomUser;
+import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.service.JobApplicationService;
+import kr.co.sist.user.service.JobPostingService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
-
+    private final JobPostingService jps;
+    
     /**
      * 로그인한 사용자의 이메일로 이력서 목록을 JSON 형태로 반환
      * - AJAX 등에서 호출하여 사용
@@ -45,6 +46,15 @@ public class JobApplicationController {
             @RequestParam("jobPostingSeq") Integer jobPostingSeq,
             @AuthenticationPrincipal CustomUser userInfo) {
         try {
+        	
+        	
+        	 JobPostDTO jobPost = jps.findById(jobPostingSeq);
+           if (jobPost.getIsEnded().equals("Y")) {
+               return ResponseEntity
+                   .status(HttpStatus.BAD_REQUEST)
+                   .body("마감된 공고입니다. 지원할 수 없습니다.");
+           }
+        	
             jobApplicationService.applyToJobUsingResumeAttachments(resumeSeq, jobPostingSeq, userInfo.getEmail());
             return ResponseEntity.ok("지원이 완료되었습니다.");
         } catch (Exception e) {
