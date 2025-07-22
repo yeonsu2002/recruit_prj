@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	//지원 취소 클릭시
 	document.querySelectorAll('.cancel-applicant').forEach(function(element) {
 		element.addEventListener('click', async function(e) {
+			if(e.target.innerText == '삭제') return;
+			
 			const jobApplicationSeq = e.target.getAttribute("data-applicantSeq");
 
 			if (!confirm("정말로 지원을 취소하시겠습니까?")) return;
@@ -67,6 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	});
+	
+	//삭제 클릭시
+	document.querys
 });
 
 function movePage(type, includeCanceled) {
