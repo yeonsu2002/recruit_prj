@@ -265,28 +265,156 @@
         .scrollspy-example {
             scroll-behavior: smooth;
         }
+        
+           .job-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .job-card {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s ease;
+        }
+        
+        .job-card:hover {
+            border-color: #c1c8cd;
+        }
+        
+        .job-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .job-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .info-item {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        
+        .deadline {
+            color: #d60000;
+            font-weight: 500;
+        }
+        
+        .dday {
+            background: #f5f5f7;
+            color: #1d1d1f;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .dday.urgent {
+            background: #fff2f2;
+            color: #d60000;
+        }
+        
+        .job-details {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .detail-item {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+        
+        .detail-label {
+            color: #86868b;
+            margin-right: 4px;
+        }
+        
+        .view-link {
+            color: #007aff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .view-link:hover {
+            text-decoration: underline;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #86868b;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+            
+            .job-card {
+                padding: 16px;
+            }
+            
+            .job-info {
+                gap: 12px;
+            }
+            
+            .job-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
   </style>
   <script type="text/javascript">
   
-  document.addEventListener('DOMContentLoaded', function() {
-  
-  
-  const scrapBtn = document.getElementById('scrapBtn');
-  const heartIcon = document.getElementById('heartIcon');
+  $(document).ready(function () {
+	  $("#scrapBtn").click(function () {
+		    const corpNoStr = $("#corpNoForScrap").val();
+		    console.log("corpNoStr:", corpNoStr);
+		    if (!corpNoStr || isNaN(corpNoStr)) {
+		        alert("유효한 기업 번호가 없습니다.");
+		        return;
+		    }
 
-  // 스크랩 버튼 클릭 시 하트 색상 및 상태 토글
-  scrapBtn.addEventListener('click', function() {
-    // 빈 하트 ↔ 빨간 하트 상태 변경
-    if (heartIcon.textContent === '🤍') {
-      heartIcon.textContent = '❤️';  // 빨간 하트로 변경
-      heartIcon.classList.add('liked');  // 빨간색 적용
-    } else {
-      heartIcon.textContent = '🤍';  // 빈 하트로 변경
-      heartIcon.classList.remove('liked');  // 빨간색 제거
-    }
-  });
- });
-  
+		    const corpNo = parseInt(corpNoStr, 10);
+		    const heartIcon = $("#heartIcon");
+		    const isScrapped = heartIcon.text() == "❤️";
+		    const url = isScrapped ? "/corpScrap/remove" : "/corpScrap/add";
+		    
+		    
+		    $.ajax({
+	            url: url,
+	            method: "POST",
+	            contentType: "application/json",
+	            data: JSON.stringify({ 
+	                favoriteCompanySeq: corpNo,  // 파라미터명 변경
+	                corpNo: corpNo               // corpNo도 함께 전달
+	            }),
+	            success: function (data) {
+	                alert(data.message);
+	                if (data.success) {
+	                    heartIcon.text(isScrapped ? "🤍" : "❤️");
+	                }
+	            },
+	            error: function (xhr, status, error) {
+	                console.error("스크랩 처리 중 오류:", error);
+	                alert("스크랩 처리 중 오류가 발생했습니다.");
+	            }
+	        });
+	    });
+	});
   
   </script>
 </head>
@@ -302,10 +430,11 @@
                 <div class="company-header">
                     <h2 class="company-name" th:text="${companyDTO != null ? companyDTO.corpNm : '회사 정보가 없습니다.'}">기업이름</h2>
                     <div class="action-buttons">
-                        <button class="floating-action-btn" id="scrapBtn">
-                            <span class="icon" id="heartIcon">🤍</span>
-                        </button>
+		                 <button class="floating-action-btn" id="scrapBtn">
+					        <span class="icon" id="heartIcon">🤍</span>
+					    </button>
                         <div style="position: relative;">
+                        	<input type="hidden" id="corpNoForScrap" th:value="${companyDTO.corpNo}" />
                             <button class="floating-action-btn" id="shareBtn">
                                 <span class="icon">📃</span>
                             </button>
@@ -352,15 +481,30 @@
                         </div>
                     </div>
 
-                    <h4 id="simple-list-item-6">채용중인 포지션</h4>
-                    <div class="positions">
-                        <div class="position-card">
-                            <p class="d-day">D-4</p>
-                            <p class="position-title">DBA</p>
-                            <p class="skills">NoSQL · MySQL · AWS</p>
-                        </div>
-                    </div>
+                  <h4 id="simple-list-item-6">채용중인 포지션</h4>
 
+					<!-- 공고 없을 때 메시지 -->
+					<div th:if="${jobList == null or jobList.isEmpty()}" class="no-positions">
+					    <div style="text-align: center; padding: 40px 20px; background-color: #f8f9fa; border-radius: 8px; color: #6c757d;">
+					        <p style="font-size: 16px; margin: 0;">현재 채용중인 포지션이 없습니다.</p>
+					        <p style="font-size: 14px; margin: 10px 0 0 0;">새로운 채용공고가 올라올 때까지 기다려주세요!</p>
+					    </div>
+					</div>
+					
+					<!-- 채용 중인 공고 리스트 -->
+					<div th:if="${jobList != null and !jobList.isEmpty()}">
+					    <div th:each="job : ${jobList}">
+					        <div th:if="${job.isEnded == 'N'}" class="job-card" style="border:1px solid #ccc; padding:1rem; margin-bottom:1rem; border-radius: 6px;">
+					            <h5 th:text="${job.postingTitle}">공고 제목</h5>
+					            <p th:text="'마감일: ' + ${job.postingEndDt}">마감일</p>
+					            <p th:text="${job.getDdayDisplay()}">D-day</p>
+					            <p th:text="'고용형태: ' + ${job.employType}">고용형태</p>
+					            <p th:text="'경력: ' + ${job.expLevel}">경력</p>
+					            <a  th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${job.jobPostingSeq})}" style="color: blue;">자세히 보기</a>
+					            
+					        </div>
+					    </div>
+					</div>
                     <div class="review-header">
                         <h4 id="simple-list-item-7" style="font-size: 16px">기업 후기</h4>
                         <a href="/user/job_posting/review" type="button" class="write-review-btn">자세히 보기</a>

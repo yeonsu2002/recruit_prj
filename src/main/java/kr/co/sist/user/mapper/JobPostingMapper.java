@@ -1,6 +1,7 @@
 package kr.co.sist.user.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +26,10 @@ public interface JobPostingMapper {
   // 인기순 공고 가져오기 (조회수 기준)
   List<JobPostDTO> getPopularJobPostings();
   
-  //List<JobPostDTO> selectJobPostingsByCorpNo(long corpNo);
+  //특정 기업의 채용공고 목록 조회
+  List<JobPostDTO> selectJobPostingsByCorpNo(long corpNo);
+  
+  //특정 기업의 활성화된 채용공고 조회 (현재 공고 제외)
+  List<JobPostDTO> selectCompanyActiveJobs(Map<String, Object> params);
 
 }

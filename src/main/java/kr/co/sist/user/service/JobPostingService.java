@@ -1,7 +1,10 @@
 package kr.co.sist.user.service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +89,69 @@ public class JobPostingService {
         return jpm.getPopularJobPostings();
     }
     
-		/*
-		 * public List<JobPostDTO> getJobPostsByCorpNo(long corpNo) { return
-		 * jpm.selectJobPostingsByCorpNo(corpNo); }
-		 */ 
+    
+    
+    /**
+     * 특정 기업의 채용공고 목록 조회 (활성화된 공고만)
+     */
+    public List<JobPostDTO> getJobPostsByCorpNo(long corpNo) {
+        List<JobPostDTO> jobList = jpm.selectJobPostingsByCorpNo(corpNo);
+        
+        // 각 공고에 대해 D-day 계산 및 마감 여부 설정
+        for (JobPostDTO job : jobList) {
+            calculateDaysRemaining(job);
+        }
+        
+        return jobList;
+    }
+    
+    /**
+     * 특정 기업의 활성화된 채용공고 조회 (현재 공고 제외)
+     * - 공고 상세페이지에서 "이 회사의 다른 공고" 표시용
+     */
+    public List<JobPostDTO> getCompanyActiveJobs(long corpNo, Integer excludeJobPostingSeq) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("corpNo", corpNo);
+        params.put("excludeJobPostingSeq", excludeJobPostingSeq);
+        params.put("limit", 5); // 최대 5개까지만 표시
+        
+        List<JobPostDTO> jobs = jpm.selectCompanyActiveJobs(params);
+        
+        // D-day 계산
+        for (JobPostDTO job : jobs) {
+            calculateDaysRemaining(job);
+        }
+        
+        return jobs;
+    }
+    
+    /**
+     * D-day 계산 및 마감 여부 설정
+     */
+    private void calculateDaysRemaining(JobPostDTO job) {
+        if (job.getPostingEndDt() != null && !job.getPostingEndDt().trim().isEmpty()) {
+            try {
+                LocalDate endDate = LocalDate.parse(job.getPostingEndDt());
+                LocalDate today = LocalDate.now();
+                long days = ChronoUnit.DAYS.between(today, endDate);
+                
+                if (days < 0) {
+                    job.setIsEnded("Y");
+                    job.setDaysRemaining(-1);
+                } else {
+                    job.setIsEnded("N");
+                    job.setDaysRemaining((int) days);
+                }
+            } catch (Exception e) {
+                // 날짜 파싱 오류 시 마감으로 처리
+                job.setIsEnded("Y");
+                job.setDaysRemaining(-1);
+            }
+        } else {
+            // 마감일이 없는 경우 마감으로 처리
+            job.setIsEnded("Y");
+            job.setDaysRemaining(-1);
+        }
+    }
 }
+

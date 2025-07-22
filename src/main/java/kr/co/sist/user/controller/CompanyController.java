@@ -18,16 +18,16 @@ import lombok.RequiredArgsConstructor;
 public class CompanyController {
 
 		private final CompanyService cms;
-		//private final JobPostingService jps;
+		private final JobPostingService jps;
 	
 	  @GetMapping("/user/job_posting/company_info")
 		public String getCompanyInfo(@RequestParam(required = true) long corpNo, Model model) {
 			
 	  	CompanyDTO companyDTO = cms.getCompanyInfoByCorpNo(corpNo);
 	  	
-	  	//List<JobPostDTO> jobList=jps.getJobPostsByCorpNo(corpNo);
+	  	List<JobPostDTO> jobList=jps.getJobPostsByCorpNo(corpNo);
 	  	
-	  	//model.addAttribute("jobList",jobList);
+	  	model.addAttribute("jobList",jobList);
 	  	model.addAttribute("companyDTO", companyDTO);
 	  	
 	  	

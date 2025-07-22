@@ -4,104 +4,242 @@
 <meta charset="UTF-8">
 <title>민기 인력</title>
 <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
-<link rel="stylesheet" th:href="@{/user/css/header.css}" />
-<link rel="stylesheet" th:href="@{/user/css/footer.css}" />
-  <style>
-    .review-container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: #f9f9f9;
-      padding: 30px;
-      border-radius: 10px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    label {
-      font-weight: bold;
-    }
-    .star-rating span {
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: lightgray;
-    }
-    .star-rating .selected {
-      color: gold;
-    }
-    textarea {
-      width: 100%;
-      height: 100px;
-      resize: vertical;
-    }
-  </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const stars = document.querySelectorAll('.star-rating span');
-      const ratingInput = document.getElementById('ratingInput');
+<link rel="stylesheet" th:href="@{/user/jobPosting/css/header.css}" />
+<link rel="stylesheet" th:href="@{/user/jobPosting/css/footer.css}" />
+<style>
+* {
+  box-sizing: border-box;
+}
 
-      stars.forEach((star, index) => {
-        star.addEventListener('click', () => {
-          const rating = index + 1;
-          ratingInput.value = rating;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+}
 
-          stars.forEach((s, i) => {
-            s.classList.toggle('selected', i < rating);
-          });
-        });
+.review-container {
+  max-width: 600px;
+  margin: 60px auto;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+}
+
+.review-container h2 {
+  margin: 0 0 30px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+  border-bottom: 2px solid #f8f9fa;
+  padding-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+.star-rating span {
+  font-size: 28px;
+  cursor: pointer;
+  color: #dee2e6;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.star-rating span:hover,
+.star-rating span.selected {
+  color: #ffc107;
+}
+
+.form-control,
+textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+}
+
+.form-control:focus,
+textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #007bff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .review-container {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+  
+  .star-rating span {
+    font-size: 24px;
+  }
+}
+
+/* 플레이스홀더 스타일 */
+::placeholder {
+  color: #adb5bd;
+  opacity: 1;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const stars = document.querySelectorAll('.star-rating span');
+  const ratingInput = document.getElementById('ratingInput');
+
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      const rating = index + 1;
+      ratingInput.value = rating;
+
+      stars.forEach((s, i) => {
+        s.classList.toggle('selected', i < rating);
       });
     });
-  </script>
+
+    // 마우스 호버 효과
+    star.addEventListener('mouseenter', () => {
+      stars.forEach((s, i) => {
+        s.style.color = i <= index ? '#ffc107' : '#dee2e6';
+      });
+    });
+  });
+
+  // 마우스가 별점 영역을 벗어날 때 원래 상태로 복원
+  document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+    const currentRating = parseInt(ratingInput.value) || 0;
+    stars.forEach((s, i) => {
+      s.style.color = i < currentRating ? '#ffc107' : '#dee2e6';
+    });
+  });
+});
+</script>
 </head>
 <body>
-  <header>
-    <div th:replace="~{fragments/header :: header}"></div>
-  </header>
+<header>
+<div th:replace="~{fragments/header :: header}"></div>
+</header>
 
-    <main>
-    <div class="review-container">
-      <h2>삼성전자 후기 작성</h2> <!-- 기업명 하드코딩 -->
-      <form action="/user/job_posting/review/write" method="post">
-        <input type="hidden" name="companyId" value="1001" /> <!-- 회사 ID 하드코딩 -->
-        <input type="hidden" name="rating" id="ratingInput" value="0" />
+<main>
+<div class="review-container">
+<h2>삼성전자 후기 작성</h2>
+<form action="/user/job_posting/review/write" method="post">
+<input type="hidden" name="companyId" value="1001" />
+<input type="hidden" name="rating" id="ratingInput" value="0" />
 
-        <div class="form-group">
-          <label>별점</label>
-          <div class="star-rating">
-            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-          </div>
-        </div>
+<div class="form-group">
+<label>별점 평가</label>
+<div class="star-rating">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+</div>
 
-        <div class="form-group">
-          <label for="pros">장점</label>
-          <textarea id="pros" name="pros" placeholder="이 회사의 장점은 무엇인가요?" required></textarea>
-        </div>
+<div class="form-group">
+<label for="pros">장점</label>
+<textarea id="pros" name="pros" placeholder="이 회사의 장점을 구체적으로 작성해주세요" required></textarea>
+</div>
 
-        <div class="form-group">
-          <label for="cons">단점</label>
-          <textarea id="cons" name="cons" placeholder="아쉬웠던 점이나 개선되었으면 하는 점은?" required></textarea>
-        </div>
+<div class="form-group">
+<label for="cons">단점</label>
+<textarea id="cons" name="cons" placeholder="아쉬웠던 점이나 개선사항을 작성해주세요" required></textarea>
+</div>
 
-        <div class="form-group">
-          <label for="summary">총평 (한줄평)</label>
-          <input type="text" id="summary" name="summary" placeholder="한 줄 요약을 적어주세요." class="form-control" required />
-        </div>
+<div class="form-group">
+<label for="summary">한줄평</label>
+<input type="text" id="summary" name="summary" placeholder="회사에 대한 총평을 한 줄로 요약해주세요" class="form-control" required />
+</div>
 
-        <div class="form-group">
-          <label>
-            <input type="checkbox" name="anonymous" value="true" />
-            익명으로 작성
-          </label>
-        </div>
+<div class="form-group">
+<label class="checkbox-group">
+<input type="checkbox" name="anonymous" value="true" />
+익명으로 작성하기
+</label>
+</div>
 
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">후기 등록</button>
-        </div>
-      </form>
-    </div>
-  </main>
+<div class="form-group">
+<button type="submit" class="btn btn-primary">후기 등록하기</button>
+</div>
+</form>
+</div>
+</main>
 
-  <footer>
-    <div th:replace="~{fragments/footer :: footer}"></div>
-  </footer>
+<footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
 </body>
 </html>
