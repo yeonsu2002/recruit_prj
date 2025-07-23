@@ -5,15 +5,42 @@
 
   <mapper namespace="kr.co.sist.user.mapper.RecentViewPostingMapper">
   
-  <insert id="insertRecentViewed" parameterType="kr.co.sist.user.dto.RecentViewPostingDTO">
-    	INSERT INTO RECENT_VIEW_POSTING (
-            RECENT_VIEW_POSTING_SEQ, EMAIL, JOB_POSTING_SEQ, OPENED_AT
-        ) VALUES (
-            RECENT_VIEW_POSTING_SEQ.NEXTVAL,
-            #{email},
-            #{jobPostingSeq},
-            SYSDATE
-        )
+  <select id="selectRecentView" resultType="kr.co.sist.user.dto.RecentViewPostingDTO">
+  select  
+  		recent_view_posting_seq AS recentViewPostingSeq,
+		email,
+		job_posting_seq AS jobPostingSeq,
+		TO_CHAR(opened_at, 'YYYY-MM-DD HH24:MI:SS') as openedAt
+		FROM RECENT_VIEW_POSTING 
+        WHERE email = #{email} AND job_posting_seq = #{jobPostingSeq}
+		
+  </select>
+  
+  <insert id="insertRecentView">
+   		INSERT INTO RECENT_VIEW_POSTING (email, job_posting_seq, opened_at)
+        VALUES (#{email}, #{jobPostingSeq}, SYSDATE)
+  
   </insert>
+  
+  <update id="updateRecentViewTime">
+ 	    UPDATE RECENT_VIEW_POSTING 
+        SET opened_at = SYSDATE 
+        WHERE recent_view_posting_seq = #{recentViewPostingSeq}
+  
+  </update>
+  
+   <delete id="deleteOldRecentViews">
+        DELETE FROM RECENT_VIEW_POSTING 
+        WHERE recent_view_posting_seq IN (
+            SELECT recent_view_posting_seq 
+            FROM (
+                SELECT recent_view_posting_seq,
+                       ROW_NUMBER() OVER (ORDER BY opened_at DESC) as rn
+                FROM RECENT_VIEW_POSTING 
+                WHERE email = #{email}
+            ) 
+            WHERE rn > #{maxRecords}
+        )
+    </delete>
   
   </mapper>
