@@ -16,6 +16,7 @@ import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.JobPostingService;
+import kr.co.sist.user.service.RecentViewService;
 import kr.co.sist.user.service.ResumeService;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class JobPostingController {
     private final UserRepository ur;
     private final CipherUtil cu;
     private final  ResumeService rs;
-   
+    private final RecentViewService recentViewService;
 	    
     //개발자채용
     @GetMapping("/user/job_posting/job_posting")
@@ -72,6 +73,8 @@ public class JobPostingController {
                 UserDTO user = new UserDTO(userEntity);
                 model.addAttribute("user", user);
                 
+                recentViewService.saveRecentViewPosting(userInfo.getEmail(), jobPostingSeq);
+                
                 List<ResumeDTO> resumes = rs.searchAllResumeByUser(userInfo.getEmail());
                 model.addAttribute("resumes", resumes);
             }
@@ -99,16 +102,4 @@ public class JobPostingController {
     }
     
     
-    //기업정보
-    @GetMapping("/user/job_posting/company_info")
-    public String companyInfo() {
-        return "user/job_posting/company_info";
-    }
-    
-    
-    //기업리뷰
-    @GetMapping("/user/job_posting/review")
-    public String review() {
-        return "user/job_posting/review";
-    }
 }

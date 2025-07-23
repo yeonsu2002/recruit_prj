@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Mapper;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
+import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.entity.UserEntity;
 
 @Mapper
 public interface JobPostingCorpMapper {
@@ -37,5 +39,7 @@ public interface JobPostingCorpMapper {
   //나의 공고 리스트 가져오기 : 위를 제외한 전체 내용
   public List<JobPostingDTO> selectMyAllPosting(JobPostingDTO jpDTO);
   
+  //이메일로 유저 정보 가져오기 
+  public UserDTO selectUserInfo(String email);
   
 }

@@ -6,6 +6,11 @@
 <!-- @Mapper와 패키지명, 인터페이스명 같아야함 -->
 <mapper namespace="kr.co.sist.corp.mapper.JobPostingCorpMapper">    
 
+<!-- 이메일로 유저 가져오기 : 임시데이터 생성에 사용 -->
+<select id="selectUserInfo" parameterType="string" resultType="kr.co.sist.user.dto.UserDTO">
+SELECT email, name FROM member WHERE email = #{email}
+</select>
+
 <!-- 새로운 공고 등록 -->
 <insert id="insertJobPost" parameterType="kr.co.sist.corp.dto.JobPostingDTO">
 	<selectKey keyProperty="jobPostingSeq" resultType="int" order="BEFORE">
@@ -71,9 +76,9 @@ WHERE jp.corp_no = #{corpNo}
 			c.CORP_NM AS corp_nm, 
 			pc.position_name AS position_name, 
 			LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.TECH_STACK_SEQ) AS tech_names,
-	        count(DISTINCT ja.RESUME_SEQ) AS app_cnt, 
-	        jp.view_cnt AS view_cnt,
-	        jp.is_ended AS is_ended
+      count(DISTINCT ja.RESUME_SEQ) AS app_cnt, 
+      jp.view_cnt AS view_cnt,
+      jp.is_ended AS is_ended
 	FROM job_posting jp 
 	INNER JOIN company c on jp.corp_no = c.corp_no
 	INNER JOIN job_posting_tech_stack jpts on jp.job_posting_seq = jpts.job_posting_seq

@@ -1,4 +1,4 @@
-package kr.co.sist.user.dto;
+package kr.co.sist.user.dto; 
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +36,17 @@ public class JobPostDTO {
     private String positionName;  
     private String stackName;
     private List<String> techStacks;
+    private String isEnded;
+    private String corpCreatedAt;
+    private String corpImg;
+    private String corpNm;          
+    private String corpInfo;        
+    private String corpUrl;     
+    private String techNames;
     
-    private String corpNm;           // corp_nm
-    private String corpInfo;         // corp_info
-    private String corpUrl;       
+    
+    // D-day 계산을 위한 필드 추가
+    private Integer daysRemaining;
     
     
     public void addTechStack(String stackName) {
@@ -50,4 +57,20 @@ public class JobPostDTO {
           this.techStacks.add(stackName);
       }
   }
+    
+    // D-day 문자열 반환 메소드
+    public String getDdayDisplay() {
+        if (daysRemaining == null) {
+            return "";
+        }
+        if (daysRemaining == 0) {
+            return "D-day";
+        } else if (daysRemaining > 0) {
+            return "D-" + daysRemaining;
+        } else {
+            return "마감";
+        }
+    }
+    
+    
 }
