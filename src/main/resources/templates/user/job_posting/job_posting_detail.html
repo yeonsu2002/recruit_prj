@@ -158,36 +158,52 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    $("#scrapBtn").click(function () {
-        const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();  // ID가 바뀐 input에서 값 읽기
-        console.log("jobPostingSeqStr:", jobPostingSeqStr);
-        if (!jobPostingSeqStr || isNaN(jobPostingSeqStr)) {
-            alert("유효한 공고 번호가 없습니다.");
-            return;
-        }
+    const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();
+    if (jobPostingSeqStr && !isNaN(jobPostingSeqStr)) {
+        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);
 
-        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);  // 문자열을 정수로 변환
-        const heartIcon = $("#heartIcon");
-        const isScrapped = heartIcon.text() === "❤️";
-        const url = isScrapped ? "/scrap/remove" : "/scrap/add";
-
+        // ⭐ [1] 페이지 로딩 시 스크랩 상태 체크
         $.ajax({
-            url: url,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+            url: "/scrap/check",
+            method: "GET",
+            data: { jobPostingSeq: jobPostingSeq },
             success: function (data) {
-                alert(data.message);
                 if (data.success) {
-                    heartIcon.text(isScrapped ? "🤍" : "❤️");
+                    const heartIcon = $("#heartIcon");
+                    heartIcon.text(data.scrapped ? "❤️" : "🤍");
                 }
             },
-            error: function (xhr, status, error) {
-                console.error("스크랩 처리 중 오류:", error);
-                alert("스크랩 처리 중 오류가 발생했습니다.");
+            error: function () {
+                console.error("스크랩 상태 확인 실패");
             }
         });
-    });
+
+        // ⭐ [2] 버튼 클릭 시 스크랩 추가/삭제
+        $("#scrapBtn").click(function () {
+            const heartIcon = $("#heartIcon");
+            const isScrapped = heartIcon.text() == "❤️";
+            const url = isScrapped ? "/scrap/remove" : "/scrap/add";
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+                success: function (data) {
+                    alert(data.message);
+                    if (data.success) {
+                        heartIcon.text(isScrapped ? "🤍" : "❤️");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("스크랩 처리 중 오류:", error);
+                    alert("스크랩 처리 중 오류가 발생했습니다.");
+                }
+            });
+        });
+    } else {
+        console.warn("공고 번호가 유효하지 않습니다.");
+    }
 });
 </script>
 
