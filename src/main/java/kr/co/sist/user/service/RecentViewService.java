@@ -1,5 +1,8 @@
 package kr.co.sist.user.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.stereotype.Service;
 
 import kr.co.sist.user.dto.RecentViewPostingDTO;
@@ -20,23 +23,25 @@ public class RecentViewService {
 			
 			RecentViewPostingDTO existingView=recentViewMapper.selectRecentView(email,jobPostingSeq);
 			
+			String nowStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
 			if(existingView !=null) {
-				
-				recentViewMapper.updateRecentViewTime(existingView.getRecentViewPostingSeq());
+		    existingView.setOpenedAt(nowStr);
+				recentViewMapper.updateRecentViewTime(existingView);
 				
 			}else {
-				
 				RecentViewPostingDTO newView=new RecentViewPostingDTO();
 				newView.setEmail(email);
 				newView.setJobPostingSeq(jobPostingSeq);
+				newView.setOpenedAt(nowStr);
 				recentViewMapper.insertRecentView(newView);
 			}
 			
-			recentViewMapper.deleteOldRecentViews(email, 10);
+			recentViewMapper.deleteOldRecentViews(email, 50);
 			
 		}catch(Exception e){
 			
-			log.error("최신본 공고 저장 실패 : email={}, jobPostingSeq={}", email, jobPostingSeq, e);
+			log.error("----------------------------최신본 공고 저장 실패 : email={}, jobPostingSeq={}", email, jobPostingSeq, e);
 			
 		}
 		
