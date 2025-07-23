@@ -40,4 +40,8 @@
 		from company
 		group by industry
 	</select>
+	
+	<select id="selectAsk" resultType="kr.co.sist.user.entity.InquiryEntity">
+	select ask_seq,title,answer_stat from ask where answer_stat='N'
+	</select>
 </mapper>

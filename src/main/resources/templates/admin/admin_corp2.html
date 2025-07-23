@@ -111,7 +111,12 @@ form input[type="submit"]:hover {
 
 <tbody>
 <tr th:each="c:${corp}">
-<td th:text="${c.corpNo}"></td>
+<td>
+  <form action="/admin_corp_detail" >
+    <input type="hidden" name="corpNo" th:value="${c.corpNo}" />
+    <input type="submit" th:value="${c.corpNo}" />
+  </form>
+</td>
 <td th:text="${c.corpNm}"></td>
 <td th:text="${c.corpInfo}"></td>
 <td th:text="${c.industry}"></td>

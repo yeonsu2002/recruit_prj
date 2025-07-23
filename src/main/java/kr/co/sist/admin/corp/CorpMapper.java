@@ -14,4 +14,5 @@ public interface CorpMapper {
 	List<CorpEntity> selectCorp();
 	List<CorpEntity> searchCorp(String corpNo, String name, List<String> industry);
 	List<String> selectCorpInd();
+	CorpEntity detailCorp(String corpNo);
 }

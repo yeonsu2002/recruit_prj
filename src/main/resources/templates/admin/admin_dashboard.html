@@ -56,13 +56,15 @@
   </div>
   <div class="chart-box">
   	<table class="table table-bordered">
+  	<tr>
+  		<td>전체</td>
+  	</tr>
   		<tr>
-  		<th>답변처리 대기중</th>
-  		<th>(답변상태 0개수)(...버튼으로 고객센터 페이지)</th>
+  		<tr th:each="ask:${ask}">
+  		<td th:text="${ask.askSeq}"></td>
+  		<td th:text="${ask.title}"></td>
+  		<td th:text="${ask.answerStat}"></td>
   		</tr>
-  		<tr>
-  		<td rowspan="2">전체</td>
-  		<td rowspan="2">(답변0상태 고객센터)</td>
   		</tr>
   	</table>
   </div>
