@@ -8,11 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.sist.user.dto.ApplicantStatisticsDTO;
+import kr.co.sist.user.dto.FavoriteCompanyDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
+import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.mapper.MyPageMapper;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +48,51 @@ public class MyPageService {
 
 		return mpMapper.cntMyScrapPosting(email);
 	}
+	
+	// 내가 최근 본 첫 공고 9개 가져오기
+	public List<MyPostingDTO> searchMyRecentPosting(String email) {
+		
+		return mpMapper.selectMyRecentPosting(email);
+	}
+	
+	// 내가 최근 본 다음 공고 9개 가져오기
+	public List<MyPostingDTO> searchMyNextRecentPosting(String email, int currentPage) {
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("email", email);
+		map.put("offset", (currentPage - 1) * 9);
+		
+		return mpMapper.selectMyNextRecentPosting(map);
+	}
+	
+	// 내가 최근 본 공고 개수
+	public int cntMyRecentPosting(String email) {
+		
+		return mpMapper.cntMyRecentPosting(email);
+	}
+	
+	// 내 관심기업 9개 가져오기
+	public List<FavoriteCompanyDTO> searchMyFavoriteCompany(String email) {
+		
+		return mpMapper.selectMyFavoriteCompany(email);
+	}
+	
+	// 내 관심기업 다음 9개 가져오기
+	public List<FavoriteCompanyDTO> searchMyNextFavoriteCompany(String email, int currentPage) {
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("email", email);
+		map.put("offset", (currentPage - 1) * 9);
+		
+		return mpMapper.selectMyNextFavoriteCompany(map);
+	}
+	
+	// 내 관심기업 개수
+	public int cntMyFavoriteCompany(String email) {
+		
+		return mpMapper.cntMyFavoriteCompany(email);
+	}
+	
 
 	// 내 모든 지원 목록
 	public List<MyApplicantDTO> searchMyAllApplicant(String email) {
@@ -119,5 +167,13 @@ public class MyPageService {
 		return statistics;
 
 	}// getApplicantStatistics
+	
+	//회원 탈퇴 처리
+	@Transactional
+	public void resignMember(UserEntity userEntity) {
+		
+		//활동 상태 탈퇴로 변경
+		userEntity.setActiveStatus(2);
+	}
 
 }// class

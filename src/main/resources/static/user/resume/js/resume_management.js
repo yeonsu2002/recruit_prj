@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	//이력서 추가 버튼 클릭시 새 페이지로 이동
 	document.getElementById('addResumeBtn').addEventListener('click', function() {
+		
+		//이력서 10개까지만 제한
+		const resumeCnt = document.querySelectorAll('.card').length;
+		if(resumeCnt >= 11){
+			alert("이력서는 최대 10개까지만 작성 가능합니다.")
+			return;
+		}
+		
 		location.href = '/user/resume/resume_create';
 	});
 

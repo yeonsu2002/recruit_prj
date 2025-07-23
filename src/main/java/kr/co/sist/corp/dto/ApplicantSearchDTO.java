@@ -37,7 +37,7 @@ public class ApplicantSearchDTO {
 
 	private boolean prev;
 	private boolean next;
-	private int displayPageNum = 5;
+	private int displayPageNum = 10;
 
 	//검색 데이터 수 설정시 계산 로직
 	public void setSearchCnt(int searchCnt) {

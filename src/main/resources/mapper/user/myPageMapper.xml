@@ -7,15 +7,10 @@
 <mapper namespace="kr.co.sist.user.mapper.MyPageMapper">
 
 	<!-- 공고관련 -->
-	<!-- <select id="selectScrapPosting" parameterType="String"
-		resultType="userJobPostingScrapDTO">
-		select SCRAP_SEQ, JOB_POSTING_SEQ, EMAIL, SCRAP_DATE
-		from
-		JOB_POSTING_SCRAP
-		where email = #{email}
-		ORDER BY
-		TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD')
-	</select> -->
+	<!-- <select id="selectScrapPosting" parameterType="String" resultType="userJobPostingScrapDTO"> 
+		select SCRAP_SEQ, JOB_POSTING_SEQ, EMAIL, SCRAP_DATE from JOB_POSTING_SCRAP 
+		where email = #{email} ORDER BY TO_DATE(SUBSTR(SCRAP_DATE, 1, 10), 'YYYY-MM-DD') 
+		</select> -->
 
 	<!-- 지원 회사 목록 가져오기 -->
 	<select id="selectMyApplicant" parameterType="String"
@@ -72,13 +67,16 @@
 			<!-- 대체 왜 아래 12나 24는 저거로 해도 잘만 타면서 6은 이따구로 해야 작동되는거? -->
 			<!-- <when test='period != null and "6".equals(period)'> -->
 			<when test='"6".equals(period)'>
-				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -6)
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD
+				HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -6)
 			</when>
 			<when test='period == "12"'>
-				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -12)
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD
+				HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -12)
 			</when>
 			<when test="period == '24'">
-				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -24)
+				and TO_DATE(ja.application_date, 'YYYY-MM-DD
+				HH24:MI:SS') &gt;= ADD_MONTHS(SYSDATE, -24)
 			</when>
 			<otherwise>
 				and TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS')
@@ -87,7 +85,7 @@
 		</choose>
 		ORDER BY TO_DATE(ja.application_date, 'YYYY-MM-DD HH24:MI:SS') desc
 	</select>
-	
+
 
 	<!-- 지원 취소 -->
 	<update id="updateApplicationCancel" parameterType="int">
@@ -106,10 +104,12 @@
 	</delete>
 
 	<!-- 스크랩한 공고 처음 9개 가져오기 -->
-	<select id="selectMyScrapPosting" parameterType="String" resultType="userMyPostingDTO">
+	<select id="selectMyScrapPosting" parameterType="String"
+		resultType="userMyPostingDTO">
 		SELECT
 		jp.job_posting_seq AS jobPostingSeq,
-		jp.posting_title AS postingTitle,
+		jp.posting_title
+		AS postingTitle,
 		jp.exp_level AS expLevel,
 		jp.district AS district,
 		jp.region AS region,
@@ -119,27 +119,36 @@
 		jp.POSTING_END_DT as postingEndDt,
 		NVL(ts.stack_names, '기술 스택 없음') AS stackName
 		FROM JOB_POSTING jp
-		JOIN COMPANY c ON jp.corp_no = c.corp_no
-		JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
-		JOIN JOB_POSTING_SCRAP js ON js.job_posting_seq = jp.job_posting_seq
+		JOIN
+		COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON
+		jp.position_seq = pc.position_seq
+		JOIN JOB_POSTING_SCRAP js ON
+		js.job_posting_seq = jp.job_posting_seq
 		LEFT JOIN (
 		SELECT
 		jpts.job_posting_seq,
-		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name) AS stack_names
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER
+		BY ts.stack_name) AS stack_names
 		FROM JOB_POSTING_TECH_STACK jpts
-		JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
-		GROUP BY jpts.job_posting_seq
+		JOIN
+		TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY
+		jpts.job_posting_seq
 		) ts ON jp.job_posting_seq = ts.job_posting_seq
 		WHERE js.email = #{email}
 		ORDER BY js.scrap_date desc
-		offset 0 rows fetch next 9 rows only
+		offset 0 rows
+		fetch next 9 rows only
 	</select>
-	
+
 	<!-- 스크랩한 공고 무한스크롤로 가져오기 -->
-	<select id="selectMyNextScrapPosting" parameterType="map" resultType="userMyPostingDTO">
+	<select id="selectMyNextScrapPosting" parameterType="map"
+		resultType="userMyPostingDTO">
 		SELECT
 		jp.job_posting_seq AS jobPostingSeq,
-		jp.posting_title AS postingTitle,
+		jp.posting_title
+		AS postingTitle,
 		jp.exp_level AS expLevel,
 		jp.district AS district,
 		jp.region AS region,
@@ -149,27 +158,150 @@
 		jp.POSTING_END_DT as postingEndDt,
 		NVL(ts.stack_names, '기술 스택 없음') AS stackName
 		FROM JOB_POSTING jp
-		JOIN COMPANY c ON jp.corp_no = c.corp_no
-		JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
-		JOIN JOB_POSTING_SCRAP js ON js.job_posting_seq = jp.job_posting_seq
+		JOIN
+		COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON
+		jp.position_seq = pc.position_seq
+		JOIN JOB_POSTING_SCRAP js ON
+		js.job_posting_seq = jp.job_posting_seq
 		LEFT JOIN (
 		SELECT
 		jpts.job_posting_seq,
-		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.stack_name) AS stack_names
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER
+		BY ts.stack_name) AS stack_names
 		FROM JOB_POSTING_TECH_STACK jpts
-		JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
-		GROUP BY jpts.job_posting_seq
+		JOIN
+		TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY
+		jpts.job_posting_seq
 		) ts ON jp.job_posting_seq = ts.job_posting_seq
 		WHERE js.email = #{email}
 		ORDER BY js.scrap_date desc
-		offset #{offset} rows fetch next 9 rows only
+		offset #{offset}
+		rows fetch next 9 rows only
 	</select>
-	
+
 	<!-- 스크랩한 공고 개수 -->
-	<select id="cntMyScrapPosting" parameterType="String" resultType="int">
+	<select id="cntMyScrapPosting" parameterType="String"
+		resultType="int">
 		select count(*)
 		from job_posting_scrap
 		where email = #{email}
+	</select>
+
+	<!-- 최근 본 공고 처음 9개 가져오기 -->
+	<select id="selectMyRecentPosting" parameterType="String"
+		resultType="userMyPostingDTO">
+		SELECT
+		jp.job_posting_seq AS jobPostingSeq,
+		jp.posting_title
+		AS postingTitle,
+		jp.exp_level AS expLevel,
+		jp.district AS district,
+		jp.region AS region,
+		c.corp_nm AS corpNm,
+		c.corp_img as corpImg,
+		pc.position_name AS positionName,
+		jp.POSTING_END_DT as postingEndDt,
+		NVL(ts.stack_names, '기술 스택 없음') AS stackName
+		FROM JOB_POSTING jp
+		JOIN
+		COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON
+		jp.position_seq = pc.position_seq
+		JOIN RECENT_VIEW_POSTING rvp ON
+		rvp.job_posting_seq = jp.job_posting_seq
+		LEFT JOIN (
+		SELECT
+		jpts.job_posting_seq,
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER
+		BY ts.stack_name) AS stack_names
+		FROM JOB_POSTING_TECH_STACK jpts
+		JOIN
+		TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY
+		jpts.job_posting_seq
+		) ts ON jp.job_posting_seq = ts.job_posting_seq
+		WHERE rvp.email = #{email}
+		ORDER BY rvp.opened_at desc
+		offset 0 rows
+		fetch next 9 rows only
+	</select>
+
+	<!-- 최근 본 공고 무한스크롤로 9개 가져오기 -->
+	<select id="selectMyNextRecentPosting" parameterType="map"
+		resultType="userMyPostingDTO">
+		SELECT
+		jp.job_posting_seq AS jobPostingSeq,
+		jp.posting_title
+		AS postingTitle,
+		jp.exp_level AS expLevel,
+		jp.district AS district,
+		jp.region AS region,
+		c.corp_nm AS corpNm,
+		c.corp_img as corpImg,
+		pc.position_name AS positionName,
+		jp.POSTING_END_DT as postingEndDt,
+		NVL(ts.stack_names, '기술 스택 없음') AS stackName
+		FROM JOB_POSTING jp
+		JOIN
+		COMPANY c ON jp.corp_no = c.corp_no
+		JOIN POSITION_CODE pc ON
+		jp.position_seq = pc.position_seq
+		JOIN RECENT_VIEW_POSTING rvp ON
+		rvp.job_posting_seq = jp.job_posting_seq
+		LEFT JOIN (
+		SELECT
+		jpts.job_posting_seq,
+		LISTAGG(ts.stack_name, ', ') WITHIN GROUP (ORDER
+		BY ts.stack_name) AS stack_names
+		FROM JOB_POSTING_TECH_STACK jpts
+		JOIN
+		TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
+		GROUP BY
+		jpts.job_posting_seq
+		) ts ON jp.job_posting_seq = ts.job_posting_seq
+		WHERE rvp.email = #{email}
+		ORDER BY rvp.opened_at desc
+		offset #{offset} rows
+		fetch next 9 rows only
+	</select>
+
+	<!-- 최근 본 공고 개수 -->
+	<select id="cntMyRecentPosting" parameterType="String"
+		resultType="int">
+		select count(*)
+		from recent_view_posting
+		where email =
+		#{email}
+	</select>
+
+	<!-- 관심 기업 처음 9개 가져오기 -->
+	<select id="selectMyFavoriteCompany" parameterType="String" resultType="userFavoriteCompanyDTO">
+		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_img
+		from favorite_company f
+		join company c on c.corp_no = f.corp_no
+		where f.email=#{email}
+		order by f.scrap_date desc
+		offset 0 rows fetch next 9 rows only
+	</select>
+	
+	<!-- 관심 기업 무한스크롤로 9개 가져오기 -->
+	<select id="selectMyNextFavoriteCompany" parameterType="map" resultType="userFavoriteCompanyDTO">
+		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_img
+		from favorite_company f
+		join company c on c.corp_no = f.corp_no
+		where f.email=#{email}
+		order by f.scrap_date desc
+		offset #{offset} rows fetch next 9 rows only
+	</select>
+	
+	<!-- 관심기업 개수 가져오기 -->
+	<select id="cntMyFavoriteCompany" parameterType="String" resultType="int">
+		select count(*)
+		from favorite_company f
+		join company c on c.corp_no = f.corp_no
+		where f.email = #{email}
 	</select>
 
 </mapper>
