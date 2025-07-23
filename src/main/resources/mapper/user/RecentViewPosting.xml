@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-  <mapper namespace="kr.co.sist.user.mapper.RecentViewPostingMapper">
+  <mapper namespace="kr.co.sist.user.mapper.RecentViewPostingMapper">  
   
   <select id="selectRecentView" resultType="kr.co.sist.user.dto.RecentViewPostingDTO">
   select  

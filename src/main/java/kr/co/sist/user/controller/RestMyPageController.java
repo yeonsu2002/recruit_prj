@@ -16,6 +16,7 @@ import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.MessageDTO;
 import kr.co.sist.user.dto.MessageSearchDTO;
+import kr.co.sist.user.dto.MyPostingDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
 import kr.co.sist.user.service.MyPageService;
@@ -30,9 +31,9 @@ public class RestMyPageController {
 
 	private final UserRepository userRepos;
 
-	// 지원한 이력서 지원 취소
+	// 지원한 공고 지원 취소
 	@PutMapping("/mypage/application/{jobApplicationSeq}")
-	public String deleteApplication(@PathVariable int jobApplicationSeq) {
+	public String cancelApplication(@PathVariable int jobApplicationSeq) {
 
 		int result = myPageServ.cancelApplication(jobApplicationSeq);
 
@@ -43,6 +44,14 @@ public class RestMyPageController {
 		return "fail";
 
 	}// deleteApplication
+
+	// 지원취소한 지원내역 삭제
+	@DeleteMapping("/mypage/application/{jobApplicationSeq}")
+	public void deleteApplication(@PathVariable int jobApplicationSeq) {
+
+		myPageServ.removeApplication(jobApplicationSeq);
+
+	}
 
 	// 검색 & 페이징 된 메일 목록 가져오기
 	@GetMapping("/mypage/messages")
@@ -90,14 +99,22 @@ public class RestMyPageController {
 			messageServ.toggleReadMessage(messageSeq);
 		}
 	}// readMessages
-	
-	//체크된 메일들 삭제
+
+	// 체크된 메일들 삭제
 	@DeleteMapping("/mypage/messages/{selectedSeq}")
 	public void removeMessages(@PathVariable List<Integer> selectedSeq) {
-		
-		for(int messageSeq : selectedSeq) {
+
+		for (int messageSeq : selectedSeq) {
 			messageServ.removeMessage(messageSeq);
 		}
-	}//deleteMessages
-	
+	}// deleteMessages
+
+	// 스크랩한 공고 페이징 해서 가져오기
+	@GetMapping("/mypage/scrap/{currentPage}")
+	public List<MyPostingDTO> getScrapPosting(@PathVariable int currentPage, @AuthenticationPrincipal CustomUser userInfo) {
+		
+		List<MyPostingDTO> posting = myPageServ.searchMyNextScrapPosting(userInfo.getEmail(), currentPage);
+    return posting;
+	}
+
 }// class
