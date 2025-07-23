@@ -98,11 +98,12 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 		});
-	});
-
+	})
+	
 
 });
 
+//페이지 이동
 function movePage(type, includeCanceled) {
 	const params = new URLSearchParams(location.search);
 	params.set("period", document.getElementById('period').value);
@@ -117,3 +118,4 @@ function movePage(type, includeCanceled) {
 
 	location.href = "/user/mypage/apply_list?" + params.toString();
 }
+

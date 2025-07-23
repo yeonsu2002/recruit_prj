@@ -26,13 +26,13 @@
 						스크랩 공고(<span th:text="${totalCnt}"></span>)
 					</div>
 					<div class="announcement-section">
-						<div class="announcement-list">
+						<div class="announcement-list" id="announcement-list">
 							<th:block th:each="posting : ${postings}">
 								<div class="announcement-card"
 									th:attr="data-posting-seq=${posting.jobPostingSeq}"
 									th:classappend="${posting.dday<0}?' expired-card'">
 									<div class="image-wrapper">
-										<img src="/images/Ssangyong.jpg" alt="기업 이미지">
+										<img th:src="@{/images/img/{img}(img=${posting.corpImg})}" alt="기업 이미지">
 									</div>
 									<div class="dday-badge"
 										th:classappend="${posting.dday == 0} ? 'dday' : 
@@ -54,8 +54,22 @@
 										개발</div>
 								</div>
 							</th:block>
-
 						</div>
+						<th:block th:if="${totalCnt == 0}">
+							<div class="empty-state">
+								<div class="empty-state-icon">
+									<i class="fas fa-search"></i>
+								</div>
+								<div class="empty-state-title">아직 스크랩한 공고가 없어요</div>
+								<div class="empty-state-message">
+									관심있는 공고를 둘러보고<br> 나에게 맞는 기회를 찾아보세요!
+								</div>
+								<a th:href="@{/user/job_posting/job_posting}" class="empty-state-btn"> <i
+									class="fas fa-briefcase" style="margin-right: 8px;"></i> 공고
+									보러가기
+								</a>
+							</div>
+						</th:block>
 					</div>
 				</div>
 			</div>

@@ -16,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.servlet.http.HttpServletRequest;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
+import kr.co.sist.pdf.PdfService;
 import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.LinkDTO;
 import kr.co.sist.user.dto.ResumeDTO;
@@ -42,6 +44,8 @@ public class ResumeController {
 	
 	private final ObjectMapper objMapper;
 	private final CipherUtil cu;
+	
+	private final PdfService pdfService;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
@@ -168,6 +172,7 @@ public class ResumeController {
 
 		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
 	}
+	
 
 	// 이력서 삭제하기
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")

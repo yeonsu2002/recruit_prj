@@ -16,6 +16,7 @@ import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.JobPostingService;
+import kr.co.sist.user.service.RecentViewService;
 import kr.co.sist.user.service.ResumeService;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class JobPostingController {
     private final UserRepository ur;
     private final CipherUtil cu;
     private final  ResumeService rs;
-   
+    private final RecentViewService recentViewService;
 	    
     //개발자채용
     @GetMapping("/user/job_posting/job_posting")
@@ -71,6 +72,8 @@ public class JobPostingController {
                 // 복호화된 데이터를 UserDTO에 담아서 전달
                 UserDTO user = new UserDTO(userEntity);
                 model.addAttribute("user", user);
+                
+                recentViewService.saveRecentViewPosting(userInfo.getEmail(), jobPostingSeq);
                 
                 List<ResumeDTO> resumes = rs.searchAllResumeByUser(userInfo.getEmail());
                 model.addAttribute("resumes", resumes);

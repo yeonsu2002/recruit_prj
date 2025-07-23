@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.sist.jwt.CustomUser;
@@ -82,4 +84,22 @@ public class ScrapController {
         }
         return result;
     }
+    
+    
+    @GetMapping("/scrap/check")
+    public Map<String, Object> checkScrap(@RequestParam Integer jobPostingSeq,
+                                          @AuthenticationPrincipal CustomUser userInfo) {
+        Map<String, Object> result = new HashMap<>();
+        if (userInfo == null) {
+            result.put("success", false);
+            result.put("message", "로그인이 필요합니다.");
+            return result;
+        }
+
+        boolean already = scrapService.isAlreadyScrapped(jobPostingSeq, userInfo.getEmail());
+        result.put("success", true);
+        result.put("scrapped", already);
+        return result;
+    }
+
 }
