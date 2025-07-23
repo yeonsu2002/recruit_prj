@@ -78,33 +78,49 @@ function openKakaoMap(){
  * 포지션 리스트 비동기 검색 기능
  */
 function getPositionList() {
+	const positionInput = document.getElementById('positionName');
+	const resultBox = document.getElementById('resultBox');
 	
-	// 클릭시 값이 있다면 결과리스트 보여주기
-	document.querySelector('#positionName').addEventListener('click', function(){
-		console.log('click 발생');
-		if(document.querySelector('#positionName').value !== ""){
-			document.querySelector('#resultBox').style.display = 'block';
-		}
-	});
-	
-	// 외부 클릭시 결과리스트 숨기기
-	document.querySelector('#positionName').addEventListener('focusout', function(){
-		console.log('focusout 발생');
+	function noResultBox(){
 		document.querySelector('#resultBox').style.display = 'none';
-	});
-	  
-	// 포지션 검색 자동완성
-  	document.getElementById('positionName').addEventListener('input', function () {
-		const keyword = document.getElementById('positionName').value.trim();
-		const resultBox = document.querySelector('#resultBox');
-
-		// 검색어가 없을때는 결과 박스 숨기기.. 
+	}
+	function showResultBox(){
+		document.querySelector('#resultBox').style.display = 'block';
+	}
+	
+	//검색어 입력 시
+	positionInput.addEventListener('keyup', function () {
+		let keyword = this.value.trim();
 		if (keyword === '') {
 			resultBox.style.display = 'none';
 			return;
 		}
+		searchFetch(keyword);
+	});
 
-		// 1글자 이상일 때 검색 시작
+	//input클릭하면 결과창 호출
+	positionInput.addEventListener('click', function () {
+		if (this.value.trim() !== '') {
+			showResultBox();
+		}
+	});
+
+	//바깥 클릭시 결과창 닫음 , 단 클릭 이벤트가 먼저 실행되도록 살짝 지연
+	positionInput.addEventListener('focusout', function () {
+		setTimeout(() => {
+			resultBox.style.display = 'none';
+		}, 150); 
+	});
+
+	// 마우스가 resultBox 버튼누르면 focusout 무시---------------------- 이거 엄청 중요 이게 포인트 
+	resultBox.addEventListener('mousedown', function (e) {
+		e.preventDefault(); // input focus 아예 안 빠지게 막음
+	});
+	
+	// 1글자 이상일 때 검색 시작
+	function searchFetch(keyword){
+		let resultBox = document.querySelector('#resultBox');
+		
 		if (keyword.length >= 1) {
 			fetch(`/corp/searchPositionByKeyword?keyword=${encodeURIComponent(keyword)}`)
 				.then(response => {
@@ -129,7 +145,9 @@ function getPositionList() {
 							li.addEventListener('click', function () {
 								document.getElementById('positionName').value = item.positionName;
 								document.getElementById('positionSeq').value = item.positionSeq;
+								console.log(item.positionName);
 								resultBox.style.display = 'none';
+								console.log('스타일 닫힘 안보여야해 ')
 							});
 
 							resultBox.appendChild(li);
@@ -147,8 +165,9 @@ function getPositionList() {
 					resultBox.style.display = 'block';
 				});
 		}
-	});
+	} //searchFetch()
 }
+
 
 /**
  * 기술스택 검색 및 추가 기능
@@ -204,13 +223,42 @@ function getStackList() {
 
 		techStackList.appendChild(badge);
 	}
+	
+	//suggestedStackList 안보이게 함수
+	function noSuggestedStackList(){
+		document.querySelector('#suggestedStackList').style.display = 'none';
+	}
+	//suggestedStackList 보이게 함수
+	function showSuggestedStackList(){
+		document.querySelector('#suggestedStackList').style.display = 'block';
+	}
 
 	// 기술스택 검색 자동완성
 	document.querySelector("#techStackSearch").addEventListener("input", function () {
 		const keyword = this.value.trim();
 		suggestedList.innerHTML = "";
+		
+		if(keyword.length >= 0){
+			showSuggestedStackList();
+		}
 
-		if (keyword.length === 0) return;
+		if (keyword.length === 0){
+			noSuggestedStackList();
+			return;
+		}
+		
+		document.querySelector("#techStackSearch").addEventListener('focusout', function(){
+			noSuggestedStackList();
+		});
+		document.querySelector("#techStackSearch").addEventListener('click', function(){
+			showSuggestedStackList();
+		});
+		
+		// 마우스가 suggestedStackList 버튼누르면 focusout 무시
+		suggestedList.addEventListener('mousedown', function (e) {
+			e.preventDefault(); // input focus 아예 안 빠지게 막음
+		});
+		
 
 		// 기술스택 검색 API 호출
 		fetch(`/corp/searchStackByKeyword?keyword=${encodeURIComponent(keyword)}`)

@@ -70,6 +70,7 @@ public class LoginController {
    * 통합(일반, 기업) 로그인 처리 -> 현재 security의 핸들러에서 대체중 
    * @return
    */
+/**
   //@PostMapping("/loginProcess")
   public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
   	
@@ -99,7 +100,7 @@ public class LoginController {
     
     return "redirect:/"; //로그인 후 메인페이지로 이동
   }
-  
+*/  
   /**
    * 일반회원 가입 페이지로 이동
    * @return

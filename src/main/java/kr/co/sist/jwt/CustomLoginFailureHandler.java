@@ -36,7 +36,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 		} else if (cause instanceof DisabledException) {
 			errorMsg = "운영수칙을 위반하여 계정이 비활성화되어있습니다. 고객센터에 문의해주세요.";
 		} else if (cause instanceof AccountExpiredException) {
-			errorMsg = "계정이 만료되었습니다.";
+			errorMsg = "회원 탈퇴한 계정입니다.";
 		} else if (cause instanceof CredentialsExpiredException) {
 			errorMsg = "비밀번호 유효기간이 만료되었습니다.";
 		}

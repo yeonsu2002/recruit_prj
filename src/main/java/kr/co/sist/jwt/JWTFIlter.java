@@ -1,12 +1,14 @@
 package kr.co.sist.jwt;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,7 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.user.dto.UserDTO;
 
 /**
- * JWTFilter역할 = 쿠키 검증 -> 세션생성 -> 세션에 유저정보 저장 
+ * if(로그인 성공){
+ * 	JWTFilter역할 = 쿠키 검증 -> 세션생성 -> 세션에 유저정보 저장 
+ * }
  * SecurityContextholder에 세션을 생성하는데, 이 세션은 Stateless상태로 관리되기 때문에 해당 요청이 끝나면 소멸됨.
  */
 
@@ -30,7 +34,67 @@ public class JWTFIlter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		
+		/**
+		 * 07.23 추가(access token 검증)
+		 */
+		String accessToken = request.getHeader("access"); // != getCookies() 주의
+		System.out.println("WJTFilter 디버깅 / accessToken = " + accessToken);
+		
+		//accessToken 없으면 다음필터로 
+		if(accessToken == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		//accessToken 만료시간 체크
+		try {
+			jwtUtil.isExpired(accessToken);
+		} catch (ExpiredJwtException e) {
+			e.printStackTrace();
+			
+			//response Body
+			PrintWriter writer = response.getWriter();
+			writer.print("access token expired!");
+		
+			//response status code
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return;
+		}
+		
+		//토큰이 access인지 확인(발급시에 페이로드에 명시)
+		String category = jwtUtil.getCategory(accessToken);
 
+		if(!category.equals("access")) {
+			
+			//response Body
+			PrintWriter writer = response.getWriter();
+			writer.print("invalid access token");
+			
+			//response status code
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return;
+		}
+		
+		//accessToken이 정상이니 SecurityContextHolder세션에 저장하자, principal에 들어갈 것들: (CustomUser 클래스 생성 -> Authentication 인터페이스의 구현체인 UsernamePasswordAuthenticationToken 객체로 생성 )
+		UserDTO uDTO = new UserDTO();
+		uDTO.setEmail(jwtUtil.getEmail(accessToken));
+		uDTO.setName(jwtUtil.getName(accessToken));
+		uDTO.setCorpNo(jwtUtil.getCorpNo(accessToken));
+		uDTO.setRole(jwtUtil.getRole(accessToken));
+		
+		//UserDetails 구현체(CustomUser)에 로그인한 회원정보 객체 담기
+		CustomUser customUser = new CustomUser(uDTO);
+		
+		//스프링 시큐리티 인증 토큰 생성 (사용자객체, 비밀번호, 권한)
+		Authentication authToken = new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
+
+		//시큐리티 세션에 저장 (stateless 동작)
+		SecurityContextHolder.getContext().setAuthentication(authToken);
+		
+		//끝. 다음 필터로 이동
+		filterChain.doFilter(request, response);
+/**		
 		String authorization = null;
 		Cookie[] cookies = request.getCookies();
 		if(cookies == null || cookies.length == 0) {
@@ -44,45 +108,8 @@ public class JWTFIlter extends OncePerRequestFilter{
 			}
 		}
 		String token = authorization; //사용자 정보 보유중 
-		
-		//1.쿠키 Authorizaiton의 값 검증
-		if(token == null) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		//2.쿠키 Authorization이 null이 아닐 때 -> 토큰 소멸시간 검증
-		if(jwtUtil.isExpired(token)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		//3.쿠키가 정상이니 SecurityContextHolder세션에 저장하자, principal에 들어갈 것들: (CustomUser 클래스 생성 -> Authentication 인터페이스의 구현체인 UsernamePasswordAuthenticationToken 객체로 생성 )
-		String username = jwtUtil.getEmail(token);
-		String role = jwtUtil.getRole(token); //우리는 계정당 Role이 하나 
-		String name = jwtUtil.getName(token);
-		Long corpNo = jwtUtil.getCorpNo(token);
-		
-		UserDTO userDTO = new UserDTO();
-		userDTO.setEmail(username);
-		userDTO.setRole(role);
-		userDTO.setName(name);
-		userDTO.setCorpNo(corpNo);
-		
-		//UserDetails 구현체에 로그인한 회원정보 객체 담기
-		CustomUser coustomUser = new CustomUser(userDTO);
-		
-		//스프링 시큐리티 인증토큰을 생성하기 (매개변수 = UserDetails 구현객체, 비밀번호(보안상 null 대입), 권한) 
-		Authentication authToken = new UsernamePasswordAuthenticationToken(coustomUser, null, coustomUser.getAuthorities());
-		
-		//SecurityContextHolder 세션에 사용자 등록 (요청 완료후 자동 삭제됨 => stateless)
-		SecurityContextHolder.getContext().setAuthentication(authToken);
-		
-		//완료됐어. 다음 필터 넘어가. 
-		filterChain.doFilter(request, response);
-		
+*/
 		
 	}
-
 	
 }

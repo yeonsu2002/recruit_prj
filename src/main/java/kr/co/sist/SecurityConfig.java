@@ -72,7 +72,7 @@ public class SecurityConfig {
     public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/reissue").permitAll()
                 .anyRequest().permitAll()
             )
             .csrf(csrf -> csrf.disable())
@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "Authorization")
+                .deleteCookies("JSESSIONID", "access", "refresh")
             )
             .addFilterAfter(new JWTFIlter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         
