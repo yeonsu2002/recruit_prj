@@ -57,7 +57,10 @@ $(function() {
             $('#selectAll').prop('checked', false);
         }
     });
-
+ // 작성 버튼 클릭
+    $('#createBtn').on('click', function() {
+      window.location.href = '/admin/notice_write';
+    });
     // 선택 삭제 기능
     $('#btnDelete').click(function() {
         const checkedItems = $('.chk:checked');
@@ -145,8 +148,8 @@ $(function() {
 
 <!-- 하단 버튼 -->
 <div class="admin-action-buttons">
-  <button id="btnApprove" class="delete-btn" type="button" style="background-color: green">작성</button>
-  <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
+  <button id="createBtn" class="delete-btn" type="button" style="background-color: green">작성</button>
+  <button id="btnDelete" class="delete-btn" type="button">삭제</button>
 </div>
 
 </section>
