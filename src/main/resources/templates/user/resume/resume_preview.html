@@ -60,7 +60,7 @@
 						<span th:text="${education.educationType}"></span> | <span
 							th:text="${education.department}"></span>
 					</p>
-					<p class="sub-info">
+					<p class="sub-info" th:if="${education.grade} != 0">
 						<span th:text="${education.grade}">3.3</span> / <span
 							th:text="${education.standardGrade}">4.5</span>
 					</p>

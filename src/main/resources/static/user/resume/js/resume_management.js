@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		//다운로드
+		const downloadBtn = e.target.closest('.download-btn');
+		if(downloadBtn){
+			alert("hi");
+			location.href = '/user/resume/download/' + resumeSeq;
+		}
 
 	});
 

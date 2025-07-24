@@ -62,7 +62,6 @@ public class ResumeService {
 	// Service 생성자주입
 	private final ProjectService pServ;
 
-	private final CipherUtil cu;
 
 	/**
 	 * 특정 유저의 모든 이력서 가져오기
@@ -99,6 +98,7 @@ public class ResumeService {
 
 		re.setTitle(user.getName() + "_" + date);
 		re.setIsPublic("Y");
+		re.setCareerType("N");
 
 		int resumeSeq = rRepos.save(re).getResumeSeq();
 
