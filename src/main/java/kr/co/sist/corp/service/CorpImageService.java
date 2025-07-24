@@ -37,8 +37,8 @@ public class CorpImageService {
     
     //상대경로로 설정----------------------------------
     private String projectPath = new File("").getAbsolutePath();
-    private String imagePath = projectPath + "/src/main/resources/static/images/corplogo";
-    private String logoPath = projectPath + "/src/main/resources/static/images/corpimg";
+    private String imagePath = projectPath + "/src/main/resources/static/images/corpimg";
+    private String logoPath = projectPath + "/src/main/resources/static/images/corplogo";
     //--------------------------------------------
 
     // 허용되는 이미지 파일 확장자
