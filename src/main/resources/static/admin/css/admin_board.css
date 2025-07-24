@@ -159,50 +159,46 @@
   outline: none;
 }
 
-/* 페이지네이션 영역 스타일 */
-.pagination-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-top: 20px;
-}
-
-/* 수직 정렬된 버튼 그룹 */
-.button-group {
-  display: flex;
-  flex-direction: row; /* column에서 row로 변경 */
-  gap: 10px;
-}
-
-/* 페이지네이션 스타일 */
 .pagination {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 20px;
 }
-
-.pagination a {
-  padding: 5px 10px;
-  color: #333;
-  text-decoration: none;
-  margin: 0 5px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.pagination a:hover {
+  .pagination a,
+    .pagination .page-link,
+    .delete-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 38px;               /* 높이 통일 */
+      font-size: 14px;
+      padding: 0 14px;            /* 상하 padding 제거, 좌우만 */
+      line-height: 1;
+      box-sizing: border-box;
+    }
+    
+.pagination a:hover,
+.pagination .page-link:hover {
   background-color: #f1f1f1;
 }
 
-.pagination .active {
-  background-color: #4caf50;
+/* ✅ 현재 선택된 페이지 스타일 */
+.pagination .active .page-link,
+.pagination .page-item.active .page-link {
+  background-color: #4CAF50;
   color: white;
+  border-color: #4CAF50;
+  cursor: default;
 }
 
-.pagination a:first-child,
-.pagination a:last-child {
-  font-weight: bold;
+/* 비활성화 상태 (필요 시 확장) */
+.pagination .page-item.disabled .page-link {
+  pointer-events: none;
+  background-color: #eee;
+  color: #aaa;
+  border-color: #ddd;
 }
 
 .delete-btn {

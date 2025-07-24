@@ -77,7 +77,6 @@ $(function() {
          <select name="type" aria-label="검색 조건 선택">
 		  <option th:value="전체" th:selected="${type == '전체'}">전체</option>
 		  <option th:value="corp_no" th:selected="${type == 'corp_no'}">사업자번호</option>
-		  <option th:value="rating" th:selected="${type == 'rating'}">평점</option>
 		  <option th:value="email" th:selected="${type == 'email'}">이메일</option> <!-- 기존 summary 대신 email 추가 -->
 		  <option th:value="summary" th:selected="${type == 'summary'}">한줄평</option> <!-- 선택 사항 -->
 		</select>
@@ -121,13 +120,20 @@ $(function() {
             <th>한줄평</th>
             <th>장점</th>
             <th>단점</th>
-            <th>작성일</th>
+            <th>
+			  작성일
+			  <a th:href="@{/admin/admin_review(order=${order == 'asc' ? 'desc' : 'asc'}, currentPage=${currentPage}, rating=${rating}, type=${type}, keyword=${keyword})}"
+			     title="작성일 정렬">
+			    <span th:text="${order == 'asc' ? '▲' : '▼'}"></span>
+			  </a>
+			</th>
+
           </tr>
         </thead>
         <tbody>
           <tr th:each="list, iterStat : ${reviewList}">
             <td><input type="checkbox" class="select-row" /></td>
-            <td th:text="${totalCount - (currentPage * size + iterStat.index)}">번호</td>
+            <td th:text="${no - iterStat.index}">번호</td>
             <td class="adminId" th:text="${list.corpNo}">사업자번호</td>
             <td th:text="${list.email}">이메일</td>
             <td th:text="${list.rating}">평점</td>
@@ -149,37 +155,29 @@ $(function() {
   </div>
       
       <nav class="pagination" aria-label="페이지 네비게이션">
+			<ul class="pagination">
+    <!-- 이전 버튼 -->
+    <li class="page-item" th:if="${startPage > 1}">
+        <a class="page-link" th:href="@{/admin/admin_review(currentPage=${startPage - 1})}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+    </li>
+
+    <!-- 페이지 번호 -->
+    <th:block th:each="pp : ${#numbers.sequence(startPage, endPage)}">
+        <li class="page-item" th:classappend="${currentPage == pp} ? 'active'">
+            <a class="page-link" th:href="@{/admin/admin_review(currentPage=${pp})}" th:text="${pp}">1</a>
+        </li>
+    </th:block>
+
+    <!-- 다음 버튼 -->
+    <li class="page-item" th:if="${endPage < totalPage}">
+        <a class="page-link" th:href="@{/admin/admin_review(currentPage=${endPage + 1})}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>
+</ul>
 			
-
-
-        <!-- 첫 페이지로 -->
-   	   <a th:href="@{/admin/admin_review(page=0, type=${type}, keyword=${keyword}, rating=${rating})}"
-		   th:classappend="${currentPage == 0} ? ' disabled' : ''"
-		   th:attr="aria-disabled=${currentPage == 0}">[<<]
-	   </a>
-	
-		<a th:href="@{/admin/admin_review(page=${(currentPage > 0) ? currentPage - 1 : 0}, type=${type}, keyword=${keyword}, rating=${rating})}"
-		   th:classappend="${currentPage == 0} ? ' disabled' : ''"
-		   th:attr="aria-disabled=${currentPage == 0}">[<]
-	   </a>
-	
-		<a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-		   th:href="@{/admin/admin_review(page=${i}, type=${type}, keyword=${keyword}, rating=${rating})}"
-		   th:text="${i + 1}"
-	   	   th:classappend="${i == currentPage} ? ' active' : ''">1
-	   </a>
-	
-		<a th:href="@{/admin/admin_review(page=${(currentPage < totalPages - 1) ? currentPage + 1 : totalPages - 1}, type=${type}, keyword=${keyword}, rating=${rating})}"
-		   th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
-		   th:attr="aria-disabled=${currentPage == totalPages - 1}">[>]
-	   </a>
-	
-		<a th:href="@{/admin/admin_review(page=${totalPages - 1}, type=${type}, keyword=${keyword}, rating=${rating})}"
-		   th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
-		   th:attr="aria-disabled=${totalPages - 1}">[>>]
-	   </a>
-
-
       </nav>
       
     </div>
