@@ -2,24 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//MyBatis//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.user.mapper.UserNoticeMapper">
 
-    <resultMap id="NoticeResultMap" type="kr.co.sist.user.dto.NoticeDTO">
-        <id property="noticeSeq" column="notice_seq"/>
-        <result property="adminId" column="admin_id"/>
-        <result property="title" column="title"/>
-        <result property="content" column="content"/>
-        <result property="regsDate" column="regs_date"/>
-        <result property="modifyDate" column="modify_date"/>
-    </resultMap>
-
-
-
-
-<select id="selectAllNotices" resultMap="NoticeResultMap">
-    SELECT 
-         notice_seq, admin_id, title, content, regs_date, modify_date
-    FROM NOTICE
-    ORDER BY NOTICE_SEQ DESC
-</select>
+ <select id="selectLatestNotices" resultType="kr.co.sist.user.dto.NoticeDTO">
+        SELECT notice_seq as noticeSeq,
+               admin_id as adminId,
+               title,
+               content,
+               regs_date as regsDate,
+               modify_date as modifyDate
+        FROM NOTICE
+        ORDER BY notice_seq DESC
+        FETCH FIRST 5 ROWS ONLY
+    </select>
 
 </mapper>
 

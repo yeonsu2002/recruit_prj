@@ -58,6 +58,7 @@
   c.corp_nm AS corpNm,
   c.corp_info AS corpInfo,
   c.corp_url AS corpUrl,
+  c.corp_img AS corpImg,
   pc.position_name AS positionName,
   TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
   LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
@@ -88,6 +89,7 @@ GROUP BY
   c.corp_nm,
   c.corp_info,
   c.corp_url,
+  c.corp_img,
   pc.position_name,
   jp.corp_no
 ORDER BY jp.job_posting_seq
@@ -205,6 +207,7 @@ ORDER BY
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
+    c.corp_img AS corpImg,
   pc.position_name AS positionName,
   TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
   LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
@@ -235,6 +238,7 @@ GROUP BY
   c.corp_nm,
   c.corp_info,
   c.corp_url,
+  c.corp_img,
   pc.position_name,
   jp.corp_no
 ORDER BY jp.view_cnt DESC

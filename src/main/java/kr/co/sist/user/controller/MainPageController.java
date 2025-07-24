@@ -34,9 +34,6 @@ public class MainPageController {
     @GetMapping("/user/main_page")
     public String MainPage(@AuthenticationPrincipal CustomUser userInfo, Model model) {
         
-        // 공지사항은 모든 사용자가 볼 수 있음
-        List<NoticeDTO> noticeList = noticeService.getNoticeList();
-        model.addAttribute("noticeList", noticeList);
         
         if (userInfo != null) {
             // 사용자 정보 가져오기
@@ -54,6 +51,13 @@ public class MainPageController {
             UserDTO user = new UserDTO(userEntity);
             model.addAttribute("user", user);
         }
+        
+        
+        // 이 부분만 추가하세요
+        List<NoticeDTO> noticeList = noticeService.getLatestNotices();
+        System.out.println("---------------------------------------" + noticeList);
+        model.addAttribute("noticeList", noticeList);
+
         
         return "user/main_page";
     }//MainPage

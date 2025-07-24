@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 public class NoticeDTO {
 	
-	    private Integer noticeSeq;
+	    private int noticeSeq;
 	    private String adminId;
 	    private String title;
 	    private String content;

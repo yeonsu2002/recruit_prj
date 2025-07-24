@@ -14,10 +14,8 @@ public class UserNoticeService {
 	@Autowired
 	private UserNoticeMapper noticeMapper;
 	
-	public List<NoticeDTO> getNoticeList(){
-		
-      return noticeMapper.selectAllNotice();
-		
-	}
+	 public List<NoticeDTO> getLatestNotices() {
+     return noticeMapper.selectLatestNotices();
+ }
 
 }

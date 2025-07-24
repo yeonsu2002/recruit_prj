@@ -355,16 +355,30 @@ $(document).ready(function(){
         
         <!-- 공지사항 섹션 (모든 사용자가 볼 수 있음) -->
           <div class="notice-section">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
           <h2 style="color: #1DD45A;">Notice</h2>
+            <a th:href="@{/notice/list}" style="font-size: 13px; color: gray; text-decoration: none;">더보기</a>
+            </div>
           <div class="notice-info">
             <!-- 공지사항이 없을 때 -->
-            <div th:if="${#lists.isEmpty(noticeList)}">
+            <div th:if="${noticeList == null}">
               <p style="color: #666; font-size: 12px;">등록된 공지사항이 없습니다.</p>
             </div>
             <!-- 공지사항이 있을 때 -->
             <div th:each="notice : ${noticeList}">
-              <h5 style="font-size: 13px; margin: 5px 0; cursor: pointer;" th:text="${notice.title}"></h5>
-              <p th:text="'공지 개수: ' + ${noticeList.size()}"></p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 3px 0;">
+             <a th:href="@{/notice/detail/{seq}(seq=${notice.noticeSeq})}"
+           style="max-width: 60%;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  font-size: 13px;
+                  cursor: pointer;
+                  text-decoration: none;
+                  color: black;"
+           th:text="${notice.title}"></a>
+  			<div style="font-size: 12px; color: gray; margin-left: 5px;" th:text="${notice.regsDate}"></div>
+            </div>
             </div>
           </div>
         </div>
@@ -381,8 +395,8 @@ $(document).ready(function(){
                     <a th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${posting.jobPostingSeq})}"
                        class="announcement-card-link">
                         <div class="image-wrapper">
-                            <img th:src="@{'/images/' + ${posting.corpNm} + '.jpg'}"
-                                 onerror="this.onerror=null;this.src='/images/default_img.jpg';" />
+                             <img th:src="@{/images/corpimg/{img}(img=${posting.corpImg})}" alt="기업 이미지">
+							 <p th:text="${posting.corpImg}"></p>
                         </div>
                         <div class="company-name" th:text="${posting.corpNm}">회사 이름</div>
                         <div class="announcement-title">
