@@ -80,7 +80,7 @@ public class SecurityConfig {
             .formLogin(auth -> auth
                 .loginPage("/login")
                 .loginProcessingUrl("/loginProcess")
-                .usernameParameter("email")
+                .usernameParameter("email") //안하면 기본값 username
                 .passwordParameter("password")
                 .failureHandler(new CustomLoginFailureHandler())
                 .successHandler(new CustomLoginSuccessHandler(jwtUtil))

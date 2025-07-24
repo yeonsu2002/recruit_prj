@@ -35,11 +35,24 @@ public class JWTFIlter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
+		String authorization = null;
+		Cookie[] cookies = request.getCookies();
+		if(cookies == null || cookies.length == 0) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		for(Cookie cookie : cookies) {
+			if(cookie.getName().equals("Authorization")) {
+				authorization = cookie.getValue();
+			}
+		}
+		String accessToken = authorization; //사용자 정보 보유중 
+		
 		/**
 		 * 07.23 추가(access token 검증)
 		 */
-		String accessToken = request.getHeader("access"); // != getCookies() 주의
-		System.out.println("WJTFilter 디버깅 / accessToken = " + accessToken);
+		//String accessToken = request.getHeader("access"); // != getCookies() 주의
 		
 		//accessToken 없으면 다음필터로 
 		if(accessToken == null) {
@@ -64,12 +77,14 @@ public class JWTFIlter extends OncePerRequestFilter{
 		
 		//토큰이 access인지 확인(발급시에 페이로드에 명시)
 		String category = jwtUtil.getCategory(accessToken);
+		
+		System.out.println("JWTFilter 디버깅 : " + category);
 
-		if(!category.equals("access")) {
+		if(!category.equals("tempJwt")) { 
 			
 			//response Body
 			PrintWriter writer = response.getWriter();
-			writer.print("invalid access token");
+			writer.print("invalid access token.. ");
 			
 			//response status code
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -94,21 +109,7 @@ public class JWTFIlter extends OncePerRequestFilter{
 		
 		//끝. 다음 필터로 이동
 		filterChain.doFilter(request, response);
-/**		
-		String authorization = null;
-		Cookie[] cookies = request.getCookies();
-		if(cookies == null || cookies.length == 0) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		for(Cookie cookie : cookies) {
-			if(cookie.getName().equals("Authorization")) {
-				authorization = cookie.getValue();
-			}
-		}
-		String token = authorization; //사용자 정보 보유중 
-*/
+
 		
 	}
 	

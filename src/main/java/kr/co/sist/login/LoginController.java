@@ -9,6 +9,7 @@ import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.AttachmentService;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -43,6 +44,8 @@ import jakarta.servlet.http.Part;
 @RequiredArgsConstructor //-> 생성자주입방식 생성자 코드 대신 어노테이션
 @Controller
 public class LoginController {
+
+    private final CipherUtil cipherUtil;
 
 	private final LoginJoinService ljs; 
 	private final JWTUtil jwtUtil;
@@ -101,6 +104,7 @@ public class LoginController {
     return "redirect:/"; //로그인 후 메인페이지로 이동
   }
 */  
+  
   /**
    * 일반회원 가입 페이지로 이동
    * @return

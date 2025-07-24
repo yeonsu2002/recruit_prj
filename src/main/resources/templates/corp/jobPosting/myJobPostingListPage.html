@@ -7,307 +7,11 @@
 <link rel="stylesheet" th:href="@{/corp/mainCss/main_page.css}"/>
 <link rel="stylesheet" th:href="@{/corp/jobPosting/myJobPostingListPage.css}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<script type="text/javascript" th:src="@{/corp/jobPosting/js/myJobPostingListPage.js}"></script>
 <style type="text/css">
 
 </style>
 <script type="text/javascript">
-document.addEventListener('DOMContentLoaded', () => {
-	
-	//공고등록 버튼 페이지 이동
-	document.querySelector('#createPostingBtn').addEventListener('click', function() {
- 		window.location.href = '/corp/jobPostingForm'; // 페이지 이동
-	});
-	
-	//헤더에 있는 값들, SecurityContext에서 가져와서 toString형태임  
-	// JSON.parse(...) -> 문자열로 되어 있는 JSON 데이터를 JavaScript 객체로 변환해주는 함수 / 반대로 자바객체를 JSON으로 -> JSON.stringify()
-	let userEmail = document.querySelector('#userEmail').value;
-	let userRole = document.querySelector('#userRole').value;
-	let userCorpNo = document.querySelector('#userCorpNo').value;
-	let userInfo = document.querySelector('#userInfo').dataset.user;
-
-	//데이터 비동기 가져오기 (매개변수 넣는거 까먹지마) 
-	fetchStartData(userCorpNo);
-
-	//진행중, 마감, 전체버튼을 눌렀을 때 클래스 제거 및 추가
-	changeClassSelectedTotd(userCorpNo);
-	
-	//전체, 마감일순, 조회수순 버튼을 눌렀을 때 클래스 제거 및 추가
-	changeClassSubSelectedToInput(userCorpNo);
-	
-});//ready
-
-
-//지원자 관리 모달창
-function openApplicantListModal(){
-	alert('지원자 관리 모달창 열림 대신에 페이지 이동으로 처리, 추후 모달창으로 간략 조회 기능구현할 것 ');
-	location.href="/corp/applicant";
-}
-
-//처음화면 자료 뿌리기(진행중, 전체)
-function fetchStartData(userCorpNo){
-	var url =`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`;
-	fetch( url )
-	.then(response => {
-		if(!response){
-			alert("데이터 갖고오기 실패");
-			throw new Error("데이터를 가져오던 중에 서버 오류 발생");
-		}
-		return response.json();
-	})
-	.then(data => {
-		//데이터가 존재할 떄
-		if(data.length > 0){ 
-			let resultData = document.querySelector('#resultData');
-			
-			console.log(data);
-			
-			
-		} else {
-			//검색 결과가 없을 때
-			
-		}
-	})
-}
-
-//진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
-function changeClassSelectedTotd(userCorpNo){
-	//console.log(typeof userCorpNo); //String 이라서 number로 바꿔줘야 
-	let corpNo = Number(userCorpNo); 
-	let orderBy = "start"; //정률순은 고정 
-	let postSts = "";
-	document.querySelectorAll('.posting-status').forEach(td => {
-		//초기값 동기적으로 부여 
-		/* if(td.classList.contains('selected')){
-		}; */
-		td.addEventListener('click', () => {
-			//기존에 선택된 td에서 클래스 제거 
-			document.querySelectorAll('.posting-status').forEach(item => {
-				item.classList.remove('selected');
-			});
-			//그러고 나서 클릭된 td에만 클래스 추가할거 
-			td.classList.add('selected');
-			
-			//비동기로 해당 버튼에 맞는 데이터 리스트 가져오기(진행중ing, 마감end, 전체total) & 전체(공고최신순)
-			if(td.id == 'getIngPosting'){
-				postSts = "ing";
-			} else if (td.id == 'getEndPosting'){
-				postSts = "end";
-			} else if (td.id == 'getAllPosting'){
-				postSts = "total";
-			}
-			//자식버튼 클래스를 '전체'쪽으로 초기화 해줘 
-			document.querySelectorAll('.posting-subStatus').forEach(item => {
-				item.classList.remove('subSelected');
-			});
-			document.querySelector('.posting-subStatus').classList.add('subSelected'); //맨 처음요소(전체)에 클래스 부여 
-			
-			//alert('종류 : ' + postSts + ', 정렬순서 : ' + orderBy);
-			
-			let url = `/corp/postings/selectby/${corpNo}/${postSts}/${orderBy}`;
-			fetch(url, {
-				method : 'GET',
-			})
-			.then(response => {
-				if(!response){
-					throw new Error('조회 요청 실패');
-				}
-				return response.json(); //밑에서DOM다시 해야하니까 JSON으로, (.text() xxx)
-			})
-			.then(data => {
-				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
-			})
-			.catch(error => {
-				
-				console.error(error);
-			})
-		});
-	});
-}
-
-//진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
-function changeClassSubSelectedToInput(userCorpNo){
-	let corpNo = userCorpNo;
-	let postSts = "ing";
-	let orderBy = "start"; //초기값 
-	
-	document.querySelectorAll('.posting-subStatus').forEach(sub => {
-		
-		sub.addEventListener('click', () => {
-			document.querySelectorAll('.posting-subStatus').forEach(item => {
-				item.classList.remove('subSelected');
-			});
-			sub.classList.add('subSelected');
-			
-			//상위 버튼클래스 확인 먼저 
-			document.querySelectorAll('.posting-status').forEach(item => {
-				if(item.classList.contains('selected')){
-					if(item.id == 'getIngPosting'){
-						postSts = "ing";
-					} else if(item.id == 'getEndPosting'){
-						postSts = "end";
-					} else if(item.id == 'getAllPosting'){
-						postSts = "total";
-					}
-				}
-			});
-			
-			//하위버튼 값 확인
-			if(sub.id == 'odbSd'){
-				orderBy = "start";
-			} else  if(sub.id == 'odbEd'){
-				orderBy = "end";
-			} else  if (sub.id == 'odbVc'){
-				orderBy = "viewCnt";
-			}
-			
-			//alert('종류 : ' + postSts + ', 정렬순서 : ' + orderBy);
-			
-			//DOM 재구성 fetch 전송 
-			let url = `/corp/postings/selectby/${corpNo}/${postSts}/${orderBy}`;
-			fetch(url, {
-				method : 'GET',
-			})
-			.then(response => {
-				if(!response){
-					throw new Error('조회 요청 실패');
-				}
-				return response.json(); //밑에서DOM다시 해야하니까 JSON으로, (.text() xxx)
-			})
-			.then(data => {
-				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
-			})
-			.catch(error => {
-				
-				console.error(error);
-			})
-			
-		});
-	});
-}
-
-//상단에 공고 n개씩 보기 설정
-function selectPostingByCnt(){
-	alert('미구현');
-}
-
-
-//수정 버튼 클릭
-function updatePosting(jobPostingSeq){
-	if(confirm('jobPostingSeq : ' + jobPostingSeq + ', 공고 수정 ㄱ?')){
-		location.href=`/corp/postings/updateForm/${jobPostingSeq}`;
-	}
-}
-
-//마감 버튼 클릭 (한번 RESTful API 호출방법으로 해볼까?)
-function finishPosting(jobPostingSeq){
-	if(confirm('해당 공고를 조기 마감하시겠습니까?')){
-		let url = `/corp/postings/${jobPostingSeq}`;
-		fetch(url, {
-			method: 'DELETE',
-		})
-		.then(response => {
-			if(!response.ok){
-				throw new Error('요청 실패');
-			} else {
-				return response.text();
-			}
-		})
-		.then(result => {
-			alert(result);
-			location.href="/corp/myJobPostingListPage";
-		})
-		.catch(error => {
-			alert('공고 조기마감 처리 실패');
-			console.error(error);
-		})
-	}
-	return false;
-}
-
-//지원자 통계 버튼 클릭
-function getApplicantStats(jobPostingSeq){
-	alert(jobPostingSeq +'-공고 지원자 통계 : 현재 미구현');
-}
-
-//공고 상세보기 (유저페이지로 이동)
-function getDetailPostingInfo(jobPostingSeq){
-	location.href=`/user/job_posting/job_posting_detail?jobPostingSeq=${jobPostingSeq}`;
-}
-
-//DOM 비동기 처리(전체, 진행중, 마감)
-function updatePostingTable(postList) {
-    const tbody = document.querySelector('#resultData');
-    tbody.innerHTML = ''; // 초기화 
-    
-    if (!postList || postList.length === 0) {
-        const trEmpty = document.createElement('tr');
-        trEmpty.innerHTML = `<td colspan='5' style="text-align: center;">조회 목록이 존재하지 않습니다.</td>`;
-        tbody.appendChild(trEmpty);
-    } else {
-	    postList.forEach(post => {
-	        const tr = document.createElement('tr');
-	        tr.innerHTML = `
-	            <td class="posting-box-need-center">${post.isEnded == 'N' ? '진행 중' : '공고 마감'}</td>
-	            <td>
-	                <a><span id="jobPosting-${post.jobPostingSeq}" class="detail-posting-link" onclick="getDetailPostingInfo(${post.jobPostingSeq})">${post.postingTitle}</span></a>
-	                <ul>
-	                    <li>근무형태 : <span>${post.employType}</span></li>
-	                    <li>포지션 : <span>${post.positionName}</span></li>
-	                    <li>경력 : <span>${post.expLevel}</span></li>
-	                    <li>접수기간 : <span>${post.postingStartDt}</span> ~ <span>${post.postingEndDt}</span></li>
-	                    <li>조회수 : <span>${post.viewCnt} </span></li>
-	                </ul>
-	            </td>`;
-	            let nOrY = '';
-	            if(post.isEnded == 'N'){
-	            	nOrY = `
-		            <td class="posting-box-need-center">
-		                <button type="button" onclick="updatePosting(${post.jobPostingSeq})">수정</button>
-		                <button type="button" onclick="finishPosting(${post.jobPostingSeq})">마감</button>
-		            </td>`;
-	            }
-	            if(post.isEnded == 'Y'){
-	            	nOrY =`
-					<td class="posting-box-need-center">
-						<button type="button" style='background-color:grey;' disabled>수정 </button>
-						<button type="button" style='background-color:grey;' disabled>마감 </button>
-					</td>`;
-	            }
-	            tr.innerHTML += nOrY;
-	            tr.innerHTML += `
-	            <td class="posting-box-need-center">
-	                <div><a style="cursor: pointer; text-decoration: underline;" onclick="openApplicantListModal()"><span>${post.appCnt}</span></a></div>
-	                <div style="color: black; cursor: pointer;" onclick="openApplicantListModal()">지원자 관리 <i class="bi bi-file-earmark-ruled"></i></div>
-	                <div><input type="button" value="지원자 통계" onclick="getApplicantStats(${post.jobPostingSeq})"></div>
-	            </td>
-	            <td class="posting-box-need-center">
-	                <button type="button">확인</button>
-	            </td>
-	        	`;
-	        tbody.appendChild(tr);
-	    });
-   	}
-}
-
-//건수 업데이트
-function updatePostingCounts(data) {
-    if (data.postCnt) {
-        const counts = data.postCnt[0];
-
-        const ingTh = document.querySelector('#getIngPosting');
-        if (ingTh) ingTh.innerHTML = `진행중 (<span>${counts.ING_POSTING_CNT || 0}</span>)건`;
-
-        const endTh = document.querySelector('#getEndPosting');
-        if (endTh) endTh.innerHTML = `마감 (<span>${counts.END_POSTING_CNT || 0}</span>)건`;
-
-        const totalTh = document.querySelector('#getAllPosting');
-        if (totalTh) totalTh.innerHTML = `전체 (<span>${counts.TOTAL_POSTING_CNT || 0}</span>)건`;
-    }
-}
 
 </script>
 </head>
@@ -392,7 +96,7 @@ function updatePostingCounts(data) {
 						<td class="posting-box-need-center">
 							<div><a style="cursor: pointer; text-decoration: underline;" th:onclick="openApplicantListModal()"><span th:text="${post.appCnt}"></span> </a></div>
 							<div style="color: black; cursor: pointer;" th:onclick="openApplicantListModal()"> 지원자 관리 <i class="bi bi-file-earmark-ruled"></i></div>
-							<div> <input type="button" value="지원자 통계" th:onclick="'getApplicantStats(' + ${post.jobPostingSeq} + ')'"> </div>
+							<div> <input type="button" value="지원자 통계" class="appl-stats-btn" th:attr="data-appli-stats=${post.jobPostingSeq}"> </div>
 						</td>
 						<td class="posting-box-need-center">
 							<button type="button">확인</button>
@@ -404,11 +108,197 @@ function updatePostingCounts(data) {
 		</div>
 	</div> <!-- 하단 끝 -->
 	
-	<!-- 모달창 : 지원자 관리 -->
-	<div>
-	
+	<!-- 통계 관련 모달창 : window.open과는 다르다. 간단한 UI를 쓸 때 사용함 -->
+	<div class="modal fade" id="applicant-stats" role="dialog">
+		<div class="modal-dialog modal-lg ">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">공고 이름</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+                    <div class="total-applicants">
+                        총 지원자수: 120명
+                    </div>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="4">경력별 현황</td>
+                        </tr>
+                        <tr>
+                            <th>신입</th>
+                            <th>1~3년</th>
+                            <th>3~5년</th>
+                            <th>5년이상</th>
+                        </tr>
+                        <tr>
+                            <td>45명</td>
+                            <td>32명</td>
+                            <td>28명</td>
+                            <td>15명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="4">성별 현황</td>
+                        </tr>
+                        <tr>
+                            <th>구분</th>
+                            <th>남성</th>
+                            <th>여성</th>
+                            <th>합계</th>
+                        </tr>
+                        <tr>
+                            <td>명</td>
+                            <td>72</td>
+                            <td>48</td>
+                            <td>120</td>
+                        </tr>
+                        <tr>
+                            <td>%</td>
+                            <td>60.0%</td>
+                            <td>40.0%</td>
+                            <td>100%</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="5">연령별 현황</td>
+                        </tr>
+                        <tr>
+                            <th>20대</th>
+                            <th>30대</th>
+                            <th>40대</th>
+                            <th>50대</th>
+                            <th>60대</th>
+                        </tr>
+                        <tr>
+                            <td>52명</td>
+                            <td>38명</td>
+                            <td>22명</td>
+                            <td>6명</td>
+                            <td>2명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="5">학력별 현황</td>
+                        </tr>
+                        <tr>
+                            <th>고졸이하</th>
+                            <th>2~3년제</th>
+                            <th>4년제</th>
+                            <th>석사</th>
+                            <th>박사</th>
+                        </tr>
+                        <tr>
+                            <td>8명</td>
+                            <td>18명</td>
+                            <td>76명</td>
+                            <td>16명</td>
+                            <td>2명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="8">외국어 현황</td>
+                        </tr>
+                        <tr>
+                            <th>토익</th>
+                            <th>토플</th>
+                            <th>텝스</th>
+                            <th>토익스피킹</th>
+                            <th>오픽</th>
+                            <th>JPT</th>
+                            <th>HSK</th>
+                            <th>기타</th>
+                        </tr>
+                        <tr>
+                            <td>85명</td>
+                            <td>12명</td>
+                            <td>8명</td>
+                            <td>24명</td>
+                            <td>18명</td>
+                            <td>6명</td>
+                            <td>4명</td>
+                            <td>3명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="5">자격증 현황</td>
+                        </tr>
+                        <tr>
+                            <th>정처기</th>
+                            <th>SQLD</th>
+                            <th>리눅스마스터</th>
+                            <th>OCP</th>
+                            <th>ADSP</th>
+                        </tr>
+                        <tr>
+                            <td>42명</td>
+                            <td>28명</td>
+                            <td>15명</td>
+                            <td>8명</td>
+                            <td>12명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="5">자격증 보유개수</td>
+                        </tr>
+                        <tr>
+                            <th>미보유</th>
+                            <th>1개</th>
+                            <th>2개</th>
+                            <th>3개</th>
+                            <th>4개이상</th>
+                        </tr>
+                        <tr>
+                            <td>25명</td>
+                            <td>48명</td>
+                            <td>32명</td>
+                            <td>12명</td>
+                            <td>3명</td>
+                        </tr>
+                    </table>
+
+                    <table class="status-table">
+                        <tr class="section-title">
+                            <td colspan="3">포트폴리오 제출 현황</td>
+                        </tr>
+                        <tr>
+                            <th>제출자</th>
+                            <th>미제출자</th>
+                            <th>제출율</th>
+                        </tr>
+                        <tr>
+                            <td>84명</td>
+                            <td>36명</td>
+                            <td>70.0%</td>
+                        </tr>
+                    </table>
+                </div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger"
+						data-bs-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
 	</div>
-	<!-- 모달창 : 지원자 통계 -->
+
 	
 	
 </div>

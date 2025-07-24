@@ -37,10 +37,10 @@ public class MainController {
 	public String corpMainPage(HttpServletRequest request, @AuthenticationPrincipal CustomUser user, Model model) {
 
 		if(user == null) {
-			System.out.println("디버깅 / 회원정보 상태 : " + "비회원, 로그인 필요 ");
+			//System.out.println("디버깅 / 회원정보 상태 : " + "비회원, 로그인 필요 ");
 			
 		} else {
-			System.out.println("디버깅 / 회원정보 상태 : " + user);
+			//System.out.println("디버깅 / 회원정보 상태 : " + user);
 			UserEntity ueEntity = ur.getById(user.getEmail());
 			
 			if(ueEntity.getPhone() != null) {

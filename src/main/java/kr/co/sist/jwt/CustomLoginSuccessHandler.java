@@ -31,22 +31,18 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		CustomUser customUser = (CustomUser) authentication.getPrincipal();
 		
 		// JWT 발급 -> access, refresh 토큰발급(07.23 변경)  
-    String access = jwtUtil.createJwt("access", customUser.getUserDTO(), 60 * 10 * 1000L); //10분
-    String refresh = jwtUtil.createJwt("refresh", customUser.getUserDTO(), 60 * 60 * 86400000L); //24시간 
+		
+		String tempJwt = jwtUtil.createJwt("tempJwt", customUser.getUserDTO(), 60 * 10 * 86400000L); // 7월 25일 컨펌받기전 까지 사용할 임시 토큰 
+    //String access = jwtUtil.createJwt("access", customUser.getUserDTO(), 60 * 10 * 1000L); //10분
+    //String refresh = jwtUtil.createJwt("refresh", customUser.getUserDTO(), 60 * 60 * 86400000L); //24시간 
     
-    //System.out.println("CustomLoginSuccessHandler / 디버깅 access : " + access);
-    //System.out.println("CustomLoginSuccessHandler / 디버깅 refresh : " + refresh);
-    
-    // access -> header에(그 후 로컬스토리지로..) 저장.
-    response.setHeader("access", access);
-    
-    asdfasdvasfvsdfvas //여기서 안되고 있다. 표시 
-    
+    // access -> 이렇게 헤더에 발급 후, 프론트에서 이걸 로컬 스토리지에 저장 하던가.. 쿠키로 변환하던가 
+    //response.setHeader("access", access);
     
     // refresh -> 쿠키 생성 후 저장
-    ResponseCookie cookie = ResponseCookie.from("refresh", refresh) //ResponseCookie : 쿠키를 String 형태로 직접 생성해 주는 빌더
+    ResponseCookie cookie = ResponseCookie.from("Authorization", tempJwt) //ResponseCookie : 쿠키를 String 형태로 직접 생성해 주는 빌더
 	    .httpOnly(true)//js접근불가 (document.cookie 불가하게됨) -> xss공격을 방어 
-	    //.secure(false) //HTTPS에서만 동작 (개발시 false)
+	    .secure(false) //HTTPS에서만 동작 (개발시 false)
 	    .sameSite("Strict") //CSRF방지 
 	    .path("/") //전체경로에 대해 쿠키 전송 
 	    //.maxAge(Duration.ofHours(1)) //쿠키 1시간 유지 (JWT보다 길어야 겠지 )
@@ -57,14 +53,15 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     
     response.setStatus(HttpStatus.OK.value());
     
+    //access토큰을 ..?컨트롤러에서? fetch에서?? 로컬 스토리지에 저장하는걸 어디서 하지 ??
+    //response.sendRedirect("/user/loginProcess/jwtProcess?access=" + access + "&role="+ customUser.getRole());
+    
     //기업회원 로그인 성공시, 기업메인페이지로 이동  
     boolean hasRoleCorp = customUser.getAuthorities().stream()
     												.anyMatch(auth -> auth.getAuthority().equals("ROLE_CORP"));
-    
     //일반회원 로그인 성공시, 유저메인페이지로 이동 
     boolean hasRoleUser = customUser.getAuthorities().stream()
     												.anyMatch(auth -> auth.getAuthority().equals("ROLE_USER"));
-    
     //원하는 대로 리다이렉트 
     if(hasRoleCorp) {
     	response.sendRedirect("/corp/main");
@@ -72,7 +69,13 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     if(hasRoleUser) {
     	response.sendRedirect("/");
     }
-		
+    
 	}
 
 }
+
+/**
+ * 	쿠키(Set-Cookie)는 자동 저장 및 전송되지만
+ * 	커스텀 헤더(access, Authorization 등)는 자동 전송되지 않음.
+ * 	따라서 서버에서 준 access토큰을 따로 저장해줘야함 
+ */
