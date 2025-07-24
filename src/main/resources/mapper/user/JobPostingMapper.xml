@@ -31,6 +31,8 @@
     <result property="stackName" column="stackName"/>
     <result property="daysRemaining" column="daysRemaining"/>
     <result property="eduLevel" column="eduLevel"/>
+    <result property="contStartDt" column="contStartDt"/>
+    <result property="contEndDt" column="contEndDt"/>
 </resultMap>
 
 <!-- 전체 공고 조회 (마감일 지나지 않은 것만) -->
@@ -113,6 +115,8 @@ ORDER BY jp.job_posting_seq
     jp.detail_address AS detailAddress,
     jp.position_seq AS positionSeq,
     jp.edu_level AS eduLevel,
+    jp.cont_start_dt AS contStartDt,
+    jp.cont_end_dt AS contEndDt,
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
@@ -149,6 +153,8 @@ GROUP BY
     jp.detail_address,
     jp.position_seq,
     jp.edu_level,
+    jp.cont_start_dt,
+    jp.cont_end_dt,
     c.corp_nm,
     c.corp_info,
     c.corp_url,

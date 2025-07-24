@@ -255,11 +255,20 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;">3,000~4,500만원</p>
+                    <p style="font-size: 15px;" th:text="|${jDto.salary}원| ?: '회사내규에 따름'"></p>
                 </div>
                 <div>
-                    <h2 style="font-size: 20px;">근무형태</h2>
-                  <p th:text="${jDto.employType} ?: '정보 없음'"  style="font-size: 15px;">근무형태</p>
+                  <h2 style="font-size: 20px;">근무형태</h2>
+				<div th:if="${jDto.employType != '계약'}">
+				    <p th:text="${jDto.employType} ?: '정보 없음'" style="font-size: 15px;">근무형태</p>
+				</div> 
+				<div th:if="${jDto.employType == '계약'}">
+				    <p style="font-size: 15px;">
+				        계약 기간: 
+				        <span th:text="|${jDto.contStartDt} ~ ${jDto.contEndDt}|"></span>
+				    </p>
+				</div>
+
                 </div>
             </div>
 
@@ -317,7 +326,7 @@ $(document).ready(function () {
 	</div>
     </div>
 </div>
-c
+
 <!-- 모달창 -->
  <div id="applyModal" class="modal">
         <div class="modal-content">
