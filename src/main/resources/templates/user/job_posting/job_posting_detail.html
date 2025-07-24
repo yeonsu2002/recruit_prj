@@ -205,6 +205,20 @@ $(document).ready(function () {
         console.warn("공고 번호가 유효하지 않습니다.");
     }
 });
+
+$(document).ready(function () {
+    $("#shareBtn").click(function (e) {
+        e.preventDefault(); // 링크 이동 방지
+        var url = window.location.href;
+        var textarea = document.createElement("textarea");
+        document.body.appendChild(textarea);
+        textarea.value = url;
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("URL이 복사되었습니다.");
+    });
+});
 </script>
 
 </head>
@@ -304,6 +318,11 @@ $(document).ready(function () {
             <div class="info-item">
                 <span class="label">업력</span>
                 <span class="value" th:text="${jDto.corpCreatedAt}"></span>
+                
+            </div>
+             <div class="info-item">
+                <span class="label">홈페이지</span>
+               <a th:href="${jDto.corpUrl}" target="_blank" class="go-link">바로가기</a>
             </div>
         </div>
 
@@ -316,16 +335,23 @@ $(document).ready(function () {
 		    지원하기
 		</button>
 		
-     <div class="floating-actions">
-	    <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}" />
-	
-	    <button class="floating-action-btn" id="scrapBtn">
-	        <span class="icon" id="heartIcon">🤍</span>
-	        <span class="text">스크랩</span>
-	    </button>
-	</div>
+	    <div class="floating-actions">
+                <input type="hidden" id="jobPostingSeqForScrap" value="123" />
+                
+                <button class="floating-action-btn" id="scrapBtn">
+                    <span class="icon" id="heartIcon">🤍</span>
+                    <span class="text">스크랩</span>
+                </button>
+                
+                <button class="floating-action-btn" id="shareBtn">
+                    <span class="icon">
+                        <a href="#" onclick="clip(); return false;">📃</a>
+                    </span>
+                    <span class="text">공유</span>
+                </button>
+            </div>
+        </div>
     </div>
-</div>
 
 <!-- 모달창 -->
  <div id="applyModal" class="modal">

@@ -205,15 +205,38 @@ ORDER BY
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
-    pc.position_name AS positionName,
-    COALESCE(ts.stack_name, '기술 스택 없음') AS stackName,
-    TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining
+  pc.position_name AS positionName,
+  TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
+  LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
 FROM JOB_POSTING jp
 JOIN COMPANY c ON jp.corp_no = c.corp_no
 JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
 WHERE jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
+GROUP BY
+  jp.job_posting_seq,
+  jp.posting_title,
+  jp.posting_detail,
+  jp.exp_level,
+  jp.recruit_cnt,
+  jp.salary,
+  jp.posting_start_dt,
+  jp.posting_end_dt,
+  jp.workday,
+  jp.work_start_time,
+  jp.work_end_time,
+  jp.view_cnt,
+  jp.zipcode,
+  jp.road_address,
+  jp.detail_address,
+  jp.position_seq,
+  jp.is_ended,
+  c.corp_nm,
+  c.corp_info,
+  c.corp_url,
+  pc.position_name,
+  jp.corp_no
 ORDER BY jp.view_cnt DESC
 FETCH FIRST 8 ROWS ONLY
 </select>
