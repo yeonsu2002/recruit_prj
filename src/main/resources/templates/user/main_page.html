@@ -10,9 +10,6 @@
 <style type="text/css">
 </style>   
 <script type="text/javascript">
-
-document.addEventListener('DOMContentLoaded', function() {
-
 let current = 0;
 const total = 4; 
 
@@ -25,22 +22,31 @@ function moveSlide(direction) {
 
 function updateSlide() {
     const track = document.querySelector('.header-carousel-track');
-    track.style.transform = `translateX(-${current * 100}%)`;
+    if (track) {  // 요소 존재 확인 추가
+        track.style.transform = `translateX(-${current * 100}%)`;
+    }
 }
 
-    document.getElementById('prevBtn').addEventListener('click', function() {
-        moveSlide(-1);
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    // 버튼 이벤트 리스너만 여기에 등록
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     
-    document.getElementById('nextBtn').addEventListener('click', function() {
-        moveSlide(1);
-    });
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            moveSlide(-1);
+        });
+    }
     
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            moveSlide(1);
+        });
+    }
     
-});//ready
-
-setInterval(() => moveSlide(1), 5000);
-
+    // 자동 슬라이드도 DOM이 로드된 후에 시작
+    setInterval(() => moveSlide(1), 5000);
+});
 
 // 알림 기능
 let isDropdownOpen = false;
@@ -257,99 +263,110 @@ $(document).ready(function(){
       </div>
 
       <div class="notice-wrapper">
-      
-
-		<!-- 기업회원 -->
-		<div sec:authorize="hasRole('ROLE_CORP')">
-		 <div class="user-info-box">
-		    <div class="access-denied-container">
-		        <h2 style="font-size: 17px;">기업회원은 개인회원 메뉴에 접근할 수 없습니다.</h2>
-		        <a th:href="@{/corp/main}" class="redirect-btn">기업회원 메인</a>
-		    </div>
-		    </div>
-		</div>
-		
-		<!-- 비회원 -->
-		<div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
-		 <div class="user-info-box">
-		    <div class="login-required">
-		        <h2 style="font-size: 17px;">로그인이 필요합니다</h2>
-		        <a th:href="@{/login}" class="login-btn">로그인</a>
-		        <a th:href="@{/user/join}" class="signup-btn">회원가입</a>
-		    </div>
-		    </div>
-		</div>
-		
-			<!--사용자  -->
-		    <div sec:authorize="hasRole('ROLE_USER')">
-		    <div class="user-info-box">
-		        <div th:if="${user != null and user.corpNo == null}">
-		            <p class="user-welcome" th:text="${user.name}">사용자</p>
-		            <p class="user-email" th:text="${user.email}">이메일 없음</p>
-		            <div class="user-menu-buttons">
-		                <a th:href="@{/user/resume/resume_management}" class="user-menu-btn resume-btn">이력서작성</a>
-		                <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
-		            </div>
-		        </div>
-				
-          <!-- 알림 영역 (로그인한 사용자에게만 표시) -->
-          <div class="notification-area" th:if="${user != null}">
-            <div class="notification-header" onclick="toggleNotifications()">
-              <div class="notification-icon">
-                🔔
-                <span class="notification-badge" id="notificationBadge">3</span>
+        <!-- 사용자 정보 박스 (권한별로 다른 내용 표시) -->
+        <div class="user-info-section">
+          <!-- 기업회원 -->
+          <div sec:authorize="hasRole('ROLE_CORP')">
+           <div class="user-info-box">
+              <div class="access-denied-container">
+                  <h2 style="font-size: 17px;">기업회원은 개인회원 메뉴에 접근할 수 없습니다.</h2>
+                  <a th:href="@{/corp/main}" class="redirect-btn">기업회원 메인</a>
               </div>
-            </div>
-            
-            <div class="notification-dropdown" id="notificationDropdown">
-              <div class="notification-item unread" onclick="markAsRead(this)">
-                <div class="notification-content">
-                  <div class="notification-icon-small">📋</div>
-                  <div class="notification-text">
-                    <div class="notification-message">새로운 채용공고가 등록되었습니다: "네이버 프론트엔드 개발자"</div>
+              </div>
+          </div>
+          
+          <!-- 비회원 -->
+          <div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
+           <div class="user-info-box">
+              <div class="login-required">
+                  <h2 style="font-size: 17px;">로그인이 필요합니다</h2>
+                  <a th:href="@{/login}" class="login-btn">로그인</a>
+                  <a th:href="@{/user/join}" class="signup-btn">회원가입</a>
+              </div>
+              </div>
+          </div>
+          
+          <!--사용자  -->
+          <div sec:authorize="hasRole('ROLE_USER')">
+          <div class="user-info-box">
+              <div th:if="${user != null and user.corpNo == null}">
+                  <p class="user-welcome" th:text="${user.name}">사용자</p>
+                  <p class="user-email" th:text="${user.email}">이메일 없음</p>
+                  <div class="user-menu-buttons">
+                      <a th:href="@{/user/resume/resume_management}" class="user-menu-btn resume-btn">이력서작성</a>
+                      <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
                   </div>
+              </div>
+              
+            <!-- 알림 영역 (로그인한 사용자에게만 표시) -->
+            <div class="notification-area" th:if="${user != null}">
+              <div class="notification-header" onclick="toggleNotifications()">
+                <div class="notification-icon">
+                  🔔
+                  <span class="notification-badge" id="notificationBadge">3</span>
                 </div>
               </div>
               
-              <div class="notification-item unread" onclick="markAsRead(this)">
-                <div class="notification-content">
-                  <div class="notification-icon-small">✅</div>
-                  <div class="notification-text">
-                    <div class="notification-message">지원한 회사에서 서류 심사 결과가 나왔습니다.</div>
+              <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-item unread" onclick="markAsRead(this)">
+                  <div class="notification-content">
+                    <div class="notification-icon-small">📋</div>
+                    <div class="notification-text">
+                      <div class="notification-message">새로운 채용공고가 등록되었습니다: "네이버 프론트엔드 개발자"</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="notification-item unread" onclick="markAsRead(this)">
-                <div class="notification-content">
-                  <div class="notification-icon-small">🎯</div>
-                  <div class="notification-text">
-                    <div class="notification-message">관심 있는 기업에서 새로운 포지션이 열렸습니다.</div>
+                
+                <div class="notification-item unread" onclick="markAsRead(this)">
+                  <div class="notification-content">
+                    <div class="notification-icon-small">✅</div>
+                    <div class="notification-text">
+                      <div class="notification-message">지원한 회사에서 서류 심사 결과가 나왔습니다.</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="notification-item" onclick="markAsRead(this)">
-                <div class="notification-content">
-                  <div class="notification-icon-small">📧</div>
-                  <div class="notification-text">
-                    <div class="notification-message">이력서 검토가 완료되었습니다.</div>
+                
+                <div class="notification-item unread" onclick="markAsRead(this)">
+                  <div class="notification-content">
+                    <div class="notification-icon-small">🎯</div>
+                    <div class="notification-text">
+                      <div class="notification-message">관심 있는 기업에서 새로운 포지션이 열렸습니다.</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="notification-footer">
-                <button onclick="clearAllNotifications()">모든 알림 지우기</button>
+                
+                <div class="notification-item" onclick="markAsRead(this)">
+                  <div class="notification-content">
+                    <div class="notification-icon-small">📧</div>
+                    <div class="notification-text">
+                      <div class="notification-message">이력서 검토가 완료되었습니다.</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="notification-footer">
+                  <button onclick="clearAllNotifications()">모든 알림 지우기</button>
+                </div>
               </div>
             </div>
           </div>
-    </div>
-</div><br>
-
-        <h2 style="color: #1DD45A;">Notice</h2>
-        <div class="notice-info">
-          <h5 style="font-size: 13px">[공지] 이력서 스터디 있음</h5>
-          <h5 style="font-size: 13px">[공지] 2025 상반기 채용</h5>
+          </div>
+        </div>
+        
+        <!-- 공지사항 섹션 (모든 사용자가 볼 수 있음) -->
+          <div class="notice-section">
+          <h2 style="color: #1DD45A;">Notice</h2>
+          <div class="notice-info">
+            <!-- 공지사항이 없을 때 -->
+            <div th:if="${#lists.isEmpty(noticeList)}">
+              <p style="color: #666; font-size: 12px;">등록된 공지사항이 없습니다.</p>
+            </div>
+            <!-- 공지사항이 있을 때 -->
+            <div th:each="notice : ${noticeList}">
+              <h5 style="font-size: 13px; margin: 5px 0; cursor: pointer;" th:text="${notice.title}"></h5>
+              <p th:text="'공지 개수: ' + ${noticeList.size()}"></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -371,7 +388,10 @@ $(document).ready(function(){
                         <div class="announcement-title">
                             <strong th:text="${posting.postingTitle}">공고 제목</strong>
                         </div>
-                        <div class="stack-name" th:text="${posting.stackName}">기술 스택</div>
+                        
+                         <div class="stack-name">
+		                  <span th:text="${posting != null} ? ${posting.techNames} : ''"></span>
+		                </div>
                         <div class="company-info">
                             <span th:text="${posting.roadAddress}">위치</span> |
                             <span th:text="${posting.expLevel}">경력</span>
