@@ -8,17 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.authorization.method.AuthorizeReturnObject;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +26,7 @@ import com.lowagie.text.pdf.BaseFont;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
+import kr.co.sist.pdf.ImgReplaceElementFactory;
 import kr.co.sist.pdf.PdfService;
 import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.LinkDTO;
@@ -54,6 +54,7 @@ public class ResumeController {
 	private final CipherUtil cu;
 
 	private final PdfService pdfService;
+	private final ImgReplaceElementFactory imgReplaceElementFactory;
 
 	// 이력서 관리 페이지로 이동
 	@GetMapping("/user/resume/resume_management")
@@ -196,6 +197,13 @@ public class ResumeController {
 
 		// pdf로 넘길 데이터 Map 생성
 		Map<String, Object> map = new HashMap<String, Object>();
+		// 이미지 경로를 절대 경로로 설정
+		String profileImg = resumeData.getResume().getImage();
+		if (profileImg != null && !profileImg.isEmpty()) {
+			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
+			String imagePath = "/images/profileImg/" + profileImg;
+			map.put("profileImagePath", imagePath);
+		}
 		map.put("user", user);
 		map.put("resumeData", resumeData);
 		map.put("resume", resumeData.getResume());
@@ -208,14 +216,20 @@ public class ResumeController {
 		map.put("additionals", resumeData.getAdditionals());
 		map.put("introductions", resumeData.getIntroductions());
 
-		String pdfTitle = resumeData.getResume().getTitle(); 
-				
+		String pdfTitle = resumeData.getResume().getTitle();
+
 		// pdf 생성
 		try {
-			String processHtml = pdfService.createPdf("/user/resume/resume_pdf", map);
+			String processHtml = pdfService.createPdf("user/resume/resume_pdf", map);
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			ITextRenderer renderer = new ITextRenderer();
+
+			SharedContext sharedContext = renderer.getSharedContext();
+			sharedContext.setPrint(true);
+			sharedContext.setInteractive(false);
+			sharedContext.setReplacedElementFactory(imgReplaceElementFactory);
+			sharedContext.getTextRenderer().setSmoothingThreshold(0);
 
 			renderer.getFontResolver().addFont(new ClassPathResource("/static/font/NanumBarunGothic.ttf").getURL().toString(),
 					BaseFont.IDENTITY_H, BaseFont.EMBEDDED
@@ -228,7 +242,7 @@ public class ResumeController {
 			response.setContentType("application/pdf");
 			String encodedFileName = URLEncoder.encode(pdfTitle, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName + ".pdf");
-			
+
 			response.getOutputStream().write(outputStream.toByteArray());
 			response.getOutputStream().flush();
 
