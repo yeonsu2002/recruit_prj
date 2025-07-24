@@ -1,5 +1,7 @@
 package kr.co.sist.login;
 
+
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,15 +32,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		UserEntity userEntity = userRepository.findById(email)
 															.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
-		System.out.println("loadUserByUsername entity디버깅 : " + userEntity);
 		
 		UserDTO userDTO = UserDTO.from(userEntity);
 		
-		System.out.println("loadUserByUsername dto디버깅 : " + userDTO.getActiveStatus());
 		//운영자에 의해 제재당하였을 때. 
 		if(userDTO.getActiveStatus() == 1) {
 			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다.");
+		}
+		//탈퇴된 구직 회원이 재로그인 시도할 때
+		if(userDTO.getActiveStatus() == 2) {
+			throw new AccountExpiredException("회원 탈퇴한 계정입니다.");
+		}
+		//탈퇴된 기업 회원이 재로그인 시도할 때
+		if(userDTO.getActiveStatus() == 3) {
+			throw new AccountExpiredException("탈퇴한 관리인 계정입니다.");
 		}
 		
 		return new CustomUser(userDTO); //CustomUser를 Entity로 만들면 형변환은 필요없지만..

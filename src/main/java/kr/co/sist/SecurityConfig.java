@@ -72,7 +72,7 @@ public class SecurityConfig {
     public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/reissue").permitAll()
                 .requestMatchers("/corp/image/**").authenticated()
                 .requestMatchers("/corp/info/**").authenticated()
                 .anyRequest().permitAll()
@@ -82,7 +82,7 @@ public class SecurityConfig {
             .formLogin(auth -> auth
                 .loginPage("/login")
                 .loginProcessingUrl("/loginProcess")
-                .usernameParameter("email")
+                .usernameParameter("email") //안하면 기본값 username
                 .passwordParameter("password")
                 .failureHandler(new CustomLoginFailureHandler())
                 .successHandler(new CustomLoginSuccessHandler(jwtUtil))
@@ -92,7 +92,7 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "Authorization")
+                .deleteCookies("JSESSIONID", "access", "refresh")
             )
             .addFilterAfter(new JWTFIlter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         
