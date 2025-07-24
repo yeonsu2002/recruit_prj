@@ -278,7 +278,7 @@
 
 	<!-- 관심 기업 처음 9개 가져오기 -->
 	<select id="selectMyFavoriteCompany" parameterType="String" resultType="userFavoriteCompanyDTO">
-		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_img
+		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_logo
 		from favorite_company f
 		join company c on c.corp_no = f.corp_no
 		where f.email=#{email}
@@ -288,7 +288,7 @@
 	
 	<!-- 관심 기업 무한스크롤로 9개 가져오기 -->
 	<select id="selectMyNextFavoriteCompany" parameterType="map" resultType="userFavoriteCompanyDTO">
-		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_img
+		select f.favorite_company_seq, f.corp_no, c.corp_nm, c.corp_logo
 		from favorite_company f
 		join company c on c.corp_no = f.corp_no
 		where f.email=#{email}

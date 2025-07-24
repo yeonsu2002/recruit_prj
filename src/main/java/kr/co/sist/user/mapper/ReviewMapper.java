@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import kr.co.sist.admin.SearchDTO;
+import kr.co.sist.admin.review.AdminReviewDTO;
 import kr.co.sist.user.dto.ReviewDTO;
 
 @Mapper
@@ -50,7 +51,7 @@ public interface ReviewMapper {
 	 * @param dto 검색, 페이징, 정렬 
 	 * @return 
 	 */
-	List<ReviewDTO> selectSearchReviews(SearchDTO sDTO);
+	List<AdminReviewDTO> selectSearchReviews(SearchDTO sDTO);
 	
 	/**
 	 * 검색 조건에 맞는 개수

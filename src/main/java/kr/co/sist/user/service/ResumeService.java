@@ -7,14 +7,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
-import kr.co.sist.login.UserRepository;
-import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.ResumeRequestDTO;
 import kr.co.sist.user.dto.ResumeResponseDTO;
@@ -36,7 +35,6 @@ import kr.co.sist.user.repository.ResumePositionCodeRepository;
 import kr.co.sist.user.repository.ResumeRepository;
 import kr.co.sist.user.repository.ResumeTechStackRepository;
 import kr.co.sist.user.repository.SelfIntroductionRepository;
-import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -130,8 +128,6 @@ public class ResumeService {
 		ResumeEntity re = searchOneResume(resumeSeq); // 기존 이력서 레코드 가져오기
 		ResumeEntity rEntity = rdd.getBasicInfo();
 
-
-		
 		// 이미지 업로드
 		if (profileImage != null && !profileImage.isEmpty()) {
 			try {
@@ -279,20 +275,25 @@ public class ResumeService {
 	 */
 	public void uploadImg(MultipartFile mf, ResumeEntity re) throws IOException {
 
-		re.setImage(mf.getOriginalFilename());
 		
 		// 상대 경로 위해 사용
 		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
 		String resourcePath = projectPath + "/src/main/resources/static/images/profileImg";
 		// --------------------
 
-		String originalFilename = mf.getOriginalFilename();
-		File dir = new File(resourcePath);
-		if (!dir.exists()) {
-			dir.mkdir();
+		//UUID로 파일명 설정(중복 방지)
+		String originalFileName = mf.getOriginalFilename();
+		String extension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+		String savedFileName = "profile_" + UUID.randomUUID().toString() + "." + extension;
+		
+		re.setImage(savedFileName);
+		
+		File uploadDir = new File(resourcePath);
+		if (!uploadDir.exists()) {
+			uploadDir.mkdir();
 		}
 
-		File uploadFile = new File(saveDir + File.separator + originalFilename);
+		File uploadFile = new File(uploadDir + File.separator + savedFileName);
 
 		mf.transferTo(uploadFile);
 	}

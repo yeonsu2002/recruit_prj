@@ -52,33 +52,30 @@ public class AdminService {
     }
     
     public Page<AdminEntity> searchAdminsWithFilters(
-            String searchType, // 전체, 이름, 이메일
-            String keyword,
-            String dept,
-            String job,
-            String stat,
-            int page,
-            int size) {
+        String searchType,
+        String keyword,
+        String dept,
+        String job,
+        String stat,
+        int page,
+        int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size);
 
-        // "전체" 값일 경우 null 처리하여 쿼리에서 무시되게 함
-        String deptFilter = "전체".equals(dept) ? null : dept;
-        String jobFilter = "전체".equals(job) ? null : job;
-        String statFilter = "전체".equals(stat) ? null : stat;
+    String deptFilter = "전체".equals(dept) ? null : dept;
+    String jobFilter = "전체".equals(job) ? null : job;
+    String statFilter = "전체".equals(stat) ? null : stat;
+    String keywordFilter = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
+    String searchTypeFilter = (searchType == null || searchType.trim().isEmpty()) ? "전체" : searchType;
 
-        // keyword도 빈문자열이나 null일 경우 null 처리
-        String keywordFilter = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
-
-        // 리포지토리 커스텀 쿼리 호출
-        return ar.findAdminsWithCustomOrder(
+    return ar.findAdminsWithCustomOrder(
+            searchTypeFilter,
             keywordFilter,
             deptFilter,
             jobFilter,
             statFilter,
             pageable);
-    }
-    
+}
     /**
      * 관리자의 모든 정보를 조회
      */

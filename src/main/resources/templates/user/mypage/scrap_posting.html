@@ -33,7 +33,6 @@
 									th:classappend="${posting.dday<0}?' expired-card'">
 									<div class="image-wrapper">
 										<img th:src="@{/images/corpimg/{img}(img=${posting.corpImg})}" alt="기업 이미지">
-										<p th:text="${posting.corpImg}"></p>
 									</div>
 									<div class="dday-badge"
 										th:classappend="${posting.dday == 0} ? 'dday' : 

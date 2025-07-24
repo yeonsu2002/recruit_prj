@@ -90,9 +90,7 @@ public class AdminController {
 	    Map<String, Object> result = new HashMap<>();
 
 	    try {
-	    		
-	    			as.updateAdminStatus(adminIds, status);
-	    		
+    			as.updateAdminStatus(adminIds, status);
 	        
 	        result.put("success", true);
 	        result.put("message", "상태가 성공적으로 변경되었습니다.");

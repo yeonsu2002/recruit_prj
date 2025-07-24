@@ -52,6 +52,12 @@ public class MainPageController {
             model.addAttribute("user", user);
         }
         
+        
+        // 이 부분만 추가하세요
+        List<NoticeDTO> noticeList = noticeService.getLatestNotices();
+        model.addAttribute("noticeList", noticeList);
+
+        
         return "user/main_page";
     }//MainPage
     

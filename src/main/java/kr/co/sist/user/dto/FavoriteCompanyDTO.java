@@ -15,7 +15,7 @@ public class FavoriteCompanyDTO {
 	private int favoriteCompanySeq;
 	private long corpNo;
 	private String corpNm;
-	private String corpImg;
+	private String corpLogo;
 	
 	
 }
