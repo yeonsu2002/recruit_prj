@@ -28,9 +28,8 @@ $(document).ready(function () {
         
         $modal.show().addClass('show');
         fetchUserResumes();
-        $('#attachmentList').empty(); // 첨부파일 리스트 초기화
+        fetchUserAttachments(); // 사용자 첨부파일 불러오기
     });
-
 
     // 모달 닫기
     function closeModal() {
@@ -38,6 +37,8 @@ $(document).ready(function () {
         selectedResumeId = null;
         $('.resume-item').removeClass('selected');
         $('#attachmentList').empty();
+        // 체크박스 상태 초기화
+        $('input[name="selectedAttachments"]').prop('checked', false);
     }
 
     $('#closeBtn, #cancelBtn').on('click', function () {
@@ -64,6 +65,20 @@ $(document).ready(function () {
         });
     }
 
+    function fetchUserAttachments() {
+        $.ajax({
+            url:'/user/attachments',
+            method: 'GET',
+            success: function (attachments) {
+                renderAttachmentList(attachments);
+            },
+            error: function () {
+                console.error('첨부파일 불러오기 실패');
+                $('#attachmentList').html('<p>첨부파일을 불러올 수 없습니다.</p>');
+            }
+        });
+    }
+    
     function renderResumeList(resumes) {
         const $container = $('.resume-section');
         $container.empty();
@@ -93,7 +108,6 @@ $(document).ready(function () {
                 selectedResumeId = parseInt($(this).val(), 10);
                 $('.resume-item').removeClass('selected');
                 resumeItem.addClass('selected');
-                renderAttachmentList(resume.attachments || []);
             });
 
             $container.append(resumeItem);
@@ -103,7 +117,6 @@ $(document).ready(function () {
             selectedResumeId = parseInt(resumes[0].resumeSeq, 10);
             $(`#resume_${selectedResumeId}`).prop('checked', true);
             $(`#resume_${selectedResumeId}`).closest('.resume-item').addClass('selected');
-            renderAttachmentList(resumes[0].attachments || []);
         }
     }
 
@@ -119,7 +132,8 @@ $(document).ready(function () {
         attachments.forEach(att => {
             const attItem = $(`
                 <div class="attachment-item">
-                    <a href="/attachment/download/${att.id}" target="_blank">${att.fileName}</a>
+                    <input type="checkbox" id="att_${att.attachmentSeq}" name="selectedAttachments" value="${att.attachmentSeq}">
+                    <label for="att_${att.attachmentSeq}">${att.fileName}</label>
                 </div>
             `);
             $attachmentContainer.append(attItem);
@@ -133,6 +147,12 @@ $(document).ready(function () {
             return;
         }
 
+        // 선택된 첨부파일들 수집
+        const selectedAttachments = [];
+        $('input[name="selectedAttachments"]:checked').each(function() {
+            selectedAttachments.push(parseInt($(this).val(), 10));
+        });
+
         const jobPostingSeq = parseInt($('#jobPostingSeq').val(), 10);
         if (!jobPostingSeq) {
             alert('잘못된 공고 정보입니다.');
@@ -144,7 +164,8 @@ $(document).ready(function () {
             method: 'POST',
             data: {
                 resumeSeq: selectedResumeId,
-                jobPostingSeq: jobPostingSeq
+                jobPostingSeq: jobPostingSeq,
+                selectedAttachments: selectedAttachments
             },
             success: function () {
                 alert('지원 완료');
@@ -219,6 +240,9 @@ $(document).ready(function () {
         alert("URL이 복사되었습니다.");
     });
 });
+
+
+
 </script>
 
 </head>
@@ -227,7 +251,7 @@ $(document).ready(function () {
 <div th:replace="~{fragments/header :: header}"></div>
 </header>
 <main>
-     <div class="main-container" style="display: flex; gap: 30px;">
+   <div class="main-container" style="display: flex; gap: 30px;">
 <div style="flex: 1;">
 
             <br>
@@ -240,7 +264,6 @@ $(document).ready(function () {
                        <span class="tech-stack-tag" th:text="${jDto != null} ? ${jDto.techNames} : ''"></span>
                 </div>
             </div>
-
 
             <div class="job-section">
                <h2 style="font-size: 20px;">주요내용</h2>
@@ -317,7 +340,9 @@ $(document).ready(function () {
         <div class="company-info-section">
             <div class="info-item">
                 <span class="label">업력</span>
-                <span class="value" th:text="${jDto.corpCreatedAt}"></span>
+		<span class="value" id="corpCreatedAt"
+      th:text="${jDto.corpCreatedAt != null ? jDto.corpCreatedAt.substring(0,4) + '-' + jDto.corpCreatedAt.substring(4,6) + '-' + jDto.corpCreatedAt.substring(6,8) : '정보 없음'}">
+</span>
                 
             </div>
              <div class="info-item">
@@ -336,7 +361,7 @@ $(document).ready(function () {
 		</button>
 		
 	    <div class="floating-actions">
-                <input type="hidden" id="jobPostingSeqForScrap" value="123" />
+                <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}"/>
                 
                 <button class="floating-action-btn" id="scrapBtn">
                     <span class="icon" id="heartIcon">🤍</span>
@@ -404,9 +429,23 @@ $(document).ready(function () {
                     </th:block>
                 </div>
 
-               <div class="section-title">첨부 파일</div>
-				<div id="attachmentList" class="attachment-list"></div>
-           
+    <div class="section-title">첨부 파일</div>
+			<div id="attachmentList" class="attachment-list">
+			    <th:block th:if="${attachments != null and #lists.isEmpty(attachments) == false}">
+			        <th:block th:each="att : ${attachments}">
+			            <div class="attachment-item">
+			                <input type="checkbox" th:id="'att_' + ${att.attachmentSeq}" 
+			                       name="selectedAttachments" th:value="${att.attachmentSeq}" />
+			                <label th:for="'att_' + ${att.attachmentSeq}" 
+			                       th:text="${att.fileName}"></label>
+			            </div>
+			        </th:block>
+			    </th:block>
+			    <th:block th:if="${attachments == null or #lists.isEmpty(attachments)}">
+			        <p>첨부파일이 없습니다.</p>
+			    </th:block>
+			</div> 
+
             </div>
             <div class="modal-buttons">
                 <button class="modal-cancel-btn" id="cancelBtn">취소</button>

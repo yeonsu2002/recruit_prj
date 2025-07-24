@@ -11,8 +11,21 @@
                modify_date as modifyDate
         FROM NOTICE
         ORDER BY notice_seq DESC
-        FETCH FIRST 5 ROWS ONLY
+        FETCH FIRST 3 ROWS ONLY
     </select>
+
+
+    <select id="selectAllNotices" resultType="kr.co.sist.user.dto.NoticeDTO">
+       SELECT notice_seq as noticeSeq,
+               admin_id as adminId,
+               title,
+               content,
+               regs_date as regsDate,
+               modify_date as modifyDate
+        FROM notice
+        ORDER BY  modify_date DESC
+    </select>
+
 
 </mapper>
 

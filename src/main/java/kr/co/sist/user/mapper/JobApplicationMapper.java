@@ -21,11 +21,16 @@ public interface JobApplicationMapper {
 
   // 3. (DTO 방식) 공고 지원 등록
   void insertJobApplicationVO(JobApplicationDTO applicationDTO);
+  
+  /**
+   * 사용자 이메일로 모든 첨부파일 목록 조회
+   */
+  List<AttachmentDTO> selectAttachmentsByEmail(String email);
+  
 
-	//Resume 첨부파일 조회
-	//List<AttachmentDTO> selectAttachmentsByResumeSeq(Integer resumeSeq);
-	
-	//지원-첨부파일 관계 저장
-	//void insertApplicationAttachment(Integer attachmentSeq, Integer applicationSeq);
-
+  /**
+   * 지원-첨부파일 관계 등록
+   */
+  void insertApplicationAttachment(@Param("attachmentSeq") Integer attachmentSeq, 
+                                 @Param("jobApplicationSeq") Integer jobApplicationSeq);
 }

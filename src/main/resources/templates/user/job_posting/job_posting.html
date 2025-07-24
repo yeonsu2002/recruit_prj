@@ -698,7 +698,6 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                 <div class="image-wrapper">
                     <!-- 기업 이미지 -->
                     <img th:src="@{/images/corpimg/{img}(img=${job.corpImg})}" alt="기업 이미지">
-					<p th:text="${job.corpImg}"></p>
                 </div>   
              <div class="dday-badge" 
 			     th:classappend="${job.daysRemaining != null and job.daysRemaining == 0} ? 'dday' : 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.sist.jwt.CustomUser;
+import kr.co.sist.user.dto.AttachmentDTO;
 import kr.co.sist.user.dto.JobPostDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.service.JobApplicationService;
@@ -34,6 +35,22 @@ public class JobApplicationController {
         List<ResumeDTO> resumes = jobApplicationService.getResumesByEmail(userInfo.getEmail());
         return ResponseEntity.ok(resumes);
     }
+    
+    
+    @GetMapping("/user/attachments")
+    public ResponseEntity<List<AttachmentDTO>> getUserAttachments(@AuthenticationPrincipal CustomUser userInfo){
+    	
+      try {
+        List<AttachmentDTO> attachments = jobApplicationService.getAttachmentsByEmail(userInfo.getEmail());
+        return ResponseEntity.ok(attachments);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    	}
+
+    	
+    }
+    
 
     /**
      * 지원하기 처리: 선택한 이력서와 공고로 지원 등록
@@ -44,21 +61,20 @@ public class JobApplicationController {
     public ResponseEntity<String> applyToJob(
             @RequestParam("resumeSeq") Integer resumeSeq,
             @RequestParam("jobPostingSeq") Integer jobPostingSeq,
+            @RequestParam(value = "selectedAttachments", required = false) List<Integer> selectedAttachments,
             @AuthenticationPrincipal CustomUser userInfo) {
         try {
-        	
-        	
-        	 JobPostDTO jobPost = jps.findById(jobPostingSeq);
-           if (jobPost.getIsEnded().equals("Y")) {
-               return ResponseEntity
-                   .status(HttpStatus.BAD_REQUEST)
-                   .body("마감된 공고입니다. 지원할 수 없습니다.");
-           }
-        	
-            jobApplicationService.applyToJobUsingResumeAttachments(resumeSeq, jobPostingSeq, userInfo.getEmail());
+            JobPostDTO jobPost = jps.findById(jobPostingSeq);
+            if (jobPost.getIsEnded().equals("Y")) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("마감된 공고입니다. 지원할 수 없습니다.");
+            }
+            
+            jobApplicationService.applyToJobWithSelectedAttachments(resumeSeq, jobPostingSeq, selectedAttachments, userInfo.getEmail());
             return ResponseEntity.ok("지원이 완료되었습니다.");
         } catch (Exception e) {
-            e.printStackTrace(); // ✅ 콘솔에 전체 에러 로그 출력
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("지원 실패: " + (e.getMessage() != null ? e.getMessage() : "알 수 없는 오류"));
@@ -73,7 +89,10 @@ public class JobApplicationController {
     public String showResumeList(@AuthenticationPrincipal CustomUser userInfo, Model model) {
         String email = userInfo.getEmail();
         List<ResumeDTO> resumes = jobApplicationService.getResumesByEmail(email);
+        List<AttachmentDTO> attachments = jobApplicationService.getAttachmentsByEmail(email);
         model.addAttribute("resumes", resumes);
+        model.addAttribute("attachments", attachments);
+        
         return "user/resume-list";
     }
     
