@@ -141,6 +141,7 @@ public class ResumeController {
 	public Map<String, Object> resumePreview(@RequestParam(required = false) MultipartFile profileImg,
 			@RequestParam("resumeData") String resumeDataJson) {
 		Map<String, Object> result = new HashMap<>();
+		System.out.println("------------------------------------" + profileImg);
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
 			rServ.modifyResume(rdd, profileImg, rdd.getBasicInfo().getResumeSeq());

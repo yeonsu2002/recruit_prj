@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,12 +44,21 @@ public class AttachmentService {
 		// 2. 파일 정보 추출
 		String originalName = file.getOriginalFilename();
 		String extension = originalName.substring(originalName.lastIndexOf('.') + 1);
+		String savedFileName = "attachment_" + UUID.randomUUID().toString() + "." + extension;
 		long fileSize = file.getSize();
 
-		// 3. 첨부파일 엔티티 생성 및 저장
+		// 3. 중복되는 파일 있는지 체크
+		List<AttachmentDTO> lists = searchAllAttachment(email);
+		for(AttachmentDTO dto : lists) {
+			if (originalName.equals(dto.getOriginalName())) return null;
+		
+		}
+		
+		// 4. 첨부파일 엔티티 생성 및 저장
 		AttachmentEntity attachment = new AttachmentEntity();
 		attachment.setEmail(email);
-		attachment.setFileName(originalName);
+		attachment.setFileName(savedFileName);
+		attachment.setOriginalName(originalName);
 		attachment.setFileSize(fileSize);
 		attachment.setFileType(extension);
 		attachment.setCreatedAt(now.toString());
@@ -67,7 +77,7 @@ public class AttachmentService {
 		if (!uploadDir.exists())
 			uploadDir.mkdir(); // 하위 폴더까지 생성
 
-		File destination = new File(uploadDir, originalName);
+		File destination = new File(uploadDir, savedFileName);
 		try {
 			file.transferTo(destination);
 			return attachment;

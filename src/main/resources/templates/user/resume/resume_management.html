@@ -53,7 +53,7 @@
 							<div class="file-info">
 								<div class="file-icon" th:text=${file.fileType}></div>
 								<div class="file-details">
-									<div class="file-name download" th:value="${file.attachmentSeq}" th:text="${file.fileName}"></div>
+									<div class="file-name download" th:value="${file.attachmentSeq}" th:text="${file.originalName}"></div>
 									<div class="file-date" th:text="${file.createdAt}"></div>
 								</div>
 							</div>
