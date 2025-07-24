@@ -121,7 +121,6 @@ public class ResumeController {
 			@RequestParam("resumeData") String resumeDataJson) {
 
 		Map<String, String> result = new HashMap<>();
-
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
 			rServ.modifyResume(rdd, profileImage, rdd.getBasicInfo().getResumeSeq());
@@ -138,13 +137,12 @@ public class ResumeController {
 	// 이력서 미리보기
 	@PostMapping("/user/resume/resumePreview")
 	@ResponseBody
-	public Map<String, Object> resumePreview(@RequestParam(required = false) MultipartFile profileImg,
+	public Map<String, Object> resumePreview(@RequestParam(required = false) MultipartFile profileImage,
 			@RequestParam("resumeData") String resumeDataJson) {
 		Map<String, Object> result = new HashMap<>();
-		System.out.println("------------------------------------" + profileImg);
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
-			rServ.modifyResume(rdd, profileImg, rdd.getBasicInfo().getResumeSeq());
+			rServ.modifyResume(rdd, profileImage, rdd.getBasicInfo().getResumeSeq());
 
 			String previewUrl = "/user/resume/preview/" + rdd.getBasicInfo().getResumeSeq();
 

@@ -10,8 +10,17 @@ public class SearchDTO {
   private String sortOrder = "desc"; // 정렬 순서, 기본값 desc
   private int page = 0;           // 요청 페이지 번호 (0부터 시작)
   private int size = 10;          // 페이지 크기
+  private int offset;
+  private String rating;     // 평점 필터 추가
 
-  
+
+  public String getRating() {
+      return rating;
+  }
+
+  public void setRating(String rating) {
+      this.rating = rating;
+  }
   /**
    * 기본키 컬럼명은 달라지니까 혹시나 또 쓸 일 있을까봐 생성자로 값 받기
    * @param sortField
@@ -69,5 +78,14 @@ public class SearchDTO {
   public void setSize(int size) {
       if(size <= 0) this.size = 10;
       else this.size = size;
+  }
+  
+  // offset getter/setter 추가
+  public int getOffset() {
+      return offset;
+  }
+
+  public void setOffset(int offset) {
+      this.offset = offset;
   }
 }
