@@ -21,6 +21,7 @@
 	transition: transform 0.2s;
 	width: 100%;
 	height: 100%;
+	cursor:pointer;
 }
 
 .announcement-card:hover {
@@ -824,5 +825,56 @@ body {
     background-color: #ccc !important;
     color: #666 !important;
     cursor: not-allowed !important;
+}
+
+/* 기존 CSS는 그대로 유지하고 빈 상태 스타일만 추가 */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #F8F9FA;
+    border-radius: 12px;
+    margin: 20px 0;
+    border: 1px solid #e9ecef;
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.empty-state-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 12px;
+}
+
+.empty-state-message {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.empty-state-btn {
+    display: inline-block;
+    background-color: #00c471;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.empty-state-btn:hover {
+    background-color: #00a85e;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
 }
 

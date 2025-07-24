@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.admin.review">
+	
+	<!-- 정렬, 검색, 페이징처리 -->
+	<select id="selectSearchReviews" parameterType="kr.co.sist.admin.SearchDTO" resultType="kr.co.sist.user.dto.ReviewDTO">
+		SELECT review_seq AS reviewSeq, corp_no AS corpNo, email, rating, summary, pros, cons, created_at AS createAt
+		FROM review
+			<where>
+				<if test="keyword != null and keyword.trim() != ''">
+			 		<choose>
+			 			<when test="type='email'">
+			 				AND email LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+			 			<when test="type='corp_no'">
+			 				AND corp_no LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+			 			<when test="type='rating'">
+			 				AND rating LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+			 			<otherwise>
+			 				  AND (author LIKE CONCAT('%', #{keyword}, '%')
+                             OR user_id LIKE CONCAT('%', #{keyword}, '%')
+                             OR rating LIKE CONCAT('%', #{keyword}, '%'))
+                             OR summary LIKE CONCAT('%', #{keyword}, '%'))
+                             OR created_at LIKE CONCAT('%', #{keyword}, '%'))
+			 			</otherwise>
+			 		</choose>
+				</if>
+			</where>
+		
+			ORDER BY
+			<choose>
+				<when test="sortField != null and sortField.trim() != ''">
+					${sortField} ${sortOrder}
+				</when>
+				<otherwise>
+					createAt DESC
+				</otherwise>
+			</choose>
+				Limit #{page} * #{size}, #{size}
+	</select> 
+	
+	 <!-- 게시글 총 개수 조회 -->
+    <select id="countPosts" parameterType="kr.co.sist.admin.SearchDTO" resultType="int">
+        SELECT COUNT(*) FROM post
+        <where>
+            <if test="keyword != null and keyword.trim() != ''">
+                <choose>
+                    <when test="type='email'">
+			 				AND email LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+			 			<when test="type='corp_no'">
+			 				AND corp_no LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+			 			<when test="type='rating'">
+			 				AND rating LIKE CONCAT('%', #{keyword}, '%')
+			 			</when>
+                    <otherwise>
+			 				  AND (author LIKE CONCAT('%', #{keyword}, '%')
+                             OR user_id LIKE CONCAT('%', #{keyword}, '%')
+                             OR rating LIKE CONCAT('%', #{keyword}, '%'))
+                             OR summary LIKE CONCAT('%', #{keyword}, '%'))
+                             OR created_at LIKE CONCAT('%', #{keyword}, '%'))
+			 			</otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+</mapper>

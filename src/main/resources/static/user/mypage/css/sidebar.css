@@ -5,6 +5,7 @@
 	border-right: 1px solid #e0e0e0;
 	padding: 20px 0;
 	min-height: 100vh; /* 전체 높이를 보장 */
+	height: 100%; /* 부모 높이에 맞춤 */
 	box-sizing: border-box; /* 패딩을 포함한 박스 크기 계산 */
 }
 
@@ -93,12 +94,16 @@ body {
 	margin: 0 auto;
 	background-color: white;
 	min-height: 100vh;
+	/* 컨테이너가 페이지 높이보다 길어질 때 자동으로 늘어나도록 */
+	height: auto;
 }
 
 /* 메인 콘텐츠 */
 .main-content {
 	flex: 1;
 	padding: 20px 30px;
+	/* 메인 콘텐츠가 사이드바보다 길어져도 사이드바가 따라오도록 */
+	min-height: 100vh;
 }
 
 .page-title {
@@ -188,7 +193,6 @@ body {
 .edit-btn:hover {
 	background-color: #3367d6;
 }
-
 
 .stats-container {
 	max-width: 800px;
