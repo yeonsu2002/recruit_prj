@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <title>민기인력 - 이미지 등록</title>
@@ -35,7 +35,7 @@
                     <div class="preview-container" id="logoPreview">
                         <th:block th:if="${corpInfo != null and corpInfo.corpLogo != null}">
                             <div class="preview-item logo">
-                                <img th:src="@{'/images/logo/' + ${corpInfo.corpLogo}}" alt="로고 미리보기" />
+                                <img th:src="@{'/images/corplogo/' + ${corpInfo.corpLogo}}" alt="로고 미리보기" />
                                 <button type="button" class="remove-btn" onclick="deleteExistingLogo()">×</button>
                                 <div class="image-info">
                                     <span>기존 로고: <span th:text="${corpInfo.corpLogo}"></span></span>
@@ -67,7 +67,7 @@
                     <div class="preview-container" id="imagePreview">
                         <th:block th:if="${corpInfo != null and corpInfo.corpImg != null}">
                             <div class="preview-item">
-                                <img th:src="@{'/images/img/' + ${corpInfo.corpImg}}" alt="이미지 미리보기" />
+                                <img th:src="@{'/images/corpimg/' + ${corpInfo.corpImg}}" alt="이미지 미리보기" />
                                 <button type="button" class="remove-btn" onclick="deleteExistingImage()">×</button>
                                 <div class="image-info">
                                     <span>기존 이미지: <span th:text="${corpInfo.corpImg}"></span></span>
