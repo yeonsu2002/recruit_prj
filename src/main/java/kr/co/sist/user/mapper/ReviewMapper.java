@@ -11,7 +11,6 @@ import kr.co.sist.user.dto.ReviewDTO;
 @Mapper
 public interface ReviewMapper {
 	
-<<<<<<< HEAD
 	 /**
 	 * 해당 기업의 모든 리뷰 조회
 	 * @param corpNo
@@ -43,7 +42,6 @@ public interface ReviewMapper {
     * 리뷰 저장
     */
    int insertReview(ReviewDTO reviewDTO);
-=======
 	List<ReviewDTO> selectReviews(String email);
 	
 	
@@ -60,7 +58,6 @@ public interface ReviewMapper {
 	 * @return 총 개수
 	 */
 	int countSearch(SearchDTO sDTO);
->>>>>>> 2094cc58ec3b3b5b888ce2917fe59178f1f5dd89
 }
 
 
