@@ -31,7 +31,7 @@
 							<th:block th:each="company : ${companies}">
 								<div class="announcement-card" th:attr="data-corp-no=${company.corpNo}">
 									<div class="image-wrapper">
-										<img src="/images/Ssangyong.jpg" alt="기업 이미지">
+										<img th:src="@{/images/corplogo/{logo}(logo=${company.corpLogo})}" alt="기업 로고">
 									</div>
 									<div class="announcement-title">
 										<strong th:text="${company.corpNm}">삼성 전자</strong>

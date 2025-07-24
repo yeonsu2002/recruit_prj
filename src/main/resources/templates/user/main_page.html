@@ -305,7 +305,9 @@ $(document).ready(function(){
                   <span class="notification-badge" id="notificationBadge">3</span>
                 </div>
               </div>
+              <th:block th:each="message :${messages}">
               
+              <th:block>
               <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-item unread" onclick="markAsRead(this)">
                   <div class="notification-content">

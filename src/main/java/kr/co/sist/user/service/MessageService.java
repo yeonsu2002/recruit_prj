@@ -1,6 +1,7 @@
 package kr.co.sist.user.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -40,7 +41,10 @@ public class MessageService {
 		message.setEmail(userEntity.getEmail());
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
-		message.setCreatedAt(now.toString());
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		message.setCreatedAt(now.format(formatter));
+
 		message.setIsRead("N");
 
 		messageRepos.save(message);
@@ -56,7 +60,9 @@ public class MessageService {
 		message.setCorpNo(corpNo);
 		message.setMessageTitle(title);
 		message.setMessageContent(content);
-		message.setCreatedAt(now.toString());
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		message.setCreatedAt(now.format(formatter));
 		message.setIsRead("N");
 
 		messageRepos.save(message);

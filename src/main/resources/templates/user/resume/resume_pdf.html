@@ -368,7 +368,8 @@ body {
 			<div class="section-title">기본정보</div>
 			<div class="basic-info">
 				<div class="profile-image">
-					<img src="/images/img22" alt="프로필 사진" />
+					<img th:if="${profileImagePath != null}"
+						th:src="${profileImagePath}" alt="프로필 사진" />
 				</div>
 				<div class="info-details">
 					<div class="name" th:text="${user.name}">홍길동</div>

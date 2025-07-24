@@ -32,7 +32,7 @@
 									th:attr="data-posting-seq=${posting.jobPostingSeq}"
 									th:classappend="${posting.dday<0}?' expired-card'">
 									<div class="image-wrapper">
-										<img src="/images/Ssangyong.jpg" alt="기업 이미지">
+										<img th:src="@{/images/corpimg/{img}(img=${posting.corpImg})}" alt="기업 이미지">
 									</div>
 									<div class="dday-badge"
 										th:classappend="${posting.dday == 0} ? 'dday' : 

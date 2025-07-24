@@ -1,6 +1,7 @@
 package kr.co.sist.user.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -51,14 +52,14 @@ public interface ReviewMapper {
 	 * @param dto 검색, 페이징, 정렬 
 	 * @return 
 	 */
-	List<AdminReviewDTO> selectSearchReviews(SearchDTO sDTO);
+	List<AdminReviewDTO> selectSearchReviews(Map<String,Object> map);
 	
 	/**
 	 * 검색 조건에 맞는 개수
 	 * @param dto 검색조건
 	 * @return 총 개수
 	 */
-	int countSearch(SearchDTO sDTO);
+	int countSearch(Map<String, Object> map);
 }
 
 

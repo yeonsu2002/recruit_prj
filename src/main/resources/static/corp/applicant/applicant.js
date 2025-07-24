@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 //검색조건, 페이징, 정렬조건 선택 후 페이지 이동
-function movePage(currentPage) {
+/*function movePage(currentPage) {
 	const params = new URLSearchParams({
 		page: currentPage,
 		postingStatus: document.querySelector('select[name="postingStatus"]').value,
@@ -97,6 +97,65 @@ function movePage(currentPage) {
 	});
 
 	location.href = '/corp/applicant?' + params.toString()
+} */
+
+//검색조건, 페이징, 정렬조건 선택 후 페이지 이동
+function movePage(currentPage) {
+	const params = new URLSearchParams();
+	
+	// 페이지는 1이 아닌 경우에만 추가
+	if (currentPage != 1) {
+		params.append('page', currentPage);
+	}
+	
+	// 각 값들을 기본값과 비교해서 다른 경우에만 추가
+	const postingStatus = document.querySelector('select[name="postingStatus"]').value;
+	const postingTitle = document.querySelector('select[name="postingTitle"]').value;
+	const applicationStatus = document.querySelector('select[name="applicationStatus"]').value;
+	const passStage = document.querySelector('select[name="passStage"]').value;
+	const keyword = document.querySelector('input[name="keyword"]').value.trim();
+	const sortBy = document.getElementById('sortBy').value;
+	const itemsPerPage = document.getElementById('itemsPerPage').value;
+	
+	// 기본값이 아닌 경우에만 쿼리스트링에 추가
+	// 공고 상태 (기본값: 빈 문자열 - "전체 공고")
+	if (postingStatus && postingStatus !== '') {
+		params.append('postingStatus', postingStatus);
+	}
+	
+	// 공고 제목 (기본값: "0" 또는 빈 값)
+	if (postingTitle && postingTitle !== '0' && postingTitle !== '') {
+		params.append('postingTitle', postingTitle);
+	}
+	
+	// 지원 상태 (기본값: "3" - "전체 지원상태")
+	if (applicationStatus && applicationStatus !== '3') {
+		params.append('applicationStatus', applicationStatus);
+	}
+	
+	// 통과 단계 (기본값: "4" - "전체 합격 상태")
+	if (passStage && passStage !== '4') {
+		params.append('passStage', passStage);
+	}
+	
+	// 검색어 (빈 문자열이 아닌 경우)
+	if (keyword) {
+		params.append('keyword', keyword);
+	}
+	
+	// 정렬 조건 (기본값: "new" - "최신순")
+	if (sortBy && sortBy !== 'new') {
+		params.append('sortBy', sortBy);
+	}
+	
+	// 페이지당 항목 수 (기본값: "10" - "10개")
+	if (itemsPerPage && itemsPerPage !== '10') {
+		params.append('size', itemsPerPage);
+	}
+	
+	// 쿼리스트링이 있으면 ? 추가, 없으면 그냥 경로만
+	const queryString = params.toString();
+	location.href = '/corp/applicant' + (queryString ? '?' + queryString : '');
 }
 
 //전체, 진행중, 마감 공고 선택에 따른 공고 종류 변경
