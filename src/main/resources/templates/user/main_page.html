@@ -237,8 +237,7 @@ $(document).ready(function(){
 		        <div class="main-img">
 		            <a th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${randomPosting.jobPostingSeq})}"
 		               class="main-img-link">
-		                <img th:src="@{'/images/' + ${randomPosting.corpNm} + '.jpg'}"
-		                     onerror="this.onerror=null;this.src='/images/default_img.jpg';" />
+		                <img th:src="@{/images/corpimg/{img}(img=${randomPosting.corpImg})}" alt="기업 이미지"/> 
 		                <div class="main-content">
 		                    <h2 th:text="${randomPosting.corpNm}">회사 이름</h2>
 		                    <p th:text="${randomPosting.postingTitle != null ? randomPosting.postingTitle : '제목 없음'}">공고 제목</p>
@@ -396,7 +395,6 @@ $(document).ready(function(){
                        class="announcement-card-link">
                         <div class="image-wrapper">
                              <img th:src="@{/images/corpimg/{img}(img=${posting.corpImg})}" alt="기업 이미지">
-							 <p th:text="${posting.corpImg}"></p>
                         </div>
                         <div class="company-name" th:text="${posting.corpNm}">회사 이름</div>
                         <div class="announcement-title">
