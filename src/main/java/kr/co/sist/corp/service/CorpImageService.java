@@ -1,5 +1,6 @@
 package kr.co.sist.corp.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,11 +27,19 @@ public class CorpImageService {
     private final CorpRepository corpRepos;
 
     // 파일 업로드 경로 (application.properties에서 설정 가능, 기본값 설정)
-    @Value("${file.upload.logo.path:src/main/resources/static/images/logo}")
-    private String logoUploadPath;
-
-    @Value("${file.upload.img.path:src/main/resources/static/images/img}")
-    private String imgUploadPath;
+		/*
+		 * @Value("${file.upload.logo.path:src/main/resources/static/images/corplogo}")
+		 * private String logoUploadPath;
+		 * 
+		 * @Value("${file.upload.img.path:src/main/resources/static/images/corpimg}")
+		 * private String imgUploadPath;
+		 */
+    
+    //상대경로로 설정----------------------------------
+    private String projectPath = new File("").getAbsolutePath();
+    private String imagePath = projectPath + "/src/main/resources/static/images/corpimg";
+    private String logoPath = projectPath + "/src/main/resources/static/images/corplogo";
+    //--------------------------------------------
 
     // 허용되는 이미지 파일 확장자
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList(
@@ -58,11 +67,11 @@ public class CorpImageService {
 
         // 기존 로고 파일 삭제
         if (StringUtils.hasText(corp.getCorpLogo())) {
-            deleteExistingFile(corp.getCorpLogo(), logoUploadPath);
+            deleteExistingFile(corp.getCorpLogo(), logoPath);
         }
 
         // 새 파일 저장
-        String savedFileName = saveFile(logoFile, "logo", logoUploadPath);
+        String savedFileName = saveFile(logoFile, "logo", logoPath);
 
         // DB 업데이트
         corp.setCorpLogo(savedFileName);
@@ -82,11 +91,11 @@ public class CorpImageService {
 
         // 기존 회사 이미지 삭제
         if (StringUtils.hasText(corp.getCorpImg())) {
-            deleteExistingFile(corp.getCorpImg(), imgUploadPath);
+            deleteExistingFile(corp.getCorpImg(), imagePath);
         }
 
         // 새 파일 저장
-        String savedFileName = saveFile(imageFile, "company", imgUploadPath);
+        String savedFileName = saveFile(imageFile, "company", imagePath);
 
         // DB 업데이트
         corp.setCorpImg(savedFileName);
@@ -103,7 +112,7 @@ public class CorpImageService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회사입니다."));
 
         if (StringUtils.hasText(corp.getCorpLogo())) {
-            deleteExistingFile(corp.getCorpLogo(), logoUploadPath);
+            deleteExistingFile(corp.getCorpLogo(), logoPath);
             corp.setCorpLogo(null);
             corpRepos.save(corp);
         }
@@ -117,7 +126,7 @@ public class CorpImageService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회사입니다."));
 
         if (StringUtils.hasText(corp.getCorpImg())) {
-            deleteExistingFile(corp.getCorpImg(), imgUploadPath);
+            deleteExistingFile(corp.getCorpImg(), imagePath);
             corp.setCorpImg(null);
             corpRepos.save(corp);
         }

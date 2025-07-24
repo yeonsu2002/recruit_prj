@@ -1,22 +1,30 @@
 package kr.co.sist.user.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.authorization.method.AuthorizeReturnObject;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lowagie.text.pdf.BaseFont;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.pdf.PdfService;
@@ -41,10 +49,10 @@ public class ResumeController {
 	private final PositionCodeService pcs;
 
 	private final UserRepository userRepos;
-	
+
 	private final ObjectMapper objMapper;
 	private final CipherUtil cu;
-	
+
 	private final PdfService pdfService;
 
 	// 이력서 관리 페이지로 이동
@@ -53,12 +61,13 @@ public class ResumeController {
 
 		// 토큰에서 유저 정보 빼오기
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
-		if(user == null) { return "redirect:/accessDenied"; }
-		
+		if (user == null) {
+			return "redirect:/accessDenied";
+		}
 
 		List<ResumeDTO> resumes = rServ.searchAllResumeByUser(userInfo.getEmail());
 		List<AttachmentDTO> files = aServ.searchAllAttachment(userInfo.getEmail());
-		
+
 		model.addAttribute("user", user);
 		model.addAttribute("resumes", resumes);
 		model.addAttribute("files", files);
@@ -84,7 +93,7 @@ public class ResumeController {
 
 		// 토큰에서 유저 정보 빼오기
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
-		
+
 		user.setPhone(cu.decryptText(user.getPhone()));
 		user.setBirth(user.getBirth().substring(0, 4));
 		model.addAttribute("user", user);
@@ -132,6 +141,7 @@ public class ResumeController {
 	public Map<String, Object> resumePreview(@RequestParam(required = false) MultipartFile profileImg,
 			@RequestParam("resumeData") String resumeDataJson) {
 		Map<String, Object> result = new HashMap<>();
+		System.out.println("------------------------------------" + profileImg);
 		try {
 			ResumeRequestDTO rdd = objMapper.readValue(resumeDataJson, ResumeRequestDTO.class);
 			rServ.modifyResume(rdd, profileImg, rdd.getBasicInfo().getResumeSeq());
@@ -149,7 +159,8 @@ public class ResumeController {
 
 	// 이력서 미리보기 창 띄우기
 	@GetMapping("/user/resume/preview/{resumeSeq}")
-	public String resumePreviewPage(@PathVariable int resumeSeq, Model model, @AuthenticationPrincipal CustomUser userInfo) {
+	public String resumePreviewPage(@PathVariable int resumeSeq, Model model,
+			@AuthenticationPrincipal CustomUser userInfo) {
 
 		// 토큰에서 유저 정보 빼오기
 		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
@@ -172,7 +183,64 @@ public class ResumeController {
 
 		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
 	}
-	
+
+	// 이력서 다운로드
+	@GetMapping("/user/resume/download/{resumeSeq}")
+	public void downloadResume(@PathVariable int resumeSeq, @AuthenticationPrincipal CustomUser userInfo,
+			HttpServletResponse response) {
+
+		// 토큰에서 유저 정보 빼오기
+		UserEntity user = userRepos.findById(userInfo.getEmail()).orElse(null);
+		user.setPhone(cu.decryptText(user.getPhone()));
+		user.setBirth(user.getBirth().substring(0, 4));
+
+		ResumeResponseDTO resumeData = rServ.searchOneDetailResume(resumeSeq);
+
+		// pdf로 넘길 데이터 Map 생성
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("user", user);
+		map.put("resumeData", resumeData);
+		map.put("resume", resumeData.getResume());
+		map.put("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
+		map.put("positions", resumeData.getPositions());
+		map.put("skills", resumeData.getSkills());
+		map.put("educations", resumeData.getEducations());
+		map.put("careers", resumeData.getCareers());
+		map.put("projects", resumeData.getProjects());
+		map.put("additionals", resumeData.getAdditionals());
+		map.put("introductions", resumeData.getIntroductions());
+
+		String pdfTitle = resumeData.getResume().getTitle(); 
+				
+		// pdf 생성
+		try {
+			String processHtml = pdfService.createPdf("/user/resume/resume_pdf", map);
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ITextRenderer renderer = new ITextRenderer();
+
+			renderer.getFontResolver().addFont(new ClassPathResource("/static/font/NanumBarunGothic.ttf").getURL().toString(),
+					BaseFont.IDENTITY_H, BaseFont.EMBEDDED
+
+			);
+			renderer.setDocumentFromString(processHtml);
+
+			renderer.layout();
+			renderer.createPDF(outputStream);
+			response.setContentType("application/pdf");
+			String encodedFileName = URLEncoder.encode(pdfTitle, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName + ".pdf");
+			
+			response.getOutputStream().write(outputStream.toByteArray());
+			response.getOutputStream().flush();
+
+			renderer.finishPDF();
+			outputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	// 이력서 삭제하기
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")

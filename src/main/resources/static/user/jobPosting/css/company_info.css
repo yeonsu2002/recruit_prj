@@ -172,6 +172,7 @@ h4 {
     flex-direction: column;
     gap: 12px;
     margin-top: 20px;
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개 */
 }
 
 /* 빈 상태 스타일 */
@@ -206,13 +207,23 @@ h4 {
 /* 채용공고 카드 스타일 */
 .job-card {
     background: white;
-    border: 1px solid #e1e5e9;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 12px;
+    padding: 20px;
     transition: all 0.2s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
+
+.job-list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개 */
+    gap: 20px; /* 카드 사이 간격 */
+    margin-top: 20px;
+}
+
 
 .job-card:hover {
     border-color: #007aff;
@@ -272,6 +283,11 @@ h4 {
     color: #d60000;
 }
 
+.dday-text {
+    color: red;
+    font-weight: bold; /* 선택 (눈에 띄게 하려면) */
+}
+
 .dday-normal {
     background: #f0f9ff;
     color: #0369a1;
@@ -309,6 +325,7 @@ h4 {
 
 /* 자세히 보기 링크 */
 .job-card a {
+    align-self: flex-end; /* 오른쪽으로 붙이기 */
     color: #007aff;
     text-decoration: none;
     font-size: 14px;
@@ -317,7 +334,7 @@ h4 {
     border-radius: 6px;
     transition: all 0.2s ease;
     display: inline-block;
-    margin-top: 8px;
+    margin-top: 12px;
 }
 
 .job-card a:hover {
@@ -400,6 +417,8 @@ h4 {
     border-radius: 2px;
     border: 1px solid #e9ecef;
     font-size: 14px;
+    width: 200px;
+    margin-left: 90px;
 }
 
 .menu-item {

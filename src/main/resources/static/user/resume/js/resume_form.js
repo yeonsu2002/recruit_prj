@@ -48,23 +48,36 @@ $(function() {
 		$("#optionsList").toggle();
 	});
 
-	//직무 클릭시
-	$('#optionsList li').on('click', function() {
+	//직무 클릭시 - 이벤트 위임으로 수정
+	$(document).on('click', '#optionsList li', function() {
 		let position = $(this).data("value");
 		let text = $(this).text();
 
-		// positions 영역에 이미 같은 텍스트를 가진 태그가 있으면 삭제
+		// 선택된 직무 개수가 5개 이상이면 추가 막기
+		const currentCount = $('#positions .tag').length;
+		if (currentCount >= 5) {
+			alert("희망 직무는 최대 5개까지만 선택할 수 있습니다.");
+			return;
+		}
+
+		// 중복 체크
+		let isDuplicate = false;
 		$('#positions .tag').each(function() {
-			if ($(this).text().replace('×', '').trim() === text) {
-				$(this).remove();
+			if ($(this).data('value') == position) {
+				isDuplicate = true;
+				return false;
 			}
 		});
 
-		$('#positions').append(
-			`<span class="tag" data-value="${position}">${text}
-             <button type="button" class="remove-tag">×</button>
-          	 </span>`
-		);
+		if (!isDuplicate) {
+			$('#positions').append(
+				`<span class="tag" data-value="${position}">${text}
+	             <button type="button" class="remove-tag">×</button>
+	          	 </span>`
+			);
+		}
+
+		$("#optionsList").hide();
 	});
 
 
@@ -114,11 +127,27 @@ $(function() {
 		let skill = $(this).data("value");
 		let text = $(this).text();
 
-		$('#skills').append(
-			`<span class="tag" data-value="${skill}">${text}
-	            <button type="button" class="remove-tag">×</button>
-	         </span>`
-		);
+		// 중복 체크: 이미 같은 기술스택이 있는지 확인
+		let isDuplicate = false;
+		$('#skills .tag').each(function() {
+			if ($(this).data('value') == skill) {
+				isDuplicate = true;
+				return false; // each 루프 종료
+			}
+		});
+
+		// 중복이 아닌 경우에만 추가
+		if (!isDuplicate) {
+			$('#skills').append(
+				`<span class="tag" data-value="${skill}">${text}
+		            <button type="button" class="remove-tag">×</button>
+		         </span>`
+			);
+		}
+
+		// 검색 목록 숨기기 및 입력창 초기화
+		$('#skillsList').hide();
+		$('#skill-input').val('');
 	});
 
 	//외부 클릭시 기술 스택 리스트 닫기
@@ -168,11 +197,27 @@ $(function() {
 		const skill = $(this).data("value");
 		const text = $(this).text();
 
-		$projectItem.find('.project-skills').append(
-			`<span class="tag" data-value="${skill}">${text}
-	       <button type="button" class="remove-tag">×</button>
-	     </span>`
-		);
+		// 해당 프로젝트 내에서 중복 체크
+		let isDuplicate = false;
+		$projectItem.find('.project-skills .tag').each(function() {
+			if ($(this).data('value') == skill) {
+				isDuplicate = true;
+				return false; // each 루프 종료
+			}
+		});
+
+		// 중복이 아닌 경우에만 추가
+		if (!isDuplicate) {
+			$projectItem.find('.project-skills').append(
+				`<span class="tag" data-value="${skill}">${text}
+		       <button type="button" class="remove-tag">×</button>
+		     </span>`
+			);
+		}
+
+		// 검색 목록 숨기기 및 입력창 초기화
+		$projectItem.find('.project-list').hide();
+		$projectItem.find('.project-input').val('');
 	});
 
 	//외부 클릭시 기술 스택 리스트 닫기
@@ -273,44 +318,67 @@ $(function() {
 		$(this).parent().remove();
 	});
 
-	document.addEventListener('input', function(e) {
-		// 날짜 형식 (YYYY.MM)
-		if (e.target.placeholder === 'YYYY.MM') {
-			let value = e.target.value.replace(/\D/g, '');
-			e.target.value = value.length >= 4 ? value.substring(0, 4) + '.' + value.substring(4, 6) : value;
-		}
+	// 날짜 형식 입력 처리 (YYYY.MM)
+	$(document).on('input', 'input[placeholder="YYYY.MM"]', function() {
+		let value = this.value.replace(/\D/g, '');
+		this.value = value.length >= 4 ? value.substring(0, 4) + '.' + value.substring(4, 6) : value;
+	});
 
-		// 학점 형식 (한 자리 정수 + 소수점 두 자리)
-		if (e.target.name === 'grade') {
-			let value = e.target.value.replace(/[^\d.]/g, '');
-			let parts = value.split('.');
+	// 학점 형식 입력 처리
+	$(document).on('input', 'input[name="grade"]', function() {
+		let value = this.value.replace(/[^\d.]/g, '');
+		let parts = value.split('.');
 
-			// 소수점 중복 제거 및 자릿수 제한
-			if (parts.length > 2) parts = [parts[0], parts[1]];
-			parts[0] = parts[0].substring(0, 1);
-			if (parts[1]) parts[1] = parts[1].substring(0, 2);
+		// 소수점 중복 제거 및 자릿수 제한
+		if (parts.length > 2) parts = [parts[0], parts[1]];
+		parts[0] = parts[0].substring(0, 1);
+		if (parts[1]) parts[1] = parts[1].substring(0, 2);
 
-			// 정수 1개 입력시 자동으로 소수점 추가
-			if (parts[0].length === 1 && parts.length === 1) {
-				e.target.value = parts[0] + '.';
-			} else {
-				e.target.value = parts[1] !== undefined ? parts[0] + '.' + parts[1] : parts[0];
-			}
+		// 정수 1개 입력시 자동으로 소수점 추가
+		if (parts[0].length === 1 && parts.length === 1) {
+			this.value = parts[0] + '.';
+		} else {
+			this.value = parts[1] !== undefined ? parts[0] + '.' + parts[1] : parts[0];
 		}
 	});
 
 	// 백스페이스로 소수점 지우기 처리
-	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Backspace') {
-			if (e.target.name === 'grade' && e.target.value.endsWith('.') && e.target.value.length === 2) {
-				e.target.value = e.target.value.substring(0, 1);
-				e.preventDefault();
-			}
-			if (e.target.placeholder === 'YYYY.MM' && e.target.value.endsWith('.') && e.target.value.length === 5) {
-				e.target.value = e.target.value.substring(0, 4);
-				e.preventDefault();
+	$(document).on('keydown', 'input[name="grade"]', function(e) {
+		if (e.key === 'Backspace' && this.value.endsWith('.') && this.value.length === 2) {
+			this.value = this.value.substring(0, 1);
+			e.preventDefault();
+		}
+	});
+
+	$(document).on('keydown', 'input[placeholder="YYYY.MM"]', function(e) {
+		if (e.key === 'Backspace' && this.value.endsWith('.') && this.value.length === 5) {
+			this.value = this.value.substring(0, 4);
+			e.preventDefault();
+		}
+	});
+
+	// 간단한 월 검증 (1~12월만 체크)
+	$(document).on('blur', 'input[placeholder="YYYY.MM"]', function() {
+		const dateValue = $(this).val();
+
+		if (dateValue && dateValue.includes('.')) {
+			const parts = dateValue.split('.');
+			if (parts.length === 2) {
+				const month = parseInt(parts[1]);
+
+				if (parts[1] && (month < 1 || month > 12)) {
+					alert('월은 01부터 12까지만 입력 가능합니다.');
+					$(this).val(parts[0] + '.');
+					$(this).focus();
+				}
 			}
 		}
+	});
+	
+	$(document).on('click', function(e) {
+	  if (!$(e.target).closest('textarea').length) {
+	    $('textarea').blur(); // textarea 포커스 해제
+	  }
 	});
 
 	// ===============================
@@ -459,6 +527,7 @@ $(function() {
 	}
 
 	// 버튼 이벤트 연결
+	// 이력서 저장하기
 	$('.save-btn').on('click', function() {
 		const formData = saveResume();
 
@@ -482,32 +551,34 @@ $(function() {
 		});
 	});
 
+	//이력서 미리보기
 	$('.preview-btn').on('click', function() {
-	    const formData = saveResume(); 
+		const formData = saveResume();
 
-	    $.ajax({
-	        url: '/user/resume/resumePreview',
-	        type: 'POST',
-	        data: formData,
-	        processData: false,
-	        contentType: false,
-	        success: function(response) {
-	            if (response.result === 'success') {
-	                window.open(response.previewUrl, '_blank', 'width=900,height=1100,scrollbars=yes,resizable=yes');
-	            } else {
-	                alert('이력서 불러오기에 실패했습니다. 다시 시도해주세요.');
-	            }
-	        },
-	        error: function(error) {
-	            alert('이력서 불러오는 중 오류가 발생했습니다.');
-	            console.error('Error:', error);
-	        }
-	    });
+		$.ajax({
+			url: '/user/resume/resumePreview',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(response) {
+				if (response.result === 'success') {
+					window.open(response.previewUrl, '_blank', 'width=900,height=1100,scrollbars=yes,resizable=yes');
+				} else {
+					alert('이력서 불러오기에 실패했습니다. 다시 시도해주세요.');
+				}
+			},
+			error: function(error) {
+				alert('이력서 불러오는 중 오류가 발생했습니다.');
+				console.error('Error:', error);
+			}
+		});
 	});
 
-
+	//이력서 PDF로 다운로드
 	$('.download-btn').on('click', function() {
-		downloadResume();
+		const resumeSeq = $('#resumeSeq').val();
+		location.href = '/user/resume/download/' + resumeSeq;
 	});
 
 });

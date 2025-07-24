@@ -64,6 +64,20 @@
 	  
 	  
 	});//ready
+	
+	$(document).ready(function () {
+	    $("#shareBtn").click(function (e) {
+	        e.preventDefault(); // 링크 이동 방지
+	        var url = window.location.href;
+	        var textarea = document.createElement("textarea");
+	        document.body.appendChild(textarea);
+	        textarea.value = url;
+	        textarea.select();
+	        document.execCommand("copy");
+	        document.body.removeChild(textarea);
+	        alert("URL이 복사되었습니다.");
+	    });
+	});
   
   </script>
 </head>
@@ -85,7 +99,7 @@
                         <div style="position: relative;">
                         	<input type="hidden" id="corpNoForScrap" th:value="${companyDTO.corpNo}" />
                             <button class="floating-action-btn" id="shareBtn">
-                                <span class="icon">📃</span>
+                                <span class="icon"><a href="#" onclick="clip(); return false;">📃</a></span>
                             </button>
                         </div>
                     </div>
@@ -96,9 +110,9 @@
                     <div class="company_info">
                         <img alt="기업 로고" src="/images/samsung.jpg" style="width:250px" height="auto"/>
                         <div class="info_box">
-                            <p>업력:<span class="gap" th:text="${companyDTO.corpCreatedAt}">업력</span></p>
-                            <p>업종:<span class="gap" th:text="${companyDTO.industry}">부동산업</span></p>
-                            <p>대표자명:<span class="gap" th:text="${companyDTO.corpCeo}">안종오</span></p>
+                            <p>업력:<span class="gap" th:text="${companyDTO.corpCreatedAt}"></span></p>
+                            <p>업종:<span class="gap" th:text="${companyDTO.industry}"></span></p>
+                            <p>대표자명:<span class="gap" th:text="${companyDTO.corpCeo}"></span></p>
                             <p>홈페이지: <a th:href="@{${companyDTO.corpUrl}}" th:text="${companyDTO.corpUrl}" target="_blank"></a></p>
                         </div>
                     </div>
@@ -141,22 +155,20 @@
 					</div>
 					
 					<!-- 채용 중인 공고 리스트 -->
-					<div th:if="${jobList != null and !jobList.isEmpty()}">
+				<div class="job-list-grid" th:if="${jobList != null and !jobList.isEmpty()}">
 					    <div th:each="job : ${jobList}">
 					        <div th:if="${job.isEnded == 'N'}" class="job-card" style="border:1px solid #ccc; padding:1rem; margin-bottom:1rem; border-radius: 6px;">
+					            <p th:text="${job.getDdayDisplay()}" style="color: red;">D-day</p>
 					            <h5 th:text="${job.postingTitle}">공고 제목</h5>
-					            <p th:text="'마감일: ' + ${job.postingEndDt}">마감일</p>
-					            <p th:text="${job.getDdayDisplay()}">D-day</p>
-					            <p th:text="'고용형태: ' + ${job.employType}">고용형태</p>
-					            <p th:text="'경력: ' + ${job.expLevel}">경력</p>
+					            <h5 th:text="${job != null} ? ${job.stackName} : ''" style="font-size: 14px; color:gray"></h5>
 					            <a  th:href="@{/user/job_posting/job_posting_detail(jobPostingSeq=${job.jobPostingSeq})}" style="color: blue;">자세히 보기</a>
 					            
 					        </div>
 					    </div>
-					</div>
+				</div>
                     <div class="review-header">
                         <h4 id="simple-list-item-7" style="font-size: 16px">기업 후기</h4>
-                        <a href="/user/job_posting/review" type="button" class="write-review-btn">자세히 보기</a>
+                     <a th:href="@{/user/job_posting/review(corpNo=${companyDTO.corpNo})}" type="button" class="write-review-btn">자세히 보기</a>
                     </div>
                 </div>
             </div>

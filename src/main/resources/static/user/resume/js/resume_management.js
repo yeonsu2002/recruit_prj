@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		//다운로드
+		const downloadBtn = e.target.closest('.download-btn');
+		if(downloadBtn){
+			alert("hi");
+			location.href = '/user/resume/download/' + resumeSeq;
+		}
 
 	});
 
@@ -90,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					<div class="file-info">
 						<div class="file-icon">${file.fileType}</div>
 						<div class="file-details">
-							<div class="file-name download">${file.fileName}</div>
+							<div class="file-name download">${file.originalName}</div>
 							<div class="file-date">${file.createdAt}</div>
 						</div>
 					</div>
@@ -102,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				</div>
 				`;
 				} else {
-					alert('업로드 실패: ' + result);
+					alert('동일한 이름의 파일이 이미 업로드 되어 있습니다.\n파일명 변경후 다시 시도해 주세요.');
 				}
 			})
 			.catch(error => {

@@ -73,6 +73,8 @@ public class SecurityConfig {
         http.securityMatcher("/**")
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/reissue").permitAll()
+                .requestMatchers("/corp/image/**").authenticated()
+                .requestMatchers("/corp/info/**").authenticated()
                 .anyRequest().permitAll()
             )
             .csrf(csrf -> csrf.disable())

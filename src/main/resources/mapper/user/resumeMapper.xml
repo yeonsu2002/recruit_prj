@@ -22,7 +22,7 @@ where resume_seq = #{resumeSeq}
 
 <!-- 해당 유저의 모든 첨부파일 가져오기 -->
 <select id="selectAllAttachment" parameterType="String" resultType="userAttachmentDTO">
-SELECT ATTACHMENT_SEQ, EMAIL, FILE_NAME , FILE_SIZE , FILE_TYPE, CREATED_AT 
+SELECT ATTACHMENT_SEQ, EMAIL, FILE_NAME , FILE_SIZE , FILE_TYPE, CREATED_AT, ORIGINAL_NAME 
 FROM attachment
 WHERE email = #{email}
 </select>
@@ -55,6 +55,7 @@ WHERE resume_seq=#{resumeSeq}
 SELECT EDUCATION_HISTORY_SEQ, RESUME_SEQ, INDEX_NUM, SCHOOL_NAME, DEPARTMENT, GRADE, STANDARD_GRADE, EDUCATION_TYPE, ADMISSION_DATE, GRADUATE_DATE
 FROM EDUCATION_HISTORY
 WHERE resume_seq=#{resumeSeq}
+order by GRADUATE_DATE
 </select>
 
 <!-- 해당 이력서의 경력 가져오기 -->
@@ -62,6 +63,7 @@ WHERE resume_seq=#{resumeSeq}
 SELECT CAREER_SEQ, RESUME_SEQ, INDEX_NUM, COMPANY_NAME, POSITION, CAREER_DESCRIPTION, START_DATE, END_DATE
 FROM CAREER
 WHERE resume_seq=#{resumeSeq}
+order by END_DATE 
 </select>
 
 <!-- 해당 이력서의 기타사항 가져오기 -->
@@ -69,6 +71,7 @@ WHERE resume_seq=#{resumeSeq}
 SELECT ADDITIONAL_INFO_SEQ, RESUME_SEQ, ACTIVITY_NAME, RECORD_TYPE, RELATED_AGENCY, DETAIL_CONTENT, END_DATE
 FROM ADDITIONAL_INFO
 WHERE resume_seq=#{resumeSeq}
+order by END_DATE
 </select>
 
 <!-- 해당 이력서의 자기소개서 가져오기 -->

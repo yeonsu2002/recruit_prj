@@ -30,14 +30,11 @@ public class PdfController {
 			String processHtml = pdfService.createPdf("index", map);
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			ITextRenderer renderer = new ITextRenderer();
-			
-			
-			renderer.getFontResolver().addFont(
-					new ClassPathResource("/static/font/NanumBarunGothic.ttf").getURL().toString(),
-					BaseFont.IDENTITY_H,
-					BaseFont.EMBEDDED
-					
-					);
+
+			renderer.getFontResolver().addFont(new ClassPathResource("/static/font/NanumBarunGothic.ttf").getURL().toString(),
+					BaseFont.IDENTITY_H, BaseFont.EMBEDDED
+
+			);
 			renderer.setDocumentFromString(processHtml);
 
 			renderer.layout();

@@ -9,15 +9,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import kr.co.sist.admin.notice.NoticeService;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.JobPostDTO;
+import kr.co.sist.user.dto.NoticeDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.UserDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.JobPostingService;
 import kr.co.sist.user.service.RecentViewService;
 import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.user.service.UserNoticeService;
 import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +33,7 @@ public class JobPostingController {
     private final CipherUtil cu;
     private final  ResumeService rs;
     private final RecentViewService recentViewService;
+    private final UserNoticeService noticeService;
 	    
     //개발자채용
     @GetMapping("/user/job_posting/job_posting")
@@ -93,6 +97,10 @@ public class JobPostingController {
             
             model.addAttribute("randomPostings", randomPostings);
             model.addAttribute("popularPostings", popularPostings);
+            
+            List<NoticeDTO> noticeList = noticeService.getLatestNotices();
+            System.out.println("---------------------------------------" + noticeList);
+            model.addAttribute("noticeList", noticeList);
             
             return "user/main_page";
         } catch (Exception e) {
