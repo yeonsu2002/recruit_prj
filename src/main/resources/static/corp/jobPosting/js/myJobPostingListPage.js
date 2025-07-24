@@ -299,7 +299,7 @@ function updatePostingCounts(data) {
         if (totalTh) totalTh.innerHTML = `전체 (<span>${counts.TOTAL_POSTING_CNT || 0}</span>)건`;
     }
 }
-
+ 
 //지원자 통계 모달창 보기
 function showApplicantStatsModal(jobPostingSeq){
 	
