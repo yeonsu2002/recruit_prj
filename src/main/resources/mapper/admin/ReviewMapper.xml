@@ -72,5 +72,13 @@
 	
 </select>
 
+<delete id="deleteReview" parameterType="Map">
+	delete from review
+	where review_seq in
+	<foreach item="id" collection="reviewSeq" open="(" separator="," close=")">
+	TO_NUMBER(#{id})
+	</foreach>
+</delete>
+
 
 </mapper>

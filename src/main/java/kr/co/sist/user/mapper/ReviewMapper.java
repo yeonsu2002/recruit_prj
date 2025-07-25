@@ -60,6 +60,13 @@ public interface ReviewMapper {
 	 * @return 총 개수
 	 */
 	int countSearch(Map<String, Object> map);
+	
+	
+	/**
+	 * 체크 삭제
+	 * @param map
+	 */
+	int deleteReview(Map<String,Object> map);
 }
 
 
