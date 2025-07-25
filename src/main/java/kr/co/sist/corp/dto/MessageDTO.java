@@ -7,13 +7,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class MailDTO {
+public class MessageDTO {
     private Long corpNo;
     private String email;
-    private String mailTitle;
-    private String mailContent;
+    private String messageTitle;
+    private String messageContent;
     private String createdAt;
     private String isRead;
     private String readedAt;
-    private Integer isOffered; 
+    private String isOffered; 
 }

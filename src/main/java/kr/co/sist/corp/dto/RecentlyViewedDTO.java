@@ -3,7 +3,7 @@ package kr.co.sist.corp.dto;
 import lombok.Data;
 
 @Data
-public class TalentPoolDTO {
+public class RecentlyViewedDTO {
 
     private Long resumeSeq;
     private Long corpNo;
