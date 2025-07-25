@@ -25,7 +25,7 @@ $(function(){
 	//딸깍 랜덤 이력서 100000개 생성
 	document.querySelector('#createRandomResume').addEventListener('click', () => {
 		if(confirm("유저 1000명 이력서를 랜덤으로 생성하시겠습니까? 정말로?")){
-			///addTenThousandResumes();
+			addTenThousandResumes();
 		}
 	});
 	
@@ -699,8 +699,10 @@ function addTenThousandResumes(){
 		}
 
 		// 기타사항 (자격증 갯수 : 최대 5개)
-		const certCount = Math.floor(Math.random() * 5) + 1; 
+		const certCount = Math.floor(Math.random() * 5) + 1; //컴터자격증 최대 5개 
+		const langCount = Math.floor(Math.random() * 2) + 1; //어학자격증 최대 2개
 		const computerCertList = ["정보처리기사", "SQLD", "리눅스마스터", "OCP", "ADSP", "데이터분석준전문가"];
+		const languageCertList = ["토익", "토플", "텝스", "토익스피킹", "오픽", "JPT", "HSK", "기타"];
 		
 		for(let j = 0; j < certCount && j < computerCertList.length; j++){
 			const etcItem = {
@@ -709,6 +711,20 @@ function addTenThousandResumes(){
 				recordType: "자격증",
 				relatedAgency: "한국자격증공단",
 				detailContent: `${computerCertList[j]} 자격증 취득`
+			};
+
+			if (etcItem.activityName) {
+				resumeData.etc.push(etcItem);
+			}
+		}
+		
+		for(let j = 0; j < langCount && j < languageCertList.length; j++){
+			const etcItem = {
+				endDate: '20012.12',
+				activityName: languageCertList[j],
+				recordType: "어학",
+				relatedAgency: "세계언어학협회",
+				detailContent: `${languageCertList[j]} 자격증 취득`
 			};
 
 			if (etcItem.activityName) {

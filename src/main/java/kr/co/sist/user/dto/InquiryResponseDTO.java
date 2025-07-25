@@ -2,6 +2,7 @@ package kr.co.sist.user.dto;
 
 import java.time.LocalDateTime;
 
+import kr.co.sist.user.entity.InquiryEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,4 +25,22 @@ public class InquiryResponseDTO {
     public InquiryResponseDTO() {
     	
     }
+    
+    public static InquiryResponseDTO fromEntity(InquiryEntity entity) {
+      InquiryResponseDTO dto = new InquiryResponseDTO();
+      dto.setAskSeq(entity.getAskSeq());
+      dto.setEmail(entity.getEmail());
+      dto.setAdminId(entity.getAdminId());
+      dto.setTitle(entity.getTitle());
+      dto.setContent(entity.getContent());
+      dto.setAnswer(entity.getAnswer());
+      dto.setRegsDate(entity.getRegsDate());
+      dto.setCategory(entity.getCategory());
+      dto.setAnswerStat(entity.getAnswerStat());
+      dto.setAttachFile(entity.getFilePath());  
+      dto.setUserType(entity.getUserType());
+      return dto;
+  }
+    
+    
 }

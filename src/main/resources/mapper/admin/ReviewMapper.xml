@@ -2,91 +2,83 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.user.mapper.ReviewMapper">
 	
-	<select id="selectSearchReviews" parameterType="kr.co.sist.admin.SearchDTO" resultType="kr.co.sist.user.dto.ReviewDTO">
-  SELECT * FROM (
-    SELECT a.*, ROWNUM rnum FROM (
-      SELECT review_seq AS reviewSeq,
-             corp_no AS corpNo,
-             email,
-             rating,
-             summary,
-             pros,
-             cons,
-             created_at AS createdAt  <!-- 오타 수정 -->
-      FROM review
-      <where>
-        <if test="keyword != null and keyword.trim() != ''">
-          <choose>
-            <when test="type == 'email'">
-              AND email LIKE '%' || #{keyword} || '%'
-            </when>
-            <when test="type == 'corp_no'">
-              AND TO_CHAR(corp_no) LIKE '%' || #{keyword} || '%'
-            </when>
-            <when test="type == 'rating'">
-              AND TO_CHAR(rating) LIKE '%' || #{keyword} || '%'
-            </when>
-            <when test="type == 'summary'">
-              AND summary LIKE '%' || #{keyword} || '%'
-            </when>
-            <otherwise>
-              AND (
-                email LIKE '%' || #{keyword} || '%'
-                OR TO_CHAR(corp_no) LIKE '%' || #{keyword} || '%'
-                OR TO_CHAR(rating) LIKE '%' || #{keyword} || '%'
-                OR summary LIKE '%' || #{keyword} || '%'
-                OR pros LIKE '%' || #{keyword} || '%'
-                OR cons LIKE '%' || #{keyword} || '%'
-              )
-            </otherwise>
-          </choose>
-        </if>
-      </where>
-      ORDER BY
-      <choose>
-        <when test="sortField != null and sortField.trim() != ''">
-          ${sortField} ${sortOrder}
-        </when>
-        <otherwise>
-          created_at DESC
-        </otherwise>
-      </choose>
-    ) a
-    WHERE ROWNUM &lt;= #{offset} + #{size}
-  )
-  WHERE rnum &gt; #{offset}
-</select>
-
-<select id="countSearch" parameterType="kr.co.sist.admin.SearchDTO" resultType="int">
-  SELECT COUNT(*) FROM review
+	<select id="selectSearchReviews" parameterType="map" resultType="kr.co.sist.admin.review.AdminReviewDTO">
+  SELECT review_seq, corp_no, email, rating, summary, pros, cons, created_at
+  FROM review
   <where>
-    <if test="keyword != null and keyword.trim() != ''">
+    <if test="rating != null and rating != '전체'">
+      rating = TO_NUMBER(#{rating})
+    </if>
+
+    <if test="keyword != null and keyword != ''">
+      AND
       <choose>
         <when test="type == 'email'">
-          AND email LIKE '%' || #{keyword} || '%'
+          email LIKE '%' || #{keyword} || '%'
+        </when>
+        <when test="type == 'summary'">
+          summary LIKE '%' || #{keyword} || '%'
         </when>
         <when test="type == 'corp_no'">
-          AND TO_CHAR(corp_no) LIKE '%' || #{keyword} || '%'
+          corp_no LIKE '%' || #{keyword} || '%'
         </when>
         <otherwise>
-          AND (
-            email LIKE '%' || #{keyword} || '%'
-            OR TO_CHAR(corp_no) LIKE '%' || #{keyword} || '%'
-            OR TO_CHAR(rating) LIKE '%' || #{keyword} || '%'
-            OR summary LIKE '%' || #{keyword} || '%'
-            OR pros LIKE '%' || #{keyword} || '%'
-            OR cons LIKE '%' || #{keyword} || '%'
-          )
+          (email LIKE '%' || #{keyword} || '%'
+           OR summary LIKE '%' || #{keyword} || '%'
+           OR corp_no LIKE '%' || #{keyword} || '%')
         </otherwise>
       </choose>
     </if>
-    
-    <!-- rating 별도 필터 -->
-  <if test="rating != null and rating != '전체'">
-    AND TO_CHAR(rating) = TO_CHAR(#{rating})
-  </if>
   </where>
+
+  <if test="order == 'desc'">
+    ORDER BY created_at DESC
+  </if>
+  <if test="order == 'asc'">
+    ORDER BY created_at ASC
+  </if>
+
+  OFFSET #{start} ROWS FETCH NEXT #{perPage} ROWS ONLY
 </select>
+
+
+<select id="countSearch"  parameterType="Map" resultType="int">
+ 	select count(*) from review
+	<where>
+    <if test="rating != null and rating != '전체'">
+      rating = TO_NUMBER(#{rating})
+    </if>
+
+    <if test="keyword != null and keyword != ''">
+      AND
+      <choose>
+        <when test="type == 'email'">
+          email LIKE '%' || #{keyword} || '%'
+        </when>
+        <when test="type == 'summary'">
+          summary LIKE '%' || #{keyword} || '%'
+        </when>
+        <when test="type == 'corp_no'">
+          corp_no LIKE '%' || #{keyword} || '%'
+        </when>
+        <otherwise>
+          (email LIKE '%' || #{keyword} || '%'
+           OR summary LIKE '%' || #{keyword} || '%'
+           OR corp_no LIKE '%' || #{keyword} || '%')
+        </otherwise>
+      </choose>
+    </if>
+  </where>
+	
+</select>
+
+<delete id="deleteReview" parameterType="Map">
+	delete from review
+	where review_seq in
+	<foreach item="id" collection="reviewSeq" open="(" separator="," close=")">
+	TO_NUMBER(#{id})
+	</foreach>
+</delete>
 
 
 </mapper>

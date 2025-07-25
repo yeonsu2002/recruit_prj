@@ -7,10 +7,13 @@
 <style>
 /* 전체 영역 여백 */
 .main {
-  padding: 30px;
-  max-width: 1000px;
-  margin: 0 auto;
+    padding: 30px;
+    margin-left: 250px; /* 사이드바가 고정되어 있다고 가정 */
+    background-color: #f9f9f9;
+    width:100%;
+    min-height: 100vh;
 }
+
 
 /* 테이블 스타일 */
 .table {
@@ -69,16 +72,10 @@ input[type="submit"] {
 <th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
 <div class="main">
 <form action="/admin_resume_search">
-<table class="table table-bordered" >
-<tr>
-<td>이력서번호</td>
-<td colspan="2"><input type="text" id="resume_seq" name="resume_seq"/></td>
-</tr>
-<tr>
-<td>이름</td>
-<td colspan="2"><input type="text" id="name" name="name"/></td>
-</tr>
-</table>
+<span>이력서번호</span>
+<span><input type="text" id="resume_seq" name="resume_seq"/></span>
+<span>이름</span>
+<span><input type="text" id="name" name="name"/></span>
 
 <input type="submit" value="검색"/>
 </form>
@@ -98,7 +95,10 @@ input[type="submit"] {
 <td th:text="${r['RESUME_SEQ']}"></td>
     <td th:text="${r['NAME']}"></td>
     <td th:text="${r['EMAIL']}"></td>
-    <td><a href="/admin_resume" th:text="${r['TITLE']}"></a></td>
+    <td>
+      <a th:href="@{/admin_resume/detail(resume_seq=${r['RESUME_SEQ']})}" 
+           th:text="${r['TITLE']}"></a>
+    </td>
 </tr>
 </tbody>
 </table>
@@ -109,11 +109,50 @@ input[type="submit"] {
 <!-- jquery CDN -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript">
-$(function(){
+$(document).ready(function () {
+	  const rowsPerPage = 10;
+	  const rows = $('#resumeTable tbody tr');
+	  const totalRows = rows.length;
+	  const totalPages = Math.ceil(totalRows / rowsPerPage);
+	  let currentPage = 1;
 
-});
+	  function showPage(page) {
+	    rows.hide();
+	    const start = (page - 1) * rowsPerPage;
+	    const end = start + rowsPerPage;
+	    rows.slice(start, end).show();
+	    renderPagination();
+	  }
+
+	  function renderPagination() {
+	    let html = '';
+	    if (currentPage > 1) {
+	      html += `<button class="btn btn-sm btn-outline-secondary me-2" id="prevPage">이전</button>`;
+	    }
+	    if (currentPage < totalPages) {
+	      html += `<button class="btn btn-sm btn-outline-secondary" id="nextPage">다음</button>`;
+	    }
+	    $('#pagination').html(html);
+
+	    $('#prevPage').click(() => {
+	      if (currentPage > 1) {
+	        currentPage--;
+	        showPage(currentPage);
+	      }
+	    });
+
+	    $('#nextPage').click(() => {
+	      if (currentPage < totalPages) {
+	        currentPage++;
+	        showPage(currentPage);
+	      }
+	    });
+	  }
+
+	  // 최초 실행
+	  showPage(currentPage);
+	});
 
 </script>
-
 </body>
 </html>

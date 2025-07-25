@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인재 관리</title>
+    <title>전체 인재</title>
     <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
     <link rel="stylesheet" th:href="@{/corp/talentPool/talent_pool.css}" />
     <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
@@ -30,7 +30,64 @@
 				</select>
 		    </div>
 		</div>
-       	<div class="talent-list" th:replace="~{fragments/talentList :: talentList}"></div>
+       	<!-- <div class="talent-list" th:replace="~{fragments/talentList :: talentList} "></div> -->
+       	
+       	<div class="talent-list" id="talentList">
+        <div th:if="${#lists.isEmpty(talentPool)}">
+            <p>인재 목록이 없습니다.</p>
+        </div>
+        
+        <div th:if="${!#lists.isEmpty(talentPool)}">
+            <div class="talent-item" th:each="talent : ${talentPool}">
+                <div class="talent-left">
+                    <div class="talent-profile" th:text="${talent.name}"></div>
+                    <div class="talent-info" 
+                         th:text="|${talent.gender == 'M' ? '남' : (talent.gender == 'F' ? '여' : '기타')}
+                                  ·${talent.birthYear}년생|"></div>
+                </div>
+
+                <div class="talent-right">
+                    <div class="spec-grid">
+                        <div class="spec-title">최종학력</div>
+                        <div th:text="${talent.finalEducation}"><!-- 대학교 졸업 --></div>
+                        <div class="spec-title">경력</div>
+                        <div th:text="${talent.totalCareer}"><!-- 경력 4년차 --></div>
+                        <div class="spec-title">거주지</div>
+                        <div th:text="${talent.shortAddress}"><!-- 서울 --></div>
+                        <div class="spec-title">자격증</div>
+                        <div th:text="${talent.certifications}"><!-- 정보처리기사 --></div>
+                        <div class="spec-title">기술 스택</div>
+                        <div class="skill-tags">
+                            <span class="skill-tag" th:text="${talent.techStacks}"></span>
+                        </div>
+                        <div class="spec-title">희망 직종</div>
+                        <div class="skill-tags">
+                            <span class="skill-tag" th:text="${talent.desiredPositions}"></span>
+                        </div> 
+                    </div>
+                </div>
+        
+                <div class="talent-actions">
+                    <button class="action-btn bookmark-btn"
+                        th:data-resume-seq="${talent.resumeSeq}"
+                        th:data-corp-no="${talent.corpNo}">
+                        <span class="bookmark-star" 
+                            th:classappend="${talent.isScrapped == 'Y'} ? 'filled'" 
+                            th:text="${talent.isScrapped == 'Y'} ? '★' : '☆'"></span>스크랩
+                    </button>
+                    <a th:href="@{/corp/talentPool/resume_detail(resumeNo=${talent.resumeSeq})}">
+                        <button class="action-btn resume-btn">이력서 확인</button>
+                    </a>
+                    <button class="action-btn interview-btn openInterviewModalBtn"
+                            th:data-resume-seq="${talent.resumeSeq}"
+                            th:data-corp-no="${corpNo}">면접 제안</button>
+                </div>
+            </div>
+        </div>
+    </div>
+       	
+       	
+       	
      </div> 
 <div class="modal" id="interviewModal" style="display:none;"></div>
 			
@@ -43,6 +100,7 @@
      th:data-total-pages="${totalPages}"
      th:data-current-page="${page}">
 </div>
+
 
 <script th:inline="javascript">
 (() => {
@@ -204,12 +262,16 @@
       });
     });
 
-    // 면접 제안 모달 열기
+ // 면접 제안 모달 열기
     talentListEl.querySelectorAll('.openInterviewModalBtn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const resumeSeq = btn.dataset.resumeSeq;
+        const resumeSeq = btn.dataset.resumeSeq;  // resumeSeq 값 가져오기
+        const corpNo = btn.dataset.corpNo;  // corpNo 값 가져오기
+        console.log("버튼에서 가져온 corpNo:", corpNo);  // corpNo가 제대로 출력되는지 확인
+
         const modalEl = document.getElementById('interviewModal');
 
+        // 면접 제안 모달 내용 로드
         fetch('/corp/talentPool/interviewOffer')
           .then(res => res.text())
           .then(html => {
@@ -218,16 +280,32 @@
             document.body.style.overflow = 'hidden';
 
             const form = modalEl.querySelector('form');
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'resumeSeq';
-            hiddenInput.value = resumeSeq;
-            form.appendChild(hiddenInput);
+            const hiddenCorpNoInput = form.querySelector('input[name="corpNo"]');
+            
+            if (hiddenCorpNoInput) {
+              hiddenCorpNoInput.value = corpNo; // corpNo를 hidden input에 설정
+            }
 
+            // resumeSeq 값 hidden input에 설정
+            const hiddenResumeSeqInput = form.querySelector('input[name="resumeSeq"]');
+            if (hiddenResumeSeqInput) {
+              hiddenResumeSeqInput.value = resumeSeq; // resumeSeq를 hidden input에 설정
+            } else {
+              // resumeSeq가 없으면 새로 생성하여 추가
+              const newHiddenResumeSeqInput = document.createElement('input');
+              newHiddenResumeSeqInput.type = 'hidden';
+              newHiddenResumeSeqInput.name = 'resumeSeq';
+              newHiddenResumeSeqInput.value = resumeSeq;
+              form.appendChild(newHiddenResumeSeqInput);
+            }
+
+            // 면접 제안 보내기
             form.onsubmit = (e) => {
               e.preventDefault();
               const formData = new FormData(form);
               const data = Object.fromEntries(formData.entries());
+
+              console.log('전송할 데이터:', data); // formData로 만들어진 데이터 확인
 
               fetch('/corp/talentPool/interviewOffer/send', {
                 method: 'POST',
@@ -238,7 +316,7 @@
                 .then(result => {
                   if (result.status === 'success') {
                     alert('면접 제안이 전송되었습니다.');
-                    closeModal();
+                    closeModal(); // 모달 닫기
                   } else {
                     alert('전송 실패: ' + result.message);
                   }
@@ -251,6 +329,8 @@
           .catch(() => alert('면접 제안 모달 로딩 실패'));
       });
     });
+
+
   }
 
   // 초기 실행

@@ -12,7 +12,7 @@
 			<div class="section-title">기본정보</div>
 			<div class="basic-info">
 				<div class="profile-image">
-					<img th:src="${'https://localhost/images/profileImg/' + user.img}" alt="프로필 사진">
+					<img th:if="${resume.image != null}" th:src="@{/images/profileImg/{img}(img=${resume.image})}" alt="프로필 사진">
 				</div>
 				<div class="info-details">
 					<div class="name" th:text="${user.name}"></div>

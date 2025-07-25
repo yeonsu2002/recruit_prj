@@ -45,7 +45,8 @@
                 <a th:href="@{/corp/talentPool/resume_detail(resumeNo=${talent.resumeSeq})}">
 					<button class="action-btn resume-btn">이력서 확인</button></a>
 				<button class="action-btn interview-btn openInterviewModalBtn"
-						th:data-resume-seq="${talent.resumeSeq}">면접 제안</button>
+				        th:data-resume-seq="${talent.resumeSeq}"
+				        th:data-corp-no="${corpNo}">면접 제안</button>
                </div>
             </div>
        	</div>

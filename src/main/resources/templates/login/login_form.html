@@ -61,6 +61,10 @@ function joinPageForm(){
 
 
 	<div class="login-container">
+		<div th:if="${msg}" style="background:#fff4e5; border:1px solid #ffc107; color:#856404; padding:10px; border-radius:6px; text-align:center;">
+			<p th:text="${msg}">
+		</div>
+	
 		<!-- 탭 메뉴 -->
 		<div class="tab-container">
 			<div class="tab-menu">

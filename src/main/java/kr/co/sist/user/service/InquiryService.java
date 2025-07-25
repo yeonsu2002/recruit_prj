@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +67,36 @@ public class InquiryService {
         saveInquiry(request, null);
     }
     
+    // 카테고리별 FAQ 조회 (답변이 완료된 문의사항을 FAQ로 활용)
+    @Transactional(readOnly = true)
+    public List<InquiryResponseDTO> getFAQsByCategory(String category) {
+        List<InquiryEntity> faqs = inquiryRepository.findByCategoryAndAnswerStatOrderByRegsDateDesc(category, "Y");
+        return faqs.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+    
+    // 사용자 유형별 FAQ 조회 (카테고리 그룹핑)
+    @Transactional(readOnly = true)
+    public Map<String, List<InquiryResponseDTO>> getFAQsByUserType(String userType) {
+        Map<String, List<InquiryResponseDTO>> faqMap = new HashMap<>();
+        
+        // 사용자 유형에 따른 카테고리 정의
+        String[] categories;
+        if ("company".equals(userType)) {
+            categories = new String[]{"company-general", "company-service", "company-payment"};
+        } else {
+            categories = new String[]{"general", "technical", "recruitment"};
+        }
+        
+        for (String category : categories) {
+            List<InquiryResponseDTO> faqs = getFAQsByCategory(category);
+            faqMap.put(category, faqs);
+        }
+        
+        return faqMap;
+    }
+    
     // 문의 생성 (createInquiry 메서드 수정)
     public void createInquiry(InquiryRequestDTO dto) {
         InquiryEntity inquiry = new InquiryEntity();
@@ -94,11 +125,11 @@ public class InquiryService {
     }
     
     private String getDefaultAdminId() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-		// 문의 목록 조회 (페이징, 필터링)
+    // 문의 목록 조회 (페이징, 필터링)
     @Transactional(readOnly = true)
     public Page<InquiryResponseDTO> getInquiries(PageRequest pageRequest, String category, String answerStat) {
         Specification<InquiryEntity> spec = Specification.where(null);
@@ -164,11 +195,19 @@ public class InquiryService {
     @Transactional(readOnly = true)
     public Map<String, Long> getInquiryStatsByCategory() {
         List<Object[]> stats = inquiryRepository.getInquiryStatsByCategory();
-        return stats.stream()
+        Map<String, Long> categoryStats = stats.stream()
                 .collect(Collectors.toMap(
                     row -> (String) row[0],
                     row -> (Long) row[1]
                 ));
+        
+        // 기본 카테고리들이 없으면 0으로 설정
+        String[] defaultCategories = {"general", "technical", "recruitment", "company-general", "company-service", "company-payment"};
+        for (String category : defaultCategories) {
+            categoryStats.putIfAbsent(category, 0L);
+        }
+        
+        return categoryStats;
     }
     
     // 답변 상태별 문의 통계
@@ -196,11 +235,19 @@ public class InquiryService {
         response.setAnswerStat(inquiry.getAnswerStat());
         return response;
     }
-    
+    public Page<InquiryResponseDTO> getInquiriesByCategory(String category, PageRequest pageRequest) {
+      return inquiryRepository.findByCategoryOrderByRegsDateDesc(category, pageRequest)
+      		.map(inquiry -> InquiryResponseDTO.fromEntity(inquiry));
+  }
 
- // 서비스에서 사용자 타입 조회
-    private String getUserType(String email) {
-        // UserService나 Repository를 통해 사용자 타입 조회
-        return userService.getUserTypeByEmail(email);
-    }
 }
+
+
+
+
+
+
+
+
+
+

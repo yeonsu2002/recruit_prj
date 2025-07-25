@@ -1,9 +1,11 @@
 package kr.co.sist.corp.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,7 +27,8 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class TalentPoolController {
-
+		
+		@Autowired
     private final TalentPoolService talentPoolService;
     private final ResumeDetailService resumeDetailService;
 
@@ -35,8 +38,7 @@ public class TalentPoolController {
                                  @RequestParam(defaultValue = "5") int size,
                                  @RequestParam(defaultValue = "latest") String sortBy,
                                  @RequestParam(defaultValue = "desc") String order,
-                                 Model model,
-                                 @AuthenticationPrincipal CustomUser corpInfo) {
+                                 Model model, @AuthenticationPrincipal CustomUser corpInfo) {
     	//로그인 안 했으면 로그인창으로
       if (corpInfo == null) {
         return "redirect:/login";
@@ -44,11 +46,14 @@ public class TalentPoolController {
     		
         Long corpNo = corpInfo.getCorpNo();
         int offset = (page - 1) * size;
-
+        
         List<TalentPoolDTO> talents = talentPoolService.getPaginatedTalents(sortBy, order, offset, size, corpNo);
         int totalCount = talentPoolService.selectTalentTotalCount();
         int totalPages = (int) Math.ceil((double) totalCount / size);
-
+        
+        System.out.println("corpNo in controller: " + corpNo);
+        
+        model.addAttribute("corpNo", corpNo);
         model.addAttribute("talentPool", talents);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("page", page);
@@ -58,13 +63,90 @@ public class TalentPoolController {
         model.addAttribute("order", order);
         
         return "corp/talentPool/talent_pool";
-    }
+    }//showTalentPool
     
     // 면접제안한 인재
     @GetMapping("/corp/talentPool/offer")
-    public String showOfferTalents() {
-    	return "corp/talentPool/offer";
-    }
+    public String showOfferTalents(@RequestParam(defaultValue = "1") int page,
+													    		 @RequestParam(defaultValue = "5") int size,
+													    		 @RequestParam(defaultValue = "latest") String sortBy,
+													    		 @RequestParam(defaultValue = "desc") String order,
+													    		 Model model, @AuthenticationPrincipal CustomUser corpInfo) {
+	    	//로그인 안 했으면 로그인창으로
+	      if (corpInfo == null) {
+	        return "redirect:/login";
+	      }
+	      
+	    	return "corp/talentPool/offer";
+    }//showOfferTalents
+    
+    // 최근 열람한 인재 전체 페이지
+    @GetMapping("/corp/talentPool/recently_viewed")
+    public String showRecentlyViewedTalents(@RequestParam(defaultValue = "1") int page,
+                                            @RequestParam(defaultValue = "5") int size,
+                                            @RequestParam(defaultValue = "latest") String sortBy,
+                                            @RequestParam(defaultValue = "desc") String order,
+                                            Model model, @AuthenticationPrincipal CustomUser corpInfo) {
+        if (corpInfo == null) {
+            return "redirect:/login";
+        }
+
+        Long corpNo = corpInfo.getCorpNo();
+        int startRow = (page - 1) * size + 1;
+        int endRow = startRow + size - 1;
+        
+        // 이력서 seq 목록 가져오기
+        List<Integer> resumeSeqs = talentPoolService.getRecentlyViewedResumes(corpNo, startRow, endRow);//
+        
+        List<TalentPoolDTO> recentlyViewedResumes = new ArrayList<>();//
+        if (!resumeSeqs.isEmpty()) {//
+            recentlyViewedResumes = talentPoolService.getResumeDetailsBySeqs(resumeSeqs);//
+        }
+
+        int totalCount = talentPoolService.getRecentlyViewedResumesCount(corpNo);
+        int totalPages = (int) Math.ceil((double) totalCount / size);//
+
+        model.addAttribute("talentPool", recentlyViewedResumes);//
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("page", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", totalPages);
+
+        return "corp/talentPool/recently_viewed";
+    }//showRecentlyViewedTalents
+
+    // 최근 열람한 인재 리스트 프래그먼트만 반환 AJAX
+    @GetMapping("/corp/talentPool/recently_viewed-fragment")
+    public String getRecentlyViewedFragment(@RequestParam(defaultValue = "1") int page,
+                                            @RequestParam(defaultValue = "5") int size,
+                                            @RequestParam(defaultValue = "latest") String sortBy,
+                                            @RequestParam(defaultValue = "desc") String order,
+                                            @AuthenticationPrincipal CustomUser corpInfo,
+                                            Model model) {
+        Long corpNo = corpInfo.getCorpNo();
+        int startRow = (page - 1) * size + 1;
+        int endRow = startRow + size - 1;
+
+        // 이력서 seq 목록 가져오기
+        List<Integer> resumeSeqs = talentPoolService.getRecentlyViewedResumes(corpNo, startRow, endRow);
+
+        List<TalentPoolDTO> recentlyViewedResumes = new ArrayList<>();
+        if (!resumeSeqs.isEmpty()) {
+            recentlyViewedResumes = talentPoolService.getResumeDetailsBySeqs(resumeSeqs);
+        }
+
+        int totalCount = talentPoolService.getRecentlyViewedResumesCount(corpNo);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        model.addAttribute("talentPool", recentlyViewedResumes);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("page", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", totalPages);
+
+        return "fragments/talentList :: talentList";
+    }//getRecentlyViewedFragment
+    
     
     // 스크랩된 인재
     @GetMapping("/corp/talentPool/scrap")
@@ -89,7 +171,7 @@ public class TalentPoolController {
         model.addAttribute("totalPages", totalPages);
 
         return "corp/talentPool/scrap";
-    }
+    }//showScrappedTalents
 
     // 스크랩 요청 (AJAX)
     @PostMapping("/corp/talentPool/scrap")
@@ -106,59 +188,76 @@ public class TalentPoolController {
         response.put("status", status);
         return ResponseEntity.ok(response);
     }
-
-
-    // 최근 열람한 인재
-    @GetMapping("/corp/talentPool/recently_viewed")
-    public String showRecentlyViewedTalents() {
-        return "corp/talentPool/recently_viewed";
-    }
     
-    //=======================기능 부분===========================
-    
-    //면접 제안 모달 fragment불러오기
+    //면접 제안 모달 fragment불러오기========================================
     @GetMapping("/corp/talentPool/interviewOffer")
-    public String interviewOfferFragment(  ) {
-//    	 String messageTitle, String messageContent, int resumeSeq, String email, 
-//    																			 @AuthenticationPrincipal CustomUser corpInfo
-//    	messageServ.addMessage(email, corpEntity.getCorpNo(), messageTitle, messageContent);
-    	return "fragments/interviewOffer::modalContent";
-    }
-    //면접 제안 기능 
+    public String interviewOfferFragment(@AuthenticationPrincipal CustomUser corpInfo, Model model) {
+        Long corpNo = corpInfo.getCorpNo();
+
+        
+        // corpNo에 해당하는 기업 정보 조회
+        InterviewOfferDTO corpInfoDTO = talentPoolService.getCorpInfoByCorpNo(corpNo);
+        
+        // corpInfoDTO가 null일 경우 기본값 설정
+        if (corpInfoDTO == null) {
+            corpInfoDTO = new InterviewOfferDTO();
+            corpInfoDTO.setCorpName("DefaultCorpName");  // 기본값 설정
+        }
+        
+        model.addAttribute("corpNo", corpNo);
+        model.addAttribute("corpInfo", corpInfoDTO);
+
+
+        return "fragments/interviewOffer::modalContent"; // modalContent 프래그먼트 반환
+    }//interviewOfferFragment
+
+    //면접 제안 기능
     @PostMapping("/corp/talentPool/interviewOffer/send")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> sendInterviewProposal(
-            @RequestBody InterviewOfferDTO proposalDto,
-            @AuthenticationPrincipal CustomUser corpUser) {
-        Map<String, String> response = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> sendInterviewOffer(@AuthenticationPrincipal CustomUser corpInfo,
+    																															@RequestBody InterviewOfferDTO ioDTO) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            if (corpUser == null) {
-                response.put("status", "fail");
-                response.put("message", "로그인이 필요합니다.");
-                return ResponseEntity.status(401).body(response);
-            }
+            // 면접 제안 상태 초기화
+        		ioDTO.setCorpNo(corpInfo.getCorpNo());
+            ioDTO.setIsRead("N");
+            ioDTO.setReadedAt("0");
+            ioDTO.setIsOffered("Y");
 
-            proposalDto.setCorpNo(corpUser.getCorpNo());
-            talentPoolService.sendInterviewProposal(proposalDto);
+            // 면접 제안 전송
+            talentPoolService.sendInterviewOffer(ioDTO);
 
             response.put("status", "success");
-            return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("status", "fail");
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            response.put("message", "Error occurred: " + e.getMessage());
+            e.printStackTrace(); // 예외 로그 출력
         }
-    }
-    
-    //이력서 상세페이지 및 확인 
+        return ResponseEntity.ok(response);
+    }//sendInterviewOffer
+
+    //이력서 상세페이지 및 이력서 확인버튼 클릭시 열람 메세지 보내기 ===========================
     @GetMapping("/corp/talentPool/resume_detail")
-    public String resumeDetail(@RequestParam("resumeNo") int resumeNo, Model model) {
-        ResumeDetailDTO rdDTO = resumeDetailService.getResumeDetail((long) resumeNo); // 서비스 통해 호출
+    public String resumeDetail(@RequestParam("resumeNo") int resumeNo, 
+												        @AuthenticationPrincipal CustomUser corpInfo, 
+												        Model model) {  
+      if (corpInfo == null) {
+        // 로그인되지 않은 경우, 로그인 페이지로 리디렉션
+        return "redirect:/login";
+    }
+    	
+    		Long corpNo = corpInfo.getCorpNo(); // CustomUser에서 corpNo를 추출
+    		
+    		InterviewOfferDTO corpInfoDTO = talentPoolService.getCorpInfoByCorpNo(corpNo);
+    		
+    		talentPoolService.viewResume((long) resumeNo, corpNo); 
+    		ResumeDetailDTO rdDTO = resumeDetailService.getResumeDetail((long) resumeNo); // 서비스 통해 호출
 
         if (rdDTO.getImage() == null || rdDTO.getImage().trim().isEmpty()) {
             rdDTO.setImage("default_img.png");
         }
-
+        System.out.println("tp con corpNo: " + corpNo + ", tp con resumeNo: " + resumeNo);
+        model.addAttribute("corpInfo", corpInfoDTO);
         model.addAttribute("resume", rdDTO); 
         model.addAttribute("resumeUser", rdDTO.getMember()); 
 

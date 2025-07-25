@@ -11,6 +11,7 @@ import kr.co.sist.user.dto.UserDTO;
 @Mapper
 public interface MemberMapper {
 	List<MemberEntity> selectMember();
-	List<MemberEntity> searchMember(String name, String gender, Integer status,String type);
-	void sanctionMember(String name);
+	List<MemberEntity> searchMember(String email,String name, String gender, Integer status,String type);
+	void sanctionMember(String email);
+	void sanctionCancel(String email);
 }

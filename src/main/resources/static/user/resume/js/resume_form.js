@@ -1,4 +1,88 @@
 $(function() {
+	// 자동저장 관련 변수
+	let autoSaveTimer = null;
+	let lastActivityTime = Date.now();
+	//const AUTO_SAVE_INTERVAL = 5 * 60 * 1000; // 5분
+	const AUTO_SAVE_INTERVAL = 10 * 1000; //10초
+
+	// 자동저장 알림 표시
+	function showAutoSaveNotification() {
+		// 기존 알림이 있으면 제거
+		$('.auto-save-notification').remove();
+		
+		// 알림 요소 생성
+		const notification = $(`
+			<div class="auto-save-notification">
+				<i class="fas fa-check-circle"></i>
+				자동저장 완료
+			</div>
+		`);
+		
+		// body에 추가
+		$('body').append(notification);
+		
+		// 애니메이션으로 표시
+		setTimeout(() => {
+			notification.addClass('show');
+		}, 100);
+		
+		// 3초 후 사라짐
+		setTimeout(() => {
+			notification.removeClass('show');
+			setTimeout(() => {
+				notification.remove();
+			}, 300);
+		}, 3000);
+	}
+
+	// 자동저장 실행 함수
+	function performAutoSave() {
+		const formData = saveResume();
+
+		$.ajax({
+			url: '/user/resume/resumeSubmit',
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(response) {
+				if (response.result === 'success') {
+					showAutoSaveNotification();
+				}
+			},
+			error: function(error) {
+				console.error('자동저장 실패:', error);
+			}
+		});
+	}
+
+	// 사용자 활동 감지 및 자동저장 타이머 설정
+	function resetAutoSaveTimer() {
+		lastActivityTime = Date.now();
+		
+		// 기존 타이머 클리어
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+		}
+		
+		// 새로운 타이머 설정
+		autoSaveTimer = setTimeout(() => {
+			// 마지막 활동으로부터 정확히 5분이 지났는지 확인
+			const timeSinceLastActivity = Date.now() - lastActivityTime;
+			if (timeSinceLastActivity >= AUTO_SAVE_INTERVAL) {
+				performAutoSave();
+			}
+		}, AUTO_SAVE_INTERVAL);
+	}
+
+	// 사용자 활동 감지 이벤트들
+	$(document).on('input change keyup click', 'input, textarea, select', function() {
+		resetAutoSaveTimer();
+	});
+
+	// 초기 타이머 설정
+	resetAutoSaveTimer();
+
 	/** 사진 업로드 초기화 */
 	const resetPhotoUploadBox = () => {
 		$('#photo-upload-box')

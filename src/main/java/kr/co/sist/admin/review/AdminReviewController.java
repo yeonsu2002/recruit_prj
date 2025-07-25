@@ -1,12 +1,13 @@
 package kr.co.sist.admin.review;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import kr.co.sist.admin.SearchDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AdminReviewController {
@@ -24,29 +25,56 @@ private final AdminReviewService adminReviewService;
    * @return Map 형태로 게시글 리스트 + 페이징 정보 리턴
    */
 	@GetMapping("/admin/admin_review")
-	public String getReviews(SearchDTO sDTO, Model model) {
-	    Map<String, Object> result = adminReviewService.getReviews(sDTO);
+	 public String getReviews(
+       @RequestParam(defaultValue = "1") int currentPage,
+       @RequestParam(defaultValue = "desc")String order,
+       @RequestParam(defaultValue = "전체")String type,
+       @RequestParam(defaultValue = "전체")String rating,
+       @RequestParam(defaultValue = "")String keyword,
+       Model model
+) {
+   // 총 글의 갯수
+		Map<String, Object> map = new HashMap<String, Object>();
+   // 페이징에 필요한 변수들
+		map.put("type", type);
+		map.put("rating", rating);
+		map.put("keyword", keyword);
+		int totalCount = adminReviewService.countSearch(map);
+   int perPage = 10;  // 한 페이지당 보여질 글의 갯수
+   int perBlock = 5;  // 현재 블럭에 보여질 페이지의 갯수
+   int totalPage = (totalCount + perPage - 1) / perPage;  // 총 페이지 수
+   int startPage = ((currentPage - 1) / perBlock) * perBlock + 1;  // 각 블럭에 보여질 시작 페이지
+   int endPage = Math.min(startPage + perBlock - 1, totalPage);  // 각 블럭에 보여질 끝 페이지
+   int start = (currentPage - 1) * perPage;  // DB에서 가져올 시작 번호
+   
+	 map.put("start", start);
+	 map.put("perPage", perPage);
+	 map.put("order", order);
+	 map.put("totalCount", totalCount);
+	 
+   // 목록 가져오기
+   List<AdminReviewDTO> list = adminReviewService.getReviews(map);
 
-	    if (sDTO.getPage() < 0) {
-        sDTO.setPage(0);
-    }
-	    
-	    model.addAttribute("reviewList", result.get("reviews"));
-	    model.addAttribute("totalCount", result.get("total"));
-	    model.addAttribute("currentPage", result.get("page"));
-	    model.addAttribute("size", result.get("size"));
-	    model.addAttribute("totalPages", result.get("totalPages"));
-
-	    // 검색 조건 유지용 (필요한 경우)
-	    model.addAttribute("type", sDTO.getType());
-	    model.addAttribute("keyword", sDTO.getKeyword());
-	    // 정렬 조건 유지용 - 이 부분 추가
-	    model.addAttribute("sortField", sDTO.getSortField());
-	    model.addAttribute("sortOrder", sDTO.getSortOrder());
-	    
-	    
-
-	    return "admin/admin_review";
-	}
+   // Model에 필요한 데이터 저장
+   model.addAttribute("type",type);
+   model.addAttribute("keyword",keyword);
+   model.addAttribute("rating",rating);
+   model.addAttribute("order",order);
+   model.addAttribute("totalCount", totalCount);
+   model.addAttribute("reviewList", list);
+   model.addAttribute("currentPage", currentPage);
+   model.addAttribute("startPage", startPage);
+   model.addAttribute("endPage", endPage);
+   model.addAttribute("totalPage", totalPage);
+   model.addAttribute("no", totalCount);  // 현재 페이지의 첫 글 번호
+   System.out.println("totalCount : " + totalCount);
+   return "admin/admin_review";
+}
+	
+	
+	
+	
+	
+	
 
 }

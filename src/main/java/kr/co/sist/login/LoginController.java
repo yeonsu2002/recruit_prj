@@ -9,6 +9,7 @@ import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.AttachmentService;
 import kr.co.sist.user.service.PositionCodeService;
 import kr.co.sist.user.service.ResumeService;
+import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -44,6 +45,8 @@ import jakarta.servlet.http.Part;
 @Controller
 public class LoginController {
 
+    private final CipherUtil cipherUtil;
+
 	private final LoginJoinService ljs; 
 	private final JWTUtil jwtUtil;
 	private final Environment env;
@@ -70,6 +73,7 @@ public class LoginController {
    * 통합(일반, 기업) 로그인 처리 -> 현재 security의 핸들러에서 대체중 
    * @return
    */
+/**
   //@PostMapping("/loginProcess")
   public String memberLoginProcess(String email, String password, HttpServletResponse response, RedirectAttributes rttr) {
   	
@@ -99,6 +103,7 @@ public class LoginController {
     
     return "redirect:/"; //로그인 후 메인페이지로 이동
   }
+*/  
   
   /**
    * 일반회원 가입 페이지로 이동

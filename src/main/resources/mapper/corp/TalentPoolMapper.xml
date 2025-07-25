@@ -91,8 +91,8 @@ ORDER BY
 </select>
 
 <insert id="insertScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
-    INSERT INTO RESUME_SCRAP (resume_seq, corp_no, is_scrapped)
-    VALUES (#{resumeSeq}, #{corpNo}, 'Y')
+    INSERT INTO RESUME_SCRAP (resume_seq, corp_no, is_scrapped, scrapped_at)
+    VALUES (#{resumeSeq}, #{corpNo}, 'Y', TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'))
 </insert>
 
 <select id="selectScrap" parameterType="kr.co.sist.corp.dto.ResumeScrapDTO">
@@ -175,6 +175,7 @@ JOIN RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq
 WHERE rs.corp_no = #{corpNo}
   AND rs.is_scrapped = 'Y'
 ORDER BY r.resume_seq DESC
+scrapped_at
 </select>
 
 <!-- 전체인재 총 건수 --> 
@@ -270,38 +271,12 @@ SELECT * FROM (
       ORDER BY latestDate DESC
     </otherwise>
   </choose>
-<!--        <choose>
-            <when test="sortBy == 'career'">
-                ORDER BY (
-                    SELECT FLOOR(SUM(MONTHS_BETWEEN(
-                        TO_DATE(c.end_date, 'YYYY-MM'),
-                        TO_DATE(c.start_date, 'YYYY-MM')
-                    )))
-                    FROM CAREER c
-                    WHERE c.resume_seq = r.resume_seq
-                ) ${order}
-            </when>
-            <when test="sortBy == 'education'">
-                ORDER BY (
-                    SELECT MAX(education_history_seq)
-                    FROM EDUCATION_HISTORY
-                    WHERE resume_seq = r.resume_seq
-                ) ${order}
-            </when>
-            <otherwise>
-                ORDER BY GREATEST(
-                    NVL(TO_DATE(REPLACE(r.updated_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'),
-                        TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')),
-                    NVL(TO_DATE(REPLACE(r.created_at, 'T', ' '), 'YYYY-MM-DD HH24:MI:SS'),
-                        TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'))
-                ) ${order}
-            </otherwise>
-        </choose> -->
     ) inner_query
     WHERE ROWNUM &lt;= #{offset} + #{size}
 )
 WHERE rn &gt; #{offset}
 </select>
+
 
 
 <!-- 스크랩인재 리스트 -->
@@ -316,6 +291,7 @@ SELECT * FROM (
 			    m.gender,
 			    SUBSTR(m.road_address, 1, 2) AS shortAddress,
 			    rs.is_scrapped AS isScrapped,
+			    rs.scrapped_at AS scrappedAt,
 			
 			    (
 			        SELECT 
@@ -365,7 +341,7 @@ SELECT * FROM (
 			JOIN RESUME_SCRAP rs ON rs.resume_seq = r.resume_seq
 			WHERE rs.corp_no = #{corpNo}
 			  AND rs.is_scrapped = 'Y'
-			ORDER BY r.resume_seq DESC
+			ORDER BY rs.scrapped_at DESC
   ) inner_query
     WHERE ROWNUM &lt;= #{offset} + #{size}
 )
@@ -381,29 +357,12 @@ WHERE rn > #{offset}
       AND rs.is_scrapped = 'Y'
 </select>
 
-<!-- 면접 제안 -->
+<!-- 면접 제안 메세지 보내기 -->
 <insert id="insertInterviewProposal" parameterType="kr.co.sist.corp.dto.InterviewOfferDTO">
-    INSERT INTO MAIL (
-        mail_seq,
-        corp_no,
-        email,
-        mail_title,
-        mail_content,
-        created_at,
-        is_read,
-        readed_at,
-        mail_type
-    ) VALUES (
-        MAIL_SEQ.NEXTVAL,      -- 시퀀스 이름
-        #{corpNo},
-        #{email},
-        #{mailTitle},
-        #{mailContent},
-        TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'), -- created_at
-        'N',         -- 읽지 않음 상태
-        NULL,        -- 읽은 시각 없음
-        'OFFER'            -- 메일 유형: 예를 들어 면접 제안 = 1
-    )
+    INSERT INTO MESSAGE 
+    (CORP_NO, EMAIL, MESSAGE_TITLE, MESSAGE_CONTENT, CREATED_AT, IS_READ, READED_AT, IS_OFFERED)
+    VALUES 
+    (#{corpNo, jdbcType=BIGINT}, #{email}, #{messageTitle, jdbcType=VARCHAR}, #{messageContent, jdbcType=VARCHAR}, TO_CHAR(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS'), #{isRead}, #{readedAt}, #{isOffered})
 </insert>
 
 
@@ -423,23 +382,145 @@ WHERE rn > #{offset}
 
 <!-- 이력서 정보 -->
 <select id="selectResumeInfo" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
-  SELECT M.EMAIL, M.NAME
+  SELECT M.EMAIL, M.NAME, R.TITLE
   FROM RESUME R
   JOIN MEMBER M ON R.EMAIL = M.EMAIL
   WHERE R.RESUME_SEQ = #{resumeSeq}
 </select>
+<!-- 기업정보 -->
+<select id="getCorpInfoByCorpNo" parameterType="long" resultType="kr.co.sist.corp.dto.InterviewOfferDTO">
+SELECT  M.EMAIL as corpEmail, C.CORP_NM as corpName, C.CORP_URL as corpUrl 
+FROM     MEMBER M
+JOIN    COMPANY C ON M.CORP_NO = C.CORP_NO
+WHERE  M.CORP_NO = #{corpNo}
+</select>
 
 
-<insert id="insertMail" parameterType="kr.co.sist.corp.dto.MailDTO">
-  INSERT INTO MAIL (
-    CORP_NO, EMAIL, MAIL_TITLE, MAIL_CONTENT,
+<!-- 이력서 열람 메세지 보내기-->
+<insert id="insertMessage" parameterType="kr.co.sist.corp.dto.MessageDTO">
+  INSERT INTO MESSAGE (
+    CORP_NO, EMAIL, MESSAGE_TITLE, MESSAGE_CONTENT,
     CREATED_AT, IS_READ, READED_AT, IS_OFFERED
   )
   VALUES (
-    #{corpNo}, #{email}, #{mailTitle}, #{mailContent},
-    #{createdAt}, #{isRead}, #{readedAt, jdbcType=VARCHAR}, #{isOffered}
+    #{corpNo}, #{email}, #{messageTitle}, #{messageContent},
+    #{createdAt}, #{isRead}, #{readedAt}, #{isOffered}
   )
 </insert>
+
+
+<!-- 최근 열람한 이력서 수 조회 -->
+<select id="getRecentlyViewedResumesCount" resultType="int">
+  SELECT COUNT(*)
+  FROM open_resume o
+  JOIN resume r ON o.resume_seq = r.resume_seq
+  JOIN member m ON r.email = m.email
+  WHERE o.corp_no = #{corpNo}
+</select>
+
+<!-- 최근 열람한 이력서 목록에서 resume_seq만 추출 -->
+<select id="getRecentlyViewedResumes" resultType="int">
+    <![CDATA[
+    SELECT resume_seq
+    FROM (
+        SELECT r.resume_seq,
+               ROW_NUMBER() OVER (ORDER BY o.READ_AT DESC) AS row_num
+        FROM open_resume o
+        JOIN resume r ON o.resume_seq = r.resume_seq
+        JOIN member m ON r.email = m.email
+        WHERE o.corp_no = #{corpNo}
+    )
+    WHERE row_num BETWEEN #{startRow} AND #{endRow}
+    ]]>
+</select>
+
+<!-- 이력서 상세 정보를 조회하는 공통 쿼리 -->
+<select id="selectResumeMemberInfo" resultType="kr.co.sist.corp.dto.TalentPoolDTO">
+  SELECT
+    m.name AS name,
+    m.gender AS gender,
+    m.birth, 'YYYY' AS birthYear,
+    e.school_name AS finalEducation,
+    LISTAGG(DISTINCT c.company_name, ', ') WITHIN GROUP (ORDER BY c.start_date DESC) AS totalCareer,
+    m.zipcode || ' ' || m.road_address AS shortAddress,
+    LISTAGG(DISTINCT ai.activity_name, ', ') WITHIN GROUP (ORDER BY ai.end_date DESC) AS certifications,
+    LISTAGG(DISTINCT t.stack_name, ', ') WITHIN GROUP (ORDER BY t.stack_name) AS techStacks,
+    LISTAGG(DISTINCT p.position_name, ', ') WITHIN GROUP (ORDER BY p.position_name) AS desiredPositions,
+    CASE WHEN MAX(sc.resume_scrap_seq) IS NOT NULL THEN 'Y' ELSE 'N' END AS isScrapped,
+	o.READ_AT AS readAt,
+    r.resume_seq AS resumeSeq,
+    m.corp_no AS corpNo,
+    m.email AS email,
+    r.created_at AS latestDate
+
+  FROM
+    RESUME r
+  JOIN
+    MEMBER m ON r.email = m.email
+  LEFT JOIN
+    EDUCATION_HISTORY e ON r.resume_seq = e.resume_seq
+  LEFT JOIN
+    CAREER c ON r.resume_seq = c.resume_seq
+  LEFT JOIN
+    ADDITIONAL_INFO ai ON r.resume_seq = ai.resume_seq AND ai.record_type = '자격증'
+  LEFT JOIN
+    RESUME_TECH_STACK rst ON r.resume_seq = rst.resume_seq
+  LEFT JOIN
+    TECH_STACK t ON rst.tech_stack_seq = t.tech_stack_seq
+  LEFT JOIN
+    POSITION_CODE p ON r.resume_seq = p.position_seq
+  LEFT JOIN
+    RESUME_SCRAP sc ON r.resume_seq = sc.resume_seq
+   LEFT JOIN
+    OPEN_RESUME o ON r.resume_seq = o.resume_seq
+  WHERE
+    r.resume_seq IN
+    <foreach item="resumeSeq" collection="resumeSeqList" open="(" separator="," close=")">
+      #{resumeSeq}
+    </foreach>
+
+  GROUP BY
+    r.resume_seq,
+    m.name, m.gender, m.birth,
+    e.school_name, m.zipcode, m.road_address,
+    m.corp_no, m.email, r.created_at, o.READ_AT
+
+  ORDER BY
+    --r.created_at DESC
+    o.READ_AT DESC
+</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

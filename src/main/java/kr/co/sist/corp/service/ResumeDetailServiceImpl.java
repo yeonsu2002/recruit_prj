@@ -20,7 +20,12 @@ public class ResumeDetailServiceImpl implements ResumeDetailService {
     @Override
     public ResumeDetailDTO getResumeDetail(Long resumeSeq) {
         ResumeDetailDTO dto = resumeDetailMapper.selectResumeBasic(resumeSeq);
-
+        
+        if (dto == null) {
+          // 이력서가 없을 경우, 예외를 던지거나 빈 객체를 반환
+          throw new RuntimeException("Resume not found for resumeSeq: " + resumeSeq);
+      }
+        
         if (dto != null) {
           dto.setPositions(resumeDetailMapper.selectPositionsByResume(resumeSeq));
           dto.setSkills(resumeDetailMapper.selectTechStacksByResume(resumeSeq));

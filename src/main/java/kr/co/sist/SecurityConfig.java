@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import kr.co.sist.admin.login.AdminDetailsServiceImpl;
@@ -24,11 +25,13 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final AdminDetailsServiceImpl adminDetailsServiceImpl;
+    private final AccessDeniedHandler accessDeniedHandler;
     
-    public SecurityConfig(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl, AdminDetailsServiceImpl adminDetailsServiceImpl) {
+    public SecurityConfig(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl, AdminDetailsServiceImpl adminDetailsServiceImpl, AccessDeniedHandler accessDeniedHandler) {
         this.jwtUtil = jwtUtil;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.adminDetailsServiceImpl = adminDetailsServiceImpl;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
     
     @Bean
@@ -72,17 +75,24 @@ public class SecurityConfig {
     public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/corp/image/**").authenticated()
-                .requestMatchers("/corp/info/**").authenticated()
+            		//맵핑 제어
+                .requestMatchers("/login", "/register", "/images/**", "/reissue", "/corp/main").permitAll()
+                //정적자료 제어 (static 아래) 혹은 anyRequest()로 퉁치거나 
+                //.requestMatchers("/**/*.css", "/**/*.js", "/**/*.jpg", "/**/*.jpeg", "/**/*.gif", "/**/*.svg", "/**/*.png", "/**/*.ttf", "/**/*.svg").permitAll()
+                .requestMatchers("/user/resume/**", "/user/mypage", "/apply").hasRole("USER")
+                .requestMatchers("/corp/applicant", "/corp/jobPostingForm", "/corp/myJobPostingListPage", "/corp/talentPool/**", "/corp/image/**", "/corp/info/**").hasRole("CORP")
                 .anyRequest().permitAll()
+            )
+            //로그인 Ok, but 권한이 없을 때 (403 Forbidden)
+            .exceptionHandling(ex ->
+            		ex.accessDeniedHandler(accessDeniedHandler) //AccessDeniedHandler는 인증은 되었지만 권한이 없는 경우에만 동작
             )
             .csrf(csrf -> csrf.disable())
             .userDetailsService(userDetailsServiceImpl)  // 🔥 직접 설정
             .formLogin(auth -> auth
                 .loginPage("/login")
                 .loginProcessingUrl("/loginProcess")
-                .usernameParameter("email")
+                .usernameParameter("email") //안하면 기본값 username
                 .passwordParameter("password")
                 .failureHandler(new CustomLoginFailureHandler())
                 .successHandler(new CustomLoginSuccessHandler(jwtUtil))
@@ -92,7 +102,7 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "Authorization")
+                .deleteCookies("JSESSIONID", "access", "refresh", "Authorization") 
             )
             .addFilterAfter(new JWTFIlter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         

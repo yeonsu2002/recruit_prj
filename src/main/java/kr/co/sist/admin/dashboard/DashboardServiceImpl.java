@@ -6,6 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.admin.ask.AdminInquiryDTO;
+import kr.co.sist.user.entity.InquiryEntity;
+
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
@@ -25,5 +28,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public List<Map<String, Object>> getCorpCountByIndustry() {
     	return dashboardMapper.selectIndCnt();
+    }
+    @Override
+    public List<InquiryEntity> getAsk() {
+    	return dashboardMapper.selectAsk();
     }
 }
