@@ -22,6 +22,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 			AuthenticationException exception) throws IOException, ServletException {
 		
 		Throwable cause = exception.getCause();
+		
 		String errorMsg = "알 수 없는 로그인 오류가 발생하였습니다.";
 		
 		//UserDetailsService 안에서 발생하는 예외는
@@ -29,7 +30,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 		
 		if(cause instanceof UsernameNotFoundException) { //스프링 시큐리티 보안정책으로 인해 UsernameNotFoundException는 BadCredentialsException로 덮어씌워짐
 			errorMsg = "등록되지 않은 이메일입니다.";
-		} else if (cause instanceof BadCredentialsException) {
+		} else if (exception instanceof BadCredentialsException) { //BadCredentialsException 은 getCause()값이 null이다.
 			errorMsg = "이메일 또는 비밀번호가 일치하지 않습니다.";
 		} else if (cause instanceof LockedException) {
 			errorMsg = "계정이 잠겨 있습니다.";
