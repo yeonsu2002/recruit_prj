@@ -28,7 +28,7 @@ import kr.co.sist.user.entity.InquiryEntity;
 import kr.co.sist.util.CipherUtil;
 
 @Controller
-public class HjsController {
+public class AdminController2 {
 	@Autowired
 	private MemberService ms;
 	@Autowired
@@ -81,7 +81,7 @@ public class HjsController {
 	}
 	*/
 	
-	@GetMapping("/admin_member2")
+	@GetMapping("/admin_member")
 	public String SelectMember2(Model model) {
 		List<MemberEntity> member=ms.searchAll2();
 		
@@ -99,10 +99,10 @@ public class HjsController {
 
 		// filtered 리스트를 모델에 추가해서 뷰에 전달
 		model.addAttribute("member", filtered);
-		return "admin/admin_member2";
+		return "admin/admin_member";
 	}
 	
-	@GetMapping("/admin_member_search2")
+	@GetMapping("/admin_member_search")
 	public String SearchMember2(
 			@RequestParam(required = false) String email,
 			@RequestParam(required = false) String name,
@@ -126,7 +126,7 @@ public class HjsController {
 		
 		// filtered 리스트를 모델에 추가해서 뷰에 전달
 		model.addAttribute("member", filtered);
-		return "admin/admin_member2";
+		return "admin/admin_member";
 	}
 	@Autowired
 	private CorpService cs;
@@ -151,16 +151,16 @@ public class HjsController {
 		return "admin/admin_corp";
 	}
 	*/
-	@GetMapping("/admin_corp2")
+	@GetMapping("/admin_corp")
 	public String SelectCorp2(Model model) {
 		List<CorpEntity> corp=cs.selectCorp();
 		List<String> corpInd=cs.selectCorpInd();
 		model.addAttribute("corp",corp);
 		model.addAttribute("corpInd",corpInd);
-		return "admin/admin_corp2";
+		return "admin/admin_corp";
 	}
 	
-	@GetMapping("/admin_corp2_search")
+	@GetMapping("/admin_corp_search")
 	public String SearchCorp2( @RequestParam(required = false) String corpNo,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) List<String> industry,
@@ -169,7 +169,7 @@ public class HjsController {
 		List<String> corpInd=cs.selectCorpInd();
 		model.addAttribute("corp",corp);
 		model.addAttribute("corpInd",corpInd);
-		return "admin/admin_corp2";
+		return "admin/admin_corp";
 	}
 	
 	@GetMapping("/admin_corp_detail")
@@ -221,6 +221,8 @@ public class HjsController {
 			return "admin/admin_resume";
 		}
 	 
+	 
+	 
 	 @GetMapping("/admin_sanction")
 		public String SearchResume(@RequestParam String email,
 				Model model) {
@@ -266,7 +268,7 @@ public class HjsController {
 				@RequestParam String content) {
 		 ms.sanctionMember(email);
 		 es.sendSanctionEmail(email,name,content);
-			return "redirect:/admin_member2";
+			return "redirect:/admin_member";
 		}
 	 
 }
