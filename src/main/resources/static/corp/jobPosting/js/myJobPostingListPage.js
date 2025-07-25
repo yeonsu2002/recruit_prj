@@ -15,57 +15,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	//데이터 비동기 가져오기 (매개변수 넣는거 까먹지마) 
 	//fetchStartData(userCorpNo);
 
-	//진행중, 마감, 전체버튼을 눌렀을 때 클래스 제거 및 추가
+	//진행중, 마감, 전체버튼 (부모)을 눌렀을 때 클래스 제거 및 추가
 	changeClassSelectedTotd(userCorpNo);
 	
-	//전체, 마감일순, 조회수순 버튼을 눌렀을 때 클래스 제거 및 추가
+	//최신, 마감일순, 조회수순 (자식) 버튼을 눌렀을 때 클래스 제거 및 추가
 	changeClassSubSelectedToInput(userCorpNo);
 	
 	//지원자 통계 모달창 열기 함수
-	document.addEventListener('click', function(e){
+/*	document.addEventListener('click', function(e){
 		if(e.target.classList.contains("appl-stats-btn")){
 			const jobPostingSeq = e.target.dataset.appliStats;
 			showApplicantStatsModal(jobPostingSeq);
-
 		}
-	});
+	});*/
+	
+	showApplicantStatsModal();
 	
 });//ready
 
 
-//지원자 관리 모달창
+//지원자 관리
 function openApplicantListModal(){
 	alert('지원자 관리 모달창 열림 대신에 페이지 이동으로 처리, 추후 모달창으로 간략 조회 기능구현할 것 ');
 	location.href="/corp/applicant";
 }
 
-//처음화면 자료 뿌리기(진행중, 전체)
-function fetchStartData(userCorpNo){
-	var url =`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`;
-	fetch( url )
-	.then(response => {
-		if(!response){
-			alert("데이터 갖고오기 실패");
-			throw new Error("데이터를 가져오던 중에 서버 오류 발생");
-		}
-		return response.json();
-	})
-	.then(data => {
-		//데이터가 존재할 떄
-		if(data.length > 0){ 
-			let resultData = document.querySelector('#resultData');
-			
-			console.log(data); //0-----------------------------------  처음 화면 자료조회 데이터는 controller에 model에 담아 쏘는 중 -------------------
-			
-			
-		} else {
-			//검색 결과가 없을 때
-			
-		}
-	})
-}
-
 //진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
+changeClassSubSelectedToInput
 function changeClassSelectedTotd(userCorpNo){
 	//console.log(typeof userCorpNo); //String 이라서 number로 바꿔줘야 
 	let corpNo = Number(userCorpNo); 
@@ -111,18 +87,17 @@ function changeClassSelectedTotd(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
+	        updatePostingTable(data.postList);
+	        updatePostingCounts(data);
 			})
 			.catch(error => {
-				
 				console.error(error);
 			})
 		});
 	});
 }
 
-//진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
+//최신순, 마감순, 조회순 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
 function changeClassSubSelectedToInput(userCorpNo){
 	let corpNo = userCorpNo;
 	let postSts = "ing";
@@ -173,8 +148,8 @@ function changeClassSubSelectedToInput(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
+	        updatePostingTable(data.postList);
+	        updatePostingCounts(data);
 			})
 			.catch(error => {
 				
@@ -263,17 +238,17 @@ function updatePostingTable(postList) {
 	            }
 	            if(post.isEnded == 'Y'){
 	            	nOrY =`
-					<td class="posting-box-need-center">
-						<button type="button" style='background-color:grey;' disabled>수정 </button>
-						<button type="button" style='background-color:grey;' disabled>마감 </button>
-					</td>`;
+								<td class="posting-box-need-center">
+									<button type="button" style='background-color:grey;' disabled>수정 </button>
+									<button type="button" style='background-color:grey;' disabled>마감 </button>
+								</td>`;
 	            }
 	            tr.innerHTML += nOrY;
 	            tr.innerHTML += `
 	            <td class="posting-box-need-center">
 	                <div><a style="cursor: pointer; text-decoration: underline;" onclick="openApplicantListModal()"><span>${post.appCnt}</span></a></div>
 	                <div style="color: black; cursor: pointer;" onclick="openApplicantListModal()">지원자 관리 <i class="bi bi-file-earmark-ruled"></i></div>
-	                <div><input type="button" value="지원자 통계" onclick="getApplicantStats(${post.jobPostingSeq})"></div>
+	                <div><input type="button" class="appl-stats-btn" value="지원자 통계" data-appli-stats='${post.jobPostingSeq}' ></div>
 	            </td>
 	            <td class="posting-box-need-center">
 	                <button type="button">확인</button>
@@ -301,15 +276,24 @@ function updatePostingCounts(data) {
 }
 
 //지원자 통계 모달창 보기
-function showApplicantStatsModal(jobPostingSeq){
+function showApplicantStatsModal(){
+	document.addEventListener('click', function(e){
+		if(e.target.classList.contains("appl-stats-btn")){
+			const jobPostingSeq = e.target.dataset.appliStats; /*위에서 th쓰면 안돼, JS문법으로 innerHTML로 만들고 있으니까*/
+			//모달열기
+			const modal = new bootstrap.Modal(document.getElementById('applicant-stats'));
+			modal.show();
 	
-	//모달열기
-	const modal = new bootstrap.Modal(document.getElementById('applicant-stats'));
-	modal.show();
-	
-	//모달 열린 후 콜백 실행 
-	document.querySelector('.modal-title').textContent = '제목임시입니다.';
-
+			//모달 열린 후 콜백 실행 
+			document.querySelector('.modal-title').textContent = `[${jobPostingSeq}]번 게시물`;
+			
+			//fetch
+			
+			
+		}
+	});
 	
 }
+
+
 
