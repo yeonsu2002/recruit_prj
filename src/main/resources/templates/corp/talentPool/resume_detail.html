@@ -26,10 +26,7 @@
 				<div class="section-title">기본정보</div>
 				<div class="basic-info">
 					<div class="profile-image">
-<!-- 						<img th:src="@{/images/profileImg/{img}(img=${resume.image})}" alt="프로필 사진">
- -->
-<img th:src="|${resume.image != null and !#strings.isEmpty(resume.image) ? '/images/profileImg/' + resume.image : '/images/default_img.png'}|">
- 
+						<img th:if="${resume.image !=null }" th:src="@{/images/profileImg/{img}(img=${resume.image})}" onerror="this.style.display='none'"  >
  					</div>
 					<div class="info-details">
 						<div class="name" th:text="${resumeUser.name}"></div>
