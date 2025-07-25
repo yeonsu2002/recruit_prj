@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import kr.co.sist.admin.resume.ResumeService;
 
 @Controller
-public class ResumeController {
+public class AdResumeController {
 	 
 		@Autowired
 		 private ResumeService rs;
