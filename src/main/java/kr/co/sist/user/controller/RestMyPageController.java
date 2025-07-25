@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
+import kr.co.sist.user.dto.FavoriteCompanyDTO;
 import kr.co.sist.user.dto.MessageDTO;
 import kr.co.sist.user.dto.MessageSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
@@ -111,10 +112,45 @@ public class RestMyPageController {
 
 	// 스크랩한 공고 페이징 해서 가져오기
 	@GetMapping("/mypage/scrap/{currentPage}")
-	public List<MyPostingDTO> getScrapPosting(@PathVariable int currentPage, @AuthenticationPrincipal CustomUser userInfo) {
-		
+	public List<MyPostingDTO> getScrapPosting(@PathVariable int currentPage,
+			@AuthenticationPrincipal CustomUser userInfo) {
+
 		List<MyPostingDTO> posting = myPageServ.searchMyNextScrapPosting(userInfo.getEmail(), currentPage);
-    return posting;
+		return posting;
+	}
+
+	// 최근 본 공고 페이징 해서 가져오기
+	@GetMapping("/mypage/scrap/resent/{currentPage}")
+	public List<MyPostingDTO> getRecentPosting(@PathVariable int currentPage,
+			@AuthenticationPrincipal CustomUser userInfo) {
+
+		List<MyPostingDTO> posting = myPageServ.searchMyNextRecentPosting(userInfo.getEmail(), currentPage);
+		return posting;
+	}
+
+	// 관심 기업 페이징 해서 가져오기
+	@GetMapping("/mypage/company/{currentPage}")
+	public List<FavoriteCompanyDTO> getFavoriteCompany(@PathVariable int currentPage,
+			@AuthenticationPrincipal CustomUser userInfo) {
+
+		List<FavoriteCompanyDTO> companies = myPageServ.searchMyNextFavoriteCompany(userInfo.getEmail(), currentPage);
+		return companies;
+	}
+
+	// 유저 탈퇴
+	@DeleteMapping("/mypage/member")
+	public String resignMember(@AuthenticationPrincipal CustomUser userInfo) {
+
+		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
+
+		try {
+			myPageServ.resignMember(userEntity);
+			return "success";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "failed";
+		}
 	}
 
 }// class

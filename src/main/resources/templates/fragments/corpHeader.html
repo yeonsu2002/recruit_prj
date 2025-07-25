@@ -26,13 +26,14 @@
 	
 	  <!-- 상단 로고 및 로그인 영역 -->
 	  <div id="corp-top-bar">
-	    <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo"></a> 
+	    <a th:href="@{/corp/main}"><img th:src="@{/images/logo.png}" alt="민기인력 로고" class="corp-logo"></a> 
 	    <div class="corp-top-menu">
 	    <!-- GlobalHandler에서 user로 넘겨주고 있다. #authentication으로 securityContextHolder 세션의 객체를 꺼내도 된다. -->
 	    	<div id="userInfo" sec:authorize="hasRole('ROLE_CORP')" >
 		      <a th:href="@{/void}" th:text="${user.name}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
 		      <a th:href="@{/logout}" class="corp-header-link">로그아웃</a> |
-		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+		      <a th:href="@{/void}" class="corp-header-link">고객센터</a> |
+		      <a th:href="@{/}" class="corp-header-link">구직서비스</a>
 		      <input type="hidden" id="userEmail" th:value="${user.email}" >
 		      <input type="hidden" id="userRole" th:value="${user.role}" >
 		      <input type="hidden" id="userCorpNo" th:value="${user.corpNo}" >
@@ -42,7 +43,8 @@
 	    	<div sec:authorize="!hasRole('ROLE_CORP')"  >
 		      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
 		      <a th:href="@{/corp/join}" class="corp-header-link">회원가입</a> |
-		      <a th:href="@{/void}" class="corp-header-link">고객센터</a>
+		      <a th:href="@{/void}" class="corp-header-link">고객센터</a> |
+		      <a th:href="@{/}" class="corp-header-link">구직서비스</a>
 	    	</div>
 	    </div>
 	    <!-- 모바일 햄버거 버튼 -->
@@ -57,7 +59,7 @@
 	        <td>지원자 관리</td>
 	        <td>공고 관리</td>
 	        <td><a th:href="@{/corp/talentPool/talent_pool}">인재 관리</a></td>
-	        <td>기업상품안내</td>
+	        <!-- <td>기업상품안내</td> -->
 	        <td>회원정보관리</td>
 	      </tr>
 	    </table>
@@ -90,17 +92,17 @@
 	            <span class="corp-submenu-link">AI인재추천</span>
 	          </div>
 	        </td>
-	        <td>
+<!-- 	        <td>
 	          <div class="corp-submenu-item">
 	            <span class="corp-submenu-link">상품 안내</span><br>
 	            <span class="corp-submenu-link">포인트충전</span><br>
 	            <span class="corp-submenu-link">결제 내역</span>
 	          </div>
-	        </td>
+	        </td> -->
 	        <td>
 	          <div class="corp-submenu-item">
 	            <a th:href="@{/corp/info/edit}"><span class="corp-submenu-link">기업 정보 수정</span></a><br>
-	            <a th:href="@{/corp/image}"><span class="corp-submenu-link">이미지 등록</span></a><br>
+	           <a th:href="@{/corp/image/upload}"><span class="corp-submenu-link">이미지 등록</span></a>
 	            <a href="#void"><span class="corp-submenu-link">비밀번호 변경</span></a>
 	          </div>
 	        </td>
@@ -118,4 +120,5 @@
 	    <a href="@{/void}" class="corp-header-link">회원정보관리</a>
 	  </div>
 	</div>
+
 </th:block>

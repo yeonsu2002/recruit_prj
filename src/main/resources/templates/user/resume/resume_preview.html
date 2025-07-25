@@ -12,14 +12,14 @@
 			<div class="section-title">기본정보</div>
 			<div class="basic-info">
 				<div class="profile-image">
-					<img th:src="@{/images/profileImg/{img}(img=${resume.image})}" alt="프로필 사진">
+					<img th:src="${'https://localhost/images/profileImg/' + user.img}" alt="프로필 사진">
 				</div>
 				<div class="info-details">
 					<div class="name" th:text="${user.name}"></div>
 					<div class="contact-info">
 						<div class="contact-item" th:text="${user.email}"></div>
 						<div class="phone-birth">
-							<span th:text="|📞${user.phone}|">01091205456</span> <span
+							<span th:text="|${user.phone}|">01091205456</span> <span
 								th:text="|📅${user.birth}년생|"></span>
 						</div>
 					</div>
@@ -60,7 +60,7 @@
 						<span th:text="${education.educationType}"></span> | <span
 							th:text="${education.department}"></span>
 					</p>
-					<p class="sub-info">
+					<p class="sub-info" th:if="${education.grade} != 0">
 						<span th:text="${education.grade}">3.3</span> / <span
 							th:text="${education.standardGrade}">4.5</span>
 					</p>

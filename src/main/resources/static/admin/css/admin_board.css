@@ -1,4 +1,16 @@
 /* 리뷰 목록 영역 스타일 */
+
+ a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: default;
+    color: gray;
+    text-decoration: none;
+  }
+  button:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed;
+  }
 .review-wrapper {
   padding: 20px;
   background-color: white;
@@ -18,12 +30,12 @@
   display: flex;
   gap: 15px;
   margin-bottom: 15px;
-  align-items: center; /* 수평 배치 */
+  align-items: center;
 }
 
 .search-group {
   display: flex;
-  flex-direction: row; /* 수평 배치 */
+  flex-direction: row;
   gap: 5px;
 }
 
@@ -37,7 +49,7 @@
 }
 
 .search-btn {
-  padding: 8px 20px; /* 너비를 늘려서 버튼 길이 맞추기 */
+  padding: 8px 20px;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -61,7 +73,7 @@
 
 .filter-group {
   display: flex;
-  flex-direction: row; /* 수평 배치 */
+  flex-direction: row;
   gap: 5px;
 }
 
@@ -136,7 +148,6 @@
   cursor: pointer;
 }
 
-/* '모두 선택' 체크박스 스타일 */
 #selectAll {
   width: 22px;
   height: 22px;
@@ -148,34 +159,46 @@
   outline: none;
 }
 
-/* 페이지네이션 영역 스타일 */
-.pagination-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
 .pagination {
   display: flex;
+  justify-content: center;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 20px;
 }
-
-.pagination a {
-  padding: 5px 10px;
-  color: #333;
-  text-decoration: none;
-  margin: 0 5px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.pagination a:hover {
+  .pagination a,
+    .pagination .page-link,
+    .delete-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 38px;               /* 높이 통일 */
+      font-size: 14px;
+      padding: 0 14px;            /* 상하 padding 제거, 좌우만 */
+      line-height: 1;
+      box-sizing: border-box;
+    }
+    
+.pagination a:hover,
+.pagination .page-link:hover {
   background-color: #f1f1f1;
 }
 
-.pagination .active {
-  background-color: #4caf50;
+/* ✅ 현재 선택된 페이지 스타일 */
+.pagination .active .page-link,
+.pagination .page-item.active .page-link {
+  background-color: #4CAF50;
   color: white;
+  border-color: #4CAF50;
+  cursor: default;
+}
+
+/* 비활성화 상태 (필요 시 확장) */
+.pagination .page-item.disabled .page-link {
+  pointer-events: none;
+  background-color: #eee;
+  color: #aaa;
+  border-color: #ddd;
 }
 
 .delete-btn {
@@ -185,19 +208,17 @@
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  min-width: 60px; /* 최소 너비 설정 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  font-size: 14px; /* 폰트 크기 명시 */
 }
 
 .delete-btn:hover {
   background-color: #e53935;
 }
 
-/* 페이지네이션 버튼 스타일 */
-.pagination a:first-child,
-.pagination a:last-child {
-  font-weight: bold;
-}
-
-/* 반응형 디자인 */
+/* 반응형 */
 @media (max-width: 768px) {
   .search-area {
     flex-direction: column;
@@ -230,4 +251,10 @@
   .delete-btn {
     margin-top: 10px;
   }
+
+  .button-group {
+    flex-direction: row; /* 모바일에서는 가로 정렬 */
+  }
+  
+  
 }

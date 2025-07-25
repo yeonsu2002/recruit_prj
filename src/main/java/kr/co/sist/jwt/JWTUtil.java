@@ -138,14 +138,32 @@ public class JWTUtil {
   	}
   }
   
+  public String getCategory(String token) { //토큰에서 카테고리 뽑기
+  	
+  	try {
+  		return Jwts.parser()
+  				.verifyWith(secretKey)
+  				.build()
+  				.parseSignedClaims(token)
+  				.getPayload()
+  				.get("category", String.class);
+  	} catch (JwtException e) {
+  		e.printStackTrace();
+  		throw new IllegalArgumentException("Invalid JWT token", e);
+  	}
+  }
+  
+  
 	// JWT생성: 더 많은 정보를 담고싶다면 매개변수에 포함.
+  // category = access, referesh 추가 (25.07.23)
 	//public String createJwt(String email, String name, String role, Long corpNo, Long expiredMs, String iss) {
-	public String createJwt(UserDTO user ,Long expiredMs) {
+	public String createJwt(String category, UserDTO user ,Long expiredMs) {
 
 		System.out.println("createJwt() 실행~ ");
 
 		try {
 			return Jwts.builder() // 빌더를 통해 JWT의 클레임(Claims), 헤더(Header), 서명(Signature)을 구성
+					.claim("category", category) // access || refresh 
 					.claim("email", user.getEmail())	// JWT의 Custom Claim(사용자 정의 클레임)을 추가 (키 : 값) -> // Payload 에 저장
 					.claim("corpNo", user.getCorpNo())
 					.claim("name", user.getName()) 

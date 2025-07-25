@@ -46,6 +46,8 @@ public class AdminEntity {
 	private String deptRole;
 	@Column(name="JOB_ROLE")
 	private String jobRole;
+	@Column(name="RESIGNATION_DATE")
+	private String resignationDate;
 	
 	
 	/**

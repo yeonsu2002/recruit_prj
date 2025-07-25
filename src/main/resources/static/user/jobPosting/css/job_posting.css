@@ -33,17 +33,6 @@ body {
   transition: all 0.2s;
 }
 
-.filter-btn:hover {
-  background-color: #f0f0f0;
-  border-color: #999;
-}
-
-.filter-btn.active {
-  background-color: #00c471;
-  border-color: #00c471;
-  color: white;
-}
-
 /* ======================
    기술스택: 상단 직무 버튼
 ====================== */
@@ -138,18 +127,6 @@ body {
   font-weight: 500;
 }
 
-.recommended-stack:hover {
-  background-color: #e9ecef;
-  border-color: #00c471;
-  color: #00c471;
-}
-
-.recommended-stack.selected {
-  background-color: #00c471;
-  border-color: #00c471;
-  color: white;
-}
-
 /* 스킬 목록 */
 .custom-options {
   list-style-type: none;
@@ -171,16 +148,6 @@ body {
   color: #495057;
 }
 
-.custom-options li:hover {
-  background-color: #f8f9fa;
-  color: #00c471;
-}
-
-.custom-options li.selected {
-  background-color: #e8f5e8;
-  color: #00c471;
-  font-weight: 500;
-}
 
 /* 선택된 기술스택 태그들 */
 .skills-container {
@@ -391,6 +358,7 @@ body {
 .region-reset:hover {
     background-color: #f8f9fa;
 }
+
 /* ======================
    공고 카드
 ====================== */
@@ -405,94 +373,70 @@ body {
     text-decoration: none;
     color: inherit;
     display: block;
+    transition: all 0.3s ease;
+}
+
+.announcement-card-link:hover {
+    text-decoration: none;
+    color: inherit;
 }
 
 .announcement-card {
     border: none;
-    border-radius: 0;
-    padding: 0;
-    background-color: transparent;
-    box-shadow: none;
-    transition: transform 0.2s;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #F8F9FA;
     width: 100%;
     height: 100%;
+    min-width: 300px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
 }
 
 .announcement-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
 }
 
 .image-wrapper {
-    width: 100%; /* 너비를 부모에 맞추어 설정 */
-    height: 180px; /* 원하는 높이 설정 */
+    width: 100%;
+    height: 180px;
     margin-bottom: 15px;
     overflow: hidden;
-    border-radius: 12px; /* 둥근 모서리 설정 */
+    border-radius: 12px;
 }
 
 .image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지가 부모 영역을 덮도록 설정 */
-}
-
-.company-name {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 5px;
-    font-weight: normal;
-}
-
-.announcement-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    line-height: 1.3;
-    color: #333;
-}
-
-.stack-name {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 8px;
-    font-weight: normal;
-}
-
-.company-info {
-    font-size: 13px;
-    color: #888;
-    font-weight: normal;
-}
-
-.announcement-card {
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #F8F9FA;
-    width: 100%;
-    min-width: 300px; /* 최소 너비 설정 */
+    object-fit: cover;
 }
 
 .company-name {
     font-size: 14px;
     color: #666;
     margin-bottom: 8px;
+    font-weight: normal;
 }
 
 .announcement-title {
     font-size: 16px;
+    font-weight: bold;
     margin-bottom: 8px;
     line-height: 1.4;
+    color: #333;
 }
 
 .stack-name {
     font-size: 12px;
     color: #007bff;
     margin-bottom: 8px;
+    font-weight: normal;
 }
 
 .company-info {
     font-size: 12px;
     color: #888;
+    font-weight: normal;
 }
 
 /* 반응형 처리 */
@@ -508,6 +452,12 @@ body {
         gap: 15px;
         padding: 15px;
     }
+    
+    /* 모바일에서는 hover 효과 제거 */
+    .announcement-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -517,12 +467,10 @@ body {
         padding: 12px;
     }
 }
-
- .d-day {
-      color: #ff5722;
-      font-weight: bold;
-    }
-
+.d-day {
+    color: #ff5722;
+    font-weight: bold;
+}
 
 /* 드롭다운 스타일 */
 .dropdown {
@@ -577,30 +525,11 @@ body {
     margin-bottom: 6px;
 }
 
-.announcement-card {
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-/* 마감된 공고 전체 카드 회색 처리 */
-.announcement-card.expired-card {
-    background-color: #f8f9fa;
-    opacity: 0.7;
-    filter: grayscale(50%);
-}
-
-.announcement-card.expired-card .company-name,
-.announcement-card.expired-card .announcement-title,
-.announcement-card.expired-card .company-info,
-.announcement-card.expired-card .position-name {
-    color: #6c757d !important;
-}
-
 .dday-badge {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #6c757d; /* 기본 회색 */
+    background-color: #6c757d;
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
@@ -643,10 +572,7 @@ body {
     margin-top: 8px;
 }
 
-/* 마감된 공고의 마감일 정보도 회색으로 */
-.expired-card .deadline-info {
-    color: #adb5bd;
-}
+
 
 .floating-apply-btn.disabled {
     background-color: #ccc !important;

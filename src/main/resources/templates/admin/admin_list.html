@@ -164,17 +164,8 @@ $(function() {
 });
 </script>
 <style type="text/css">
-  a.disabled {
-    pointer-events: none;
-    opacity: 0.5;
-    cursor: default;
-    color: gray;
-    text-decoration: none;
-  }
-  button:disabled {
-    background-color: #ccc !important;
-    cursor: not-allowed;
-  }
+ 
+  
 </style>
 </head>
 
@@ -235,7 +226,7 @@ $(function() {
             <option th:value="전체" th:selected="${stat == '전체'}">전체</option>
             <option th:value="승인대기" th:selected="${stat == '승인대기'}">승인대기</option>
             <option th:value="승인됨" th:selected="${stat == '승인됨'}">승인됨</option>
-            <option th:value="퇴직" th:selected="${stat == '탈퇴'}">탈퇴</option>
+            <option th:value="탈퇴" th:selected="${stat == '탈퇴'}">탈퇴</option>
           </select>
         </div>
       </div>
@@ -259,6 +250,8 @@ $(function() {
             <th>직급</th>
             <th>상태</th>
             <th>승인신청날짜</th>
+            <th>승인날짜</th>
+            <th>탈퇴날짜</th>
           </tr>
         </thead>
         <tbody>
@@ -271,6 +264,8 @@ $(function() {
             <td th:text="${list.job}">직급</td>
             <td class="stat" th:text="${list.stat}">상태</td>
             <td th:text="${list.approvalRequestDate}">승인신청날짜</td>
+            <td th:text="${list.approvalDate}">승인날짜</td>
+            <td th:text="${list.resignationDate}">탈퇴날짜</td>
           </tr>
         </tbody>
       </table>
@@ -278,8 +273,15 @@ $(function() {
 
     <!-- 하단 페이지 네비 + 버튼 -->
     <div class="pagination-wrapper">
-
+		
+	 <!-- 버튼 그룹: 수직 정렬 -->
+  <div class="button-group">
+    <button id="btnApprove" class="delete-btn" type="button">승인</button>
+    <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
+  </div>
+      
       <nav class="pagination" aria-label="페이지 네비게이션">
+
 
         <!-- 첫 페이지로 -->
         <a th:href="@{/admin/admin_list(page=0)}"
@@ -307,10 +309,7 @@ $(function() {
            th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
            th:attr="aria-disabled=${totalPages - 1}">[>>]</a>
       </nav>
-      <div>
-        <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
-        <button id="btnApprove" class="delete-btn" type="button" style="background-color: green">승인</button>
-      </div>
+      
     </div>
   </section>
 </div>

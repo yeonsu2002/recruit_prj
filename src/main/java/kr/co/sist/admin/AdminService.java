@@ -1,5 +1,8 @@
 package kr.co.sist.admin;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,38 +52,35 @@ public class AdminService {
     }
     
     public Page<AdminEntity> searchAdminsWithFilters(
-            String searchType, // 전체, 이름, 이메일
-            String keyword,
-            String dept,
-            String job,
-            String stat,
-            int page,
-            int size) {
+        String searchType,
+        String keyword,
+        String dept,
+        String job,
+        String stat,
+        int page,
+        int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+    Pageable pageable = PageRequest.of(page, size);
 
-        // "전체" 값일 경우 null 처리하여 쿼리에서 무시되게 함
-        String deptFilter = "전체".equals(dept) ? null : dept;
-        String jobFilter = "전체".equals(job) ? null : job;
-        String statFilter = "전체".equals(stat) ? null : stat;
+    String deptFilter = "전체".equals(dept) ? null : dept;
+    String jobFilter = "전체".equals(job) ? null : job;
+    String statFilter = "전체".equals(stat) ? null : stat;
+    String keywordFilter = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
+    String searchTypeFilter = (searchType == null || searchType.trim().isEmpty()) ? "전체" : searchType;
 
-        // keyword도 빈문자열이나 null일 경우 null 처리
-        String keywordFilter = (keyword == null || keyword.trim().isEmpty()) ? null : keyword.trim();
-
-        // 리포지토리 커스텀 쿼리 호출
-        return ar.findAdminsWithCustomOrder(
+    return ar.findAdminsWithCustomOrder(
+            searchTypeFilter,
             keywordFilter,
             deptFilter,
             jobFilter,
             statFilter,
             pageable);
-    }
-    
+}
     /**
      * 관리자의 모든 정보를 조회
      */
-    public List<AdminEntity> searchAllAdmin() {
-        return ar.findAll();
+    public Optional<AdminEntity> searchOneAdmin(String email) {
+        return ar.findById(email);
     }
     
     
@@ -90,10 +90,28 @@ public class AdminService {
             Optional<AdminEntity> optAdmin = ar.findById(adminId);
             if (optAdmin.isPresent()) {
                 AdminEntity admin = optAdmin.get();
+
+                // 기존 값 유지 (중요)
+                String prevApprovalDate = admin.getApprovalDate();
+                String prevRequestDate = admin.getApprovalRequestDate();
+
                 admin.setStat(status);
+
+                if ("승인됨".equals(status)) {
+                    if (prevApprovalDate == null) {
+                        admin.setApprovalDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    }
+                } else if ("탈퇴".equals(status)) {
+                    admin.setResignationDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    // 승인 요청일과 승인일 유지
+                    admin.setApprovalDate(prevApprovalDate);
+                    admin.setApprovalRequestDate(prevRequestDate);
+                }
+
                 ar.save(admin);
             }
         }
     }
+
     
 }

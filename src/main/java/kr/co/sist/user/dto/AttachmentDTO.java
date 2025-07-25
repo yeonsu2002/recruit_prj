@@ -13,6 +13,6 @@ import lombok.ToString;
 public class AttachmentDTO {
 
 	private int attachmentSeq;
-	private String email, fileName, fileType, createdAt;
+	private String email, originalName, fileName, fileType, createdAt;
 	private long fileSize;
 }

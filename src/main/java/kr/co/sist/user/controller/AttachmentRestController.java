@@ -82,6 +82,7 @@ public class AttachmentRestController {
 	        // DB에서 파일 정보 가져오기
 	        AttachmentEntity attachment = attachmentServ.searchOneAttachment(attachmentSeq);
 	        String fileName = attachment.getFileName();
+	        String originalName = attachment.getOriginalName();
 	        
 	        //상대 경로 위해 사용
 	    		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
@@ -98,7 +99,7 @@ public class AttachmentRestController {
 	        FileSystemResource resource = new FileSystemResource(file);
 
 	        // 다운로드시 파일명이 깨지지 않도록 인코딩
-	        String encodedName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+	        String encodedName = URLEncoder.encode(originalName, "UTF-8").replace("+", "%20");
 	        String contentDisposition = "attachment; filename*=UTF-8''" + encodedName;
 
 	        // 파일 타입 설정 (못 찾으면 기본값 설정)
@@ -120,8 +121,4 @@ public class AttachmentRestController {
 	    }
 	}//downloadFile
 	
-	public void hi() {
-		
-	}
-
 }

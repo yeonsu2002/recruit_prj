@@ -158,35 +158,65 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    $("#scrapBtn").click(function () {
-        const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();  // ID가 바뀐 input에서 값 읽기
-        console.log("jobPostingSeqStr:", jobPostingSeqStr);
-        if (!jobPostingSeqStr || isNaN(jobPostingSeqStr)) {
-            alert("유효한 공고 번호가 없습니다.");
-            return;
-        }
+    const jobPostingSeqStr = $("#jobPostingSeqForScrap").val();
+    if (jobPostingSeqStr && !isNaN(jobPostingSeqStr)) {
+        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);
 
-        const jobPostingSeq = parseInt(jobPostingSeqStr, 10);  // 문자열을 정수로 변환
-        const heartIcon = $("#heartIcon");
-        const isScrapped = heartIcon.text() === "❤️";
-        const url = isScrapped ? "/scrap/remove" : "/scrap/add";
-
+        // ⭐ [1] 페이지 로딩 시 스크랩 상태 체크
         $.ajax({
-            url: url,
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+            url: "/scrap/check",
+            method: "GET",
+            data: { jobPostingSeq: jobPostingSeq },
             success: function (data) {
-                alert(data.message);
                 if (data.success) {
-                    heartIcon.text(isScrapped ? "🤍" : "❤️");
+                    const heartIcon = $("#heartIcon");
+                    heartIcon.text(data.scrapped ? "❤️" : "🤍");
                 }
             },
-            error: function (xhr, status, error) {
-                console.error("스크랩 처리 중 오류:", error);
-                alert("스크랩 처리 중 오류가 발생했습니다.");
+            error: function () {
+                console.error("스크랩 상태 확인 실패");
             }
         });
+
+        // ⭐ [2] 버튼 클릭 시 스크랩 추가/삭제
+        $("#scrapBtn").click(function () {
+            const heartIcon = $("#heartIcon");
+            const isScrapped = heartIcon.text() == "❤️";
+            const url = isScrapped ? "/scrap/remove" : "/scrap/add";
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ jobPostingSeq: jobPostingSeq }),
+                success: function (data) {
+                    alert(data.message);
+                    if (data.success) {
+                        heartIcon.text(isScrapped ? "🤍" : "❤️");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("스크랩 처리 중 오류:", error);
+                    alert("스크랩 처리 중 오류가 발생했습니다.");
+                }
+            });
+        });
+    } else {
+        console.warn("공고 번호가 유효하지 않습니다.");
+    }
+});
+
+$(document).ready(function () {
+    $("#shareBtn").click(function (e) {
+        e.preventDefault(); // 링크 이동 방지
+        var url = window.location.href;
+        var textarea = document.createElement("textarea");
+        document.body.appendChild(textarea);
+        textarea.value = url;
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("URL이 복사되었습니다.");
     });
 });
 </script>
@@ -239,11 +269,20 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;">3,000~4,500만원</p>
+                    <p style="font-size: 15px;" th:text="|${jDto.salary}원| ?: '회사내규에 따름'"></p>
                 </div>
                 <div>
-                    <h2 style="font-size: 20px;">근무형태</h2>
-                  <p th:text="${jDto.employType} ?: '정보 없음'"  style="font-size: 15px;">근무형태</p>
+                  <h2 style="font-size: 20px;">근무형태</h2>
+				<div th:if="${jDto.employType != '계약'}">
+				    <p th:text="${jDto.employType} ?: '정보 없음'" style="font-size: 15px;">근무형태</p>
+				</div> 
+				<div th:if="${jDto.employType == '계약'}">
+				    <p style="font-size: 15px;">
+				        계약 기간: 
+				        <span th:text="|${jDto.contStartDt} ~ ${jDto.contEndDt}|"></span>
+				    </p>
+				</div>
+
                 </div>
             </div>
 
@@ -279,6 +318,11 @@ $(document).ready(function () {
             <div class="info-item">
                 <span class="label">업력</span>
                 <span class="value" th:text="${jDto.corpCreatedAt}"></span>
+                
+            </div>
+             <div class="info-item">
+                <span class="label">홈페이지</span>
+               <a th:href="${jDto.corpUrl}" target="_blank" class="go-link">바로가기</a>
             </div>
         </div>
 
@@ -291,17 +335,24 @@ $(document).ready(function () {
 		    지원하기
 		</button>
 		
-     <div class="floating-actions">
-	    <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}" />
-	
-	    <button class="floating-action-btn" id="scrapBtn">
-	        <span class="icon" id="heartIcon">🤍</span>
-	        <span class="text">스크랩</span>
-	    </button>
-	</div>
+	    <div class="floating-actions">
+                <input type="hidden" id="jobPostingSeqForScrap" value="123" />
+                
+                <button class="floating-action-btn" id="scrapBtn">
+                    <span class="icon" id="heartIcon">🤍</span>
+                    <span class="text">스크랩</span>
+                </button>
+                
+                <button class="floating-action-btn" id="shareBtn">
+                    <span class="icon">
+                        <a href="#" onclick="clip(); return false;">📃</a>
+                    </span>
+                    <span class="text">공유</span>
+                </button>
+            </div>
+        </div>
     </div>
-</div>
-c
+
 <!-- 모달창 -->
  <div id="applyModal" class="modal">
         <div class="modal-content">

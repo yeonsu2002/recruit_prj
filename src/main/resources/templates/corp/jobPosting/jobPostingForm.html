@@ -78,24 +78,49 @@ function openKakaoMap(){
  * 포지션 리스트 비동기 검색 기능
  */
 function getPositionList() {
-	// 포지션 입력 필드 클릭 시 초기화
-	document.querySelector('#positionName').addEventListener('click', function(){
-		document.querySelector('#positionName').value = "";
-		document.querySelector('#positionSeq').value = "";
-	});
-	  
-	// 포지션 검색 자동완성
-  	document.getElementById('positionName').addEventListener('input', function () {
-		const keyword = document.getElementById('positionName').value.trim();
-		const resultBox = document.querySelector('#resultBox');
-
-		// 검색어가 없을때는 결과 박스 숨기기.. 이거 왜 안먹히냐고
+	const positionInput = document.getElementById('positionName');
+	const resultBox = document.getElementById('resultBox');
+	
+	function noResultBox(){
+		document.querySelector('#resultBox').style.display = 'none';
+	}
+	function showResultBox(){
+		document.querySelector('#resultBox').style.display = 'block';
+	}
+	
+	//검색어 입력 시
+	positionInput.addEventListener('keyup', function () {
+		let keyword = this.value.trim();
 		if (keyword === '') {
 			resultBox.style.display = 'none';
 			return;
 		}
+		searchFetch(keyword);
+	});
 
-		// 1글자 이상일 때 검색 시작
+	//input클릭하면 결과창 호출
+	positionInput.addEventListener('click', function () {
+		if (this.value.trim() !== '') {
+			showResultBox();
+		}
+	});
+
+	//바깥 클릭시 결과창 닫음 , 단 클릭 이벤트가 먼저 실행되도록 살짝 지연
+	positionInput.addEventListener('focusout', function () {
+		setTimeout(() => {
+			resultBox.style.display = 'none';
+		}, 150); 
+	});
+
+	// 마우스가 resultBox 버튼누르면 focusout 무시---------------------- 이거 엄청 중요 이게 포인트 
+	resultBox.addEventListener('mousedown', function (e) {
+		e.preventDefault(); // input focus 아예 안 빠지게 막음
+	});
+	
+	// 1글자 이상일 때 검색 시작
+	function searchFetch(keyword){
+		let resultBox = document.querySelector('#resultBox');
+		
 		if (keyword.length >= 1) {
 			fetch(`/corp/searchPositionByKeyword?keyword=${encodeURIComponent(keyword)}`)
 				.then(response => {
@@ -120,7 +145,9 @@ function getPositionList() {
 							li.addEventListener('click', function () {
 								document.getElementById('positionName').value = item.positionName;
 								document.getElementById('positionSeq').value = item.positionSeq;
+								console.log(item.positionName);
 								resultBox.style.display = 'none';
+								console.log('스타일 닫힘 안보여야해 ')
 							});
 
 							resultBox.appendChild(li);
@@ -138,8 +165,9 @@ function getPositionList() {
 					resultBox.style.display = 'block';
 				});
 		}
-	});
+	} //searchFetch()
 }
+
 
 /**
  * 기술스택 검색 및 추가 기능
@@ -195,13 +223,42 @@ function getStackList() {
 
 		techStackList.appendChild(badge);
 	}
+	
+	//suggestedStackList 안보이게 함수
+	function noSuggestedStackList(){
+		document.querySelector('#suggestedStackList').style.display = 'none';
+	}
+	//suggestedStackList 보이게 함수
+	function showSuggestedStackList(){
+		document.querySelector('#suggestedStackList').style.display = 'block';
+	}
 
 	// 기술스택 검색 자동완성
 	document.querySelector("#techStackSearch").addEventListener("input", function () {
 		const keyword = this.value.trim();
 		suggestedList.innerHTML = "";
+		
+		if(keyword.length >= 0){
+			showSuggestedStackList();
+		}
 
-		if (keyword.length === 0) return;
+		if (keyword.length === 0){
+			noSuggestedStackList();
+			return;
+		}
+		
+		document.querySelector("#techStackSearch").addEventListener('focusout', function(){
+			noSuggestedStackList();
+		});
+		document.querySelector("#techStackSearch").addEventListener('click', function(){
+			showSuggestedStackList();
+		});
+		
+		// 마우스가 suggestedStackList 버튼누르면 focusout 무시
+		suggestedList.addEventListener('mousedown', function (e) {
+			e.preventDefault(); // input focus 아예 안 빠지게 막음
+		});
+		
 
 		// 기술스택 검색 API 호출
 		fetch(`/corp/searchStackByKeyword?keyword=${encodeURIComponent(keyword)}`)
@@ -438,7 +495,7 @@ function initPreviewFeature() {
 	document.querySelector('.preview-btn').addEventListener('click', function() {
 		const formData = collectFormData();
 		
-		alert('미리보기 기능을 준비중입니다!\n\n현재 입력된 데이터를 콘솔에서 확인할 수 있습니다.');
+		alert('미리보기 기능을 준비중.. \n\n입력된 데이터는 콘솔에서 확인..');
 	});
 }
 
@@ -471,7 +528,7 @@ function setPostingStartDate() {
 function initSalaryFormatting() {
 	const salaryInput = document.querySelector('input[name="salary"]');
 	if (salaryInput) {
-		salaryInput.addEventListener('blur', function() {
+		salaryInput.addEventListener('input', function() {
 			let value = this.value;
 			value = value.replace(/[^0-9]/g, ''); //숫자 이외의 문자 제거
 			this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -551,7 +608,7 @@ function isValidStdEdd(){
 
                     <div class="form-group position-box">
                         <label class="form-label required">포지션</label>
-                        <input type="text" id="positionName" name="positionSeq" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
+                        <input type="text" id="positionName" class="form-input" placeholder="포지션 검색" style="position: relative;" autocomplete="off">
                         <ul id="resultBox" class="list-group position-absolute" style="display: none" ></ul>
                         <input type="hidden" id="positionSeq"> <!-- hidden으로 -->
                     </div>
@@ -560,11 +617,11 @@ function isValidStdEdd(){
                         <label class="form-label">주요 기술스택 <span style="color: red">*</span> </label>
                         <input type="text" id="techStackSearch" name="techStackSearch" class="form-input" placeholder="예: Java, Spring Boot, MySQL, AWS">
                         <!-- 검색 리스트 (비동기로 ul > li) -->
-						<ul id="suggestedStackList" class="list-group mt-1 position-absolute" style="z-index:1000; display: none;"></ul>
-						<!-- 선택된 스택들 -->
-						<div id="techStack-list" class="mt-3"></div>
-						<!-- 스택 seq담을 input -->
-						<div id="hiddenInputsArea"></div>
+												<ul id="suggestedStackList" class="list-group mt-1 position-absolute" style="z-index:1000; display: none;"></ul>
+												<!-- 선택된 스택들 -->
+												<div id="techStack-list" class="mt-3"></div>
+												<!-- 스택 seq담을 input -->
+												<div id="hiddenInputsArea"></div>
                     </div>
 
                     <div class="form-group">
@@ -687,22 +744,10 @@ function isValidStdEdd(){
                     
                     <div class="form-group">
                         <label class="form-label required">채용공고 상세 내용</label>
-                        <textarea name="postingDetail" id="postingDetail" class="form-textarea" rows="12" wrap="on" placeholder="📌 주요 업무
-- 담당하게 될 구체적인 업무 내용을 작성해주세요
-- 프로젝트 성격, 사용 기술, 협업 방식 등을 포함해주세요
-
-🎯 자격 요건
-- 필수 요구사항을 명확히 작성해주세요
-- 우대사항도 함께 작성하시면 좋습니다
-
-🎁 복지 및 혜택
-- 급여 외 복리후생을 상세히 작성해주세요
-- 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요
-
-📋 채용 절차
-- 서류 전형부터 최종 면접까지의 과정을 안내해주세요" required></textarea>
+                        <textarea name="postingDetail" id="postingDetail" class="form-textarea" rows="12" wrap="on"
+												placeholder="📌 주요 업무&#10;- 담당하게 될 구체적인 업무 내용을 작성해주세요&#10;- 프로젝트 성격, 사용 기술, 협업 방식 등을 포함해주세요&#10;&#10;🎯 자격 요건&#10;- 필수 요구사항을 명확히 작성해주세요&#10;- 우대사항도 함께 작성하시면 좋습니다&#10;&#10;🎁 복지 및 혜택&#10;- 급여 외 복리후생을 상세히 작성해주세요&#10;- 교육 지원, 근무 환경, 성장 기회 등을 포함해주세요&#10;&#10;📋 채용 절차&#10;- 서류 전형부터 최종 면접까지의 과정을 안내해주세요"
+												required></textarea>
                     </div>
-
                     <div class="form-group">
                     	<input type="hidden" id="postingStartDt" name="postingStartDt" value="">
                         <label class="form-label required">공고 마감일</label>
@@ -731,7 +776,7 @@ function isValidStdEdd(){
                 <button type="button" form="frm" id="submitFormBtn"  class="submit-btn">채용공고 등록하기</button>
                 
                 <div class="preview-section">
-                    <button type="button" class="preview-btn">미리보기</button>
+<!--                     <button type="button" class="preview-btn">미리보기</button> -->
                 </div>
             </div>
 
