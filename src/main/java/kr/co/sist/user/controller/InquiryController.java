@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
 import java.util.Map;
 
 import kr.co.sist.jwt.CustomUser;
@@ -30,9 +31,50 @@ public class InquiryController {
 
     // 고객센터 메인 페이지
     @GetMapping("/help")
-    public String helpCenter() {
+    public String helpCenter(Model model) {
+        // 카테고리별 문의 통계 추가
+        Map<String, Long> categoryStats = helpService.getInquiryStatsByCategory();
+        model.addAttribute("categoryStats", categoryStats);
         return "user/help/help";
     }
+
+    // 카테고리별 FAQ 목록 API
+    @GetMapping("/api/faqs/{category}")
+    @ResponseBody
+    public ResponseEntity<List<InquiryResponseDTO>> getFAQsByCategory(@PathVariable String category) {
+        try {
+            List<InquiryResponseDTO> faqs = helpService.getFAQsByCategory(category);
+            return ResponseEntity.ok(faqs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // 사용자 유형별 FAQ 목록 API
+    @GetMapping("/api/faqs")
+    @ResponseBody
+    public ResponseEntity<Map<String, List<InquiryResponseDTO>>> getAllFAQs(
+            @RequestParam(defaultValue = "user") String userType) {
+        try {
+            Map<String, List<InquiryResponseDTO>> faqsByCategory = helpService.getFAQsByUserType(userType);
+            return ResponseEntity.ok(faqsByCategory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // 카테고리별 문의 통계 API
+    @GetMapping("/api/stats/category")
+    @ResponseBody
+    public ResponseEntity<Map<String, Long>> getCategoryStats() {
+        try {
+            Map<String, Long> stats = helpService.getInquiryStatsByCategory();
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     @GetMapping("/test/setSession")
     @ResponseBody
     public String setTestSession(HttpSession session) {
@@ -49,7 +91,7 @@ public class InquiryController {
             @RequestParam("inquiryContent") String content,
             @RequestParam(value = "attachFile", required = false) MultipartFile file,
             @AuthenticationPrincipal CustomUser user
-            ) {   // HttpSession 직접 주입
+            ) {
 
         try {
             String userEmail = user.getEmail(); // 로그인한 사용자 이메일
@@ -108,4 +150,20 @@ public class InquiryController {
                     .body(Map.of("success", false, "message", "문의 접수 중 오류 발생: " + e.getMessage()));
         }
     }
+ // 카테고리별 문의 목록 조회 페이지
+    @GetMapping("/list/{category}")
+    public String getInquiriesByCategory(@PathVariable String category, 
+                                         @RequestParam(defaultValue = "0") int page,
+                                         Model model) {
+        int pageSize = 10; // 한 페이지에 10개씩
+        Page<InquiryResponseDTO> inquiryPage = helpService.getInquiriesByCategory(category, PageRequest.of(page, pageSize));
+
+        model.addAttribute("inquiries", inquiryPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", inquiryPage.getTotalPages());
+        model.addAttribute("category", category);
+
+        return "user/help/inquiry_list"; // Thymeleaf 템플릿 경로
+    }
+
 }

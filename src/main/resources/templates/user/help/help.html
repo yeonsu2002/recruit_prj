@@ -8,8 +8,6 @@
     <link rel="stylesheet" th:href="@{/user/css/header.css}" />
     <link rel="stylesheet" th:href="@{/user/css/footer.css}" />
     <link rel="stylesheet" th:href="@{/user/help/help.css}"/>
-    <style type="text/css">
-    </style>
 </head>
 <body>
     <header>
@@ -49,76 +47,10 @@
                     <!-- FAQ Section -->
                     <div class="faq-section">
                         <div class="faq-title">자주 묻는 질문<strong>(사용자)</strong></div>
-                        
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('general')">
-                                <div class="faq-category-title">
-                                    <span class="category-general">일반</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="general-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 회원가입은 어떻게 하나요?</div>
-                                    <div class="faq-answer">A. 홈페이지 우측 상단의 '회원가입' 버튼을 클릭하여 가입할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 비밀번호를 잊어버렸어요.</div>
-                                    <div class="faq-answer">A. 로그인 페이지에서 '비밀번호 찾기'를 클릭하여 재설정할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 회원 탈퇴는 어떻게 하나요?</div>
-                                    <div class="faq-answer">A. 마이페이지 > 회원정보 수정 > 회원탈퇴에서 진행할 수 있습니다.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('tech')">
-                                <div class="faq-category-title">
-                                    <span class="category-tech">기술문의</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="tech-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 이력서 업로드가 안되요.</div>
-                                    <div class="faq-answer">A. 파일 형식이 PDF, DOC, DOCX인지 확인하고, 파일 크기가 10MB 이하인지 확인해주세요.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 사이트가 느려요.</div>
-                                    <div class="faq-answer">A. 브라우저 캐시를 삭제하거나 다른 브라우저를 사용해보세요.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 모바일에서 사용할 수 있나요?</div>
-                                    <div class="faq-answer">A. 네, 모바일 웹과 앱 모두 지원합니다.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('recruitment')">
-                                <div class="faq-category-title">
-                                    <span class="category-recruitment">구직</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="recruitment-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 지원 현황을 어떻게 확인하나요?</div>
-                                    <div class="faq-answer">A. 마이페이지 > 지원현황에서 확인할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 채용공고는 어떻게 검색하나요?</div>
-                                    <div class="faq-answer">A. 검색창에 키워드를 입력하거나 필터를 사용하여 원하는 조건으로 검색할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 스크랩한 공고는 어디서 볼 수 있나요?</div>
-                                    <div class="faq-answer">A. 마이페이지 > 스크랩한 공고에서 확인할 수 있습니다.</div>
-                                </div>
+                        <div id="user-faq-container">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                FAQ를 불러오는 중...
                             </div>
                         </div>
                     </div>
@@ -148,76 +80,10 @@
                     <!-- FAQ Section -->
                     <div class="faq-section">
                         <div class="faq-title">자주 묻는 질문<strong>(기업)</strong></div>
-                        
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('company-general')">
-                                <div class="faq-category-title">
-                                    <span class="category-general">일반</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="company-general-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 기업회원 가입은 어떻게 하나요?</div>
-                                    <div class="faq-answer">A. 기업 서비스 페이지에서 사업자등록번호를 통해 가입할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 기업 인증은 얼마나 걸리나요?</div>
-                                    <div class="faq-answer">A. 일반적으로 1-2 영업일 소요됩니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 기업정보 수정은 어떻게 하나요?</div>
-                                    <div class="faq-answer">A. 기업관리 페이지에서 기업정보를 수정할 수 있습니다.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('company-service')">
-                                <div class="faq-category-title">
-                                    <span class="category-service">서비스문의</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="company-service-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 채용공고는 어떻게 등록하나요?</div>
-                                    <div class="faq-answer">A. 기업관리 페이지에서 '채용공고 등록' 버튼을 클릭하여 등록할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 지원자 관리는 어떻게 하나요?</div>
-                                    <div class="faq-answer">A. 채용관리 페이지에서 지원자 현황을 확인하고 관리할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 공고 노출 기간은 얼마나 되나요?</div>
-                                    <div class="faq-answer">A. 기본 30일이며, 연장할 수 있습니다.</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="faq-category">
-                            <div class="faq-category-header" onclick="toggleFAQ('company-payment')">
-                                <div class="faq-category-title">
-                                    <span class="category-payment">결제</span>
-                                    <span class="faq-category-count">3</span>
-                                </div>
-                                <div class="faq-arrow">▶</div>
-                            </div>
-                            <div class="faq-items" id="company-payment-items">
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 결제 방법은 무엇이 있나요?</div>
-                                    <div class="faq-answer">A. 신용카드, 계좌이체, 가상계좌를 지원합니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 세금계산서 발행이 가능한가요?</div>
-                                    <div class="faq-answer">A. 네, 결제 완료 후 세금계산서를 발행할 수 있습니다.</div>
-                                </div>
-                                <div class="faq-item">
-                                    <div class="faq-question">Q. 환불 정책은 어떻게 되나요?</div>
-                                    <div class="faq-answer">A. 서비스 이용 전 100% 환불, 이용 후에는 정책에 따라 부분 환불 가능합니다.</div>
-                                </div>
+                        <div id="company-faq-container">
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                FAQ를 불러오는 중...
                             </div>
                         </div>
                     </div>
@@ -249,8 +115,9 @@
                             <option value="technical">기술 문의</option>
                             <option value="account">계정 문의</option>
                             <option value="recruitment">구직 관련</option>
-                            <option value="company">기업 서비스</option>
-                            <option value="payment">결제 관련</option>
+                            <option value="company-general">기업 일반</option>
+                            <option value="company-service">기업 서비스</option>
+                            <option value="company-payment">기업 결제</option>
                             <option value="other">기타</option>
                         </select>
                     </div>
@@ -290,6 +157,14 @@
     </footer>
 
     <script type="text/javascript">
+        // 현재 활성 탭
+        let currentTab = 'user';
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFAQs(currentTab);
+        });
+
         // Tab switching functionality
         function switchTab(tab) {
             // Remove active class from all tabs
@@ -299,6 +174,101 @@
             // Add active class to selected tab
             event.target.classList.add('active');
             document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Update current tab and load FAQs
+            currentTab = tab;
+            loadFAQs(tab);
+        }
+
+        // FAQ 데이터 로드
+        function loadFAQs(userType) {
+            const container = document.getElementById(userType + '-faq-container');
+            
+            // 로딩 상태 표시
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    FAQ를 불러오는 중...
+                </div>
+            `;
+            
+            // API 호출
+            fetch(`/user/help/api/faqs?userType=${userType}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderFAQs(container, data, userType);
+                })
+                .catch(error => {
+                    console.error('FAQ 로드 중 오류:', error);
+                    container.innerHTML = `
+                        <div class="empty-message">
+                            FAQ를 불러오는 중 오류가 발생했습니다.
+                            <br>잠시 후 다시 시도해주세요.
+                        </div>
+                    `;
+                });
+        }
+
+        // FAQ 렌더링
+        function renderFAQs(container, faqData, userType) {
+            if (!faqData || Object.keys(faqData).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-message">
+                        현재 등록된 FAQ가 없습니다.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            // 카테고리 매핑
+            const categoryInfo = {
+                'general': { name: '일반', class: 'category-general' },
+                'technical': { name: '기술문의', class: 'category-tech' },
+                'recruitment': { name: '구직', class: 'category-recruitment' },
+                'company-general': { name: '일반', class: 'category-general' },
+                'company-service': { name: '서비스문의', class: 'category-service' },
+                'company-payment': { name: '결제', class: 'category-payment' }
+            };
+
+            Object.keys(faqData).forEach(category => {
+                const faqs = faqData[category];
+                const info = categoryInfo[category] || { name: category, class: 'category-general' };
+                
+                html += `
+                    <div class="faq-category">
+                        <div class="faq-category-header" onclick="toggleFAQ('${category}')">
+                            <div class="faq-category-title">
+                                <span class="${info.class}">${info.name}</span>
+                                <span class="faq-category-count">${faqs.length}</span>
+                            </div>
+                            <div class="faq-arrow">▶</div>
+                        </div>
+                        <div class="faq-items" id="${category}-items">
+                `;
+                
+                faqs.forEach(faq => {
+                    html += `
+                        <div class="faq-item">
+                            <div class="faq-question">Q. ${faq.title}</div>
+                            <div class="faq-answer">A. ${faq.answer || '답변 준비 중입니다.'}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
         // FAQ toggle functionality
@@ -339,7 +309,7 @@
             charCount.textContent = textarea.value.length;
         }
 
-        // 폼 제출 처리 (수정된 부분)
+        // 폼 제출 처리
         document.getElementById('inquiryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -384,6 +354,10 @@
                 if (data.success) {
                     alert('문의가 성공적으로 접수되었습니다.\n빠른 시일 내에 답변드리겠습니다.');
                     closeModal();
+                    // FAQ 새로고침 (새로운 문의가 답변되어 FAQ로 추가될 수 있음)
+                    setTimeout(() => {
+                        loadFAQs(currentTab);
+                    }, 1000);
                 } else {
                     alert('문의 접수 중 오류가 발생했습니다: ' + data.message);
                 }
