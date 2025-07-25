@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.user.dto.ReviewDTO;
+import kr.co.sist.user.dto.ReviewSearchDTO;
+import kr.co.sist.user.mapper.ReviewMapper;
 import kr.co.sist.user.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 
@@ -25,11 +27,11 @@ import lombok.RequiredArgsConstructor;
 public class ReviewController {
 
 	private final ReviewService rs;
+	private final ReviewMapper reviewMapper;
 	
 	//리뷰조회페이지
 	@GetMapping("/user/job_posting/review")
 	public String review(@RequestParam(value = "corpNo", required = false) Long corpNo, Model model) {
-		System.out.println("---------------------Controller에 넘어온 corpNo = " + corpNo);
 	    
 	    // corpNo 유효성 검사를 먼저 수행
 	    if (corpNo == null || corpNo <= 0) {
@@ -224,4 +226,7 @@ public class ReviewController {
 
 	    return "redirect:/user/job_posting/review?corpNo=" + corpNo;
 	}
+	
+	
+	
 }
