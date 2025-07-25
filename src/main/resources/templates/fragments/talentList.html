@@ -47,6 +47,10 @@
 				<button class="action-btn interview-btn openInterviewModalBtn"
 				        th:data-resume-seq="${talent.resumeSeq}"
 				        th:data-corp-no="${corpNo}">면접 제안</button>
+                   <a th:href="@{/corp/talentPool/resume_detail}">
+                   <button class="action-btn resume-btn">이력서 확인</button></a>
+                   <button class="action-btn interview-btn openInterviewModalBtn">
+                   면접 제안</button>
                </div>
             </div>
        	</div>
