@@ -7,8 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import kr.co.sist.corp.dto.InterviewOfferDTO;
+<<<<<<< Updated upstream
 import kr.co.sist.corp.dto.MessageDTO;
 import kr.co.sist.corp.dto.RecentlyViewedDTO;
+=======
+import kr.co.sist.corp.dto.MailDTO;
+>>>>>>> Stashed changes
 import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.dto.TalentPoolDTO;
 
@@ -55,7 +59,11 @@ public interface TalentPoolMapper {
       @Param("size") int size,
       @Param("corpNo") Long corpNo);
   
+<<<<<<< Updated upstream
   void insertInterviewProposal(InterviewOfferDTO ioDTO);
+=======
+  void insertInterviewProposal(InterviewOfferDTO proposalDto);
+>>>>>>> Stashed changes
   
   //이력서 상세
   TalentPoolDTO selectResumeDetail(int resumeNo);
@@ -66,6 +74,7 @@ public interface TalentPoolMapper {
   void insertResumeViewLog(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
   //이력서 정보
   TalentPoolDTO selectResumeInfo(@Param("resumeSeq") Long resumeSeq);
+<<<<<<< Updated upstream
   //기업명
   InterviewOfferDTO getCorpInfoByCorpNo(Long corpNo);
 
@@ -79,6 +88,13 @@ public interface TalentPoolMapper {
   int getRecentlyViewedResumesCount(Long corpNo);
   // 이력서 상세 정보 조회
   List<TalentPoolDTO> selectResumeMemberInfo(Map<String, Object> params);
+=======
+
+  
+  //메일 알림
+  void insertMail(MailDTO mail);
+
+>>>>>>> Stashed changes
   
 
 }
