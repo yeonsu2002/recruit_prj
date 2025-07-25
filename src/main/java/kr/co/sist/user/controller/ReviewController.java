@@ -95,7 +95,7 @@ public class ReviewController {
 	    return "user/job_posting/review";
 	}
 
-	@GetMapping("/user/job_posting/review_write")  // URL 경로 수정
+	@GetMapping("/user/job_posting/review_write") 
 	public String reviewWritePage(@RequestParam("corpNo") Long corpNo,
 	                              @AuthenticationPrincipal CustomUser userInfo,
 	                              RedirectAttributes redirectAttributes,

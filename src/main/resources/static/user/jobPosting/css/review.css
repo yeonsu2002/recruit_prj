@@ -176,3 +176,31 @@
     color: white;
     text-decoration: none;
 }
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 요소 간 간격 */
+}
+
+.review-rating {
+  font-size: 18px;
+}
+
+.score-number {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.review-date {
+  color: gray;
+  font-size: 14px;
+}
+
+.title-pros {
+    color: green;
+  }
+  .title-cons {
+    color: red;
+  }
+  

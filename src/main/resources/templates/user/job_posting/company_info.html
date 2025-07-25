@@ -108,9 +108,9 @@
                 <div data-bs-spy="scroll" data-bs-target="#simple-list-example" data-bs-offset="0" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
                     <h4 id="simple-list-item-1">기업정보</h4>
                     <div class="company_info">
-                        <img alt="기업 로고" src="/images/samsung.jpg" style="width:250px" height="auto"/>
+                       <img th:src="@{/images/corplogo/{img}(img=${companyDTO.corpLogo})}" alt="로고"/>
                         <div class="info_box">
-                            <p>업력:<span class="gap" th:text="${companyDTO.corpCreatedAt}"></span></p>
+                            <p>설립일:<span class="gap" th:text="${companyDTO.corpCreatedAt}"></span></p>
                             <p>업종:<span class="gap" th:text="${companyDTO.industry}"></span></p>
                             <p>대표자명:<span class="gap" th:text="${companyDTO.corpCeo}"></span></p>
                             <p>홈페이지: <a th:href="@{${companyDTO.corpUrl}}" th:text="${companyDTO.corpUrl}" target="_blank"></a></p>
@@ -118,17 +118,17 @@
                     </div>
 
                     <h4 id="simple-list-item-2">회사소개</h4>
-                    <p th:text="${companyDTO.corpInfo}"></p>
+                    <p class="content-detail" th:text="${companyDTO.corpInfo}"></p>
 
                     <h4 id="simple-list-item-3">기업 규모</h4>
                     <div class="company-scale">
                         <div class="scale-item">
                             <p class="scale-label">사원수</p>
-                            <p class="scale-value" th:text="${companyDTO.corpEmpCnt}"></p>
+                            <p class="scale-value" th:text="|${companyDTO.corpEmpCnt}명|"></p>
                         </div>
                         <div class="scale-item">
                             <p class="scale-label">매출</p>
-                            <p class="scale-value" th:text="${companyDTO.corpAnnualRevenue}"></p>
+                            <p class="scale-value" th:text="|${companyDTO.corpAnnualRevenue}억원|"></p>
                         </div>
                         <div class="scale-item">
                             <p class="scale-label">규모</p>

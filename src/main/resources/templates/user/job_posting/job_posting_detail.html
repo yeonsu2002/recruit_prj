@@ -28,7 +28,6 @@ $(document).ready(function () {
         
         $modal.show().addClass('show');
         fetchUserResumes();
-        fetchUserAttachments(); // 사용자 첨부파일 불러오기
     });
 
     // 모달 닫기
@@ -65,19 +64,6 @@ $(document).ready(function () {
         });
     }
 
-    function fetchUserAttachments() {
-        $.ajax({
-            url:'/user/attachments',
-            method: 'GET',
-            success: function (attachments) {
-                renderAttachmentList(attachments);
-            },
-            error: function () {
-                console.error('첨부파일 불러오기 실패');
-                $('#attachmentList').html('<p>첨부파일을 불러올 수 없습니다.</p>');
-            }
-        });
-    }
     
     function renderResumeList(resumes) {
         const $container = $('.resume-section');
@@ -120,25 +106,6 @@ $(document).ready(function () {
         }
     }
 
-    function renderAttachmentList(attachments) {
-        const $attachmentContainer = $('#attachmentList');
-        $attachmentContainer.empty();
-
-        if (!attachments || attachments.length === 0) {
-            $attachmentContainer.append('<p>첨부파일이 없습니다.</p>');
-            return;
-        }
-
-        attachments.forEach(att => {
-            const attItem = $(`
-                <div class="attachment-item">
-                    <input type="checkbox" id="att_${att.attachmentSeq}" name="selectedAttachments" value="${att.attachmentSeq}">
-                    <label for="att_${att.attachmentSeq}">${att.fileName}</label>
-                </div>
-            `);
-            $attachmentContainer.append(attItem);
-        });
-    }
 
     // 지원하기 버튼 클릭
     $('#confirmBtn').on('click', function () {
@@ -146,12 +113,6 @@ $(document).ready(function () {
             alert('이력서를 선택해주세요.');
             return;
         }
-
-        // 선택된 첨부파일들 수집
-        const selectedAttachments = [];
-        $('input[name="selectedAttachments"]:checked').each(function() {
-            selectedAttachments.push(parseInt($(this).val(), 10));
-        });
 
         const jobPostingSeq = parseInt($('#jobPostingSeq').val(), 10);
         if (!jobPostingSeq) {
@@ -165,7 +126,6 @@ $(document).ready(function () {
             data: {
                 resumeSeq: selectedResumeId,
                 jobPostingSeq: jobPostingSeq,
-                selectedAttachments: selectedAttachments
             },
             success: function () {
                 alert('지원 완료');
@@ -287,12 +247,11 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">근무지</h2>
-                   <p th:text="${jDto.roadAddress}" style="font-size: 15px;">근무주소</p>
-
+               	  <p th:text="|${jDto.roadAddress} ${jDto.detailAddress}|">근무주소</p>
                 </div>
-                <div>
+                <div> 
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;" th:text="|${jDto.salary}원| ?: '회사내규에 따름'"></p>
+                    <p style="font-size: 15px;" th:text="|${jDto.corpAvgSal}만원| ?: '회사내규에 따름'"></p>
                 </div>
                 <div>
                   <h2 style="font-size: 20px;">근무형태</h2>
@@ -311,11 +270,12 @@ $(document).ready(function () {
 
            <div class="company-intro">
     <h2><strong>기업소개</strong></h2><br><br>
-    <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2>
     
     <div class="company-content">
-       <img th:if="${jDto != null}" th:src="@{${jDto.corpImg}}" alt="회사 이미지"/>
-        
+        <img th:src="@{/images/corpimg/{img}(img=${jDto.corpImg})}" alt="기업 이미지"
+     style="width: auto; height: 400px; object-fit: cover; border-radius: 12px;" />
+        <br><br>
+  		  <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2><br>
         <div class="company-description" th:text="${jDto.corpInfo}"></div>
     </div>
 </div>
@@ -327,7 +287,7 @@ $(document).ready(function () {
     <div class="company-floating-card">
         <div class="company-logo-section">
             <div class="logo-placeholder">
-                <span>🏢</span>
+                 <img th:src="@{/images/corplogo/{img}(img=${jDto.corpLogo})}" alt="로고" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
             </div>
             <div class="company-title">
                 <h4 th:text="${jDto.corpNm}">기업이름</h4>
@@ -339,10 +299,13 @@ $(document).ready(function () {
 
         <div class="company-info-section">
             <div class="info-item">
-                <span class="label">업력</span>
+                <span class="label">설립일</span>
+		<!-- <span class="value" id="corpCreatedAt"
+		      th:text="${jDto.corpCreatedAt != null ? jDto.corpCreatedAt.substring(0,4) + '-' + jDto.corpCreatedAt.substring(4,6) + '-' + jDto.corpCreatedAt.substring(6,8) : '정보 없음'}">
+		</span> -->
 		<span class="value" id="corpCreatedAt"
-      th:text="${jDto.corpCreatedAt != null ? jDto.corpCreatedAt.substring(0,4) + '-' + jDto.corpCreatedAt.substring(4,6) + '-' + jDto.corpCreatedAt.substring(6,8) : '정보 없음'}">
-</span>
+		      th:text="${jDto.corpCreatedAt}">
+		</span>
                 
             </div>
              <div class="info-item">
@@ -351,7 +314,15 @@ $(document).ready(function () {
             </div>
         </div>
 
-        <!-- 마감일 체크해서 지원 버튼 비활성화 -->
+		<!-- 비회원 -->
+       <div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
+           <a th:href="@{/login}" class="apply-button">지원하기</a>
+       </div>
+       
+		<!-- 회원 -->
+      <div sec:authorize="hasRole('ROLE_USER')">
+        <div th:if="${user != null and user.corpNo == null}">
+      
        <button class="floating-apply-btn" 
         id="applyBtn" 
         th:disabled="${jDto.isEnded == 'Y'}" 
@@ -359,7 +330,8 @@ $(document).ready(function () {
         th:classappend="${jDto.isEnded == 'Y' ? ' disabled' : ''}">
 		    지원하기
 		</button>
-		
+		</div>
+       </div>
 	    <div class="floating-actions">
                 <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}"/>
                 
@@ -429,22 +401,6 @@ $(document).ready(function () {
                     </th:block>
                 </div>
 
-    <div class="section-title">첨부 파일</div>
-			<div id="attachmentList" class="attachment-list">
-			    <th:block th:if="${attachments != null and #lists.isEmpty(attachments) == false}">
-			        <th:block th:each="att : ${attachments}">
-			            <div class="attachment-item">
-			                <input type="checkbox" th:id="'att_' + ${att.attachmentSeq}" 
-			                       name="selectedAttachments" th:value="${att.attachmentSeq}" />
-			                <label th:for="'att_' + ${att.attachmentSeq}" 
-			                       th:text="${att.fileName}"></label>
-			            </div>
-			        </th:block>
-			    </th:block>
-			    <th:block th:if="${attachments == null or #lists.isEmpty(attachments)}">
-			        <p>첨부파일이 없습니다.</p>
-			    </th:block>
-			</div> 
 
             </div>
             <div class="modal-buttons">

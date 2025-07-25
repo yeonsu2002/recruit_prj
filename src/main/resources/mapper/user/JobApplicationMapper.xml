@@ -20,20 +20,6 @@
     
     
      
-     <!-- 2. 사용자 이메일로 모든 첨부파일 조회 - 컬럼명 수정 -->
-    <select id="selectAttachmentsByEmail" resultType="kr.co.sist.user.dto.AttachmentDTO">
-        SELECT
-            ATTACHMENT_SEQ as attachmentSeq,
-            EMAIL as email,
-            FILE_NAME as fileName,
-            FILE_SIZE as fileSize,
-            FILE_TYPE as fileType,
-            CREATED_AT as createdAt
-        FROM ATTACHMENT
-        WHERE EMAIL = #{email}
-        ORDER BY CREATED_AT DESC
-    </select>
-    
 
    <insert id="insertJobApplication" parameterType="map">
     INSERT INTO JOB_APPLICATION (
@@ -60,7 +46,6 @@
         job_posting_seq,
         application_status,
         application_date,
-        interview_date,
         is_read,
         pass_stage
     ) VALUES (
@@ -68,23 +53,26 @@
         #{jobPostingSeq},
         #{applicationStatus},
         #{applicationDate},
-        #{interviewDate,jdbcType=VARCHAR},  <!-- interviewDate에 jdbcType 명시 -->
         #{isRead},
         #{passStage}
     )
 </insert>
 
-
-<!-- 5. 지원-첨부파일 관계 등록 -->
- <insert id="insertApplicationAttachment">
-    INSERT INTO APPLICATION_ATTACHMENT (
-        attachment_seq,
-        job_application_seq
-    ) VALUES (
-        #{attachmentSeq, jdbcType=INTEGER},
-        #{jobApplicationSeq, jdbcType=INTEGER}
-    )
-</insert>
+<select id="selectExistingApplication" resultType="kr.co.sist.user.dto.JobApplicationDTO">
+    SELECT
+        job_application_seq AS jobApplicationSeq,
+        resume_seq AS resumeSeq,
+        job_posting_seq AS jobPostingSeq,
+        application_status AS applicationStatus,
+        application_date AS applicationDate,
+        interview_date AS interviewDate,
+        is_read AS isRead,
+        pass_stage AS passStage
+    FROM JOB_APPLICATION
+    WHERE resume_seq = #{resumeSeq}
+      AND job_posting_seq = #{jobPostingSeq}
+      AND application_status IN (0, 1)
+</select>
 
 
 </mapper>
