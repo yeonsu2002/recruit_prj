@@ -42,6 +42,8 @@
 	</select>
 	
 	<select id="selectAsk" resultType="kr.co.sist.user.entity.InquiryEntity">
-	select ask_seq,title,answer_stat from ask where answer_stat='N'
+	select ask_seq,title,answer_stat 
+	from ask 
+	where answer_stat='N' and <![CDATA[ ROWNUM <= 5 ]]>
 	</select>
 </mapper>

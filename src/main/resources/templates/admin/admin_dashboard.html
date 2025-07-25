@@ -57,15 +57,21 @@
   <div class="chart-box">
   	<table class="table table-bordered">
   	<tr>
-  		<td>전체</td>
+  		<td colspan="2">현재 비답장 상태인 문의들</td>
+  		<td>0개</td>
   	</tr>
-  		<tr>
+  	<tr>
+  		<td>문의 번호</td>
+  		<td>제목</td>
+  		<td>문의 상태</td>
+  	</tr>
+  	<tr>
   		<tr th:each="ask:${ask}">
   		<td th:text="${ask.askSeq}"></td>
   		<td th:text="${ask.title}"></td>
   		<td th:text="${ask.answerStat}"></td>
   		</tr>
-  		</tr>
+  	</tr>
   	</table>
   </div>
 </div>

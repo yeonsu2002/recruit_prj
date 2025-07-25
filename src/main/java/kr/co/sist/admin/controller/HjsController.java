@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.sist.admin.dashboard.DashboardService;
 import kr.co.sist.admin.email.EmailService;
@@ -175,7 +176,6 @@ public class HjsController {
 	public String CorpDetail(@RequestParam String corpNo,
 												Model model) {
 		CorpEntity corp=cs.detailCorp(corpNo);
-
 		model.addAttribute("corp", corp);
 		return "admin/admin_corp_detail";
 	}
