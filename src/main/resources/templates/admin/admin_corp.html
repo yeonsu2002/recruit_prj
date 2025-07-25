@@ -65,6 +65,42 @@ form input[type="submit"]:hover {
     text-align: center;
     vertical-align: middle;
 }
+#corpTable td.num-cell {
+	min-width: 100px;
+    max-width: 100px;      /* 원하는 최대 너비 */
+    white-space: nowrap;   /* 줄바꿈 금지 */
+    overflow: hidden;      /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* ...으로 표시 */
+}
+#corpTable td.info-cell {
+	min-width: 350px;
+    max-width: 350px;      /* 원하는 최대 너비 */
+    white-space: nowrap;   /* 줄바꿈 금지 */
+    overflow: hidden;      /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* ...으로 표시 */
+}
+#corpTable td.name-cell {
+	min-width: 150px;
+    max-width: 150px;      /* 원하는 최대 너비 */
+    white-space: nowrap;   /* 줄바꿈 금지 */
+    overflow: hidden;      /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* ...으로 표시 */
+}
+
+#corpTable td.industry-cell {
+	min-width: 150px;
+    max-width: 150px;      /* 원하는 최대 너비 */
+    white-space: nowrap;   /* 줄바꿈 금지 */
+    overflow: hidden;      /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* ...으로 표시 */
+}
+#corpTable td.url-cell {
+	min-width: 250px;
+    max-width: 250px;      /* 원하는 최대 너비 */
+    white-space: nowrap;   /* 줄바꿈 금지 */
+    overflow: hidden;      /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* ...으로 표시 */
+}
 
 /* 페이지네이션 영역 */
 #pagination {
@@ -103,16 +139,16 @@ form input[type="submit"]:hover {
 
 <tbody>
 <tr th:each="c:${corp}">
-<td>
+<td class="num-cell">
   <form id="detail" action="/admin_corp_detail" >
     <input type="hidden" name="corpNo" th:value="${c.corpNo}" />
   <a href="#" onclick="document.getElementById('detail').submit();" th:text="${c.corpNo}"></a>
   </form>
 </td>
-<td th:text="${c.corpNm}"></td>
-<td th:text="${c.corpInfo}"></td>
-<td th:text="${c.industry}"></td>
-<td th:text="${c.corpUrl}"></td>
+<td th:text="${c.corpNm}" class="name-cell"></td>
+<td th:text="${c.corpInfo}" class="info-cell"></td>
+<td th:text="${c.industry}" class="industry-cell"></td>
+<td th:text="${c.corpUrl}" class="url-cell"></td>
 </tr>
 </tbody>
 </table>

@@ -81,13 +81,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:inline="javascript">
 /*<![CDATA[*/
-  const userCount = /*[[${userCount}]]*/ [];
+	const userCount = /*[[${userCount}]]*/ [];
   console.log(userCount);
-
+/*
   const labels = userCount.map(item => item.REGDATE?.split(' ')[0]); // 날짜만 추출
   const counts = userCount.map(item => parseInt(item.COUNT));
 
   const ctx = document.getElementById('myChart').getContext('2d');
+  */
+  const labels=userCount.map(item=>item.PT);
+  const counts=userCount.map(item=>parseInt(item.CNT));
+  const ctx = document.getElementById('myChart').getContext('2d');
+  
   backgroundColor: [
 	  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
 	  '#9966FF', '#FF9F40', '#C9CBCF'
@@ -97,7 +102,7 @@
     data: {
       labels: labels,
       datasets: [{
-        label: '일별 회원수',
+        label: '일별 공고 등록수',
         data: counts,
         backgroundColor: 'rgba(54, 162, 235, 0.7)',
         borderColor: 'rgba(54, 162, 235, 1)',
@@ -112,7 +117,6 @@
           },
           title: {
             display: true,
-            text: '일별 누적 회원 수'
           }
         },
         scales: {
