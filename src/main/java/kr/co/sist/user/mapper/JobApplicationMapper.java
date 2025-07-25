@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import kr.co.sist.user.dto.AttahDTO;
 import kr.co.sist.user.dto.JobApplicationDTO;
 import kr.co.sist.user.dto.ResumeDTO;
 
@@ -24,4 +25,11 @@ public interface JobApplicationMapper {
   //4. 중복 방지  
   JobApplicationDTO selectExistingApplication(@Param("resumeSeq") Integer resumeSeq,
       @Param("jobPostingSeq") Integer jobPostingSeq);
+  
+  List<AttahDTO> selectAttachmentsByEmail(@Param("email") String email);
+  void insertApplicationAttachment(@Param("jobApplicationSeq") Integer jobApplicationSeq, 
+                                 @Param("attachmentSeq") Integer attachmentSeq);
+
+  
+  
 }     

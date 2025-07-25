@@ -28,6 +28,7 @@ $(document).ready(function () {
         
         $modal.show().addClass('show');
         fetchUserResumes();
+        fetchUserAttachments();
     });
 
     // 모달 닫기
@@ -63,7 +64,84 @@ $(document).ready(function () {
             }
         });
     }
+    
+    function fetchUserAttachments(){
+    	$.ajax({
+    		url:'/user/attachments',
+    		method:'GET',
+    		success:function(attachments){
+    			renderAttachmentList(attachments);
+    		},
+    		error: function () {
+                console.error('첨부파일 불러오기에 실패했습니다.');
+                $('#attachmentList').html('<p>첨부파일을 불러올 수 없습니다.</p>');
+            }
+    	});
+    }
 
+    
+    function fetchUserAttachments(){
+        console.log('첨부파일 불러오기 시작'); // 디버깅 로그
+        
+        $.ajax({
+            url:'/user/attachments',
+            method:'GET',
+            success:function(attachments){
+                console.log('첨부파일 조회 성공:', attachments); // 응답 데이터 확인
+                renderAttachmentList(attachments);
+            },
+            error: function (xhr, status, error) {
+                console.error('첨부파일 불러오기 실패:', error);
+                console.error('Status:', status);
+                console.error('Response:', xhr.responseText);
+                $('#attachmentList').html('<p style="color: red;">첨부파일을 불러올 수 없습니다. 오류: ' + error + '</p>');
+            }
+        });
+    }
+
+    // 첨부파일 렌더링 함수 (디버깅 추가)
+    function renderAttachmentList(attachments) {
+        console.log('첨부파일 렌더링 시작:', attachments); // 디버깅 로그
+        
+        const $container = $('#attachmentList');
+        $container.empty();
+
+        if (!attachments || attachments.length === 0) {
+            console.log('첨부파일이 없음'); // 디버깅 로그
+            $container.append('<p>등록된 첨부파일이 없습니다.</p>');
+            return;
+        }
+
+        console.log('첨부파일 개수:', attachments.length); // 디버깅 로그
+
+        attachments.forEach((attachment, index) => {
+            console.log(`첨부파일 ${index}:`, attachment); // 각 첨부파일 정보 확인
+            
+            const attachmentItem = $(`
+                <div class="attachment-item">
+                    <input type="checkbox" 
+                           id="attachment_${attachment.attachmentSeq}" 
+                           name="selectedAttachments" 
+                           value="${attachment.attachmentSeq}" 
+                           class="attachment-checkbox">
+                    <label for="attachment_${attachment.attachmentSeq}" class="attachment-label">
+                        <div class="attachment-icon">📎</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">${attachment.originalName || '파일명 없음'}</div>
+                            <div class="attachment-meta">
+                                ${attachment.createdAt || '날짜 정보 없음'} 업로드 
+                                ${attachment.fileSize ? '(' + Math.round(attachment.fileSize / 1024) + 'KB)' : ''}
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            `);
+            $container.append(attachmentItem);
+        });
+        
+        console.log('첨부파일 렌더링 완료'); // 디버깅 로그
+    }
+    
     
     function renderResumeList(resumes) {
         const $container = $('.resume-section');
@@ -119,14 +197,26 @@ $(document).ready(function () {
             alert('잘못된 공고 정보입니다.');
             return;
         }
+		
+        //선택한 첨부파일들
+        const selectedAttachments = [];
+        $('input[name="selectedAttachments"]:checked').each(function() {
+            selectedAttachments.push(parseInt($(this).val(), 10));
+        });
+
+
+        const formData = {
+            resumeSeq: selectedResumeId,
+            jobPostingSeq: jobPostingSeq,
+            selectedAttachments: selectedAttachments
+        };
+
 
         $.ajax({
             url: '/apply',
             method: 'POST',
-            data: {
-                resumeSeq: selectedResumeId,
-                jobPostingSeq: jobPostingSeq,
-            },
+            data: formData,
+            traditional: true, // 배열 파라미터 전송을 위해 필요
             success: function () {
                 alert('지원 완료');
                 closeModal();
@@ -400,6 +490,18 @@ $(document).ready(function () {
                     </div>
                     </th:block>
                 </div>
+					
+			<!-- 첨부파일 -->
+			<div class="section-title">추가 첨부파일 (선택사항)</div>
+			    <div class="attachment-section">
+			        <p class="attachment-description">지원서와 함께 제출할 추가 첨부파일을 선택하세요.</p>
+			        <div id="attachmentList">
+			            <!-- JavaScript로 동적 생성 -->
+			        </div>
+			    </div>
+			</div>
+										
+
 
 
             </div>

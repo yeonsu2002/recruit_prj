@@ -6,9 +6,9 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import kr.co.sist.admin.SearchDTO;
 import kr.co.sist.admin.review.AdminReviewDTO;
 import kr.co.sist.user.dto.ReviewDTO;
+import kr.co.sist.user.dto.ReviewSearchDTO;
 
 @Mapper
 public interface ReviewMapper {
@@ -67,6 +67,13 @@ public interface ReviewMapper {
 	 * @param map
 	 */
 	int deleteReview(Map<String,Object> map);
+	
+	
+	int countReviewsByCorpNo(Long corpNo);
+  List<ReviewDTO> selectReviewsPage(ReviewSearchDTO dto);
+	
+	
+	
 }
 
 
