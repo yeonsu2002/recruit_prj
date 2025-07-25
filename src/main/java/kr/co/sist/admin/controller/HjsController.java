@@ -13,15 +13,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.sist.admin.dashboard.DashboardService;
 import kr.co.sist.admin.email.EmailService;
 import kr.co.sist.admin.resume.ResumeService;
 import kr.co.sist.admin.Member.*;
+import kr.co.sist.admin.ask.AdminInquiryDTO;
 import kr.co.sist.admin.corp.CorpService;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.user.dto.ResumeDTO;
 import kr.co.sist.user.dto.UserDTO;
+import kr.co.sist.user.entity.InquiryEntity;
 import kr.co.sist.util.CipherUtil;
 
 @Controller
@@ -100,13 +103,15 @@ public class HjsController {
 	}
 	
 	@GetMapping("/admin_member_search2")
-	public String SearchMember2(  @RequestParam(required = false) String name,
+	public String SearchMember2(
+			@RequestParam(required = false) String email,
+			@RequestParam(required = false) String name,
       @RequestParam(required = false) String gender,
       @RequestParam(required = false) Integer status,
       @RequestParam(required = false) String type,
       Model model) {
 		
-		List<MemberEntity> member=ms.searchMember(name,gender,status,type);
+		List<MemberEntity> member=ms.searchMember(email,name,gender,status,type);
 		List<MemberEntity> filtered = new ArrayList();
 		for (MemberEntity m : member) {
 			try {
@@ -167,6 +172,14 @@ public class HjsController {
 		return "admin/admin_corp2";
 	}
 	
+	@GetMapping("/admin_corp_detail")
+	public String CorpDetail(@RequestParam String corpNo,
+												Model model) {
+		CorpEntity corp=cs.detailCorp(corpNo);
+		model.addAttribute("corp", corp);
+		return "admin/admin_corp_detail";
+	}
+	
 	
 	@Autowired
     private DashboardService dashboardService;
@@ -182,6 +195,8 @@ public class HjsController {
 	        List<Map<String, Object>> indCount = dashboardService.getCorpCountByIndustry();
 	        model.addAttribute("indCount",indCount);
 	        
+	        List<InquiryEntity> ask = dashboardService.getAsk();
+	        model.addAttribute("ask",ask);
 	        
 	        return "admin/admin_dashboard"; 
 	    }
@@ -207,9 +222,9 @@ public class HjsController {
 		}
 	 
 	 @GetMapping("/admin_sanction")
-		public String SearchResume(@RequestParam(required = false) String name,
+		public String SearchResume(@RequestParam String email,
 				Model model) {
-			MemberEntity member=ms.searchNameMember(name);
+			MemberEntity member=ms.searchEmailMember(email);
 			
 				try {
 	       if (member.getPhone() != null) {
@@ -223,6 +238,25 @@ public class HjsController {
 			model.addAttribute("member", member);
 			return "admin/admin_sanction";
 		}
+	 
+	 @GetMapping("/admin_sanction_cancel")
+		public String sanctionCancel(@RequestParam String email,
+				Model model) {
+		 ms.sanctionCancel(email);
+		 MemberEntity member=ms.searchEmailMember(email);
+			
+				try {
+	       if (member.getPhone() != null) {
+	           member.setPhone(cipherUtil.decryptText(member.getPhone()));
+	       }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}  // 복호화
+
+			// filtered 리스트를 모델에 추가해서 뷰에 전달
+			model.addAttribute("member", member);
+			return "admin/admin_member_detail";
+		}
 
 		@Autowired
 		private EmailService es;
@@ -230,8 +264,8 @@ public class HjsController {
 		public String SendSaction(@RequestParam(required = false) String email,
 				@RequestParam String name,
 				@RequestParam String content) {
-		 ms.sanctionMember(name);
-		 es.sendSanctionEmail("mogiyi1147@forexru.com",name,content);
+		 ms.sanctionMember(email);
+		 es.sendSanctionEmail(email,name,content);
 			return "redirect:/admin_member2";
 		}
 	 

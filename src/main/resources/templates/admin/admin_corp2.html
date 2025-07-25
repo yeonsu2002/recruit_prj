@@ -11,6 +11,7 @@
     padding: 30px;
     margin-left: 250px; /* 사이드바가 고정되어 있다고 가정 */
     background-color: #f9f9f9;
+    width:100%;
     min-height: 100vh;
 }
 
@@ -77,28 +78,19 @@ form input[type="submit"]:hover {
 <th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
 <div class="main">
 <form action="/admin_corp2_search">
-<table class="table table-bordered" >
-<tr>
-<td>사업번호</td>
-<td colspan="10"><input type="text" id="corpNo" name="corpNo"/></td>
-</tr>
-<tr>
-<td>이름</td>
-<td colspan="10"><input type="text" id="name" name="name"/></td>
-</tr>
-<tr>
-<td>업종</td>
-<td th:each="c:${corpInd}">
+<span>사업번호</span>
+<span></span><input type="text" id="corpNo" name="corpNo"/></span><br>
+<span>이름</span>
+<span><input type="text" id="name" name="name"/></span><br>
+<span>업종</span>
+<span th:each="c:${corpInd}">
 <input type="checkbox"  th:id="'ind_' + ${c}" name="industry" th:value="${c}" class="btn-check" autocomplete="off">
 <label class="btn btn-outline-primary"  th:for="'ind_' + ${c}" th:text="${c}"></label>
-</td>
-</tr>
-</table>
-
-<input type="submit" value="검색"/>
+</span><br>
+<span><input type="submit" value="검색"/></span>
 </form>
 
-<table class="table table-bordered" id="memberTable">
+<table class="table table-bordered" id="corpTable">
 <thead>
 <tr>
 <th>사업번호</th>
@@ -111,7 +103,12 @@ form input[type="submit"]:hover {
 
 <tbody>
 <tr th:each="c:${corp}">
-<td th:text="${c.corpNo}"></td>
+<td>
+  <form id="detail" action="/admin_corp_detail" >
+    <input type="hidden" name="corpNo" th:value="${c.corpNo}" />
+  <a href="#" onclick="document.getElementById('detail').submit();" th:text="${c.corpNo}"></a>
+  </form>
+</td>
 <td th:text="${c.corpNm}"></td>
 <td th:text="${c.corpInfo}"></td>
 <td th:text="${c.industry}"></td>
@@ -126,9 +123,49 @@ form input[type="submit"]:hover {
 <!-- jquery CDN -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript">
-$(function(){
+$(document).ready(function () {
+	  const rowsPerPage = 10;
+	  const rows = $('#corpTable tbody tr');
+	  const totalRows = rows.length;
+	  const totalPages = Math.ceil(totalRows / rowsPerPage);
+	  let currentPage = 1;
 
-});
+	  function showPage(page) {
+	    rows.hide();
+	    const start = (page - 1) * rowsPerPage;
+	    const end = start + rowsPerPage;
+	    rows.slice(start, end).show();
+	    renderPagination();
+	  }
+
+	  function renderPagination() {
+	    let html = '';
+	    if (currentPage > 1) {
+	      html += `<button class="btn btn-sm btn-outline-secondary me-2" id="prevPage">이전</button>`;
+	    }
+	    if (currentPage < totalPages) {
+	      html += `<button class="btn btn-sm btn-outline-secondary" id="nextPage">다음</button>`;
+	    }
+	    $('#pagination').html(html);
+
+	    $('#prevPage').click(() => {
+	      if (currentPage > 1) {
+	        currentPage--;
+	        showPage(currentPage);
+	      }
+	    });
+
+	    $('#nextPage').click(() => {
+	      if (currentPage < totalPages) {
+	        currentPage++;
+	        showPage(currentPage);
+	      }
+	    });
+	  }
+
+	  // 최초 실행
+	  showPage(currentPage);
+	});
 
 </script>
 

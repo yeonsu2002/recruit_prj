@@ -41,12 +41,16 @@ public class MemberService {
 		return memberMapper.selectMember();
 	}
 	
-	public List<MemberEntity> searchMember(String name, String gender, Integer status,String type) {
-		return memberMapper.searchMember(name, gender, status,type);
+	public List<MemberEntity> searchMember(String email,String name, String gender, Integer status,String type) {
+		return memberMapper.searchMember(email,name, gender, status,type);
 	}
 	
-	public void sanctionMember(String name) {
-		memberMapper.sanctionMember(name);
+	public void sanctionMember(String email) {
+		memberMapper.sanctionMember(email);
+		return;
+	}
+	public void sanctionCancel(String email) {
+		memberMapper.sanctionCancel(email);
 		return;
 	}
 }

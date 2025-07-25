@@ -37,4 +37,9 @@ public class CorpService {
 	public List<CorpEntity> searchCorp(String corpNo, String name, List<String> industry){
 		return cm.searchCorp(corpNo, name, industry);
 	}
+	
+	public CorpEntity detailCorp(String corpNo) {
+		return cm.detailCorp(corpNo);
+	}
+
 }

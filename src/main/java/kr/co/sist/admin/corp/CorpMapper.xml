@@ -32,4 +32,8 @@
     </if>
     </where>
     </select>
+    
+    <select id="detailCorp" parameterType="String">
+    select * from company where corp_no=#{corpNo}
+    </select>
 </mapper>
