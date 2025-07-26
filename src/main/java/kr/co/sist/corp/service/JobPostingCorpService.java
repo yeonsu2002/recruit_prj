@@ -8,12 +8,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.CorpEntity;
+import kr.co.sist.corp.dto.JobPostingApplicantStatsDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.dto.JobPostingEntity;
 import kr.co.sist.corp.mapper.JobPostingCorpMapper;
@@ -178,6 +180,32 @@ public class JobPostingCorpService {
   	
   	JobPostingEntity jpEntity  = jRepository.findByCorpNo_CorpNoAndJobPostingSeq(corpNo, jobPostingSeq);
   	
+  	JobPostingDTO jpDTO = JobPostingDTO.from(jpEntity);
+  	
+  	return jpDTO;
+  }
+  
+  /**
+   * 공고번호로 해당 공고의 지원자들의 통계자료 가져오기 
+   */
+  public JobPostingApplicantStatsDTO selectApplicantStats(int JobPostingSeq) {
+  	
+  	try {
+  		JobPostingApplicantStatsDTO jpasDTO = jpm.selectApplicantStats(JobPostingSeq);
+  		//System.out.println("[디버깅] 서비_ selectApplicantStats : " + jpasDTO);
+  		return jpasDTO;
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			throw new RuntimeException("지원자 통계 조회 중 오류가 발생했습니다.", e);
+		}
+  	
+  }
+  
+  /**
+   * 공고 번호로 해당 공고 정보 가져오기 
+   */
+  public JobPostingDTO selectJobPostingInfo(int JobPostingSeq) {
+  	JobPostingEntity jpEntity = jRepository.findById(JobPostingSeq).orElseThrow(() -> new NotFoundException("해당 공고가 존재하지 않습니다."));
   	JobPostingDTO jpDTO = JobPostingDTO.from(jpEntity);
   	
   	return jpDTO;
