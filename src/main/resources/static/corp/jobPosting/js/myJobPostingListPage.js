@@ -283,7 +283,7 @@ function updatePostingTable(postList) {
 	    });
    	}
 }
-
+ 
 //건수 업데이트
 function updatePostingCounts(data) {
     if (data.postCnt) {
