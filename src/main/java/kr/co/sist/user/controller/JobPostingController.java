@@ -99,7 +99,6 @@ public class JobPostingController {
             model.addAttribute("popularPostings", popularPostings);
             
             List<NoticeDTO> noticeList = noticeService.getLatestNotices();
-            System.out.println("---------------------------------------" + noticeList);
             model.addAttribute("noticeList", noticeList);
             
             return "user/main_page";

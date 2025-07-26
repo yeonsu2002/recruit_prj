@@ -698,7 +698,6 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                 <div class="image-wrapper">
                     <!-- 기업 이미지 -->
                     <img th:src="@{/images/corpimg/{img}(img=${job.corpImg})}" alt="기업 이미지">
-					<p th:text="${job.corpImg}"></p>
                 </div>   
              <div class="dday-badge" 
 			     th:classappend="${job.daysRemaining != null and job.daysRemaining == 0} ? 'dday' : 
@@ -716,7 +715,7 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                 
                 <div class="company-info">
                     <!-- 지역 (주소의 첫 7자) -->
-                    <span th:text="${#strings.length(job.roadAddress) >= 7 ? #strings.substring(job.roadAddress, 0, 7) : job.roadAddress}">지역</span> |
+                    <span th:text="|${job.region} ${job.district}|">지역</span> |
                     <!-- 경력 여부 (신입/경력) -->
                     <span th:text="${job.expLevel}">경력</span>
                 </div>

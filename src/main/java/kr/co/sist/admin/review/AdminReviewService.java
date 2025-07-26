@@ -25,4 +25,9 @@ public class AdminReviewService {
 		
 		return reviewMapper.countSearch(map);
 	}
+	
+	public boolean deleteReview(Map<String,Object> map) {
+		int count = reviewMapper.deleteReview(map);
+		return count > 0;
+	}
 }

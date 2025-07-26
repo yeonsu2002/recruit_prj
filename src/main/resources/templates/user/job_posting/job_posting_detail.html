@@ -28,9 +28,8 @@ $(document).ready(function () {
         
         $modal.show().addClass('show');
         fetchUserResumes();
-        $('#attachmentList').empty(); // 첨부파일 리스트 초기화
+        fetchUserAttachments();
     });
-
 
     // 모달 닫기
     function closeModal() {
@@ -38,6 +37,8 @@ $(document).ready(function () {
         selectedResumeId = null;
         $('.resume-item').removeClass('selected');
         $('#attachmentList').empty();
+        // 체크박스 상태 초기화
+        $('input[name="selectedAttachments"]').prop('checked', false);
     }
 
     $('#closeBtn, #cancelBtn').on('click', function () {
@@ -63,7 +64,85 @@ $(document).ready(function () {
             }
         });
     }
+    
+    function fetchUserAttachments(){
+    	$.ajax({
+    		url:'/user/attachments',
+    		method:'GET',
+    		success:function(attachments){
+    			renderAttachmentList(attachments);
+    		},
+    		error: function () {
+                console.error('첨부파일 불러오기에 실패했습니다.');
+                $('#attachmentList').html('<p>첨부파일을 불러올 수 없습니다.</p>');
+            }
+    	});
+    }
 
+    
+    function fetchUserAttachments(){
+        console.log('첨부파일 불러오기 시작'); // 디버깅 로그
+        
+        $.ajax({
+            url:'/user/attachments',
+            method:'GET',
+            success:function(attachments){
+                console.log('첨부파일 조회 성공:', attachments); // 응답 데이터 확인
+                renderAttachmentList(attachments);
+            },
+            error: function (xhr, status, error) {
+                console.error('첨부파일 불러오기 실패:', error);
+                console.error('Status:', status);
+                console.error('Response:', xhr.responseText);
+                $('#attachmentList').html('<p style="color: red;">첨부파일을 불러올 수 없습니다. 오류: ' + error + '</p>');
+            }
+        });
+    }
+
+    // 첨부파일 렌더링 함수 (디버깅 추가)
+    function renderAttachmentList(attachments) {
+        console.log('첨부파일 렌더링 시작:', attachments); // 디버깅 로그
+        
+        const $container = $('#attachmentList');
+        $container.empty();
+
+        if (!attachments || attachments.length === 0) {
+            console.log('첨부파일이 없음'); // 디버깅 로그
+            $container.append('<p>등록된 첨부파일이 없습니다.</p>');
+            return;
+        }
+
+        console.log('첨부파일 개수:', attachments.length); // 디버깅 로그
+
+        attachments.forEach((attachment, index) => {
+            console.log(`첨부파일 ${index}:`, attachment); // 각 첨부파일 정보 확인
+            
+            const attachmentItem = $(`
+                <div class="attachment-item">
+                    <input type="checkbox" 
+                           id="attachment_${attachment.attachmentSeq}" 
+                           name="selectedAttachments" 
+                           value="${attachment.attachmentSeq}" 
+                           class="attachment-checkbox">
+                    <label for="attachment_${attachment.attachmentSeq}" class="attachment-label">
+                        <div class="attachment-icon">📎</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">${attachment.originalName || '파일명 없음'}</div>
+                            <div class="attachment-meta">
+                                ${attachment.createdAt || '날짜 정보 없음'} 업로드 
+                                ${attachment.fileSize ? '(' + Math.round(attachment.fileSize / 1024) + 'KB)' : ''}
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            `);
+            $container.append(attachmentItem);
+        });
+        
+        console.log('첨부파일 렌더링 완료'); // 디버깅 로그
+    }
+    
+    
     function renderResumeList(resumes) {
         const $container = $('.resume-section');
         $container.empty();
@@ -93,7 +172,6 @@ $(document).ready(function () {
                 selectedResumeId = parseInt($(this).val(), 10);
                 $('.resume-item').removeClass('selected');
                 resumeItem.addClass('selected');
-                renderAttachmentList(resume.attachments || []);
             });
 
             $container.append(resumeItem);
@@ -103,28 +181,9 @@ $(document).ready(function () {
             selectedResumeId = parseInt(resumes[0].resumeSeq, 10);
             $(`#resume_${selectedResumeId}`).prop('checked', true);
             $(`#resume_${selectedResumeId}`).closest('.resume-item').addClass('selected');
-            renderAttachmentList(resumes[0].attachments || []);
         }
     }
 
-    function renderAttachmentList(attachments) {
-        const $attachmentContainer = $('#attachmentList');
-        $attachmentContainer.empty();
-
-        if (!attachments || attachments.length === 0) {
-            $attachmentContainer.append('<p>첨부파일이 없습니다.</p>');
-            return;
-        }
-
-        attachments.forEach(att => {
-            const attItem = $(`
-                <div class="attachment-item">
-                    <a href="/attachment/download/${att.id}" target="_blank">${att.fileName}</a>
-                </div>
-            `);
-            $attachmentContainer.append(attItem);
-        });
-    }
 
     // 지원하기 버튼 클릭
     $('#confirmBtn').on('click', function () {
@@ -138,14 +197,26 @@ $(document).ready(function () {
             alert('잘못된 공고 정보입니다.');
             return;
         }
+		
+        //선택한 첨부파일들
+        const selectedAttachments = [];
+        $('input[name="selectedAttachments"]:checked').each(function() {
+            selectedAttachments.push(parseInt($(this).val(), 10));
+        });
+
+
+        const formData = {
+            resumeSeq: selectedResumeId,
+            jobPostingSeq: jobPostingSeq,
+            selectedAttachments: selectedAttachments
+        };
+
 
         $.ajax({
             url: '/apply',
             method: 'POST',
-            data: {
-                resumeSeq: selectedResumeId,
-                jobPostingSeq: jobPostingSeq
-            },
+            data: formData,
+            traditional: true, // 배열 파라미터 전송을 위해 필요
             success: function () {
                 alert('지원 완료');
                 closeModal();
@@ -219,6 +290,9 @@ $(document).ready(function () {
         alert("URL이 복사되었습니다.");
     });
 });
+
+
+
 </script>
 
 </head>
@@ -227,7 +301,7 @@ $(document).ready(function () {
 <div th:replace="~{fragments/header :: header}"></div>
 </header>
 <main>
-     <div class="main-container" style="display: flex; gap: 30px;">
+   <div class="main-container" style="display: flex; gap: 30px;">
 <div style="flex: 1;">
 
             <br>
@@ -240,7 +314,6 @@ $(document).ready(function () {
                        <span class="tech-stack-tag" th:text="${jDto != null} ? ${jDto.techNames} : ''"></span>
                 </div>
             </div>
-
 
             <div class="job-section">
                <h2 style="font-size: 20px;">주요내용</h2>
@@ -264,12 +337,11 @@ $(document).ready(function () {
                 </div>
                 <div>
                     <h2 style="font-size: 20px;">근무지</h2>
-                   <p th:text="${jDto.roadAddress}" style="font-size: 15px;">근무주소</p>
-
+               	  <p th:text="|${jDto.roadAddress} ${jDto.detailAddress}|">근무주소</p>
                 </div>
-                <div>
+                <div> 
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;" th:text="|${jDto.salary}원| ?: '회사내규에 따름'"></p>
+                    <p style="font-size: 15px;" th:text="|${jDto.corpAvgSal}만원| ?: '회사내규에 따름'"></p>
                 </div>
                 <div>
                   <h2 style="font-size: 20px;">근무형태</h2>
@@ -288,11 +360,12 @@ $(document).ready(function () {
 
            <div class="company-intro">
     <h2><strong>기업소개</strong></h2><br><br>
-    <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2>
     
     <div class="company-content">
-       <img th:if="${jDto != null}" th:src="@{${jDto.corpImg}}" alt="회사 이미지"/>
-        
+        <img th:src="@{/images/corpimg/{img}(img=${jDto.corpImg})}" alt="기업 이미지"
+     style="width: auto; height: 400px; object-fit: cover; border-radius: 12px;" />
+        <br><br>
+  		  <h2 th:text="${jDto.corpNm}" style="font-size: 25px;">기업이름</h2><br>
         <div class="company-description" th:text="${jDto.corpInfo}"></div>
     </div>
 </div>
@@ -304,7 +377,7 @@ $(document).ready(function () {
     <div class="company-floating-card">
         <div class="company-logo-section">
             <div class="logo-placeholder">
-                <span>🏢</span>
+                 <img th:src="@{/images/corplogo/{img}(img=${jDto.corpLogo})}" alt="로고" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
             </div>
             <div class="company-title">
                 <h4 th:text="${jDto.corpNm}">기업이름</h4>
@@ -316,8 +389,13 @@ $(document).ready(function () {
 
         <div class="company-info-section">
             <div class="info-item">
-                <span class="label">업력</span>
-                <span class="value" th:text="${jDto.corpCreatedAt}"></span>
+                <span class="label">설립일</span>
+		<!-- <span class="value" id="corpCreatedAt"
+		      th:text="${jDto.corpCreatedAt != null ? jDto.corpCreatedAt.substring(0,4) + '-' + jDto.corpCreatedAt.substring(4,6) + '-' + jDto.corpCreatedAt.substring(6,8) : '정보 없음'}">
+		</span> -->
+		<span class="value" id="corpCreatedAt"
+		      th:text="${jDto.corpCreatedAt}">
+		</span>
                 
             </div>
              <div class="info-item">
@@ -326,7 +404,15 @@ $(document).ready(function () {
             </div>
         </div>
 
-        <!-- 마감일 체크해서 지원 버튼 비활성화 -->
+		<!-- 비회원 -->
+       <div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
+           <a th:href="@{/login}" class="apply-button">지원하기</a>
+       </div>
+       
+		<!-- 회원 -->
+      <div sec:authorize="hasRole('ROLE_USER')">
+        <div th:if="${user != null and user.corpNo == null}">
+      
        <button class="floating-apply-btn" 
         id="applyBtn" 
         th:disabled="${jDto.isEnded == 'Y'}" 
@@ -334,9 +420,10 @@ $(document).ready(function () {
         th:classappend="${jDto.isEnded == 'Y' ? ' disabled' : ''}">
 		    지원하기
 		</button>
-		
+		</div>
+       </div>
 	    <div class="floating-actions">
-                <input type="hidden" id="jobPostingSeqForScrap" value="123" />
+                <input type="hidden" id="jobPostingSeqForScrap" th:value="${jDto.jobPostingSeq}"/>
                 
                 <button class="floating-action-btn" id="scrapBtn">
                     <span class="icon" id="heartIcon">🤍</span>
@@ -403,10 +490,20 @@ $(document).ready(function () {
                     </div>
                     </th:block>
                 </div>
+					
+			<!-- 첨부파일 -->
+			<div class="section-title">추가 첨부파일 (선택사항)</div>
+			    <div class="attachment-section">
+			        <p class="attachment-description">지원서와 함께 제출할 추가 첨부파일을 선택하세요.</p>
+			        <div id="attachmentList">
+			            <!-- JavaScript로 동적 생성 -->
+			        </div>
+			    </div>
+			</div>
+										
 
-               <div class="section-title">첨부 파일</div>
-				<div id="attachmentList" class="attachment-list"></div>
-           
+
+
             </div>
             <div class="modal-buttons">
                 <button class="modal-cancel-btn" id="cancelBtn">취소</button>

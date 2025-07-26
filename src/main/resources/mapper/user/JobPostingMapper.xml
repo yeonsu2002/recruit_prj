@@ -18,14 +18,16 @@
     <result property="workEndTime" column="workEndTime"/>
     <result property="viewCnt" column="viewCnt"/>
     <result property="zipcode" column="zipcode"/>
-    <result property="roadAddress" column="roadAddress"/>
-    <result property="detailAddress" column="detailAddress"/>
+    <result property="region" column="region"/>
+    <result property="district" column="district"/>
     <result property="isEnded" column="isEnded"/>
     <result property="corpNm" column="corpNm"/>
     <result property="corpImg" column="corpImg"/>
     <result property="corpInfo" column="corpInfo"/>
     <result property="corpUrl" column="corpUrl"/>
     <result property="corpNo" column="corpNo"/>
+    <result property="corpLogo" column="corpLogo"/>
+    <result property="corpAvgSal" column="corpAvgSal"/>
     <result property="positionName" column="positionName"/>
     <result property="positionSeq" column="positionSeq"/>
     <result property="stackName" column="stackName"/>
@@ -51,14 +53,16 @@
   jp.work_end_time AS workEndTime,
   jp.view_cnt AS viewCnt,
   jp.zipcode AS zipcode,
-  jp.road_address AS roadAddress,
-  jp.detail_address AS detailAddress,
+  jp.region AS region,
+  jp.district AS district,
   jp.position_seq AS positionSeq,
   jp.is_ended AS isEnded,
   c.corp_nm AS corpNm,
   c.corp_info AS corpInfo,
   c.corp_url AS corpUrl,
   c.corp_img AS corpImg,
+  c.corp_logo AS corpLogo,
+  c.corp_avg_sal AS corpAvgSal,
   pc.position_name AS positionName,
   TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
   LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
@@ -82,14 +86,16 @@ GROUP BY
   jp.work_end_time,
   jp.view_cnt,
   jp.zipcode,
-  jp.road_address,
-  jp.detail_address,
+  jp.region,
+  jp.district,
   jp.position_seq,
   jp.is_ended,
   c.corp_nm,
   c.corp_info,
   c.corp_url,
   c.corp_img,
+  c.corp_logo,
+  c.corp_avg_sal,
   pc.position_name,
   jp.corp_no
 ORDER BY jp.job_posting_seq
@@ -113,17 +119,21 @@ ORDER BY jp.job_posting_seq
     jp.work_end_time AS workEndTime,
     jp.view_cnt AS viewCnt,
     jp.zipcode AS zipcode,
-    jp.road_address AS roadAddress,
-    jp.detail_address AS detailAddress,
+    jp.region AS region,
+    jp.district AS district,
     jp.position_seq AS positionSeq,
     jp.edu_level AS eduLevel,
     jp.cont_start_dt AS contStartDt,
     jp.cont_end_dt AS contEndDt,
+    jp.detail_address AS detailAddress,
+    jp.road_address AS roadAddress,
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
     c.corp_no AS corpNo,
     c.corp_img AS corpImg,
+    c.corp_logo AS corpLogo,
+    c.corp_avg_sal AS corpAvgSal,
     c.corp_created_at AS corpCreatedAt,
     pc.position_name AS positionName,
     jp.is_ended AS isEnded,
@@ -151,8 +161,10 @@ GROUP BY
     jp.work_end_time,
     jp.view_cnt,
     jp.zipcode,
+	jp.region,
+	jp.district,
+	jp.detail_address,
     jp.road_address,
-    jp.detail_address,
     jp.position_seq,
     jp.edu_level,
     jp.cont_start_dt,
@@ -162,6 +174,8 @@ GROUP BY
     c.corp_url,
     c.corp_no,
     c.corp_img,
+    c.corp_logo,
+    c.corp_avg_sal,
     c.corp_created_at,
     pc.position_name,
     jp.is_ended
@@ -201,8 +215,8 @@ ORDER BY
     jp.work_end_time AS workEndTime,
     jp.view_cnt AS viewCnt,
     jp.zipcode AS zipcode,
-    jp.road_address AS roadAddress,
-    jp.detail_address AS detailAddress,
+     jp.region AS region,
+    jp.district AS district,
     jp.position_seq AS positionSeq,
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
@@ -231,8 +245,8 @@ GROUP BY
   jp.work_end_time,
   jp.view_cnt,
   jp.zipcode,
-  jp.road_address,
-  jp.detail_address,
+  jp.region,
+	jp.district,
   jp.position_seq,
   jp.is_ended,
   c.corp_nm,

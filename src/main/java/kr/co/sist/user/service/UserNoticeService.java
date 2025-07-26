@@ -18,4 +18,7 @@ public class UserNoticeService {
      return noticeMapper.selectLatestNotices();
  }
 
+	 public List<NoticeDTO> getAllNotice() {
+		 return noticeMapper.selectAllNotices();
+	 }
 }

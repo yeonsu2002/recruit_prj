@@ -7,7 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import kr.co.sist.corp.dto.InterviewOfferDTO;
-import kr.co.sist.corp.dto.MailDTO;
+import kr.co.sist.corp.dto.MessageDTO;
+import kr.co.sist.corp.dto.RecentlyViewedDTO;
 import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.dto.TalentPoolDTO;
 
@@ -54,7 +55,7 @@ public interface TalentPoolMapper {
       @Param("size") int size,
       @Param("corpNo") Long corpNo);
   
-  void insertInterviewProposal(InterviewOfferDTO proposalDto);
+  void insertInterviewProposal(InterviewOfferDTO ioDTO);
   
   //이력서 상세
   TalentPoolDTO selectResumeDetail(int resumeNo);
@@ -65,11 +66,19 @@ public interface TalentPoolMapper {
   void insertResumeViewLog(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
   //이력서 정보
   TalentPoolDTO selectResumeInfo(@Param("resumeSeq") Long resumeSeq);
+  //기업명
+  InterviewOfferDTO getCorpInfoByCorpNo(Long corpNo);
 
-  
-  //메일 알림
-  void insertMail(MailDTO mail);
+  //메세지(알람) 보내기
+  void insertMessage(MessageDTO mail);
 
+
+  //최근 열람한 이력서 목록 조회
+  List<Integer> getRecentlyViewedResumes(Map<String, Object> params);
+  // 최근 열람한 이력서 수 조회
+  int getRecentlyViewedResumesCount(Long corpNo);
+  // 이력서 상세 정보 조회
+  List<TalentPoolDTO> selectResumeMemberInfo(Map<String, Object> params);
   
 
 }

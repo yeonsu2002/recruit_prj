@@ -2,6 +2,7 @@ package kr.co.sist.login;
 
 
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,21 +32,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		
 		UserEntity userEntity = userRepository.findById(email)
-															.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+															.orElseThrow(() -> new BadCredentialsException("없는 계정.. 이메일 비번 틀렸거나 "));
 		
 		UserDTO userDTO = UserDTO.from(userEntity);
 		
-		//운영자에 의해 제재당하였을 때. 
+		//운영자에 의해 제재당하였을 때. ( ActiveStatus = 1 )
 		if(userDTO.getActiveStatus() == 1) {
-			throw new DisabledException("운영수칙을 위반하여 제재된 계정입니다.");
+			throw new DisabledException("운영수칙을 위반하여 제재된 계정");
 		}
-		//탈퇴된 구직 회원이 재로그인 시도할 때
+		//탈퇴된 구직 회원이 재로그인 시도할 때 ( ActiveStatus = 2 )
 		if(userDTO.getActiveStatus() == 2) {
-			throw new AccountExpiredException("회원 탈퇴한 계정입니다.");
+			throw new AccountExpiredException("회원 탈퇴한 계정");
 		}
-		//탈퇴된 기업 회원이 재로그인 시도할 때
+		//탈퇴된 기업 회원이 재로그인 시도할 때 ( ActiveStatus = 3 )
 		if(userDTO.getActiveStatus() == 3) {
-			throw new AccountExpiredException("탈퇴한 관리인 계정입니다.");
+			throw new AccountExpiredException("탈퇴한 관리인 계정");
 		}
 		
 		return new CustomUser(userDTO); //CustomUser를 Entity로 만들면 형변환은 필요없지만..

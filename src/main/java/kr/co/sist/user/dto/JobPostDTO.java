@@ -31,6 +31,8 @@ public class JobPostDTO {
     private String eduLevel;
     private Integer viewCnt;
     private String zipcode;
+    private String region;
+    private String district;
     private String roadAddress;
     private String detailAddress;
     private String positionName;  
@@ -39,11 +41,12 @@ public class JobPostDTO {
     private String isEnded;
     private String corpCreatedAt;
     private String corpImg;
+  	private String corpLogo;
+  	private long corpAvgSal;
     private String corpNm;          
     private String corpInfo;        
     private String corpUrl;     
     private String techNames;
-    
     
     // D-day 계산을 위한 필드 추가
     private Integer daysRemaining;

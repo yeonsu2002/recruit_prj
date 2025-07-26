@@ -10,5 +10,6 @@ import kr.co.sist.user.dto.NoticeDTO;
 public interface UserNoticeMapper {
 	
   List<NoticeDTO> selectLatestNotices();
+  List<NoticeDTO> selectAllNotices();
 
 }

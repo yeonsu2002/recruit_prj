@@ -88,26 +88,32 @@ function convertAvgRatingToStars(avgRating) {
                 <div th:unless="${reviewList == null or #lists.isEmpty(reviewList)}">
                     <div class="review-item" th:each="review : ${reviewList}">
                         <div class="review-content">
-                            <!-- 별점 표시 -->
-                            <div class="review-rating" th:text="${@reviewService.convertRatingToStars(review.rating)}">⭐⭐⭐⭐⭐</div>
+                        
+                         <div class="review-meta">
+						  <div class="review-rating" th:text="${@reviewService.convertRatingToStars(review.rating)}">⭐⭐⭐⭐⭐</div>
+						  <span class="score-number" th:text="${review.rating}">0.0</span>
+						  <div class="review-date" th:text="'작성일: ' + ${review.createdAt}">작성일: 2024-01-01</div>
+						</div>
                             
-                            <!-- 한줄평 -->
-                            <div class="review-title" th:text="${review.summary}">한줄평</div>
+                         <!-- 한줄평 -->
+                         <div class="review-title" th:text="${review.summary}">한줄평</div>
                             
-                            <!-- 장점 -->
-                            <div class="review-section-item">
-                                <strong>장점</strong>
-                                <div class="review-text" th:text="${review.pros}">장점 내용</div>
-                            </div>
+                         <div style="display: flex; gap: 40px;">
+  
+						  <!-- 장점 -->
+						  <div class="review-section-item" style="max-width: 300px;">
+						    <strong style="color: green;">장점</strong>
+						    <div class="review-text ellipsis" th:text="${review.pros}">장점 내용</div>
+						  </div>
+						
+						  <!-- 단점 -->
+						  <div class="review-section-item" style="max-width: 300px;">
+						    <strong style="color: red;">단점</strong>
+						    <div class="review-text ellipsis" th:text="${review.cons}">단점 내용</div>
+						  </div>
+						
+						</div>
                             
-                            <!-- 단점 -->
-                            <div class="review-section-item">
-                                <strong>단점</strong>
-                                <div class="review-text" th:text="${review.cons}">단점 내용</div>
-                            </div>
-                            
-                            <!-- 작성일 -->
-                            <div class="review-date" th:text="'작성일: ' + ${review.createdAt}">작성일: 2024-01-01</div>
                         </div>
                     </div>
                     

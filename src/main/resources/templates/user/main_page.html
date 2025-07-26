@@ -14,7 +14,7 @@ let current = 0;
 const total = 4; 
 
 function moveSlide(direction) {    
-    current += direction;
+    current += direction; 
     if (current >= total) current = 0;
     if (current < 0) current = total - 1;
     updateSlide();
@@ -296,60 +296,6 @@ $(document).ready(function(){
                       <a th:href="@{/user/mypage}" class="user-menu-btn mypage-btn">마이페이지</a>
                   </div>
               </div>
-              
-            <!-- 알림 영역 (로그인한 사용자에게만 표시) -->
-            <div class="notification-area" th:if="${user != null}">
-              <div class="notification-header" onclick="toggleNotifications()">
-                <div class="notification-icon">
-                  🔔
-                  <span class="notification-badge" id="notificationBadge">3</span>
-                </div>
-              </div>
-              <th:block th:each="message :${messages}">
-              
-              <th:block>
-              <div class="notification-dropdown" id="notificationDropdown">
-                <div class="notification-item unread" onclick="markAsRead(this)">
-                  <div class="notification-content">
-                    <div class="notification-icon-small">📋</div>
-                    <div class="notification-text">
-                      <div class="notification-message">새로운 채용공고가 등록되었습니다: "네이버 프론트엔드 개발자"</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="notification-item unread" onclick="markAsRead(this)">
-                  <div class="notification-content">
-                    <div class="notification-icon-small">✅</div>
-                    <div class="notification-text">
-                      <div class="notification-message">지원한 회사에서 서류 심사 결과가 나왔습니다.</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="notification-item unread" onclick="markAsRead(this)">
-                  <div class="notification-content">
-                    <div class="notification-icon-small">🎯</div>
-                    <div class="notification-text">
-                      <div class="notification-message">관심 있는 기업에서 새로운 포지션이 열렸습니다.</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="notification-item" onclick="markAsRead(this)">
-                  <div class="notification-content">
-                    <div class="notification-icon-small">📧</div>
-                    <div class="notification-text">
-                      <div class="notification-message">이력서 검토가 완료되었습니다.</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="notification-footer">
-                  <button onclick="clearAllNotifications()">모든 알림 지우기</button>
-                </div>
-              </div>
-            </div>
           </div>
           </div>
         </div>
@@ -358,7 +304,7 @@ $(document).ready(function(){
           <div class="notice-section">
           <div style="display: flex; justify-content: space-between; align-items: center;">
           <h2 style="color: #1DD45A;">Notice</h2>
-            <a th:href="@{/notice/list}" style="font-size: 13px; color: gray; text-decoration: none;">더보기</a>
+            <a th:href="@{/user/job_posting/notice_list}" style="font-size: 13px; color: gray; text-decoration: none;">더보기</a>
             </div>
           <div class="notice-info">
             <!-- 공지사항이 없을 때 -->
@@ -407,7 +353,7 @@ $(document).ready(function(){
 		                  <span th:text="${posting != null} ? ${posting.techNames} : ''"></span>
 		                </div>
                         <div class="company-info">
-                            <span th:text="${posting.roadAddress}">위치</span> |
+                            <span  th:text="|${posting.region} ${posting.district}|">위치</span> |
                             <span th:text="${posting.expLevel}">경력</span>
                         </div>
                     </a>

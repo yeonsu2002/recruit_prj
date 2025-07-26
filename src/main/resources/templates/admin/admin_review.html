@@ -23,33 +23,39 @@ $(function() {
 
 
    
-  });
+ 
 
-  // 탈퇴 버튼 클릭
   $('#btnWithdraw').on('click', function() {
-    let hasAlreadyWithdrawn = false;
-    let selectedIds = [];
+	  let selectedIds = [];
 
-    $('tbody tr').each(function() {
-      const isChecked = $(this).find('.select-row').prop('checked');
-      const stat = $(this).find('td.stat').text().trim();
-      const adminId = $(this).find('td.adminId').text().trim();
+	  $('.select-row:checked').each(function() {
+	    selectedIds.push($(this).val());
+	  });
 
-      
-    });
+	  if (selectedIds.length === 0) {
+	    alert('삭제할 리뷰를 선택해주세요.');
+	    return;
+	  }
 
-    if (selectedIds.length === 0) {
-      alert('삭제할 리뷰를 선택해주세요.');
-      return;
-    }
+	  if (!confirm('선택한 리뷰를 삭제 처리하시겠습니까?')) {
+	    return;
+	  }
 
+	  $.ajax({
+	    url: '/admin/deleteReview',
+	    method: 'DELETE',
+	    contentType: 'application/json',
+	    data: JSON.stringify({ reviewSeq: selectedIds }),
+	    success: function(response) {
+	      alert('탈퇴 처리 완료');
+	      location.reload();
+	    },
+	    error: function() {
+	      alert('탈퇴 처리 중 오류가 발생했습니다.');
+	    }
+	  });
+	});
 
-
-    if (!confirm('선택한 리뷰를 삭제 처리하시겠습니까?')) {
-      return;
-    }
-
-    
 });
 </script>
 <style type="text/css">
@@ -132,8 +138,8 @@ $(function() {
         </thead>
         <tbody>
           <tr th:each="list, iterStat : ${reviewList}">
-            <td><input type="checkbox" class="select-row" /></td>
-            <td th:text="${no - iterStat.index}">번호</td>
+            <td><input type="checkbox" class="select-row" th:value="${list.reviewSeq}"/></td>
+            <td th:text="${no - iterStat.index} ">번호</td>
             <td class="adminId" th:text="${list.corpNo}">사업자번호</td>
             <td th:text="${list.email}">이메일</td>
             <td th:text="${list.rating}">평점</td>
