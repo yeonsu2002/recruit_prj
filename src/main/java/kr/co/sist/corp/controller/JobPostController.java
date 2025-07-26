@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.sist.corp.dto.CorpDTO;
+import kr.co.sist.corp.dto.JobPostingApplicantStatsDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.service.JobPostingCorpService;
+import kr.co.sist.globalController.Exceptions.NotFoundException;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.jwt.JWTUtil;
 import kr.co.sist.user.dto.PositionCodeDTO;
@@ -221,6 +224,51 @@ public class JobPostController {
   	return "corp/jobPosting/updateJobPostingForm";
   }
   
+  /**
+   * 공고에 해당하는 지원자들 통계자료 가져오기 
+   */
+  @GetMapping("/corp/jobPosting/applicantStats/{jobPostingSeq}")
+  public ResponseEntity<?> getApplicantStats(@PathVariable int jobPostingSeq){
+  	System.out.println("[디버깅] controller - getApplicantStats 실행 : 매개변수 -> " +  jobPostingSeq);
+  	
+  	try {
+  		
+  		JobPostingApplicantStatsDTO jpasDTO = jpcService.selectApplicantStats(jobPostingSeq);
+  		if(jpasDTO == null) {
+  			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("통계 자료가 존재하지 않음 ");
+  		}
+  		
+  		jpasDTO.setJobPostingSeq(jobPostingSeq);
+  		return ResponseEntity.ok(jpasDTO);
+  		
+		} catch (DataIntegrityViolationException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터 무결성 위반: 존재하지 않는 공고번호");
+		} catch (Exception e){
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류 발생");
+		}
+  }
   
   
 }
+/**
+ * 자주 쓰는 형태 패턴 
+// 200 OK + 데이터
+return ResponseEntity.ok(data);
+
+// 201 Created
+return new ResponseEntity<>("생성 완료", HttpStatus.CREATED);
+
+// 204 No Content
+return ResponseEntity.noContent().build();
+
+// 400 Bad Request
+return ResponseEntity.badRequest().body("잘못된 요청");
+
+// 404 Not Found
+return ResponseEntity.status(HttpStatus.NOT_FOUND).body("찾을 수 없음");
+
+// 500 Internal Server Error
+return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+ */

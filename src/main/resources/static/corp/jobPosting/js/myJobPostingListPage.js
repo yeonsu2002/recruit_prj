@@ -15,57 +15,34 @@ document.addEventListener('DOMContentLoaded', () => {
 	//데이터 비동기 가져오기 (매개변수 넣는거 까먹지마) 
 	//fetchStartData(userCorpNo);
 
-	//진행중, 마감, 전체버튼을 눌렀을 때 클래스 제거 및 추가
+	//진행중, 마감, 전체버튼 (부모)을 눌렀을 때 클래스 제거 및 추가
 	changeClassSelectedTotd(userCorpNo);
 	
-	//전체, 마감일순, 조회수순 버튼을 눌렀을 때 클래스 제거 및 추가
+	//최신, 마감일순, 조회수순 (자식) 버튼을 눌렀을 때 클래스 제거 및 추가
 	changeClassSubSelectedToInput(userCorpNo);
 	
 	//지원자 통계 모달창 열기 함수
-	document.addEventListener('click', function(e){
+/*	document.addEventListener('click', function(e){
 		if(e.target.classList.contains("appl-stats-btn")){
 			const jobPostingSeq = e.target.dataset.appliStats;
 			showApplicantStatsModal(jobPostingSeq);
-
 		}
-	});
+	});*/
+	
+	//지원자 통계 모달창 보기
+	showApplicantStatsModal();
 	
 });//ready
 
 
-//지원자 관리 모달창
+//지원자 관리
 function openApplicantListModal(){
 	alert('지원자 관리 모달창 열림 대신에 페이지 이동으로 처리, 추후 모달창으로 간략 조회 기능구현할 것 ');
 	location.href="/corp/applicant";
 }
 
-//처음화면 자료 뿌리기(진행중, 전체)
-function fetchStartData(userCorpNo){
-	var url =`/corp/getMyAllPosting?corpNo=${userCorpNo}&postSts=ing&orderBy=start`;
-	fetch( url )
-	.then(response => {
-		if(!response){
-			alert("데이터 갖고오기 실패");
-			throw new Error("데이터를 가져오던 중에 서버 오류 발생");
-		}
-		return response.json();
-	})
-	.then(data => {
-		//데이터가 존재할 떄
-		if(data.length > 0){ 
-			let resultData = document.querySelector('#resultData');
-			
-			console.log(data); //0-----------------------------------  처음 화면 자료조회 데이터는 controller에 model에 담아 쏘는 중 -------------------
-			
-			
-		} else {
-			//검색 결과가 없을 때
-			
-		}
-	})
-}
-
 //진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
+changeClassSubSelectedToInput
 function changeClassSelectedTotd(userCorpNo){
 	//console.log(typeof userCorpNo); //String 이라서 number로 바꿔줘야 
 	let corpNo = Number(userCorpNo); 
@@ -111,18 +88,17 @@ function changeClassSelectedTotd(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
+	        updatePostingTable(data.postList);
+	        updatePostingCounts(data);
 			})
 			.catch(error => {
-				
 				console.error(error);
 			})
 		});
 	});
 }
 
-//진행중, 마감, 전체 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
+//최신순, 마감순, 조회순 클릭에 따라 클래스 추가 그리고 비동기로 조회 목록 가져오기 
 function changeClassSubSelectedToInput(userCorpNo){
 	let corpNo = userCorpNo;
 	let postSts = "ing";
@@ -173,8 +149,8 @@ function changeClassSubSelectedToInput(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-                updatePostingTable(data.postList);
-                updatePostingCounts(data);
+	        updatePostingTable(data.postList);
+	        updatePostingCounts(data);
 			})
 			.catch(error => {
 				
@@ -244,7 +220,7 @@ function updatePostingTable(postList) {
 	        tr.innerHTML = `
 	            <td class="posting-box-need-center">${post.isEnded == 'N' ? '진행 중' : '공고 마감'}</td>
 	            <td>
-	                <a><span id="jobPosting-${post.jobPostingSeq}" class="detail-posting-link" onclick="getDetailPostingInfo(${post.jobPostingSeq})">${post.postingTitle}</span></a>
+	                <a><span id="jobPostingTitle-${post.jobPostingSeq}" class="detail-posting-link" onclick="getDetailPostingInfo(${post.jobPostingSeq})">${post.postingTitle}</span></a>
 	                <ul>
 	                    <li>근무형태 : <span>${post.employType}</span></li>
 	                    <li>포지션 : <span>${post.positionName}</span></li>
@@ -263,17 +239,17 @@ function updatePostingTable(postList) {
 	            }
 	            if(post.isEnded == 'Y'){
 	            	nOrY =`
-					<td class="posting-box-need-center">
-						<button type="button" style='background-color:grey;' disabled>수정 </button>
-						<button type="button" style='background-color:grey;' disabled>마감 </button>
-					</td>`;
+								<td class="posting-box-need-center">
+									<button type="button" style='background-color:grey;' disabled>수정 </button>
+									<button type="button" style='background-color:grey;' disabled>마감 </button>
+								</td>`;
 	            }
 	            tr.innerHTML += nOrY;
 	            tr.innerHTML += `
 	            <td class="posting-box-need-center">
-	                <div><a style="cursor: pointer; text-decoration: underline;" onclick="openApplicantListModal()"><span>${post.appCnt}</span></a></div>
+	                <div><a style="cursor: pointer; text-decoration: underline;" onclick="openApplicantListModal()"><span id="applicant-cnt-${post.jobPostingSeq}">${post.appCnt}</span></a></div>
 	                <div style="color: black; cursor: pointer;" onclick="openApplicantListModal()">지원자 관리 <i class="bi bi-file-earmark-ruled"></i></div>
-	                <div><input type="button" value="지원자 통계" onclick="getApplicantStats(${post.jobPostingSeq})"></div>
+	                <div><input type="button" class="appl-stats-btn" value="지원자 통계" data-appli-stats='${post.jobPostingSeq}' ></div>
 	            </td>
 	            <td class="posting-box-need-center">
 	                <button type="button">확인</button>
@@ -301,15 +277,98 @@ function updatePostingCounts(data) {
 }
 
 //지원자 통계 모달창 보기
-function showApplicantStatsModal(jobPostingSeq){
+function showApplicantStatsModal(){
+	document.addEventListener('click', function(e){
+		if(e.target.classList.contains("appl-stats-btn")){
+			const jobPostingSeq = e.target.dataset.appliStats; /*위에서 th쓰면 안돼, JS문법으로 innerHTML로 만들고 있으니까*/
+			
+			if(document.querySelector('#applicant-cnt-' + jobPostingSeq).textContent == 0){
+				alert('지원자가 0명인 공고는 통계서비스를 지원하지 않습니다.');
+				return;
+			}
+			
+			//부스  모달열기
+			const modal = new bootstrap.Modal(document.getElementById('applicant-stats'));
+			modal.show();
 	
-	//모달열기
-	const modal = new bootstrap.Modal(document.getElementById('applicant-stats'));
-	modal.show();
-	
-	//모달 열린 후 콜백 실행 
-	document.querySelector('.modal-title').textContent = '제목임시입니다.';
+			//모달 열린 후 콜백 실행할거 
+			const title = document.querySelector(`#jobPostingTitle-${jobPostingSeq}`).textContent;
+			document.querySelector('.modal-title').textContent = title; /*`[${jobPostingSeq}]번 게시물`*/
+			
+			
+			//fetch
+			const url = `/corp/jobPosting/applicantStats/${jobPostingSeq}`;
+			fetch(url, {
+				method : 'GET',
+				headers : {
+					//'Content-Type': 'application/json', //json으로 body통해서 보낼거, 
+					//'Accept': 'application/json' //나도 json응답을 기대해 
+				},
+				//body : JSON.stringify({jobPostingSeq : jobPostingSeq}) //값이 하나니까 그냥 url로 넘기자 
+			})
+			.then(response => { // 응답 성공 (200), 응답 실패 (400, 404, 500 등)
 
+				if(!response.ok){ // 응답 코드가 200~299 아니면 false
+					return response.text().then ( msg => {
+						throw new Error(msg); // 서버에서 온 "통계 자료가 존재하지 않음" 메시지
+					})
+				} else {
+					return response.json(); //Accept에서 josn으로 응답 받기로 해서 
+				}
+			})
+			.then(data => {
+				console.log(data);
+				document.querySelector('#totalApplicantCount').textContent = data.totalApplicantCount ?? 0;
+				document.querySelector('#newEmployee').textContent = data.newEmployee ?? 0;
+				document.querySelector('#oneYearEmployee').textContent = data.oneYearEmployee ?? 0;
+				document.querySelector('#threeYearEmployee').textContent = data.threeYearEmployee ?? 0;
+				document.querySelector('#fiveYearEmployee').textContent = data.fiveYearEmployee ?? 0;
+				document.querySelector('#maleCount').textContent = data.maleCount ?? 0;
+				document.querySelector('#femaleCount').textContent = data.femaleCount ?? 0;
+				document.querySelector('#malePlusFemaleCount').textContent = data.maleCount + data.femaleCount ?? 0;
+				document.querySelector('#maleRatio').textContent = data.maleRatio ?? 0;
+				document.querySelector('#femaleRatio').textContent = data.femaleRatio ?? 0;
+				document.querySelector('#ageGroup20s').textContent = data.ageGroup20s ?? 0;
+				document.querySelector('#ageGroup30s').textContent = data.ageGroup30s ?? 0;
+				document.querySelector('#ageGroup40s').textContent = data.ageGroup40s ?? 0;
+				document.querySelector('#ageGroup50s').textContent = data.ageGroup50s ?? 0;
+				document.querySelector('#ageGroup60s').textContent = data.ageGroup60s ?? 0;
+				document.querySelector('#highSchoolCount').textContent = data.highSchoolCount ?? 0;
+				document.querySelector('#associateDegreeCount').textContent = data.associateDegreeCount ?? 0;
+				document.querySelector('#bachelorDegreeCount').textContent = data.bachelorDegreeCount ?? 0;
+				document.querySelector('#masterDegreeCount').textContent = data.masterDegreeCount ?? 0;
+				document.querySelector('#doctorateDegreeCount').textContent = data.doctorateDegreeCount ?? 0;
+				document.querySelector('#hasToeicCount').textContent = data.hasToeicCount ?? 0;
+				document.querySelector('#hasToeflCount').textContent = data.hasToeflCount ?? 0;
+				document.querySelector('#hasTepsCount').textContent = data.hasTepsCount ?? 0;
+				document.querySelector('#hasToeicSpeakingCount').textContent = data.hasToeicSpeakingCount ?? 0;
+				document.querySelector('#hasOpicCount').textContent = data.hasOpicCount ?? 0;
+				document.querySelector('#hasJptCount').textContent = data.hasJptCount ?? 0;
+				document.querySelector('#hasHskCount').textContent = data.hasHskCount ?? 0;
+				document.querySelector('#hasJcgCount').textContent = data.hasJcgCount ?? 0;
+				document.querySelector('#hasSqldCount').textContent = data.hasSqldCount ?? 0;
+				document.querySelector('#hasLinuxCount').textContent = data.hasLinuxCount ?? 0;
+				document.querySelector('#hasOcpCount').textContent = data.hasOcpCount ?? 0;
+				document.querySelector('#hasAdspCount').textContent = data.hasAdspCount ?? 0;
+				document.querySelector('#has0CertCount').textContent = data.has0CertCount ?? 0;
+				document.querySelector('#has1CertCount').textContent = data.has1CertCount ?? 0;
+				document.querySelector('#has2CertCount').textContent = data.has2CertCount ?? 0;
+				document.querySelector('#has3CertCount').textContent = data.has3CertCount ?? 0;
+				document.querySelector('#has4OrMoreCount').textContent = data.has4OrMoreCount ?? 0;
+				document.querySelector('#sentProjectCount').textContent = data.sentProjectCount ?? 0;
+				document.querySelector('#noSentProjectCount').textContent = data.noSentProjectCount ?? 0;
+				document.querySelector('#sentProjectRatio').textContent = data.sentProjectRatio ?? 0;
+			
+			})
+			.catch(err => console.error("에러발생 : ", err.message)); //catch는 네트워크 오류일 때만 동작, 여기에 위에서 throw 한 메시지가 출력됨
+			
+			/* 서버에서 body에 메시지를 보낸 경우 =
+				then에서 response.text()나 response.json()으로 직접 읽어야 함
+			*/
+		}
+	});
 	
 }
+
+
 
