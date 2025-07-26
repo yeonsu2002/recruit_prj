@@ -29,9 +29,11 @@ public class ReviewController {
 	private final ReviewService rs;
 	private final ReviewMapper reviewMapper;
 	
-	//리뷰조회페이지
+	//리뷰조회페이지 (페이징 추가)
 	@GetMapping("/user/job_posting/review")
-	public String review(@RequestParam(value = "corpNo", required = false) Long corpNo, Model model) {
+	public String review(@RequestParam(value = "corpNo", required = false) Long corpNo, 
+	                    @RequestParam(value = "page", defaultValue = "1") int page,
+	                    Model model) {
 	    
 	    // corpNo 유효성 검사를 먼저 수행
 	    if (corpNo == null || corpNo <= 0) {
@@ -53,6 +55,17 @@ public class ReviewController {
 	    reviewStats.setTotalReviews(0);
 	    String companyName = "알 수 없는 기업";
 	    
+	    // 페이징 정보 초기화
+	    ReviewSearchDTO searchDTO = new ReviewSearchDTO();
+	    searchDTO.setCorpNo(corpNo);
+	    searchDTO.setPage(page);
+	    
+	    // 디버깅용 로그 추가
+	    System.out.println("===== 페이징 디버깅 =====");
+	    System.out.println("corpNo: " + corpNo);
+	    System.out.println("page: " + page);
+	    System.out.println("offset: " + searchDTO.getOffset());
+	    
 	    try {
 	        // 먼저 기업명 확인 (기업이 존재하는지 확인)
 	        String name = rs.getCompanyName(corpNo);
@@ -61,9 +74,9 @@ public class ReviewController {
 	        } else {
 	            companyName = name;
 	            
-	            // 기업이 존재하면 리뷰 데이터 조회
+	            // 기업이 존재하면 페이징된 리뷰 데이터 조회
 	            try {
-	                reviewList = rs.getReviews(corpNo);
+	                reviewList = rs.getReviewsWithPaging(searchDTO);
 	                if (reviewList == null) {
 	                    reviewList = new ArrayList<>();
 	                }
@@ -93,6 +106,20 @@ public class ReviewController {
 	    model.addAttribute("reviewStats", reviewStats);
 	    model.addAttribute("companyName", companyName);
 	    model.addAttribute("corpNo", corpNo);
+	    
+	    // 페이징 정보 추가 (1-based 그대로 전달)
+	    model.addAttribute("currentPage", searchDTO.getPage()); 
+	    model.addAttribute("totalPages", searchDTO.getTotalPages());
+	    model.addAttribute("startPage", searchDTO.getStartPage()); 
+	    model.addAttribute("endPage", searchDTO.getEndPage()); 
+	    model.addAttribute("totalElements", searchDTO.getTotalElements());
+	    
+	    // 디버깅 정보 출력
+	    System.out.println("=== 페이징 정보 ===");
+	    System.out.println("현재 페이지: " + searchDTO.getPage());
+	    System.out.println("전체 페이지: " + searchDTO.getTotalPages());
+	    System.out.println("리뷰 개수: " + reviewList.size());
+	    System.out.println("전체 리뷰 수: " + searchDTO.getTotalElements());
 	    
 	    return "user/job_posting/review";
 	}
@@ -226,7 +253,5 @@ public class ReviewController {
 
 	    return "redirect:/user/job_posting/review?corpNo=" + corpNo;
 	}
-	
-	
 	
 }
