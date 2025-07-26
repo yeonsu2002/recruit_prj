@@ -519,7 +519,64 @@ function checkRegionMatch(jobAddress, selectedRegions) {
     // 전체 버튼 기본 활성화
     document.querySelector('.position-button[data-position="전체"]').classList.add('active');
 
-});
+    
+    function resetAllFilters() {
+        // 1. 직무 필터 초기화
+        document.querySelectorAll('.position-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.position-button[data-position="전체"]').classList.add('active');
+        filterState.selectedPositions = ['전체'];
+        
+        // 2. 기술스택 필터 초기화
+        filterState.selectedTechStacks = [];
+        document.getElementById('skills').innerHTML = '';
+        document.getElementById('techStackSearchInput').value = '';
+        document.getElementById('skillsList').style.display = 'none';
+        
+        // 3. 경력 필터 초기화
+        document.getElementById('careerAll').checked = true;
+        filterState.selectedCareer = '전체';
+        document.getElementById('historyBtn').textContent = '경력 ▾';
+        
+        // 4. 지역 필터 초기화
+        filterState.selectedRegions = [];
+        document.querySelectorAll('#subRegionPopup input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.querySelectorAll('.region-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        updateSelectedTags();
+        updateAreaButton();
+        
+        // 5. 모든 드롭다운 닫기
+        document.getElementById('techStackDropdown').style.display = 'none';
+        document.getElementById('historyDropdown').style.display = 'none';
+        document.getElementById('areaDropdown').style.display = 'none';
+        
+        // 6. 필터 적용하여 모든 공고 표시
+        applyAllFilters();
+        
+        console.log('모든 필터가 초기화되었습니다.');
+    }
+
+    // 전체 초기화 버튼 이벤트 리스너 추가
+        const allResetBtn = document.getElementById('allResetBtn');
+        
+        if (allResetBtn) {
+            allResetBtn.addEventListener('click', function() {
+                // 클릭 애니메이션 효과
+                this.classList.add('clicked');
+                
+                // 초기화 실행
+                resetAllFilters();
+                
+    
+            });
+        }
+    });
+    
 
 </script>
 </head>
@@ -558,6 +615,7 @@ function checkRegionMatch(jobAddress, selectedRegions) {
 
 <br><br>
 
+<div style="display: flex; align-items: center; gap: 10px;">
  <!-- 기술 스택 필터 바 -->
 	<div id="skills" class="skills-container"></div><br>
 <div class="filter-container">
@@ -682,7 +740,11 @@ function checkRegionMatch(jobAddress, selectedRegions) {
         </div>
     </div>
 </div>
-
+ <button class="all-reset-button" id="allResetBtn">
+    <span class="reset-icon">🔄</span>
+    전체 초기화
+  </button>
+</div>
 <br><br>
 
 

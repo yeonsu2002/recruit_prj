@@ -18,29 +18,9 @@
         WHERE email = #{email}
     </select>
     
-    
-     
 
-   <insert id="insertJobApplication" parameterType="map">
-    INSERT INTO JOB_APPLICATION (
-        resume_seq,
-        job_posting_seq,
-        application_status,
-        application_date,
-        is_read,
-        pass_stage
-    ) VALUES (
-        #{resumeSeq},
-        #{jobPostingSeq},
-        #{applicationStatus},
-        #{applicationDate},
-        #{isRead},
-        #{passStage}
-    )
-</insert>
-
-    <!-- 3. (DTO 방식) 공고 지원 등록 -->
- <insert id="insertJobApplicationVO" parameterType="kr.co.sist.user.dto.JobApplicationDTO">
+ <insert id="insertJobApplicationVO" parameterType="kr.co.sist.user.dto.JobApplicationDTO"
+ 			  useGeneratedKeys="true" keyProperty="jobApplicationSeq" keyColumn="job_application_seq">
     INSERT INTO JOB_APPLICATION (
         resume_seq,
         job_posting_seq,
@@ -73,6 +53,31 @@
       AND job_posting_seq = #{jobPostingSeq}
       AND application_status IN (0, 1)
 </select>
+
+
+ <select id="selectAttachmentsByEmail" resultType="kr.co.sist.user.dto.AttahDTO">
+        SELECT
+            attachment_seq AS attachmentSeq,
+            email,
+            original_name AS originalName,
+            file_name AS fileName,
+            file_size AS fileSize,
+            created_at AS createdAt,
+            file_type AS fileType
+        FROM ATTACHMENT
+        WHERE email = #{email}
+        ORDER BY created_at DESC
+    </select>
+    
+    <insert id="insertApplicationAttachment">
+        INSERT INTO APPLICATION_ATTACHMENT (
+            job_application_seq,
+            attachment_seq
+        ) VALUES (
+            #{jobApplicationSeq},
+            #{attachmentSeq}
+        )
+    </insert>
 
 
 </mapper>

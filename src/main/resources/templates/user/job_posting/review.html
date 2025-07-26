@@ -124,16 +124,27 @@ function convertAvgRatingToStars(avgRating) {
                 </div>
             </div>
             
-            <!-- 페이지네이션 (리뷰가 있을 때만 표시) -->
-            <div class="pagination" th:if="${corpNo != null && reviewList != null && !#lists.isEmpty(reviewList)}">
-                <a href="#">«</a>
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <span>...</span>
-                <a href="#">10</a>
-                <a href="#">»</a>
-            </div>
+             <!-- 페이징 (리뷰가 있을 때만 표시) -->
+         <div class="pagination" th:if="${corpNo != null && reviewList != null && !#lists.isEmpty(reviewList)}">
+		    <!-- 이전 페이지 -->
+		    <a th:href="@{/user/job_posting/review(corpNo=${corpNo}, page=${currentPage - 1})}" 
+		       th:class="${currentPage == 1} ? 'disabled' : ''"
+		       th:if="${currentPage > 1}">이전</a>
+		    <span th:if="${currentPage == 1}" class="disabled">이전</span>
+		    
+		    <!-- 페이지 번호들 -->
+		    <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+		        <a th:href="@{/user/job_posting/review(corpNo=${corpNo}, page=${page})}"
+		           th:text="${page}"
+		           th:class="${page == currentPage} ? 'active' : ''">1</a>
+		    </th:block>
+		    
+		    <!-- 다음 페이지 -->
+		    <a th:href="@{/user/job_posting/review(corpNo=${corpNo}, page=${currentPage + 1})}" 
+		       th:class="${currentPage == totalPages} ? 'disabled' : ''"
+		       th:if="${currentPage < totalPages}">다음</a>
+		    <span th:if="${currentPage == totalPages}" class="disabled">다음</span>
+		</div>
         </div>
     </div>
 </main>

@@ -88,7 +88,26 @@ and ja.pass_stage=2
         )
     </insert>
 
-
+<!-- 해당 기업의 리뷰 총 개수 조회 -->
+<select id="countReviewsByCorpNo" parameterType="Long" resultType="int">
+    SELECT COUNT(*) FROM REVIEW WHERE corp_no = #{corpNo}
+</select>
+<!-- 페이징된 리뷰 목록 조회 (Oracle 12c+ 버전) -->
+<select id="selectReviewsPage" parameterType="kr.co.sist.user.dto.ReviewSearchDTO" resultMap="reviewResult">
+    SELECT 
+        review_seq,
+        corp_no,
+        email,
+        rating,
+        summary,
+        pros,
+        cons,
+        created_at
+    FROM REVIEW
+    WHERE corp_no = #{corpNo}
+    ORDER BY created_at DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+</select>
 
 
 </mapper>
