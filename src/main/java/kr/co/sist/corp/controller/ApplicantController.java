@@ -3,6 +3,9 @@ package kr.co.sist.corp.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URLEncoder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -63,6 +67,9 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class ApplicantController {
+
+	@Value("${upload.saveDir}")
+	private String saveDir;
 
 	private final CorpRepository corpRepos;
 	private final UserRepository userRepos;
@@ -261,6 +268,9 @@ public class ApplicantController {
 			String resourcePath = projectPath + "/src/main/resources/static/attachment";
 			// --------------------
 
+			// 배포시 사용
+//			String resourcePath = saveDir + "/attachment";
+
 			File file = new File(resourcePath, fileName);
 
 			if (!file.exists()) {
@@ -310,7 +320,10 @@ public class ApplicantController {
 		if (profileImg != null && !profileImg.isEmpty()) {
 			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
 			String imagePath = "/images/profileImg/" + profileImg;
+			// 배포시 사용
+//		String imagePath = saveDir + "/images/profileImg/" + profileImg;
 			map.put("profileImagePath", imagePath);
+
 		}
 		map.put("user", user);
 		map.put("resumeData", resumeData);
@@ -362,7 +375,95 @@ public class ApplicantController {
 
 	}// downloadResume
 
-	//엑셀 파일 다운로드
+	@GetMapping("/corp/applicant/download/all")
+	public void downloadMultipleResumes(HttpServletResponse response, @ModelAttribute ApplicantSearchDTO searchDTO,
+			@AuthenticationPrincipal CustomUser corpInfo) {
+		try {
+			CorpEntity corp = corpRepos.findById(corpInfo.getCorpNo()).orElse(null);
+			searchDTO.setCorpNo(corp.getCorpNo());
+
+			List<ApplicantDTO> applicants = applicantServ.searchApplicantForExcel(searchDTO);
+			List<Integer> resumeSeqs = new ArrayList<>();
+			for (ApplicantDTO applicant : applicants) {
+				resumeSeqs.add(applicant.getResumeSeq());
+			}
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ITextRenderer renderer = new ITextRenderer();
+
+			// SharedContext 설정
+			SharedContext sharedContext = renderer.getSharedContext();
+			sharedContext.setPrint(true);
+			sharedContext.setInteractive(false);
+			sharedContext.setReplacedElementFactory(imgReplaceElementFactory);
+			sharedContext.getTextRenderer().setSmoothingThreshold(0);
+
+			// 폰트 추가
+			renderer.getFontResolver().addFont(new ClassPathResource("/static/font/NanumBarunGothic.ttf").getURL().toString(),
+					BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+			boolean isFirst = true;
+
+			for (int resumeSeq : resumeSeqs) {
+				ResumeResponseDTO resumeData = resumeServ.searchOneDetailResume(resumeSeq);
+				ResumeEntity resume = resumeData.getResume();
+
+				UserEntity user = userRepos.findById(resume.getEmail()).orElse(null);
+				user.setPhone(cu.decryptText(user.getPhone()));
+				user.setBirth(user.getBirth().substring(0, 4));
+
+				Map<String, Object> map = new HashMap<>();
+				String profileImg = resume.getImage();
+				if (profileImg != null && !profileImg.isEmpty()) {
+					String imagePath = "/images/profileImg/" + profileImg;
+//				String imagePath = saveDir + "/images/profileImg/" + profileImg;
+					map.put("profileImagePath", imagePath);
+				}
+
+				map.put("user", user);
+				map.put("resumeData", resumeData);
+				map.put("resume", resume);
+				map.put("links", resumeData.getLinks() != null ? resumeData.getLinks() : new LinkDTO());
+				map.put("positions", resumeData.getPositions());
+				map.put("skills", resumeData.getSkills());
+				map.put("educations", resumeData.getEducations());
+				map.put("careers", resumeData.getCareers());
+				map.put("projects", resumeData.getProjects());
+				map.put("additionals", resumeData.getAdditionals());
+				map.put("introductions", resumeData.getIntroductions());
+
+				String processHtml = pdfService.createPdf("user/resume/resume_pdf", map);
+
+				if (isFirst) {
+					// 첫 문서
+					renderer.setDocumentFromString(processHtml);
+					renderer.layout();
+					renderer.createPDF(outputStream, false); // false: 이어서 쓰기
+					isFirst = false;
+				} else {
+					// 두 번째 이후 문서
+					renderer.setDocumentFromString(processHtml);
+					renderer.layout();
+					renderer.writeNextDocument();
+				}
+			}
+
+			renderer.finishPDF();
+
+			String fileName = URLEncoder.encode("지원자_이력서_모음", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + fileName + ".pdf");
+
+			response.getOutputStream().write(outputStream.toByteArray());
+			response.getOutputStream().flush();
+			outputStream.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 엑셀 파일 다운로드
 	@GetMapping("/corp/applicant/excel")
 	public void createExcel(HttpServletResponse response, @ModelAttribute ApplicantSearchDTO searchDTO,
 			@AuthenticationPrincipal CustomUser corpInfo) {
@@ -428,7 +529,8 @@ public class ApplicantController {
 			}
 
 			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-Disposition", "attachment;filename=test.xlsx");
+			String fileName = URLEncoder.encode("지원자 정보", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + fileName + ".xlsx");
 			workbook.write(response.getOutputStream());
 			workbook.close();
 		} catch (Exception e) {

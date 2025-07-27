@@ -8,8 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -248,6 +251,20 @@ public class JobPostController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류 발생");
 		}
+  }
+  
+  
+  /**
+   *  공고의 지원자들 정보를 엑셀로 뽑기 
+   */
+  @GetMapping("/corp/applicantInfoList/excel/download/{jobPostingSeq}/{title}")
+  public ResponseEntity<Resource> downloadApplicantInfoListExcel(@PathVariable("jobPostingSeq") int jobPostingSeq, @PathVariable("title") String title){
+  	Resource result = jpcService.excelDownload(jobPostingSeq);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + title + "_지원자리스트.xlsx")
+            .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .body(result);
   }
   
   

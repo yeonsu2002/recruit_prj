@@ -72,6 +72,7 @@ JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
 WHERE jp.is_ended = 'N'
+  AND TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD') >= TRUNC(SYSDATE)
 GROUP BY
   jp.job_posting_seq,
   jp.posting_title,
@@ -99,7 +100,6 @@ GROUP BY
   pc.position_name,
   jp.corp_no
 ORDER BY jp.job_posting_seq
-
 </select>
 
 <!-- 특정 jobPostingSeq에 해당하는 공고 조회 -->
@@ -145,7 +145,7 @@ JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
 WHERE jp.job_posting_seq = #{jobPostingSeq}
-  AND jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
+  AND jp.is_ended = 'N'
 GROUP BY
     jp.job_posting_seq,
     jp.posting_title,
@@ -215,22 +215,22 @@ ORDER BY
     jp.work_end_time AS workEndTime,
     jp.view_cnt AS viewCnt,
     jp.zipcode AS zipcode,
-     jp.region AS region,
+    jp.region AS region,
     jp.district AS district,
     jp.position_seq AS positionSeq,
     c.corp_nm AS corpNm,
     c.corp_info AS corpInfo,
     c.corp_url AS corpUrl,
     c.corp_img AS corpImg,
-  pc.position_name AS positionName,
-  TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
-  LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
+    pc.position_name AS positionName,
+    TRUNC(TO_DATE(jp.posting_end_dt, 'YYYY-MM-DD')) - TRUNC(SYSDATE) AS daysRemaining,
+    LISTAGG(DISTINCT ts.stack_name, ', ') WITHIN GROUP (ORDER BY ts.tech_stack_seq) AS techNames
 FROM JOB_POSTING jp
 JOIN COMPANY c ON jp.corp_no = c.corp_no
 JOIN POSITION_CODE pc ON jp.position_seq = pc.position_seq
 LEFT JOIN JOB_POSTING_TECH_STACK jpts ON jp.job_posting_seq = jpts.job_posting_seq
 LEFT JOIN TECH_STACK ts ON jpts.tech_stack_seq = ts.tech_stack_seq
-WHERE jp.posting_end_dt >= TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')
+WHERE jp.is_ended = 'N'
 GROUP BY
   jp.job_posting_seq,
   jp.posting_title,
@@ -246,7 +246,7 @@ GROUP BY
   jp.view_cnt,
   jp.zipcode,
   jp.region,
-	jp.district,
+  jp.district,
   jp.position_seq,
   jp.is_ended,
   c.corp_nm,
@@ -322,8 +322,7 @@ GROUP BY
     c.corp_no,
     c.corp_img,
     pc.position_name
-ORDER BY jp.posting_start_dt DESC
+ORDER BY jp.job_posting_seq
 </select>
-
-
+ 
 </mapper>

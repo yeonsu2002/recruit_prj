@@ -6,10 +6,10 @@
       <button type="button" class="modal-close">Ⅹ</button>
     </div>
     <div class="modal-body">
-     <form id="interviewOfferForm" method="post" action="@{/corp/talentPool/interviewOffer/send}">
-	    <input type="hidden" th:value="${corpNo}" id="corpNo">
-	    <input type="hidden" th:value="${email}" id="email">
-        <input type="hidden" name="resumeSeq" th:value="${resumeSeq}" />
+	<form id="interviewOfferForm" method="post" th:action="@{/corp/talentPool/interviewOffer/send}">
+	    <input type="hidden" th:value="${corpNo}" id="corpNo" name="corpNo">
+	    <input type="hidden" th:value="${email}" id="email" name="email">
+        <input type="hidden" th:value="${resumeSeq}" name="resumeSeq" />
 
         <div class="form-group">
           <label class="form-label">메일 제목</label>
@@ -31,7 +31,7 @@
 감사합니다.
 [[${corpInfo.corpName}]] 드림
 
-홈페이지 : [[${corpInfo.corpUrl}]]
+[[${corpInfo.corpName}]] 홈페이지 : [[${corpInfo.corpUrl}]]
           </textarea>
         </div>
         <div class="contact-info">
