@@ -1,24 +1,41 @@
 package kr.co.sist.admin.ask;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class AdminInquiryService {
+	
+	private final AdminInquiryMapper adminInquiryMapper;
+	
+	public AdminInquiryService(AdminInquiryMapper adminInquiryMapper) {
+		this.adminInquiryMapper = adminInquiryMapper;
+	}
+	
+	public List<AdminInquiryDTO> getInquirys(Map<String, Object> map) {
+		
+		return adminInquiryMapper.selectSearchAsks(map);
+	}
+	
+	public AdminInquiryDTO getInquiry(int ask_seq){
+		
+		return adminInquiryMapper.selectSearchAsk(ask_seq);
+	}
+	
+	public int countSearch(Map<String, Object> map) {
+		return adminInquiryMapper.countSearch(map);
+	}
 
-    private final AdminInquiryRepository inquiryRepo;
+	public boolean deleteInquiry(Map<String,Object> map) {
+		int count = adminInquiryMapper.deleteInquiry(map);
+		return count > 0;
+	}
+	
+	public boolean updateInquiry(Map<String,Object> map) {
+		int count = adminInquiryMapper.updateInquiry(map);
+		return count > 0;
+	}
 
-    public Page<AdminInquiryDTO> getFilteredInquiries(String category, String answerStat, String keyword, String keywordType, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "askSeq"));
-        System.out.println(inquiryRepo.findAll());
-        return inquiryRepo.findAll(
-                AdminInquirySpecification.filterBy(category, answerStat, keyword, keywordType),
-                pageRequest
-        ).map(AdminInquiryDTO::new);
-    }
 }

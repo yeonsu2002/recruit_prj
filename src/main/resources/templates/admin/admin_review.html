@@ -47,11 +47,11 @@ $(function() {
 	    contentType: 'application/json',
 	    data: JSON.stringify({ reviewSeq: selectedIds }),
 	    success: function(response) {
-	      alert('탈퇴 처리 완료');
+	      alert('삭제 처리 완료');
 	      location.reload();
 	    },
 	    error: function() {
-	      alert('탈퇴 처리 중 오류가 발생했습니다.');
+	      alert('삭제 처리 중 오류가 발생했습니다.');
 	    }
 	  });
 	});

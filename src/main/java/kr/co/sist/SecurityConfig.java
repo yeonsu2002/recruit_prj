@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import kr.co.sist.admin.login.AdminDetailsServiceImpl;
 import kr.co.sist.jwt.AdminCustomLoginFailureHandler;
+import kr.co.sist.jwt.AdminCustomLoginSuccessHandler;
 import kr.co.sist.jwt.CustomLoginFailureHandler;
 import kr.co.sist.jwt.CustomLoginSuccessHandler;
 import kr.co.sist.jwt.JWTFIlter;
@@ -26,12 +27,16 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final AdminDetailsServiceImpl adminDetailsServiceImpl;
     private final AccessDeniedHandler accessDeniedHandler;
-    
-    public SecurityConfig(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl, AdminDetailsServiceImpl adminDetailsServiceImpl, AccessDeniedHandler accessDeniedHandler) {
+    private final AdminCustomLoginFailureHandler adminCustomLoginFailureHandler;
+    private final AdminCustomLoginSuccessHandler adminCustomLoginSuccessHandler;
+    public SecurityConfig(JWTUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl, AdminDetailsServiceImpl adminDetailsServiceImpl, AccessDeniedHandler accessDeniedHandler
+    		,AdminCustomLoginFailureHandler adminCustomLoginFailureHandler, AdminCustomLoginSuccessHandler adminCustomLoginSuccessHandler) {
         this.jwtUtil = jwtUtil;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.adminDetailsServiceImpl = adminDetailsServiceImpl;
         this.accessDeniedHandler = accessDeniedHandler;
+        this.adminCustomLoginFailureHandler = adminCustomLoginFailureHandler;
+        this.adminCustomLoginSuccessHandler = adminCustomLoginSuccessHandler;
     }
     
     @Bean
@@ -57,8 +62,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/admin/login_process")
                 .usernameParameter("admin_email")
                 .passwordParameter("admin_password")
-                .failureHandler(new AdminCustomLoginFailureHandler())
-                .defaultSuccessUrl("/admin/admin_mainpage",true)
+                .failureHandler(adminCustomLoginFailureHandler)
+                .successHandler(adminCustomLoginSuccessHandler)
                 .permitAll()
             )
             .logout(auth -> auth

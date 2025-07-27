@@ -9,7 +9,6 @@ import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.entity.UserEntity;
 
 @Mapper
 public interface JobPostingCorpMapper {
@@ -41,5 +40,5 @@ public interface JobPostingCorpMapper {
   
   //이메일로 유저 정보 가져오기 
   public UserDTO selectUserInfo(String email);
-  
+
 }

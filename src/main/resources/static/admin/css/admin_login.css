@@ -105,3 +105,21 @@
             margin-bottom: 15px;
             font-size: 14px;
         }
+        .register-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #888;       /* 회색 */
+    color: white;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: none;  /* a 태그 밑줄 제거 */
+}
+
+.register-btn:hover {
+    background: #666;       /* 더 어두운 회색 */
+}
+        
