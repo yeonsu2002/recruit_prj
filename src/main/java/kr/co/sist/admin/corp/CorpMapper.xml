@@ -11,6 +11,7 @@
 	</select>
 	<select id="selectCorpInd" resultType="java.lang.String">
 	select distinct(industry) as ind from company 
+	where industry is not null
 	</select>
 	
 	<select id="searchCorp" parameterType="map" resultType="kr.co.sist.corp.dto.CorpEntity">

@@ -26,8 +26,8 @@ form .table {
 }
 
 form input[type="text"] {
-  width: 100%;
   padding: 8px;
+  margin-bottom:10px;
   border: 1px solid #ced4da;
   border-radius: 6px;
 }
@@ -81,7 +81,7 @@ input[type="submit"]:hover {
 <span>이메일</span>
 <span><input type="text" id="email" name="email"/></span>
 <span>이름	</span>
-<span><input type="text" id="name" name="name"/></span>
+<span><input type="text" id="name" name="name"/></span><br>
 <span>성별:</span>
 <span>
 <input type="radio" id="male" name="gender" value="M" class="btn-check" autocomplete="off">
@@ -99,7 +99,7 @@ input[type="submit"]:hover {
 <span>
 <input type="radio" id="corp" name="type" value="ROLE_CORP" class="btn-check" autocomplete="off">
 <label class="btn btn-outline-primary" for="corp">기업</label>
-</span></br>
+</span>
 <span>상태:</span>
 <span>
 활동중<input type="checkbox" id="status" name="status" value="0">
