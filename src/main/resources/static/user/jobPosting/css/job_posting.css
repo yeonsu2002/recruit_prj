@@ -585,3 +585,60 @@ body {
     color: #666 !important;
     cursor: not-allowed !important;
 }
+
+.all-reset-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    height: 40px; /* filter-btn과 동일한 높이 */
+    white-space: nowrap;
+}
+
+.all-reset-button:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.all-reset-button:active {
+    background-color: #dee2e6;
+    transform: translateY(1px);
+}
+
+.reset-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.all-reset-button:hover .reset-icon {
+    transform: rotate(180deg);
+}
+
+/* 클릭 애니메이션 효과 */
+.all-reset-button.clicked {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.all-reset-button.clicked .reset-icon {
+    transform: rotate(360deg);
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+    .all-reset-button {
+        padding: 6px 12px;
+        font-size: 13px;
+        height: 36px;
+    }
+}

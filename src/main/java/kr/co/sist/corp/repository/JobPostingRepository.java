@@ -18,4 +18,6 @@ public interface JobPostingRepository extends JpaRepository<JobPostingEntity, In
 	public JobPostingEntity findByCorpNo_CorpNoAndJobPostingSeq(Long corpNo, int jobPostingSeq);
 	
 	
+	
+	
 }

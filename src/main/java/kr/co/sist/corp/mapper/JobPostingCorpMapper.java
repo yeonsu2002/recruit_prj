@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.co.sist.corp.dto.JobPostingApplicantStatsDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
@@ -31,7 +32,6 @@ public interface JobPostingCorpMapper {
   
   //공고안에서 기술스택 비동기 검색 조회
   public List<TechStackDTO> selectTechStackList(String keyword);
-
   
   //나의 공고 리스트 가져오기 : 진행중, 마감, 전체 갯수 출력
   public List<Map<String, Integer>> selectMyPostingCount(Long corpNo);
@@ -41,5 +41,8 @@ public interface JobPostingCorpMapper {
   
   //이메일로 유저 정보 가져오기 
   public UserDTO selectUserInfo(String email);
+  
+  // 공고 번호로 해당 공고에 넣은 이력서들의 통계자료 가져오기
+  public JobPostingApplicantStatsDTO selectApplicantStats(int jobPostingSeq);
   
 }

@@ -258,7 +258,7 @@ public class ResumeController {
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")
 	@ResponseBody
 	public Map<String, Object> resumeRemove(@PathVariable int resumeSeq) {
-
+		
 		Map<String, Object> result = new HashMap<>();
 
 		rServ.removeResume(resumeSeq);

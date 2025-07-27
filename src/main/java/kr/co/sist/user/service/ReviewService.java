@@ -1,15 +1,12 @@
 package kr.co.sist.user.service;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import kr.co.sist.user.dto.ReviewDTO;
+import kr.co.sist.user.dto.ReviewSearchDTO;
 import kr.co.sist.user.mapper.ReviewMapper;
-
 @Service
 public class ReviewService {
 	
@@ -25,6 +22,31 @@ public class ReviewService {
 	public List<ReviewDTO> getReviews(Long corpNo){
 		
 		return reviewMapper.selectReviewsByCorpNo(corpNo);
+	}
+	
+	/**
+	 * 페이징된 리뷰 목록 조회
+	 * @param searchDTO
+	 * @return
+	 */
+	public List<ReviewDTO> getReviewsWithPaging(ReviewSearchDTO searchDTO) {
+		// 전체 리뷰 수 조회 (int를 long으로 변환)
+		int totalCount = reviewMapper.countReviewsByCorpNo(searchDTO.getCorpNo());
+		
+		// 디버깅용 로그 추가
+		System.out.println("전체 리뷰 수: " + totalCount);
+		System.out.println("현재 페이지: " + searchDTO.getPage());
+		System.out.println("페이지 사이즈: " + searchDTO.getSize());
+		System.out.println("오프셋: " + searchDTO.getOffset());
+		
+		// 페이징 정보 계산 (int를 long으로 변환하여 전달)
+		searchDTO.calculatePageInfo((long) totalCount);
+		
+		// 페이징된 리뷰 목록 조회
+		List<ReviewDTO> result = reviewMapper.selectReviewsPage(searchDTO);
+		System.out.println("조회된 리뷰 수: " + (result != null ? result.size() : 0));
+		
+		return result;
 	}
 	
 	
@@ -66,7 +88,6 @@ public class ReviewService {
 	public boolean checkReviewEligibility(String email, Long corpNo) {
 	   int count = reviewMapper.checkReviewEligibility(email, corpNo);
      return count > 0;
-
 	}
 	
 	 /**
@@ -76,7 +97,6 @@ public class ReviewService {
       int count = reviewMapper.checkExistingReview(email, corpNo);
       return count > 0;
   }
-
 	
 	/**
 	 * 리뷰 저장
@@ -101,7 +121,6 @@ public class ReviewService {
 		
 	 }
 	}
-
 	/**
 	 * 별점을 별 문자열로 변환하는 유틸리티 메서드
 	 * @param rating
@@ -116,12 +135,10 @@ public class ReviewService {
 			}else {
         stars.append("☆");
     }
-
 		}
 		
 		return stars.toString();
 	}
-
 	
 	public String convertAvgRatingToStars(double avgRating) {
 		
@@ -141,6 +158,3 @@ public class ReviewService {
    return stars.toString();
  }
 }
-
-
-

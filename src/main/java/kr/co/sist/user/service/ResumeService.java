@@ -108,8 +108,15 @@ public class ResumeService {
 	 * 
 	 * @param resumeSeq
 	 */
+	@Transactional
 	public void removeResume(int resumeSeq) {
-		rMapper.deleteResume(resumeSeq);
+		 try {
+       System.out.println("삭제 시작--------");
+       rMapper.deleteResume(resumeSeq);
+       System.out.println("삭제 완료");
+   } catch (Exception e) {
+       e.printStackTrace();
+   }
 	}
 
 	/**

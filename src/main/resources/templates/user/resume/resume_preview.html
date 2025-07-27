@@ -97,7 +97,7 @@
 						<h5>상세내용</h5>
 						<p th:text="${project.projectContent}">재밌는 프로젝트였습니다.</p>
 						<h5>저장소 링크</h5>
-						<p th:text="${project.repositoryLink}">https://abcd</p>
+						<p><a th:href="${project.repositoryLink}" th:text="${project.repositoryLink}">https://abcd</a></p>
 						<h5 th:if="${project.releaseStatus == 'Y'}">배포 완료</h5>
 					</div>
 				</div>
@@ -138,16 +138,16 @@
 			<div class="section-title">링크</div>
 			<div class="links-section">
 				<div style="margin-bottom: 20px;">
-					<strong>Github</strong> <span th:text="${links.githubUrl}"
-						style="margin-left: 50px;">https://abcd</span>
+					<strong>Github</strong> <a th:href="${links.githubUrl}" th:text="${links.githubUrl}"
+						style="margin-left: 50px;">https://abcd</a>
 				</div>
 				<div style="margin-bottom: 20px;">
-					<strong>Notion</strong> <span th:text="${links.notionUrl}"
-						style="margin-left: 50px;">https://abcd</span>
+					<strong>Notion</strong> <a th:href="${links.notionUrl}" th:text="${links.notionUrl}"
+						style="margin-left: 50px;">https://abcd</a>
 				</div>
 				<div>
-					<strong>BLOG</strong> <span th:text="${links.blogUrl}"
-						style="margin-left: 60px;">https://abcd</span>
+					<strong>BLOG</strong> <a th:href="${links.blogUrl}" th:text="${links.blogUrl}"
+						style="margin-left: 60px;">https://abcd</a>
 				</div>
 			</div>
 		</div>

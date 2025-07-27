@@ -92,8 +92,7 @@ and ja.pass_stage=2
 <select id="countReviewsByCorpNo" parameterType="Long" resultType="int">
     SELECT COUNT(*) FROM REVIEW WHERE corp_no = #{corpNo}
 </select>
-
-<!-- 페이징된 리뷰 목록 조회 -->
+<!-- 페이징된 리뷰 목록 조회 (Oracle 12c+ 버전) -->
 <select id="selectReviewsPage" parameterType="kr.co.sist.user.dto.ReviewSearchDTO" resultMap="reviewResult">
     SELECT 
         review_seq,
@@ -107,7 +106,8 @@ and ja.pass_stage=2
     FROM REVIEW
     WHERE corp_no = #{corpNo}
     ORDER BY created_at DESC
-    LIMIT #{size} OFFSET #{offset}
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
 </select>
+
 
 </mapper>
