@@ -1033,3 +1033,17 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+  .job-section {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    max-width: 760px; /* 조정 가능 */
+    word-break: keep-all;
+    line-height: 1.7;
+  }
+
+  .content-detail {
+    white-space: pre-wrap;
+  }
