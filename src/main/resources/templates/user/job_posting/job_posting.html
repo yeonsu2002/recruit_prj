@@ -773,6 +773,11 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                     <strong th:text="${job.postingTitle}">공고 제목</strong>
                 </div>
                 
+                <!-- 기술 스택 출력 -->
+                <div class="stack-name">
+                  <span th:text="${job != null} ? ${job.techNames} : ''"></span>
+                </div>
+                
                 <div class="company-info">
                     <!-- 지역 (주소의 첫 7자) -->
                     <span th:text="|${job.region} ${job.district}|">지역</span> |
@@ -780,10 +785,6 @@ function checkRegionMatch(jobAddress, selectedRegions) {
                     <span th:text="${job.expLevel}">경력</span>
                 </div>
                 
-                <!-- 기술 스택 출력 -->
-                <div class="stack-name">
-                  <span th:text="${job != null} ? ${job.techNames} : ''"></span>
-                </div>
                 
                 <div class="position-name" th:text="${job.positionName}">직무</div>
             </div>
