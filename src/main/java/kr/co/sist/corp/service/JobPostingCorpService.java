@@ -1,5 +1,7 @@
 package kr.co.sist.corp.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,11 +10,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
+import kr.co.sist.corp.dto.AllApplicantInfoDTO;
 import kr.co.sist.corp.dto.CorpDTO;
 import kr.co.sist.corp.dto.CorpEntity;
 import kr.co.sist.corp.dto.JobPostingApplicantStatsDTO;
@@ -210,6 +221,111 @@ public class JobPostingCorpService {
   	
   	return jpDTO;
   }
+  
+  /**
+   * 공고의 지원자들 상세정보 엑셀 다운로드 (참조: https://adjh54.tistory.com/664)
+   */
+  public Resource excelDownload(int jobPostingSeq) {
+  	
+  	Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("구직자 정보");
+
+    // 헤더 행 생성
+    Row headerRow = sheet.createRow(0);
+    String[] headers = {
+        "이름", "이메일", "도로명주소", "출생년도", "성별",
+        "경력 직무/포지션", "경력 연차",
+        "학교명", "전공", "학점", "학력 구분", "졸업일",
+        "토익", "토플", "텝스", "토익스피킹", "오픽", "JPT", "HSK",
+        "정보처리기사", "SQLD", "리눅스마스터", "OCP", "ADSP",
+        "프로젝트 경험 유무",
+        "자격증 개수"
+    };
+    for (int i = 0; i < headers.length; i++) {
+        Cell cell = headerRow.createCell(i);
+        cell.setCellValue(headers[i]);
+    }
+
+    // 데이터 행 생성 selectAllApplicantInfo
+    List<AllApplicantInfoDTO> appInfoList = jpm.selectAllApplicantInfo(jobPostingSeq);
+    
+    System.out.println("[디버깅] 조회된 데이터 수: " + appInfoList.size()); 
+    
+    Object[][] data = new Object [appInfoList.size()][];
+    for(int i = 0; i < data.length; i++) {
+    	AllApplicantInfoDTO dto = appInfoList.get(i);
+    	data[i] = new Object[] {
+    			dto.getName(),
+          dto.getEmail(),
+          dto.getRoadAddress(),
+          dto.getBirth4(),
+          dto.getGender(),
+          dto.getExp(),
+          dto.getExpYear(),
+          dto.getSchoolName(),
+          dto.getMajor(),
+          dto.getGrade(),
+          dto.getEducationType(),
+          dto.getGraduateDate(),
+          dto.getHasToeic(),
+          dto.getHasTofel(),
+          dto.getHasTeps(),
+          dto.getHasToeicSpeaking(),
+          dto.getHasOpic(),
+          dto.getHasJpt(),
+          dto.getHasHsk(),
+          dto.getHasEngineer(),
+          dto.getHasSqld(),
+          dto.getHasLinux(),
+          dto.getHasOcp(),
+          dto.getHasAdsp(),
+          dto.getHasProject(),
+          dto.getCertCount()
+    	};
+    }
+    
+
+    // Sheet 내에 헤더 / 데이터 행 구성
+    for (int i = 0; i < data.length; i++) {
+        Row row = sheet.createRow(i + 1); // +1 ?? 헤더 다음부터..
+        for (int j = 0; j < data[i].length; j++) {
+            Cell cell = row.createCell(j);
+
+            if (data[i][j] != null) {
+              cell.setCellValue(data[i][j].toString());
+	          } else {
+	              cell.setCellValue("-"); // null 처리
+	          }
+            
+            // 문자 처리
+            if (data[i][j] instanceof String) {
+                cell.setCellValue((String) data[i][j]);
+            }
+            // 숫자 처리
+            if (data[i][j] instanceof Integer) {
+                cell.setCellValue((Integer) data[i][j]);
+            }
+        }
+    }
+
+    // 열 너비 자동 조정
+    for (int i = 0; i < headers.length; i++) {
+        sheet.autoSizeColumn(i);
+    }
+
+    // 파일 생성
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    try {
+        workbook.write(outputStream);
+        workbook.close();
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+    ByteArrayResource resource = new ByteArrayResource(outputStream.toByteArray());
+    return resource;
+
+  }
+
   
   
 }

@@ -88,8 +88,8 @@ function changeClassSelectedTotd(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-	        updatePostingTable(data.postList);
-	        updatePostingCounts(data);
+		        updatePostingTable(data.postList);
+		        updatePostingCounts(data);
 			})
 			.catch(error => {
 				console.error(error);
@@ -149,8 +149,8 @@ function changeClassSubSelectedToInput(userCorpNo){
 			})
 			.then(data => {
 				console.log(data);
-	        updatePostingTable(data.postList);
-	        updatePostingCounts(data);
+		        updatePostingTable(data.postList);
+		        updatePostingCounts(data);
 			})
 			.catch(error => {
 				
@@ -277,10 +277,13 @@ function updatePostingCounts(data) {
 }
 
 //지원자 통계 모달창 보기
+let isExcelBtnBound = false;
 function showApplicantStatsModal(){
 	document.addEventListener('click', function(e){
 		if(e.target.classList.contains("appl-stats-btn")){
-			const jobPostingSeq = e.target.dataset.appliStats; /*위에서 th쓰면 안돼, JS문법으로 innerHTML로 만들고 있으니까*/
+			let jobPostingSeq = e.target.dataset.appliStats; /*위에서 th쓰면 안돼, JS문법으로 innerHTML로 만들고 있으니까*/
+			
+			console.log('e.target.dataset.appliStats = ' + e.target.dataset.appliStats);
 			
 			if(document.querySelector('#applicant-cnt-' + jobPostingSeq).textContent == 0){
 				alert('지원자가 0명인 공고는 통계서비스를 지원하지 않습니다.');
@@ -291,9 +294,25 @@ function showApplicantStatsModal(){
 			const modal = new bootstrap.Modal(document.getElementById('applicant-stats'));
 			modal.show();
 	
-			//모달 열린 후 콜백 실행할거 
-			const title = document.querySelector(`#jobPostingTitle-${jobPostingSeq}`).textContent;
+			//모달 열린 후 콜백 실행할거 1
+			let title = document.querySelector(`#jobPostingTitle-${jobPostingSeq}`).textContent;
 			document.querySelector('.modal-title').textContent = title; /*`[${jobPostingSeq}]번 게시물`*/
+			
+			document.querySelector('.modal-excel-seq').textContent = jobPostingSeq;
+			console.log('모달 열린 후에 seq : ' + jobPostingSeq);
+			
+			//모달 열린 후 콜백 실행할거 2, 이벤트 중복등록 안되게 설정 햇음 
+			if (!isExcelBtnBound) {
+				document.querySelector('#excel-download-btn').addEventListener('click', () => {
+					
+					let excelTitle = document.querySelector('.modal-title').textContent;
+					let excelSeq = document.querySelector('.modal-excel-seq').textContent
+					giveJobPostingSeqToExcelBtn(excelSeq, excelTitle);
+					console.log('[디버깅] seq : ' + excelSeq);
+					console.log('[디버깅] title : ' + excelTitle);
+				});
+				isExcelBtnBound = true;
+			}
 			
 			
 			//fetch
@@ -370,5 +389,40 @@ function showApplicantStatsModal(){
 	
 }
 
+function giveJobPostingSeqToExcelBtn(jobPostingSeq, title){
+	
+	let encodedTitle = encodeURIComponent(title);
+	
+	const url = `/corp/applicantInfoList/excel/download/${jobPostingSeq}/${encodedTitle}`;
+	
+	const a = document.createElement('a');
+	a.href = url;
+	a.setAttribute('download', `${title}_지원자정보.xlsx`);
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	
+/** 
+ 	비동기로 하면 다운로드 창을 안띄움 
+	fetch(url, {
+		method : 'GET',
+	})
+	.then(response => {
+		if(!response.ok){
+			throw new Error('엑셀 다운로드 요청 실패')
+		}
+		return response.json();
+	})
+	.then(result => {
+		alert("엑셀 다운로드 성공");
+		console.log(result);
+	})
+	.catch(error => {
+		alert('엑셀 다운로드 실패');
+		c
+		onsole.error(error);
+	})
+*/		
+}
 
 
