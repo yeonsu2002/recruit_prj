@@ -287,8 +287,10 @@
 
 					<!-- Modal footer -->
 				<div class="modal-footer">
-					<button type="button" class="btn btn-danger"
-						data-bs-dismiss="modal">Close</button>
+					<input type="hidden" class="modal-excel-seq" th:value="${jobPostingSeq}">
+				    <button type="button" id="excel-download-btn" class="btn btn-success" >엑셀 Download</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+					<div th:if="${downloadMessage}" th:text="${downloadMessage}"></div>
 				</div>
 
 			</div>

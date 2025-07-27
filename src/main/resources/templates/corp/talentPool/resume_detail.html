@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이력서 상세보기</title>
         <th:block th:replace="~{fragments/external_file :: cdn_block}"></th:block>
-        <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
         <link rel="stylesheet" th:href="@{/corp/talentPool/resume_detail.css}"/>
+        <link rel="stylesheet" th:href="@{/corp/talentPool/interviewOffer.css}"/>
     <style>
-       
     </style>
 </head>
 <body>
     <th:block th:replace="~{fragments/corpHeader :: corpHeader}"></th:block>
     <div class="container">
-        <!-- 왼쪽: 이력서 내용 영역 -->
+        <!-- 좌측 이력서 내용 영역 -->
 		<div class="resume-section">
-		    <!-- 플레이스홀더는 내용 없을 때만 보여줌 -->
 		    <div class="resume-placeholder" th:if="${resume == null}">
 		        이력서가 없습니다.
 		    </div>
@@ -162,7 +160,7 @@
                 </button>
                 
                 <button class="sidebar-btn bookmark-btn" onclick="handleBookmark()">
-                    <span class="btn-icon">★</span>
+                    <span class="btn-icon" th:text="${resume.isScrapped == 'Y'} ? '★' : '☆'"></span>
                     <span class="btn-text">스크랩</span>
                 </button>
                 
@@ -173,172 +171,127 @@
             </div>
         </div>
     </div>
-   			<div class="modal" id="interviewModal" style="display:none;">
-			  <div th:replace="~{fragments/interviewOffer.html :: modalContent }"></div> <!-- ✅ 안전 -->
-			</div>
+   			<div class="modal" id="interviewModal" style="display:none;"></div>
+<script th:inline="javascript">
+	const resumeSeq = /*[[${resume.resumeSeq}]]*/ 0;
+	const corpNo = /*[[${corpInfo.corpNo}]]*/ 0;
+	const isScrapped = /*[[${resume.isScrapped eq 'Y'}]]*/ false;
+    const scrapBtn = document.querySelector('.bookmark-btn');
 
-    <script>
-    document.querySelector('.openInterviewModalBtn').addEventListener('click', openModal);
+    if (isScrapped) {
+        scrapBtn.classList.add('scrapped');
+        scrapBtn.querySelector('.btn-icon').textContent = '⭐';
+    }
 
-    document.querySelectorAll('.interview-btn').forEach(button => {
-    	  button.addEventListener('click', () => {
-    	    openModal();
-    	  });
-    	});
-    function openModal() {
-        document.getElementById('interviewModal').style.display = 'block';
-        document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+    function handleBookmark() {
+        fetch('/corp/talentPool/scrap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resumeSeq })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'scrap_success') {
+                scrapBtn.classList.add('scrapped');
+                scrapBtn.querySelector('.btn-icon').textContent = '⭐';
+            } else if (data.status === 'scrap_cancel') {
+                scrapBtn.classList.remove('scrapped');
+                scrapBtn.querySelector('.btn-icon').textContent = '☆';
+            } else {
+                alert('스크랩 처리 실패');
+            }
+        })
+        .catch(() => alert('스크랩 요청 실패'));
+    }
+
+    function handleGoBack() {
+        window.history.back();
     }
 
     function closeModal() {
-        document.getElementById('interviewModal').style.display = 'none';
-        document.body.style.overflow = 'auto'; // 배경 스크롤 복원
+        const modalEl = document.getElementById('interviewModal');
+        modalEl.style.display = 'none';
+        modalEl.innerHTML = '';
+        document.body.style.overflow = 'auto';
     }
 
-    // 모달 외부 클릭 시 닫기
-    window.onclick = function(event) {
-        const modal = document.getElementById('interviewModal');
-        if (event.target === modal) {
-            closeModal();
-        }
-    }
+    document.querySelector('.openInterviewModalBtn').addEventListener('click', () => {
+    	  const modalEl = document.getElementById('interviewModal');
+    	  if (!modalEl) {
+    	    alert('모달 요소를 찾을 수 없습니다.');
+    	    return;
+    	  }
 
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
+    	  fetch(`/corp/talentPool/interviewOffer`)
+    	    .then(res => {
+    	      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    	      return res.text();
+    	    })
+    	    .then(html => {
+    	      console.log("서버에서 받은 HTML fragment:", html);
+
+    	      modalEl.innerHTML = html;
+    	      modalEl.style.display = 'block';
+    	      document.body.style.overflow = 'hidden';
+
+    	      const form = modalEl.querySelector('form');
+    	      if (!form) {
+    	        alert("모달 내 form 요소를 찾을 수 없습니다.");
+    	        return;
+    	      }
+
+    	      const resumeInput = form.querySelector('input[name="resumeSeq"]');
+    	      const corpInput = form.querySelector('input[name="corpNo"]');
+
+    	      if (!resumeInput || !corpInput) {
+    	        alert("폼 내 필수 히든 input이 없습니다.");
+    	        console.warn("resumeSeq input:", resumeInput);
+    	        console.warn("corpNo input:", corpInput);
+    	        return;
+    	      }
+
+    	      resumeInput.value = resumeSeq;
+    	      corpInput.value = corpNo;
+
+    	      form.onsubmit = e => {
+    	        e.preventDefault();
+    	        const formData = new FormData(form);
+    	        const data = Object.fromEntries(formData.entries());
+
+    	        fetch('/corp/talentPool/interviewOffer/send', {
+    	          method: 'POST',
+    	          headers: { 'Content-Type': 'application/json' },
+    	          body: JSON.stringify(data)
+    	        })
+    	          .then(res => res.json())
+    	          .then(result => {
+    	            if (result.status === 'success') {
+    	              alert('면접 제안이 전송되었습니다.');
+    	              closeModal();
+    	            } else {
+    	              alert('전송 실패: ' + result.message);
+    	            }
+    	          })
+    	          .catch(() => alert('전송 실패'));
+    	      };
+
+    	      modalEl.querySelector('.modal-close')?.addEventListener('click', closeModal);
+    	    })
+    	    .catch(err => {
+    	      console.error("모달 로딩 중 오류 발생:", err);
+    	      alert("면접 제안 모달 로딩 실패");
+    	    });
+    	});
+
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
             closeModal();
         }
     });
-/*         // 포지션 제안 버튼 클릭
-        function handlePositionOffer() {
-            const btn = document.querySelector('.position-btn');
-            const originalContent = btn.innerHTML;
-            
-            // 로딩 상태
-            btn.classList.add('btn-loading');
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                btn.classList.remove('btn-loading');
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                
-                // 성공 효과
-                alert('포지션 제안을 보냈습니다!');
-            }, 1500);
-        } */
-
-        // 스크랩 버튼 클릭
-		function handleBookmark() {
-		    const btn = document.querySelector('.bookmark-btn');
-		    const icon = btn.querySelector('.btn-icon');
-		    const text = btn.querySelector('.btn-text');
-		
-		    if (btn.classList.contains('active')) {
-		        // 스크랩 취소
-		        btn.classList.remove('active');
-		        // 아이콘 텍스트는 그대로 '⭐' 유지
-		        // text.textContent = '스크랩';  <-- 삭제 또는 주석 처리
-		
-		        btn.style.transform = 'scale(0.95)';
-		        setTimeout(() => {
-		            btn.style.transform = 'scale(1)';
-		        }, 150);
-		
-		        showToast('스크랩을 취소했습니다.');
-		    } else {
-		        // 스크랩 추가
-		        btn.classList.add('active');
-		        // 아이콘 텍스트는 그대로 '⭐' 유지
-		        // text.textContent = '스크랩됨';  <-- 삭제 또는 주석 처리
-		
-		        btn.style.transform = 'scale(1.05)';
-		        setTimeout(() => {
-		            btn.style.transform = 'scale(1)';
-		        }, 150);
-		
-		        showToast('이력서를 스크랩했습니다!');
-		    }
-		}
-
-        // 목록으로 돌아가기
-		function handleGoBack() {
-		    const btn = document.querySelector('.list-btn');
-		
-		    // 브라우저 히스토리 뒤로 가기
-		    window.history.back();
-		}
+</script>
 
 
-        // 토스트 메시지 표시
-        function showToast(message) {
-            // 기존 토스트 제거
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
-            
-            // 새 토스트 생성
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 12px 24px;
-                border-radius: 25px;
-                font-size: 14px;
-                z-index: 10000;
-                animation: toastSlideIn 0.3s ease-out;
-            `;
-            
-            // 토스트 애니메이션 스타일 추가
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes toastSlideIn {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
-                }
-                @keyframes toastSlideOut {
-                    from {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
-                    to {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(-20px);
-                    }
-                }
-            `;
-            
-            document.head.appendChild(style);
-            document.body.appendChild(toast);
-            
-            // 3초 후 제거
-            setTimeout(() => {
-                toast.style.animation = 'toastSlideOut 0.3s ease-out';
-                setTimeout(() => {
-                    toast.remove();
-                    style.remove();
-                }, 300);
-            }, 3000);
-        }
-
-        // 페이지 로드 애니메이션
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '1';
-        });
-    </script>
     	<th:block th:replace="~{fragments/corpFooter :: corpFooter}"></th:block>
 </body>
 </html>

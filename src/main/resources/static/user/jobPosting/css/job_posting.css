@@ -586,31 +586,34 @@ body {
     cursor: not-allowed !important;
 }
 
+/* 전체 초기화 버튼 - 다른 필터 버튼과 동일한 스타일 */
 .all-reset-button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px 16px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    cursor: pointer;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 16px;
     font-size: 14px;
-    color: #666;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    height: 40px; /* filter-btn과 동일한 높이 */
+    color: #495057;
+    cursor: pointer;
+    min-width: 100px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 10px 20px 0;
+    height: auto;
     white-space: nowrap;
+    font-weight: normal;
 }
 
 .all-reset-button:hover {
-    background-color: #e9ecef;
+    background-color: #f8f9fa;
     border-color: #adb5bd;
     color: #495057;
 }
 
 .all-reset-button:active {
-    background-color: #dee2e6;
+    background-color: #e9ecef;
     transform: translateY(1px);
 }
 
@@ -625,9 +628,9 @@ body {
 
 /* 클릭 애니메이션 효과 */
 .all-reset-button.clicked {
-    background-color: #28a745;
+    background-color: #00c471;
     color: white;
-    border-color: #28a745;
+    border-color: #00c471;
 }
 
 .all-reset-button.clicked .reset-icon {
@@ -637,8 +640,8 @@ body {
 /* 반응형 대응 */
 @media (max-width: 768px) {
     .all-reset-button {
-        padding: 6px 12px;
-        font-size: 13px;
-        height: 36px;
+        padding: 10px 16px;
+        font-size: 14px;
+        min-width: 100px;
     }
 }

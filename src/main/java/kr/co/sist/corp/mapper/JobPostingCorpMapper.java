@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.co.sist.corp.dto.AllApplicantInfoDTO;
 import kr.co.sist.corp.dto.JobPostingApplicantStatsDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
@@ -44,5 +45,9 @@ public interface JobPostingCorpMapper {
   
   // 공고 번호로 해당 공고에 넣은 이력서들의 통계자료 가져오기
   public JobPostingApplicantStatsDTO selectApplicantStats(int jobPostingSeq);
+  
+  // 해당 공고의 지원자들의 정보 리스트를 엑셀로 뽑기위한 sql문
+  public List<AllApplicantInfoDTO> selectAllApplicantInfo(int jobPostingSeq);
+  
   
 }

@@ -92,16 +92,38 @@ document.addEventListener('DOMContentLoaded', function() {
 		const passStage = document.querySelector('select[name="passStage"]').value;
 		const keyword = document.querySelector('input[name="keyword"]').value.trim();
 		const sortBy = document.getElementById('sortBy').value;
-		
+
 		params.append('postingStatus', postingStatus);
 		params.append('postingTitle', postingTitle);
 		params.append('applicationStatus', applicationStatus);
 		params.append('passStage', passStage);
 		params.append('keyword', keyword);
 		params.append('sortBy', sortBy);
-		
+
 		const queryString = params.toString();
 		location.href = '/corp/applicant/excel?' + queryString;
+	});
+
+	//pdf 출력 버튼 클릭
+	document.getElementById('pdfExport').addEventListener('click', function() {
+		const params = new URLSearchParams();
+
+		const postingStatus = document.querySelector('select[name="postingStatus"]').value;
+		const postingTitle = document.querySelector('select[name="postingTitle"]').value;
+		const applicationStatus = document.querySelector('select[name="applicationStatus"]').value;
+		const passStage = document.querySelector('select[name="passStage"]').value;
+		const keyword = document.querySelector('input[name="keyword"]').value.trim();
+		const sortBy = document.getElementById('sortBy').value;
+
+		params.append('postingStatus', postingStatus);
+		params.append('postingTitle', postingTitle);
+		params.append('applicationStatus', applicationStatus);
+		params.append('passStage', passStage);
+		params.append('keyword', keyword);
+		params.append('sortBy', sortBy);
+
+		const queryString = params.toString();
+		location.href = '/corp/applicant/download/all?' + queryString;
 	});
 
 });

@@ -3,6 +3,7 @@ package kr.co.sist.corp.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import kr.co.sist.corp.dto.ResumeDetailDTO;
 import kr.co.sist.user.dto.*;
@@ -11,6 +12,8 @@ import kr.co.sist.user.dto.*;
 public interface ResumeDetailMapper {
   
   ResumeDetailDTO selectResumeBasic(Long resumeSeq);
+  
+  String selectIsScrappedByResumeAndCorp(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
 
   List<PositionCodeDTO> selectPositionsByResume(Long resumeSeq);
 
@@ -27,4 +30,5 @@ public interface ResumeDetailMapper {
   List<SelfIntroductionDTO> selectIntroductionsByResume(Long resumeSeq);
 
   LinkDTO selectLinksByResume(Long resumeSeq);
+
 }
