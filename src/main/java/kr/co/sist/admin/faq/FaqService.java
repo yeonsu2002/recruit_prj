@@ -36,5 +36,21 @@ public class FaqService {
     @Transactional
     public void deleteFaq(int faqSeq) {
         faqRepository.deleteById(faqSeq);
-    }
+   }
+   /* public List<FaqEntity> getFaqsFilteredByUserType(String userType) {
+      List<FaqEntity> allFaqs = faqRepository.findAll();
+
+      // 서비스에서 userType 키워드 기반 필터링
+      return allFaqs.stream()
+          .filter(faq -> {
+              String title = faq.getTitle().toLowerCase();
+              String content = faq.getContent().toLowerCase();
+              return (userType.equals("user") && title.contains("일반")) ||
+                     (userType.equals("company") && title.contains("기업"));
+          })
+          .toList();
+  }*/
+        public List<FaqEntity> getFaqsFilteredByUserType(String userType) {
+          return faqRepository.findAll();
+      }
 }

@@ -55,10 +55,6 @@ public class InquiryService {
         inquiry.setUserType(request.getUserType());
         
         // 파일 처리
-        if (file != null && !file.isEmpty()) {
-            String fileName = saveFile(file);
-            inquiry.setFilePath(fileName);
-        }
         
         inquiryRepository.save(inquiry);
     }
@@ -118,9 +114,6 @@ public class InquiryService {
         inquiry.setRegsDate(LocalDateTime.now());
         
         // 파일 처리
-        if (dto.getAttachFile() != null && !dto.getAttachFile().isEmpty()) {
-            inquiry.setFilePath(dto.getAttachFile());
-        }
         
         inquiryRepository.save(inquiry);
     }

@@ -52,7 +52,7 @@ public class InquiryController {
     }
 
     // 사용자 유형별 FAQ 목록 API
-    @GetMapping("/api/faqs")
+    @GetMapping("/api/inquiry-faqs")
     @ResponseBody
     public ResponseEntity<Map<String, List<InquiryResponseDTO>>> getAllFAQs(
             @RequestParam(defaultValue = "user") String userType) {
@@ -112,14 +112,6 @@ public class InquiryController {
             inquiryRequest.setAnswerStat("N");
             inquiryRequest.setUserType(userType); // 여기에 userType 세팅
 
-            if (file != null && !file.isEmpty()) {
-                try {
-                    String fileName = helpService.saveFile(file);
-                    inquiryRequest.setAttachFile(fileName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
             helpService.saveInquiry(inquiryRequest);
 

@@ -20,7 +20,6 @@ public class InquiryResponseDTO {
     private LocalDateTime regsDate;
     private String category;
     private String answerStat;
-    private String attachFile;
     private String userType;
     public InquiryResponseDTO() {
     	
@@ -37,7 +36,6 @@ public class InquiryResponseDTO {
       dto.setRegsDate(entity.getRegsDate());
       dto.setCategory(entity.getCategory());
       dto.setAnswerStat(entity.getAnswerStat());
-      dto.setAttachFile(entity.getFilePath());  
       dto.setUserType(entity.getUserType());
       return dto;
   }

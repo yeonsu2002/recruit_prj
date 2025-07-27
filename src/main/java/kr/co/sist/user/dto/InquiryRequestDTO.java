@@ -16,7 +16,6 @@ public class InquiryRequestDTO {
     private String content;
     private String category;
     private String answerStat;
-    private String attachFile;
     private String userType;
     public InquiryRequestDTO() {
 		}
