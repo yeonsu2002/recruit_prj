@@ -343,7 +343,7 @@ $(document).ready(function () {
                 </div>
                 <div> 
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;" th:text="|${jDto.corpAvgSal}만원| ?: '회사내규에 따름'"></p>
+                    <p style="font-size: 15px;" th:text="${corpAvgSal}"></p>
                 </div>
                 <div>
                   <h2 style="font-size: 20px;">근무형태</h2>
