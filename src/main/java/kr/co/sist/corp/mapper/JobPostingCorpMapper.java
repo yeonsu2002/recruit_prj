@@ -41,9 +41,6 @@ public interface JobPostingCorpMapper {
   
   //이메일로 유저 정보 가져오기 
   public UserDTO selectUserInfo(String email);
-<<<<<<< HEAD
-
-=======
   
   // 공고 번호로 해당 공고에 넣은 이력서들의 통계자료 가져오기
   public JobPostingApplicantStatsDTO selectApplicantStats(int jobPostingSeq);
@@ -52,5 +49,4 @@ public interface JobPostingCorpMapper {
   public List<AllApplicantInfoDTO> selectAllApplicantInfo(int jobPostingSeq);
   
   
->>>>>>> 3c352e3973ae0118b837b17cbba8e23c4a556f80
 }

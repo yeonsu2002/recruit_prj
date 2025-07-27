@@ -42,7 +42,7 @@ public class AdminCustomLoginFailureHandler implements AuthenticationFailureHand
 		} else if (exception instanceof LockedException) {
 			errorMsg = "계정이 잠겨 있습니다.";
 		} else if (exception instanceof DisabledException) {
-			errorMsg = "계정이 비활성화되어있습니다.";
+			errorMsg = "탈퇴한 계정입니다. 관리자에게 문의를 해 복구하실 수 있습니다.";
 		} else if (exception instanceof AccountExpiredException) {
 			errorMsg = "계정이 만료되었습니다.";
 		}

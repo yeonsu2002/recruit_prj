@@ -1,5 +1,6 @@
 package kr.co.sist.admin.login;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +28,9 @@ public class AdminDetailsServiceImpl implements UserDetailsService {
         if ("계정잠김".equals(admin.getStat())) {
           throw new LockedException("계정이 잠긴 상태입니다.");
       }
+        if ("탈퇴".equals(admin.getStat())) {
+        	throw new DisabledException("탈퇴한 사용자입니다.");
+        }
         
         CustomAdmin customAdmin = new CustomAdmin(admin);
 
