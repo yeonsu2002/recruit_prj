@@ -79,9 +79,9 @@
 
         /* 제목 섹션 */
         .job_posting_title {
-            font-size: 28px;
+            font-size: 40px;
             font-weight: bold;
-            color: #2c3e50;
+            color: black;
             margin-bottom: 10px;
         }
 
@@ -189,7 +189,7 @@
             max-width: 700px;
             height: auto;
             padding: 20px;
-            background: #f8f9fa;
+            background: #e9ecef;
             border-radius: 8px;
             border: 1px solid #e9ecef;
         }
@@ -1009,3 +1009,39 @@
 .modal-content::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+
+
+.floating-apply-btn {
+  display: inline-block;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 20px;
+  background-color: #218838;
+  color: white;
+  text-decoration: none;
+  border: none;
+  min-width: 120px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.floating-apply-btn:disabled,
+.floating-apply-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+  .job-section {
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 760px; /* 조정 가능 */
+    word-break: keep-all;
+    line-height: 1.7;
+  }
+
+  .content-detail {
+    white-space: pre-wrap;
+  }

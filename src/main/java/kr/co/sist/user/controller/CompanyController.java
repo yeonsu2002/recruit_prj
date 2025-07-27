@@ -1,5 +1,6 @@
 package kr.co.sist.user.controller;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,11 @@ public class CompanyController {
 	  	model.addAttribute("jobList",jobList);
 	  	model.addAttribute("companyDTO", companyDTO);
 	  	
+	    NumberFormat numberFormat = NumberFormat.getInstance();
+      String corpAvgSal = numberFormat.format(companyDTO.getCorpAvgSal()) + "만원";
+      String corpAnnualRevenue = numberFormat.format(companyDTO.getCorpAnnualRevenue()) + "억원";
+      model.addAttribute("corpAvgSal", corpAvgSal);
+      model.addAttribute("corpAnnualRevenue", corpAnnualRevenue);
 	  	
 	  	return "user/job_posting/company_info";
 		}

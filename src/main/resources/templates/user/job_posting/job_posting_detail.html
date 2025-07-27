@@ -27,6 +27,7 @@ $(document).ready(function () {
         }
         
         $modal.show().addClass('show');
+        $('body').css('overflow', 'hidden'); // ✅ 스크롤 비활성화
         fetchUserResumes();
         fetchUserAttachments();
     });
@@ -34,6 +35,7 @@ $(document).ready(function () {
     // 모달 닫기
     function closeModal() {
         $modal.hide().removeClass('show');
+        $('body').css('overflow', ''); // ✅ 스크롤 복원
         selectedResumeId = null;
         $('.resume-item').removeClass('selected');
         $('#attachmentList').empty();
@@ -315,11 +317,10 @@ $(document).ready(function () {
                 </div>
             </div>
 
-            <div class="job-section">
-               <h2 style="font-size: 20px;">주요내용</h2>
-            <div class="content-detail" th:text="${jDto.postingDetail}"></div>
-            </div>
-
+	           <div class="job-section">
+				  <h2 style="font-size: 20px;">주요내용</h2>
+				  <div class="content-detail" th:text="${jDto.postingDetail}"></div>
+				</div>
             <div class="job-info-box">
                 <div>
                     <h2 style="font-size: 20px;" >경력</h2>
@@ -341,7 +342,7 @@ $(document).ready(function () {
                 </div>
                 <div> 
                     <h2 style="font-size: 20px;">평균 연봉</h2>
-                    <p style="font-size: 15px;" th:text="|${jDto.corpAvgSal}만원| ?: '회사내규에 따름'"></p>
+                    <p style="font-size: 15px;" th:text="${corpAvgSal}"></p>
                 </div>
                 <div>
                   <h2 style="font-size: 20px;">근무형태</h2>
@@ -359,7 +360,7 @@ $(document).ready(function () {
             </div>
 
            <div class="company-intro">
-    <h2><strong>기업소개</strong></h2><br><br>
+    <h2><strong>|기업소개|</strong></h2><br><br>
     
     <div class="company-content">
         <img th:src="@{/images/corpimg/{img}(img=${jDto.corpImg})}" alt="기업 이미지"
@@ -406,7 +407,7 @@ $(document).ready(function () {
 
 		<!-- 비회원 -->
        <div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
-           <a th:href="@{/login}" class="apply-button">지원하기</a>
+          <a th:href="@{/login}" class="floating-apply-btn">지원하기</a>
        </div>
        
 		<!-- 회원 -->

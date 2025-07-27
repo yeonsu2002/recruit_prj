@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -43,6 +44,9 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class ResumeController {
+	
+	@Value("${upload.saveDir}")
+	private String saveDir;
 
 	private final ResumeService rServ;
 	private final AttachmentService aServ;
@@ -183,7 +187,7 @@ public class ResumeController {
 		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
 	}
 
-	// 이력서 다운로드
+	// 이력서 다운로드(pdf생성)
 	@GetMapping("/user/resume/download/{resumeSeq}")
 	public void downloadResume(@PathVariable int resumeSeq, @AuthenticationPrincipal CustomUser userInfo,
 			HttpServletResponse response) {
@@ -202,6 +206,9 @@ public class ResumeController {
 		if (profileImg != null && !profileImg.isEmpty()) {
 			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
 			String imagePath = "/images/profileImg/" + profileImg;
+			
+			//배포시 사용
+//			String imagePath = saveDir + "/images/profileImg/" + profileImg;
 			map.put("profileImagePath", imagePath);
 		}
 		map.put("user", user);
@@ -258,7 +265,7 @@ public class ResumeController {
 	@PostMapping("/user/resume/resumeRemove/{resumeSeq}")
 	@ResponseBody
 	public Map<String, Object> resumeRemove(@PathVariable int resumeSeq) {
-
+		
 		Map<String, Object> result = new HashMap<>();
 
 		rServ.removeResume(resumeSeq);

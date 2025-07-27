@@ -15,35 +15,43 @@ public interface ReviewMapper {
 	
 	 /**
 	 * 해당 기업의 모든 리뷰 조회
-	 * @param corpNo
 	 * @return
 	 */
-	List<ReviewDTO> selectReviewsByCorpNo(@Param("corpNo") Long corpNo);
+	 List<ReviewDTO> selectReviewsByCorpNo(Long corpNo);
 
+	 
+	 List<ReviewDTO> selectReviewsPage(ReviewSearchDTO searchDTO);
+
+	 
+	 /**
+    * 해당 기업의 리뷰 총 개수 조회
+    */
+   int countReviewsByCorpNo(Long corpNo);
+	
    /**
     * 리뷰 통계 조회 (평균 평점, 총 리뷰 수)
     */
-   ReviewDTO selectReviewStats(@Param("corpNo") Long corpNo);
+   ReviewDTO selectReviewStats(Long corpNo);
    
    /**
     * 기업명 조회
     */
-   String selectCompanyName(@Param("corpNo") Long corpNo);
+   String selectCompanyName(Long corpNo);
    
    /**
     * 리뷰 작성 권한 확인 (해당 기업에 최종합격한 이력이 있는지)
     */
-   int checkReviewEligibility(@Param("email") String email, @Param("corpNo") Long corpNo);
+   int checkReviewEligibility(String email, Long corpNo);
    
    /**
     * 이미 리뷰를 작성했는지 확인
     */
-   int checkExistingReview(@Param("email") String email, @Param("corpNo") Long corpNo);
+   int checkExistingReview(String email, Long corpNo);
    
    /**
     * 리뷰 저장
     */
-   int insertReview(ReviewDTO reviewDTO);
+   int insertReview(ReviewDTO dto);
 	List<ReviewDTO> selectReviews(String email);
 	
 	
@@ -68,12 +76,5 @@ public interface ReviewMapper {
 	 */
 	int deleteReview(Map<String,Object> map);
 	
-	
-	int countReviewsByCorpNo(Long corpNo);
-  List<ReviewDTO> selectReviewsPage(ReviewSearchDTO dto);
-	
-	
-	
+ 
 }
-
-

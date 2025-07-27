@@ -31,8 +31,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AttachmentRestController {
 
-	@Value("${upload.fileDir}")
-	private String fileDir;
+	@Value("${upload.saveDir}")
+	private String saveDir;
 	
 	private final JWTUtil jwtUtil;
 	private final AttachmentService attachmentServ;
@@ -89,6 +89,9 @@ public class AttachmentRestController {
 	    		String resourcePath = projectPath + "/src/main/resources/static/attachment";
 	    		//--------------------
 	        
+	    		//배포시 사용
+//	    		String resourcePath = saveDir + "/attachment";
+	    		
 	    		File file = new File(resourcePath, fileName);
 
 	        if (!file.exists()) {

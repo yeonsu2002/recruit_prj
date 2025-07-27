@@ -99,8 +99,11 @@ main {
 .announcement-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 가운데 정렬 */
+    align-items: center;
     margin-top: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .search-header {
@@ -132,6 +135,13 @@ main {
     color: #888;
 }
 
+.stack-name {
+    font-size: 12px;
+    color: #007bff;
+    margin-bottom: 8px;
+    font-weight: normal;
+}
+
 </style>   
 <script type="text/javascript">
 </script>
@@ -154,23 +164,18 @@ main {
        class="announcement-card-link">
         <div class="announcement-card">
             <div class="image-wrapper">
-                <img th:src="@{'/images/' + ${job.corpNm} + '.jpg'}" alt="기업이미지" />
+                 <img th:src="@{/images/corpimg/{img}(img=${job.corpImg})}" alt="기업 이미지">
             </div>
             <div class="company-name" th:text="${job.corpNm}">회사명</div>
             <div class="announcement-title">
                 <strong th:text="${job.postingTitle}">공고 제목</strong>
             </div>
-            <div class="company-info">
-                <span th:text="${#strings.length(job.roadAddress) >= 7 ? #strings.substring(job.roadAddress, 0, 7) : job.roadAddress}">지역</span> |
-                <span th:text="${job.expLevel}">경력</span>
-            </div>
             <div class="stack-name">
-                <span th:if="${job.techStacks != null and !job.techStacks.isEmpty()}">
-                    <span th:each="stack : ${job.techStacks}">
-                        <span th:text="${stack}"></span>
-                    </span>
-                </span>
-                <span th:if="${job.techStacks == null or job.techStacks.isEmpty()}">기술스택 없음</span>
+                 <span th:text="${job != null} ? ${job.techNames} : ''"></span>
+            </div>
+            <div class="company-info">
+                 <span th:text="|${job.region} ${job.district}|">지역</span> |
+                <span th:text="${job.expLevel}">경력</span>
             </div>
         </div>
     </a>

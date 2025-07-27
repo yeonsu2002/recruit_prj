@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -17,6 +20,8 @@ import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.FavoriteCompanyDTO;
 import kr.co.sist.user.dto.MessageDTO;
 import kr.co.sist.user.dto.MessageSearchDTO;
+import kr.co.sist.user.dto.MyApplicantDTO;
+import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
@@ -31,6 +36,25 @@ public class RestMyPageController {
 	private final MessageService messageServ;
 
 	private final UserRepository userRepos;
+
+	// 필터링해서 이후 지원내역 9개 가져오기
+	@GetMapping("/mypage/apply")
+	public Map<String, Object> getApplyList(@AuthenticationPrincipal CustomUser userInfo, @RequestBody MyApplicantSearchDTO searchDTO) {
+		
+		Map<String, Object> result = new HashMap<>();
+
+		UserEntity userEntity = userRepos.findById(userInfo.getEmail()).orElse(null);
+		searchDTO.setEmail(userEntity.getEmail());
+		searchDTO.setOffset((searchDTO.getCurrentPage() - 1) * 9);
+		
+		List<MyApplicantDTO> applicants = myPageServ.searchMyNextApplicant(searchDTO);
+		
+		result.put("result", "success");
+		result.put("applicants", applicants);
+
+		return result;
+		
+	}
 
 	// 지원한 공고 지원 취소
 	@PutMapping("/mypage/application/{jobApplicationSeq}")
@@ -146,11 +170,13 @@ public class RestMyPageController {
 		try {
 			myPageServ.resignMember(userEntity);
 			return "success";
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "failed";
 		}
 	}
+	
+	
 
 }// class

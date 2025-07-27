@@ -123,6 +123,17 @@
     		<artifactId>flying-saucer-pdf</artifactId>
     		<version>9.9.0</version>
 		</dependency>
+		<!-- 엑셀다운로드기능 구현 -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>5.2.3</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi-ooxml</artifactId>
+    		<version>5.2.3</version> <!-- 최신 버전 확인 가능 -->
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

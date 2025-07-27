@@ -9,6 +9,7 @@
 <link rel="stylesheet" th:href="@{/corp/applicant/applicant.css}">
 <script th:src="@{/corp/applicant/applicant.js}"></script>
 <style>
+
 </style>
 </head>
 <body>
@@ -93,7 +94,7 @@
 							<div class="col-position" th:text="${applicant.postingTitle}"></div>
 							<div class="col-company" th:text="${applicant.statusName}"></div>
 							<div class="col-resume active"
-								th:attr="data-resume=${applicant.resumeSeq}, data-posting=${applicant.jobPostingSeq}"
+								th:attr="data-resume=${applicant.resumeSeq}, data-posting=${applicant.jobPostingSeq}, data-seq=${applicant.jobApplicationSeq}"
 								th:text="${applicant.title}"></div>
 							<div class="col-date" th:text="${applicant.applicationDate}"></div>
 							<div class="col-status">
@@ -134,6 +135,17 @@
 						<input type="hidden" th:value="${search.totalPage}" id="totalPage">
 						<input type="hidden" th:value="${search.displayPageNum}"
 							id="displayPageNum">
+					</div>
+					
+					<div class="export-buttons">
+						<button class="export-btn" id="excelExport">
+							<i class="fas fa-file-excel"></i>
+							엑셀 출력
+						</button>
+						<button class="export-btn" id="pdfExport">
+							<i class="fas fa-file-pdf"></i>
+							PDF 출력
+						</button>
 					</div>
 				</div>
 			</div>
