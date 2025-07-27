@@ -8,6 +8,7 @@ import kr.co.sist.user.dto.RecentViewPostingDTO;
 @Mapper
 public interface RecentViewPostingMapper {
 	
+	//최근 본 공고
 	RecentViewPostingDTO selectRecentView(@Param("email") String email,
 																				@Param("jobPostingSeq") Integer jobPostingSeq);
 	
