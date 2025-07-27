@@ -27,6 +27,7 @@ $(document).ready(function () {
         }
         
         $modal.show().addClass('show');
+        $('body').css('overflow', 'hidden'); // ✅ 스크롤 비활성화
         fetchUserResumes();
         fetchUserAttachments();
     });
@@ -34,6 +35,7 @@ $(document).ready(function () {
     // 모달 닫기
     function closeModal() {
         $modal.hide().removeClass('show');
+        $('body').css('overflow', ''); // ✅ 스크롤 복원
         selectedResumeId = null;
         $('.resume-item').removeClass('selected');
         $('#attachmentList').empty();
@@ -406,7 +408,7 @@ $(document).ready(function () {
 
 		<!-- 비회원 -->
        <div sec:authorize="!hasRole('ROLE_USER') and !hasRole('ROLE_CORP')">
-           <a th:href="@{/login}" class="apply-button">지원하기</a>
+          <a th:href="@{/login}" class="floating-apply-btn">지원하기</a>
        </div>
        
 		<!-- 회원 -->

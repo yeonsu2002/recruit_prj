@@ -53,7 +53,6 @@ public class MainPageController {
         }
         
         
-        // 이 부분만 추가하세요
         List<NoticeDTO> noticeList = noticeService.getLatestNotices();
         model.addAttribute("noticeList", noticeList);
 
