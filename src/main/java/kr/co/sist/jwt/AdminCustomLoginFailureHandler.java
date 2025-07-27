@@ -2,24 +2,36 @@ package kr.co.sist.jwt;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.sist.admin.AdminRepository;
+import kr.co.sist.admin.login.log.AdminLoginLogService;
 
+@Component
 public class AdminCustomLoginFailureHandler implements AuthenticationFailureHandler {
 
+	 @Autowired
+   private AdminLoginLogService adminLoginLogService;
+	 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
+		
+		
+		 String adminId = request.getParameter("admin_email");
+     String ip = getClientIP(request);
+     String userAgent = request.getHeader("User-Agent");
 		
 		String errorMsg = "알 수 없는 로그인 오류가 발생하였습니다.";
 		
@@ -30,18 +42,22 @@ public class AdminCustomLoginFailureHandler implements AuthenticationFailureHand
 		} else if (exception instanceof LockedException) {
 			errorMsg = "계정이 잠겨 있습니다.";
 		} else if (exception instanceof DisabledException) {
-			errorMsg = "계정이 비활성화되어있습니다.";
+			errorMsg = "탈퇴한 계정입니다. 관리자에게 문의를 해 복구하실 수 있습니다.";
 		} else if (exception instanceof AccountExpiredException) {
 			errorMsg = "계정이 만료되었습니다.";
-		} else if (exception instanceof CredentialsExpiredException) {
-			errorMsg = "비밀번호 유효기간이 만료되었습니다.";
 		}
 		
+		
+
+		adminLoginLogService.logLogin(adminId, false, ip, userAgent, errorMsg);
 		// 메시지를 쿼리파라미터로 전달 (GET 방식으로 리다이렉트)
-		System.out.println("디버깅 : " + errorMsg);
-		System.out.println("디버깅 : exception class = " + exception.getClass().getName());
 		response.sendRedirect("/admin/admin_login?error=true&errorMessage=" + java.net.URLEncoder.encode(errorMsg, "UTF-8"));
 		 
 	}
+	
+	 private String getClientIP(HttpServletRequest request) {
+     String xfHeader = request.getHeader("X-Forwarded-For");
+     return (xfHeader == null) ? request.getRemoteAddr() : xfHeader.split(",")[0];
+ }
 
 }

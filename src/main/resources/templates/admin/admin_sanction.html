@@ -5,86 +5,131 @@
 <title>Insert title here</title>
 <link rel="shortcut icon" href="http://localhost/images/favicon.png"/>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-    padding: 20px;
-  }
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
 
-  form {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
+    .container {
+      width: 90%;
+      height:85vh;
+      margin-top: 30px;
+      margin-left: 250px;
+      margin-right: 50px;
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 22px;
+      color: #343a40;
+    }
 
-  td {
-    padding: 10px 12px;
-    vertical-align: middle;
-  }
+    table {
+      width: 100%;
+      height:90%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
 
-  td:first-child {
-    font-weight: bold;
-    color: #333;
-    width: 120px;
-    background-color: #f0f0f0;
-  }
+    td {
+      padding: 12px 16px;
+      vertical-align: top;
+    }
 
-  input[type="textarea"],
-  input[type="text"] {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-  }
+    td:first-child {
+      width: 130px;
+      font-weight: bold;
+      background-color: #f1f3f5;
+      color: #333;
+    }
 
-  input[type="submit"] {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #2d6cdf;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    float: right;
-    transition: background-color 0.3s ease;
-  }
+    textarea {
+      width: 100%;
+      height: 50vh;
+      padding: 12px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      resize: vertical;
+      font-size: 14px;
+      line-height: 1.6;
+      font-family: inherit;
+    }
 
-  input[type="submit"]:hover {
-    background-color: #1e50aa;
-  }
-</style>
+    input[type="submit"], input[type="button"] {
+      padding: 10px 24px;
+      margin-top: 10px;
+      margin-right: 10px;
+      background-color: #0d6efd;
+      color: white;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+      font-size: 15px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0b5ed7;
+    }
+
+    input[type="button"] {
+      background-color: #6c757d;
+    }
+
+    input[type="button"]:hover {
+      background-color: #5c636a;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      input[type="submit"], input[type="button"] {
+        width: 100%;
+        margin: 8px 0;
+      }
+
+      textarea {
+        height: 150px;
+      }
+    }
+  </style>
 </head>
 <body>
 <th:block th:replace="fragments/adminHeader :: adminHeader"></th:block>
 
+<div class="container">
+<h2>회원 제재하기</h2>
 <form action="/send_sanction">
 <table>
 <tr>
 <td>이름</td>
 <td th:text="${member.name}"></td>
 <input type="hidden" name="name" th:value="${member.name}"/>
+<input type="hidden" name="email" th:value="${member.email}"/>
+</tr>
+<tr>
+<td>이메일</td>
+<td th:text="${member.email}"></td>
 </tr>
 <tr>
 <td>제재사유</td>
-<td><input type="textarea" name="content"/></td>
+<td><textarea name="content" required></textarea></td>
 </tr>
-<input type="hidden" name="email" th:value="${member.email}"/>
-<input type="submit" id="test" value="이메일 보내기"/>
 </table>
+<input type="submit" id="test" value="이메일 보내기"/>
 <input type="button" value="뒤로가기" onclick="history.back()" />
 </form>
-
+</div>
 
 <!-- jquery CDN -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>

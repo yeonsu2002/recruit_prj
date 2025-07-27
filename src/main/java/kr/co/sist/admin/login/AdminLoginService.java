@@ -20,8 +20,6 @@ public class AdminLoginService {
 	 public AdminDTO authenticate(String adminId, String rawPassword) {
 
 		  // Optional로 받은 후 값이 있는지 확인하거나 예외 처리
-		 System.out.print("adminId : "+adminId);
-		 System.out.print("ar : "+ar);
 	    AdminEntity admin = ar.findById(adminId)
 	        .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
 	    

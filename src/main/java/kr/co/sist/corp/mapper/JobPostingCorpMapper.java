@@ -11,7 +11,6 @@ import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.user.dto.PositionCodeDTO;
 import kr.co.sist.user.dto.TechStackDTO;
 import kr.co.sist.user.dto.UserDTO;
-import kr.co.sist.user.entity.UserEntity;
 
 @Mapper
 public interface JobPostingCorpMapper {

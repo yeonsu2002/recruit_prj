@@ -46,7 +46,7 @@ private final AdminReviewService adminReviewService;
    int startPage = ((currentPage - 1) / perBlock) * perBlock + 1;  // 각 블럭에 보여질 시작 페이지
    int endPage = Math.min(startPage + perBlock - 1, totalPage);  // 각 블럭에 보여질 끝 페이지
    int start = (currentPage - 1) * perPage;  // DB에서 가져올 시작 번호
-   
+   int startNum = totalCount - ((currentPage - 1) * perPage);
 	 map.put("start", start);
 	 map.put("perPage", perPage);
 	 map.put("order", order);
@@ -66,7 +66,7 @@ private final AdminReviewService adminReviewService;
    model.addAttribute("startPage", startPage);
    model.addAttribute("endPage", endPage);
    model.addAttribute("totalPage", totalPage);
-   model.addAttribute("no", totalCount);  // 현재 페이지의 첫 글 번호
+   model.addAttribute("no", startNum);  // 현재 페이지의 첫 글 번호
    System.out.println("totalCount : " + totalCount);
    return "admin/admin_review";
 }

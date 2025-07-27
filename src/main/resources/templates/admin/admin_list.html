@@ -44,10 +44,10 @@ $(function() {
       const stat = $(this).find('td.stat').text().trim();
 
       if (stat !== '승인됨' && stat !== '탈퇴') {
-        canApprove = true;  // 승인가능 상태가 하나라도 있으면 승인버튼 활성
+        canApprove = true;
       }
       if (stat !== '탈퇴') {
-        canWithdraw = true; // 탈퇴 아닌 상태가 있으면 탈퇴버튼 활성
+        canWithdraw = true;
       }
     });
 
@@ -67,16 +67,16 @@ $(function() {
     $('tbody tr').each(function() {
       const isChecked = $(this).find('.select-row').prop('checked');
       const stat = $(this).find('td.stat').text().trim();
-      const adminId = $(this).find('td.adminId').text().trim();
+      const adminId = $(this).find('.admin-id-cell').text().trim();
 
       if (isChecked) {
         if (stat === '탈퇴') {
           hasWithdrawn = true;
-          return false; // 중단
+          return false;
         }
         if (stat === '승인됨') {
           hasAlreadyApproved = true;
-          return false; // 중단
+          return false;
         }
         selectedIds.push(adminId);
       }
@@ -97,7 +97,6 @@ $(function() {
       return;
     }
 
-    // AJAX 승인 요청
     $.ajax({
       url: '/admin/updateStatus',
       method: 'POST',
@@ -121,12 +120,12 @@ $(function() {
     $('tbody tr').each(function() {
       const isChecked = $(this).find('.select-row').prop('checked');
       const stat = $(this).find('td.stat').text().trim();
-      const adminId = $(this).find('td.adminId').text().trim();
+      const adminId = $(this).find('.admin-id-cell').text().trim();
 
       if (isChecked) {
         if (stat === '탈퇴') {
           hasAlreadyWithdrawn = true;
-          return false; // 중단
+          return false;
         }
         selectedIds.push(adminId);
       }
@@ -146,7 +145,6 @@ $(function() {
       return;
     }
 
-    // AJAX 탈퇴 요청
     $.ajax({
       url: '/admin/updateStatus',
       method: 'POST',
@@ -161,28 +159,159 @@ $(function() {
       }
     });
   });
+
+  // --- 모달 관련 코드 ---
+  $('#modalCloseBtn').on('click', function() {
+    $('#adminDetailModal').hide();
+  });
+
+  // 관리자 아이디 클릭 이벤트 - ID 기반으로 변경
+  function setupAdminIdClickEvents() {
+    // 모든 관리자 ID 셀에 클릭 이벤트 바인딩
+    $('.admin-id-cell').off('click').on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      console.log('관리자 ID 클릭됨:', $(this).text());
+      
+      const adminId = $(this).text().trim();
+      
+      // 모달 데이터 로딩 표시
+      const tbody = $('#loginLogsTableBody');
+      tbody.html('<tr><td colspan="5">데이터를 불러오는 중...</td></tr>');
+      
+      // 모달 먼저 표시
+      $('#adminDetailModal').show().css({
+        'display': 'block',
+        'visibility': 'visible',
+        'z-index': '1000'
+      });
+
+      $.ajax({
+        url: '/admin/loginLogs/' + encodeURIComponent(adminId),
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          console.log('Ajax 성공, 받은 데이터:', data);
+          
+          tbody.empty();
+
+          if (!data || data.length === 0) {
+            tbody.append('<tr><td colspan="5">로그인 기록이 없습니다.</td></tr>');
+          } else {
+            data.forEach(function(log) {
+              const row = `
+                <tr>
+                  <td>${log.loginTime || log.login_time}</td>
+                  <td>${log.loginResult || log.login_result}</td>
+                  <td>${log.loginFail || log.login_fail}</td>
+                  <td>${log.loginIp || log.login_ip}</td>
+                  <td>${log.userAgent || log.user_agent}</td>
+                </tr>
+              `;
+              tbody.append(row);
+            });
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Ajax 오류:', status, error);
+          tbody.html('<tr><td colspan="5">데이터를 불러오는데 실패했습니다.</td></tr>');
+          alert('관리자 로그인 이력 정보를 불러오는데 실패했습니다.');
+        }
+      });
+    });
+  }
+
+  // 페이지 로드 후 이벤트 설정
+  setupAdminIdClickEvents();
+  
+  // 페이지네이션이나 검색 후 다시 이벤트 설정이 필요한 경우를 위해
+  // 전역 함수로 노출
+  window.setupAdminIdClickEvents = setupAdminIdClickEvents;
 });
 </script>
 <style type="text/css">
- 
+  #adminDetailModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 30px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 1000;
+    min-width: 700px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+  }
   
+  #adminDetailModal h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 18px;
+  }
+  
+  #adminDetailModal button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+  }
+  
+  #adminDetailModal button:hover {
+    background-color: #0056b3;
+  }
+  
+  #adminDetailModal table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  #adminDetailModal th, #adminDetailModal td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  #adminDetailModal th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  /* 관리자 ID 셀 스타일 */
+  .admin-id-cell {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  
+  .admin-id-cell:hover {
+    color: #0056b3;
+    background-color: #f8f9fa;
+  }
 </style>
 </head>
 
 <body>
 
-<!-- 사이드바 포함 -->
 <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
 
-<!-- 콘텐츠 영역 -->
 <div class="admin-container">
   <section class="review-wrapper">
     <h2 class="review-title">관리자 명단</h2>
 
-    <!-- 검색+필터 form -->
     <form th:action="@{/admin/admin_list}" method="get">
-
-      <!-- 검색 영역 -->
       <div class="search-area">
         <div class="search-group">
           <select name="searchType" aria-label="검색 조건 선택">
@@ -197,7 +326,6 @@ $(function() {
         <button class="search-btn" type="submit">검색</button>
       </div>
 
-      <!-- 필터 영역 -->
       <div class="filter-area">
         <div class="filter-group">
           <label>부서:</label>
@@ -230,10 +358,8 @@ $(function() {
           </select>
         </div>
       </div>
-
     </form>
 
-    <!-- 테이블 -->
     <div class="review-table-wrapper">
       <div class="selection-info">
         <span>현재 선택된 항목: <span id="selectedCount">0</span> / 모두 <span id="totalCount" th:text="${adminList.size()}">0</span></span>
@@ -258,7 +384,8 @@ $(function() {
           <tr th:each="list, iterStat : ${adminList}">
             <td><input type="checkbox" class="select-row" /></td>
             <td th:text="${totalCount - (currentPage * 10 + iterStat.index)}">번호</td>
-            <td class="adminId" th:text="${list.adminId}">아이디</td>
+            <!-- 클래스명을 admin-id-cell로 변경 -->
+            <td class="admin-id-cell" th:text="${list.adminId}">아이디</td>
             <td th:text="${list.name}">이름</td>
             <td th:text="${list.dept}">부서</td>
             <td th:text="${list.job}">직급</td>
@@ -271,47 +398,56 @@ $(function() {
       </table>
     </div>
 
-    <!-- 하단 페이지 네비 + 버튼 -->
     <div class="pagination-wrapper">
-		
-	 <!-- 버튼 그룹: 수직 정렬 -->
-  <div class="button-group">
-    <button id="btnApprove" class="delete-btn" type="button">승인</button>
-    <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
-  </div>
-      
+      <div class="button-group">
+        <button id="btnApprove" class="delete-btn" type="button">승인</button>
+        <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
+      </div>
+
       <nav class="pagination" aria-label="페이지 네비게이션">
-
-
-        <!-- 첫 페이지로 -->
         <a th:href="@{/admin/admin_list(page=0)}"
            th:classappend="${currentPage == 0} ? ' disabled' : ''"
            th:attr="aria-disabled=${currentPage == 0}">[<<]</a>
 
-        <!-- 이전 페이지 -->
         <a th:href="@{/admin/admin_list(page=${(currentPage > 0) ? currentPage - 1 : 0})}"
            th:classappend="${currentPage == 0} ? ' disabled' : ''"
            th:attr="aria-disabled=${currentPage == 0}">[<]</a>
 
-        <!-- 페이지 번호들 -->
         <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
            th:href="@{/admin/admin_list(page=${i})}"
            th:text="${i + 1}"
            th:classappend="${i == currentPage} ? ' active' : ''">1</a>
 
-        <!-- 다음 페이지 -->
         <a th:href="@{/admin/admin_list(page=${(currentPage < totalPages - 1) ? currentPage + 1 : totalPages - 1})}"
            th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
            th:attr="aria-disabled=${currentPage == totalPages - 1}">[>]</a>
 
-        <!-- 마지막 페이지로 -->
         <a th:href="@{/admin/admin_list(page=${totalPages - 1})}"
            th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
            th:attr="aria-disabled=${totalPages - 1}">[>>]</a>
       </nav>
-      
     </div>
   </section>
+</div>
+
+<!-- 관리자 상세 모달 -->
+<div id="adminDetailModal">
+  <h3>관리자 로그인 이력(최근 5회)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>로그인 시도 시각</th>
+        <th>로그인 성공 여부</th>
+        <th>원인</th>
+        <th>IP</th>
+        <th>접속환경</th>
+      </tr>
+    </thead>
+    <tbody id="loginLogsTableBody">
+      <!-- Ajax로 행이 동적으로 추가 -->
+    </tbody>
+  </table>
+  <button type="button" id="modalCloseBtn">닫기</button>
 </div>
 
 </body>
