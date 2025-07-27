@@ -18,35 +18,32 @@ public class ResumeDetailServiceImpl implements ResumeDetailService {
     }
 
     @Override
-    public ResumeDetailDTO getResumeDetail(Long resumeSeq) {
+    public ResumeDetailDTO getResumeDetail(Long resumeSeq, Long corpNo) {
         ResumeDetailDTO dto = resumeDetailMapper.selectResumeBasic(resumeSeq);
-        
+
         if (dto == null) {
-          // 이력서가 없을 경우, 예외를 던지거나 빈 객체를 반환
-          throw new RuntimeException("Resume not found for resumeSeq: " + resumeSeq);
-      }
-        
-        if (dto != null) {
-          dto.setPositions(resumeDetailMapper.selectPositionsByResume(resumeSeq));
-          dto.setSkills(resumeDetailMapper.selectTechStacksByResume(resumeSeq));
-          dto.setEducations(resumeDetailMapper.selectEducationsByResume(resumeSeq));
-          dto.setCareers(resumeDetailMapper.selectCareersByResume(resumeSeq));
-          dto.setProjects(resumeDetailMapper.selectProjectsByResume(resumeSeq));
-          dto.setAdditionals(resumeDetailMapper.selectAdditionalsByResume(resumeSeq));
-          dto.setIntroductions(resumeDetailMapper.selectIntroductionsByResume(resumeSeq));
-          dto.setLinks(resumeDetailMapper.selectLinksByResume(resumeSeq));
+            throw new RuntimeException("Resume not found for resumeSeq: " + resumeSeq);
+        }
 
-          // 복호화 처리
-          if (dto.getMember() != null) {
-              String encryptedPhone = dto.getMember().getPhone();
-              if (encryptedPhone != null) {
-                  String decryptedPhone = cu.decryptText(encryptedPhone);
-                  dto.getMember().setPhone(decryptedPhone);
-              }//end if
-          }//end if
-          
-      }//end if
+        dto.setPositions(resumeDetailMapper.selectPositionsByResume(resumeSeq));
+        dto.setSkills(resumeDetailMapper.selectTechStacksByResume(resumeSeq));
+        dto.setEducations(resumeDetailMapper.selectEducationsByResume(resumeSeq));
+        dto.setCareers(resumeDetailMapper.selectCareersByResume(resumeSeq));
+        dto.setProjects(resumeDetailMapper.selectProjectsByResume(resumeSeq));
+        dto.setAdditionals(resumeDetailMapper.selectAdditionalsByResume(resumeSeq));
+        dto.setIntroductions(resumeDetailMapper.selectIntroductionsByResume(resumeSeq));
+        dto.setLinks(resumeDetailMapper.selectLinksByResume(resumeSeq));
 
-      return dto;
-  }
+        // 스크랩 여부 조회
+        String isScrapped = resumeDetailMapper.selectIsScrappedByResumeAndCorp(resumeSeq, corpNo);
+        dto.setIsScrapped(isScrapped != null ? isScrapped : "N");
+
+        // 회원 전화번호 복호화
+        if (dto.getMember() != null && dto.getMember().getPhone() != null) {
+            String decryptedPhone = cu.decryptText(dto.getMember().getPhone());
+            dto.getMember().setPhone(decryptedPhone);
+        }
+
+        return dto;
+    }
 }

@@ -47,6 +47,14 @@
     WHERE r.resume_seq = #{resumeSeq}
   </select>
 
+	<!-- 스크랩 여부 조회 -->
+  <select id="selectIsScrappedByResumeAndCorp" resultType="String">
+   SELECT IS_SCRAPPED
+   FROM RESUME_SCRAP
+   WHERE RESUME_SEQ = #{resumeSeq}
+   AND CORP_NO = #{corpNo}
+  </select>
+
   <!-- 포지션 리스트 조회 -->
   <select id="selectPositionsByResume" parameterType="long" resultType="kr.co.sist.user.dto.PositionCodeDTO">
     SELECT pc.position_seq, pc.position_name

@@ -15,10 +15,11 @@ public class TalentPoolDTO {
     private String email;
     private String title;
     private String gender;
-    private String birthYear;
+    private String birth;
     private String shortAddress;
     private String totalCareer;
     private String finalEducation;
+    private String educationType;
     private String desiredPositions;
     private String techStacks;
     private String certifications;
