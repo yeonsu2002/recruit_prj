@@ -52,6 +52,7 @@ public class InquiryService {
         inquiry.setCategory(request.getCategory());
         inquiry.setAnswerStat("N"); // 답변 대기 상태
         inquiry.setRegsDate(LocalDateTime.now());
+        inquiry.setUserType(request.getUserType());
         
         // 파일 처리
         if (file != null && !file.isEmpty()) {
