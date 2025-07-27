@@ -30,13 +30,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		
 		CustomUser customUser = (CustomUser) authentication.getPrincipal();
 		
-		// JWT 발급 -> access, refresh 토큰발급(07.23 변경)  
-		
-		String tempJwt = jwtUtil.createJwt("tempJwt", customUser.getUserDTO(), 60 * 10 * 86400000L); // 7월 25일 컨펌받기전 까지 사용할 임시 토큰 
+		String tempJwt = jwtUtil.createJwt("tempJwt", customUser.getUserDTO(), 60 * 60 * 1000L); //리팩토링 할 때 access & refresh로 바꾸기  
     //String access = jwtUtil.createJwt("access", customUser.getUserDTO(), 60 * 10 * 1000L); //10분
     //String refresh = jwtUtil.createJwt("refresh", customUser.getUserDTO(), 60 * 60 * 86400000L); //24시간 
     
-    // access -> 이렇게 헤더에 발급 후, 프론트에서 이걸 로컬 스토리지에 저장 하던가.. 쿠키로 변환하던가 
+    // access -> 이렇게 헤더에 발급 후, 프론트에서 이걸 로컬 스토리지에 저장 (실무 방식)
     //response.setHeader("access", access);
     
     // refresh -> 쿠키 생성 후 저장
@@ -45,8 +43,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 	    .secure(false) //HTTPS에서만 동작 (개발시 false)
 	    .sameSite("Strict") //CSRF방지 
 	    .path("/") //전체경로에 대해 쿠키 전송 
-	    //.maxAge(Duration.ofHours(1)) //쿠키 1시간 유지 (JWT보다 길어야 겠지 )
-	    .maxAge(Duration.ofHours(24)) //refresh 쿠키는 24시간 유지 
+	    .maxAge(Duration.ofHours(1)) //쿠키 1시간 유지 (JWT보다 길어야 겠지 )
+	    //.maxAge(Duration.ofHours(24)) //refresh 쿠키는 24시간 유지 
 	    .build();
 
     response.setHeader("Set-Cookie", cookie.toString()); // "Set-Cookie"는 서버 → 클라이언트로 쿠키를 보내기 위한 공식 HTTP 응답 헤더
