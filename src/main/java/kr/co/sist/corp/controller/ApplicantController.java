@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -63,6 +64,9 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class ApplicantController {
+	
+	@Value("${upload.saveDir}")
+	private String saveDir;
 
 	private final CorpRepository corpRepos;
 	private final UserRepository userRepos;
@@ -260,6 +264,9 @@ public class ApplicantController {
 			String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
 			String resourcePath = projectPath + "/src/main/resources/static/attachment";
 			// --------------------
+			
+			//배포시 사용
+//			String resourcePath = saveDir + "/attachment";
 
 			File file = new File(resourcePath, fileName);
 
@@ -310,7 +317,10 @@ public class ApplicantController {
 		if (profileImg != null && !profileImg.isEmpty()) {
 			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
 			String imagePath = "/images/profileImg/" + profileImg;
+			// 배포시 사용
+//		String imagePath = saveDir + "/images/profileImg/" + profileImg;
 			map.put("profileImagePath", imagePath);
+
 		}
 		map.put("user", user);
 		map.put("resumeData", resumeData);
@@ -362,7 +372,7 @@ public class ApplicantController {
 
 	}// downloadResume
 
-	//엑셀 파일 다운로드
+	// 엑셀 파일 다운로드
 	@GetMapping("/corp/applicant/excel")
 	public void createExcel(HttpServletResponse response, @ModelAttribute ApplicantSearchDTO searchDTO,
 			@AuthenticationPrincipal CustomUser corpInfo) {

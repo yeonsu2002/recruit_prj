@@ -287,6 +287,10 @@ public class ResumeService {
 		String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
 		String resourcePath = projectPath + "/src/main/resources/static/images/profileImg";
 		// --------------------
+		
+		//배포시 사용
+//		String resourcePath = saveDir + "/images/profileImg";
+		
 
 		//UUID로 파일명 설정(중복 방지)
 		String originalFileName = mf.getOriginalFilename();
@@ -300,7 +304,7 @@ public class ResumeService {
 			uploadDir.mkdir();
 		}
 
-		File uploadFile = new File(uploadDir + File.separator + savedFileName);
+		File uploadFile = new File(uploadDir, savedFileName);
 
 		mf.transferTo(uploadFile);
 	}
