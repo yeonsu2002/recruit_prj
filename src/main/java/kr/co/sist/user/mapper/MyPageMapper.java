@@ -9,13 +9,15 @@ import kr.co.sist.user.dto.FavoriteCompanyDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
+import kr.co.sist.user.dto.MyReviewDTO;
 
 @Mapper
 public interface MyPageMapper {
 
 	
-	public List<MyApplicantDTO> selectMyApplicant(String email);
-	public List<MyApplicantDTO> selectMyAllApplicant(MyApplicantSearchDTO searchDTO);
+	public List<MyApplicantDTO> selectMyAllApplicant(String email);
+	public List<MyApplicantDTO> selectMyApplicant(MyApplicantSearchDTO searchDTO);
+	public List<MyApplicantDTO> selectMyNextApplicant(MyApplicantSearchDTO searchDTO);
 	
 	public int updateApplicationCancel(int jobApplicationSeq);
 	public int deleteApplication(int jobApplicationSeq);
@@ -34,5 +36,10 @@ public interface MyPageMapper {
 	public List<FavoriteCompanyDTO> selectMyFavoriteCompany(String email);
 	public List<FavoriteCompanyDTO> selectMyNextFavoriteCompany(Map<String, Object> map);
 	public int cntMyFavoriteCompany(String email);
+	
+	//기업 리뷰
+	public List<MyReviewDTO> selectMyReview(String email);
+	public int cntMyReview(String email);
+	public void deleteMyReview(int reviewSeq);
 	
 }

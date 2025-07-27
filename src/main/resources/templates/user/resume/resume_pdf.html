@@ -467,7 +467,10 @@ body {
 						<h5>상세내용</h5>
 						<p th:text="${project.projectContent}">프로젝트 상세 설명입니다.</p>
 						<h5>저장소 링크</h5>
-						<p th:text="${project.repositoryLink}">https://github.com/example</p>
+						<p>
+							<a th:text="${project.repositoryLink}"
+								th:href="${project.repositoryLink}">https://github.com/example</a>
+						</p>
 						<h5 th:if="${project.releaseStatus == 'Y'}">배포 완료</h5>
 					</div>
 				</div>
@@ -514,18 +517,18 @@ body {
 			<div class="links-section">
 				<div class="link-item"
 					th:if="${links.githubUrl != null and links.githubUrl != ''}">
-					<span class="link-label">Github</span> <span class="link-url"
-						th:text="${links.githubUrl}">https://github.com/example</span>
+					<span class="link-label">Github</span> <a class="link-url"
+						th:href="${links.githubUrl}" th:text="${links.githubUrl}">https://github.com/example</a>
 				</div>
 				<div class="link-item"
 					th:if="${links.notionUrl != null and links.notionUrl != ''}">
-					<span class="link-label">Notion</span> <span class="link-url"
-						th:text="${links.notionUrl}">https://notion.so/example</span>
+					<span class="link-label">Notion</span> <a class="link-url"
+						th:href="${links.notionUrl}" th:text="${links.notionUrl}">https://notion.so/example</a>
 				</div>
 				<div class="link-item"
 					th:if="${links.blogUrl != null and links.blogUrl != ''}">
-					<span class="link-label">Blog</span> <span class="link-url"
-						th:text="${links.blogUrl}">https://blog.example.com</span>
+					<span class="link-label">Blog</span> <a class="link-url"
+						th:href="${links.blogUrl}" th:text="${links.blogUrl}">https://blog.example.com</a>
 				</div>
 			</div>
 		</div>

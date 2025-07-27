@@ -16,4 +16,7 @@ public class MyApplicantSearchDTO {
 	private String type;
 	private String period;
 	private String includeCanceled = "true";
+	
+	private int offset;
+	private int currentPage;
 }

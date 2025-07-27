@@ -12,6 +12,8 @@ import lombok.ToString;
 @Alias("corpApplicationAttachmentDTO")
 public class ApplicationAttachmentDTO {
 
+	private int attachmentSeq;
+	private String originalName;
 	private String fileName;
-	private int applicationAttachmentSeq, attachmentSeq, jobApplicationSeq;
+	private String fileType;
 }
