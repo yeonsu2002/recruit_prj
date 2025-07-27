@@ -15,6 +15,7 @@ import kr.co.sist.user.dto.FavoriteCompanyDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
+import kr.co.sist.user.dto.MyReviewDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.mapper.MessageMapper;
 import kr.co.sist.user.mapper.MyPageMapper;
@@ -97,14 +98,14 @@ public class MyPageService {
 	// 내 모든 지원 목록
 	public List<MyApplicantDTO> searchMyAllApplicant(String email) {
 
-		return mpMapper.selectMyApplicant(email);
+		return mpMapper.selectMyAllApplicant(email);
 
 	}
 
 	// 내 지원 목록
 	public List<MyApplicantDTO> searchMyApplicant(MyApplicantSearchDTO searchDTO) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		List<MyApplicantDTO> applicants = mpMapper.selectMyAllApplicant(searchDTO);
+		List<MyApplicantDTO> applicants = mpMapper.selectMyApplicant(searchDTO);
 		for (MyApplicantDTO applicant : applicants) {
 
 			// 디데이 추가
@@ -128,6 +129,34 @@ public class MyPageService {
 
 		return applicants;
 	}// searchMyApplicant
+	
+	//내 다음 지원 목록
+	public List<MyApplicantDTO> searchMyNextApplicant(MyApplicantSearchDTO searchDTO) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		List<MyApplicantDTO> applicants = mpMapper.selectMyNextApplicant(searchDTO);
+		for (MyApplicantDTO applicant : applicants) {
+
+			// 디데이 추가
+			LocalDate endDate = LocalDate.parse(applicant.getPostingEndDt(), formatter);
+			long days = ChronoUnit.DAYS.between(LocalDate.now(), endDate);
+
+			String dday;
+			if (days == 0) {
+				dday = "D-day";
+			} else if (days > 0) {
+				dday = "D-" + days;
+			} else {
+				dday = "마감";
+			}
+			applicant.setDDay(dday);
+
+			// 날짜 가공
+			applicant.setApplicationDate(applicant.getApplicationDate().substring(0, 10));
+
+		}
+
+		return applicants;
+	}// searchMyNextApplicant
 
 	// 지원 취소
 	public int cancelApplication(int jobApplicatioinSeq) {
@@ -174,6 +203,22 @@ public class MyPageService {
 		
 		//활동 상태 탈퇴로 변경
 		userEntity.setActiveStatus(2);
+	}
+	
+	//내 기업 후기
+	public List<MyReviewDTO> searchMyReview(String email){
+		
+		return mpMapper.selectMyReview(email);
+	}
+	
+	//내 후기 개수
+	public int cntMyReview(String email) {
+		return mpMapper.cntMyReview(email);
+	}
+	
+	//내 후기 삭제
+	public void removeMyReview(int reviewSeq) {
+		mpMapper.deleteMyReview(reviewSeq);
 	}
 
 }// class

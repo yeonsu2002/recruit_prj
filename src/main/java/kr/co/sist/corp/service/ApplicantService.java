@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.sist.corp.dto.ApplicantDTO;
 import kr.co.sist.corp.dto.ApplicantSearchDTO;
+import kr.co.sist.corp.dto.ApplicationAttachmentDTO;
 import kr.co.sist.corp.dto.JobPostingDTO;
 import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.mapper.ApplicantMapper;
@@ -31,6 +32,14 @@ public class ApplicantService {
 	public List<ApplicantDTO> searchApplicant(ApplicantSearchDTO searchDTO) {
 
 		List<ApplicantDTO> applicantDTO = applicantMapper.selectApplicant(searchDTO);
+
+		return manufactureApplicantDTO(applicantDTO);
+	}
+	
+	//조건에 맞는 지원자 모두 찾기(엑셀영)
+	public List<ApplicantDTO> searchApplicantForExcel(ApplicantSearchDTO searchDTO) {
+		
+		List<ApplicantDTO> applicantDTO = applicantMapper.selectApplicantForExcel(searchDTO);
 
 		return manufactureApplicantDTO(applicantDTO);
 	}
@@ -174,6 +183,12 @@ public class ApplicantService {
 	public int searchApplicantCnt(ApplicantSearchDTO searchDTO) {
 		
 		return applicantMapper.selectApplicantCnt(searchDTO);
+	}
+	
+	//해당 지원서의 첨부파일 가져오기
+	public List<ApplicationAttachmentDTO> searchApplicantAttachment(int jobApplicationSeq){
+		
+		return applicantMapper.selectApplicantAttachment(jobApplicationSeq);
 	}
 
 }// class

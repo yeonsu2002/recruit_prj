@@ -1,6 +1,7 @@
 package kr.co.sist.user.controller;
 
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import kr.co.sist.admin.notice.NoticeService;
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
 import kr.co.sist.user.dto.JobPostDTO;
@@ -58,7 +58,12 @@ public class JobPostingController {
 
         // 공고 데이터 모델에 추가
         model.addAttribute("jDto", jDto);
-
+        
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        String corpAvgSal = numberFormat.format(jDto.getCorpAvgSal()) + "만원";
+        model.addAttribute("corpAvgSal", corpAvgSal);
+        
+        
         if (userInfo != null) {
             UserEntity userEntity = ur.findById(userInfo.getEmail()).orElse(null);
             if (userEntity != null) {

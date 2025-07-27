@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import kr.co.sist.jwt.CustomUser;
 import kr.co.sist.login.UserRepository;
@@ -18,6 +19,7 @@ import kr.co.sist.user.dto.MessageStatisticsDTO;
 import kr.co.sist.user.dto.MyApplicantDTO;
 import kr.co.sist.user.dto.MyApplicantSearchDTO;
 import kr.co.sist.user.dto.MyPostingDTO;
+import kr.co.sist.user.dto.MyReviewDTO;
 import kr.co.sist.user.entity.UserEntity;
 import kr.co.sist.user.service.MessageService;
 import kr.co.sist.user.service.MyPageService;
@@ -116,9 +118,27 @@ public class MyPageController {
 		return "/user/mypage/mail_list";
 	}
 
+	//내 기업 후기 페이지
 	@GetMapping("/user/mypage/company_reviews")
-	public String companyReviews() {
+	public String companyReviews(@AuthenticationPrincipal CustomUser userInfo, Model model) {
+		
+		List<MyReviewDTO> reviews = myPageServ.searchMyReview(userInfo.getEmail());
+		int totalCnt = myPageServ.cntMyReview(userInfo.getEmail());
+		
+		System.out.println("------------------------------------" + totalCnt);
+		
+		model.addAttribute("reviews", reviews);
+		model.addAttribute("totalCnt", totalCnt);
+		
 		return "/user/mypage/company_reviews";
+	}
+	
+	//기업후기 삭제
+	@PostMapping("/mypage/reviewDelete")
+	public String deleteReview(int reviewSeq) {
+		myPageServ.removeMyReview(reviewSeq);
+		
+		return "redirect:/user/mypage/company_reviews";
 	}
 
 	//관심기업 페이지로 이동

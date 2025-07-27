@@ -128,7 +128,7 @@
                         </div>
                         <div class="scale-item">
                             <p class="scale-label">매출</p>
-                            <p class="scale-value" th:text="|${companyDTO.corpAnnualRevenue}억원|"></p>
+                            <p class="scale-value" th:text="${corpAnnualRevenue}"></p>
                         </div>
                         <div class="scale-item">
                             <p class="scale-label">규모</p>
@@ -140,7 +140,7 @@
                     <div class="info-card">
                         <div class="salary-block">
                             <p class="info-title">전체</p>
-                            <p class="info-value" th:text="|${companyDTO.corpAvgSal}만원|"></p>
+                            <p class="info-value" th:text="${corpAvgSal}"></p>
                         </div>
                     </div>
 
