@@ -77,7 +77,7 @@ public class ResumeController {
 		model.addAttribute("resumes", resumes);
 		model.addAttribute("files", files);
 
-		return "/user/resume/resume_management";
+		return "user/resume/resume_management";
 	}
 
 	// 이력서 신규 작성
@@ -116,7 +116,7 @@ public class ResumeController {
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
-		return "/user/resume/resume_form";
+		return "user/resume/resume_form";
 	}
 
 	// 이력서 저장(수정)하기
@@ -184,7 +184,7 @@ public class ResumeController {
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
-		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
+		return "user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
 	}
 
 	// 이력서 다운로드(pdf생성)

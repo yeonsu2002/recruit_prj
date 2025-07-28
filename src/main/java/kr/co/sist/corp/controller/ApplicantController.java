@@ -114,7 +114,7 @@ public class ApplicantController {
 		model.addAttribute("applicants", applicants);
 		model.addAttribute("search", searchDTO);
 
-		return "/corp/applicant/applicant";
+		return "corp/applicant/applicant";
 	}// applicant
 
 	// 공고 유형 선택에 따른 결과값 보내기(진행중, 마감된 공고)
@@ -213,7 +213,7 @@ public class ApplicantController {
 		model.addAttribute("jobPostingSeq", jobPostingSeq);
 		model.addAttribute("attachments", attachments);
 
-		return "/corp/applicant/applicant_resume";
+		return "corp/applicant/applicant_resume";
 	}
 
 	// 북마크 추가

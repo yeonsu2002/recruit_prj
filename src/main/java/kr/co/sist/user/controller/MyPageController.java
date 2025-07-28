@@ -52,7 +52,7 @@ public class MyPageController {
 		model.addAttribute("statistics", statistics);
 		model.addAttribute("user", userEntity);
 
-		return "/user/mypage/mypage";
+		return "user/mypage/mypage";
 
 	}
 
@@ -60,7 +60,7 @@ public class MyPageController {
 	@GetMapping("/user/mypage/account_resign")
 	public String accountResign(@AuthenticationPrincipal CustomUser userInfo, Model model) {
 		
-		return "/user/mypage/account_resign";
+		return "user/mypage/account_resign";
 	}
 
 	// 지원 목록으로 이동
@@ -83,7 +83,7 @@ public class MyPageController {
 		model.addAttribute("applicants", applicantDTO);
 		model.addAttribute("search", searchDTO);
 
-		return "/user/mypage/apply_list";
+		return "user/mypage/apply_list";
 	}
 
 	// 메일 목록으로 이동
@@ -115,7 +115,7 @@ public class MyPageController {
 		model.addAttribute("statistics", statistics);
 		model.addAttribute("search", searchDTO);
 
-		return "/user/mypage/mail_list";
+		return "user/mypage/mail_list";
 	}
 
 	//내 기업 후기 페이지
@@ -130,7 +130,7 @@ public class MyPageController {
 		model.addAttribute("reviews", reviews);
 		model.addAttribute("totalCnt", totalCnt);
 		
-		return "/user/mypage/company_reviews";
+		return "user/mypage/company_reviews";
 	}
 	
 	//기업후기 삭제
@@ -151,7 +151,7 @@ public class MyPageController {
 		model.addAttribute("companies",companies);
 		model.addAttribute("totalCnt", totalCnt);
 		
-		return "/user/mypage/favorite_companies";
+		return "user/mypage/favorite_companies";
 	}
 
 	//최근 본 공고 페이지로 이동
@@ -164,7 +164,7 @@ public class MyPageController {
 		model.addAttribute("postings",postings);
 		model.addAttribute("totalCnt", totalCnt);
 		
-		return "/user/mypage/recent_posting";
+		return "user/mypage/recent_posting";
 	}
 
 	//스크랩한 공고 페이지로 이동
@@ -178,6 +178,6 @@ public class MyPageController {
 		model.addAttribute("postings",postings);
 		model.addAttribute("totalCnt", totalCnt);
 		
-		return "/user/mypage/scrap_posting";
+		return "user/mypage/scrap_posting";
 	}
 }
