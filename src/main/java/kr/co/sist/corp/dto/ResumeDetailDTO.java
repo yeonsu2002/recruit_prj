@@ -23,6 +23,7 @@ public class ResumeDetailDTO {
   private String updatedAt;
   private String careerType;
   private String isPublic;
+  private String isScrapped;
 
   private UserDTO member;  // email, name, phone, birth, profile_image 등
 

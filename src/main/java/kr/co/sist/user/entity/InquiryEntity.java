@@ -58,8 +58,6 @@ public class InquiryEntity {
     protected void onCreate() {
         regsDate = LocalDateTime.now();
     }
-    @Column(name = "FILE_PATH", length = 255)
-    private String filePath;
 
     
 }

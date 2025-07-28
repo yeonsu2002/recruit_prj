@@ -1,15 +1,15 @@
 package kr.co.sist.admin.login;
 
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import kr.co.sist.admin.AdminDTO;
 import kr.co.sist.admin.AdminEntity;
 import kr.co.sist.admin.AdminRepository;
 import kr.co.sist.jwt.CustomAdmin;
-import lombok.RequiredArgsConstructor;
 
 @Service
 public class AdminDetailsServiceImpl implements UserDetailsService {
@@ -21,16 +21,18 @@ public class AdminDetailsServiceImpl implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String adminId) throws UsernameNotFoundException {
-    		Thread.dumpStack();
-        System.out.println("👉 loadUserByUsername() called with ID: " + adminId);
         
         AdminEntity admin = adminRepository.findById(adminId)
             .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 관리자 ID입니다."));
 
-        System.out.println("✅ adminRepository.findById() success: " + admin.getAdminId());
+        if ("계정잠김".equals(admin.getStat())) {
+          throw new LockedException("계정이 잠긴 상태입니다.");
+      }
+        if ("탈퇴".equals(admin.getStat())) {
+        	throw new DisabledException("탈퇴한 사용자입니다.");
+        }
         
         CustomAdmin customAdmin = new CustomAdmin(admin);
-        System.out.println("✅ CustomAdmin created");
 
         return customAdmin;
     }

@@ -1,5 +1,6 @@
 package kr.co.sist.user.dto;
 
+import kr.co.sist.jwt.CustomUser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +16,6 @@ public class InquiryRequestDTO {
     private String content;
     private String category;
     private String answerStat;
-    private String attachFile;
     private String userType;
     public InquiryRequestDTO() {
 		}

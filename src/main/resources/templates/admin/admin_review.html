@@ -47,11 +47,11 @@ $(function() {
 	    contentType: 'application/json',
 	    data: JSON.stringify({ reviewSeq: selectedIds }),
 	    success: function(response) {
-	      alert('탈퇴 처리 완료');
+	      alert('삭제 처리 완료');
 	      location.reload();
 	    },
 	    error: function() {
-	      alert('탈퇴 처리 중 오류가 발생했습니다.');
+	      alert('삭제 처리 중 오류가 발생했습니다.');
 	    }
 	  });
 	});
@@ -157,7 +157,9 @@ $(function() {
 		
 	 <!-- 버튼 그룹: 수직 정렬 -->
   <div class="button-group">
+  <span sec:authorize="hasRole('팀장') or hasRole('SUPER')">
     <button id="btnWithdraw" class="delete-btn" type="button">삭제</button>
+    </span>
   </div>
       
       <nav class="pagination" aria-label="페이지 네비게이션">

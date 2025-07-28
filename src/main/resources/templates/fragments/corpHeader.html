@@ -32,7 +32,7 @@
 	    	<div id="userInfo" sec:authorize="hasRole('ROLE_CORP')" >
 		      <a th:href="@{/void}" th:text="${user.name}" class="corp-header-link" style="color: #1abc9c; text-decoration: underline;" onclick="alert('마이페이지 링크입니다.')" ></a> |
 		      <a th:href="@{/logout}" class="corp-header-link">로그아웃</a> |
-		      <a th:href="@{/void}" class="corp-header-link">고객센터</a> |
+		      <a th:href="@{/user/help/help}" class="corp-header-link">고객센터</a> |
 		      <a th:href="@{/}" class="corp-header-link">구직서비스</a>
 		      <input type="hidden" id="userEmail" th:value="${user.email}" >
 		      <input type="hidden" id="userRole" th:value="${user.role}" >
@@ -43,7 +43,7 @@
 	    	<div sec:authorize="!hasRole('ROLE_CORP')"  >
 		      <a th:href="@{/login}" class="corp-header-link">로그인</a> |
 		      <a th:href="@{/corp/join}" class="corp-header-link">회원가입</a> |
-		      <a th:href="@{/void}" class="corp-header-link">고객센터</a> |
+		      <a th:href="@{/user/help/help}" class="corp-header-link">고객센터</a> |
 		      <a th:href="@{/}" class="corp-header-link">구직서비스</a>
 	    	</div>
 	    </div>

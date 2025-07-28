@@ -79,9 +79,35 @@ FROM (
 	</select>
 	
 	<select id="selectIndCnt" resultType="map">
-		select industry, COUNT(*) as count
-		from company
-		group by industry
+		select rownum, industry, count
+	from(
+		select c.industry, count(c.industry) as count
+		from company c
+		join job_posting j
+		on c.corp_no=j.corp_no
+		group by c.industry
+		order by count(c.industry) desc
+		)
+	where <![CDATA[rownum<=4]]>
+	
+	union all
+
+SELECT 5 AS rn, '기타' AS industry, SUM(count) AS count
+FROM (
+    SELECT rn, industry, count
+    FROM (
+        SELECT ROWNUM AS rn, industry, count
+        FROM (
+            SELECT c.industry, COUNT(*) AS count
+            FROM company c
+            JOIN job_posting j ON c.corp_no = j.corp_no
+            GROUP BY c.industry
+            ORDER BY count DESC
+        )
+    )
+    WHERE <![CDATA[rn > 4]]>
+)
+	
 	</select>
 	
 	<select id="selectAsk" resultType="kr.co.sist.user.entity.InquiryEntity">

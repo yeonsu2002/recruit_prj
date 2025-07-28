@@ -277,7 +277,9 @@ select[name="postingTitle"] {
 .pagination-container {
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	margin-top: 30px;
+	position: relative;
 }
 
 .pagination {
@@ -316,6 +318,37 @@ select[name="postingTitle"] {
 
 .invisible-btn {
 	visibility: hidden;
+}
+
+.export-buttons {
+	position: absolute;
+	right: 0;
+	display: flex;
+	gap: 8px;
+}
+
+.export-btn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background-color: white;
+	color: #333;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.export-btn:hover {
+	background-color: #f8f9fa;
+	border-color: #007bff;
+	color: #007bff;
+}
+
+.export-btn i {
+	font-size: 12px;
 }
 
 .col-resume.active {
