@@ -19,7 +19,7 @@ import kr.co.sist.jwt.CustomAdmin;
 
 
 @Controller
-@RequestMapping("/admin/admin_faq")
+@RequestMapping("admin/admin_faq")
 public class FaqController {
 
     private final FaqService faqService;
