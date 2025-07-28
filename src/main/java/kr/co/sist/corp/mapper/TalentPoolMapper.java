@@ -33,30 +33,24 @@ public interface TalentPoolMapper {
 	int isResumeScrapped(@Param("resumeSeq") Long resumeSeq, @Param("corpNo") Long corpNo);
 
 	//전체 인재
-//  List<TalentPoolDTO> selectPaginatedTalents(Map<String, Object> paramMap);
-//  //전체 인재 총 건수
-//  int selectAllTalentTotalCount();
   public List<TalentPoolDTO> selectAllTalents(TalentFilterDTO filterDTO); // 파라미터 타입 변경
+  //전체 인재 총 건수
   int selectAllTalentTotalCount(TalentFilterDTO filterDTO);
 
     
   // 스크랩한 인재 목록 조회 (페이징)
-  List<TalentPoolDTO> selectPaginatedScrappedTalents(
-      @Param("corpNo") Long corpNo,
-      @Param("offset") int offset,
-      @Param("size") int size,
-      @Param("sortBy") String sortBy,  // "latest", "career", "education"
-      @Param("order") String order     // "asc", "desc"
-  );
-
+  List<TalentPoolDTO> selectPaginatedScrappedTalents(	@Param("corpNo") Long corpNo,
+																								      @Param("offset") int offset,
+																								      @Param("size") int size,
+																								      @Param("sortBy") String sortBy,  
+																								      @Param("order") String order );    
   // 스크랩한 인재 총 건 수
   int getScrappedTalentsTotalCount(@Param("corpNo") Long corpNo);
   
-  
-  //최근 열람한 이력서 목록 조회
-  List<Integer> getRecentlyViewedResumes(Map<String, Object> params);
   // 최근 열람한 이력서 수 조회
   int getRecentlyViewedTotalCount(Long corpNo);
+  //최근 열람한 이력서 목록 조회
+  List<Integer> getRecentlyViewedResumes(Map<String, Object> params);
   // 이력서 상세 정보 조회
   public List<TalentPoolDTO> selectResumeMemberInfo(
       @Param("resumeSeqList") List<Integer> resumeSeqList,
@@ -64,7 +58,6 @@ public interface TalentPoolMapper {
       @Param("order") String order
   );
 
-  
   //============기능 부분===============
   //툴바
   List<TalentPoolDTO> getSortedTalentPool(@Param("sortBy") String sortBy,
@@ -76,7 +69,6 @@ public interface TalentPoolMapper {
   List<TalentPoolDTO> selectFilteredTalents(Map<String, Object> paramMap);
   int selectFilteredTalentCount(Map<String, Object> paramMap);
 
-  
   //면접 제안 메세지
   void insertInterviewProposal(InterviewOfferDTO ioDTO);
   //이력서 상세정보

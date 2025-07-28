@@ -5,7 +5,7 @@
     
     
 <mapper namespace="kr.co.sist.corp.mapper.TalentPoolMapper">
-
+<!-- 스크랩 여부 확인 -->
 <select id="isResumeScrapped" resultType="int">
     SELECT COUNT(*)
     FROM RESUME_SCRAP
@@ -13,8 +13,6 @@
       AND corp_no = #{corpNo}
       AND is_scrapped = 'Y'
 </select>
-
-<!-- 스크랩부분 -->
 <!-- 스크랩 여부 확인  -->
 <select id="checkScrapExists" resultType="int">
     SELECT COUNT(*) 
@@ -120,11 +118,9 @@ scrapped_at
     <if test="address != null and address != ''">
         AND SUBSTR(m.road_address, 1, 2) = #{address}
     </if>
-
     <if test="gender != null and gender != ''">
         AND m.gender = #{gender}
     </if>
-
     <if test="minCareerMonths != null and maxCareerMonths != null">
         AND (
             SELECT NVL(FLOOR(SUM(MONTHS_BETWEEN(TO_DATE(c.end_date, 'YYYY-MM'), TO_DATE(c.start_date, 'YYYY-MM')))), 0)
@@ -132,7 +128,6 @@ scrapped_at
             WHERE c.resume_seq = r.resume_seq
         ) BETWEEN #{minCareerMonths} AND #{maxCareerMonths}
     </if>
-
     <if test="education != null and education != ''">
         AND (
             SELECT education_type FROM EDUCATION_HISTORY
@@ -140,7 +135,6 @@ scrapped_at
               AND education_history_seq = (SELECT MAX(education_history_seq) FROM EDUCATION_HISTORY WHERE resume_seq = r.resume_seq)
         ) = #{education}
     </if>
-
     <if test="position != null and position != ''">
         AND EXISTS (
             SELECT 1 FROM RESUME_POSITION_CODE rpc
@@ -149,7 +143,6 @@ scrapped_at
               AND pc.position_name = #{position}
         )
     </if>
-
     <if test="techStack != null and techStack != ''">
         AND EXISTS (
             SELECT 1 FROM RESUME_TECH_STACK rts
@@ -158,7 +151,6 @@ scrapped_at
               AND ts.stack_name = #{techStack}
         )
     </if>
-
     <if test="keyword != null and keyword != ''">
         AND (
             m.name LIKE '%' || #{keyword} || '%'
@@ -449,7 +441,6 @@ WHERE  M.CORP_NO = #{corpNo}
   WHERE R.RESUME_SEQ = #{resumeSeq}
 </select>
 
-
 <!-- 이력서 열람 메세지 보내기-->
 <insert id="insertMessage" parameterType="kr.co.sist.corp.dto.MessageDTO">
   INSERT INTO MESSAGE (
@@ -541,8 +532,11 @@ WHERE  M.CORP_NO = #{corpNo}
     POSITION_CODE p ON r.resume_seq = p.position_seq
   LEFT JOIN
     RESUME_SCRAP sc ON r.resume_seq = sc.resume_seq
-   LEFT JOIN
-    OPEN_RESUME o ON r.resume_seq = o.resume_seq
+  LEFT JOIN (
+    SELECT resume_seq, MAX(read_at) AS read_at
+    FROM OPEN_RESUME
+    GROUP BY resume_seq
+	) o ON r.resume_seq = o.resume_seq
   WHERE
     r.resume_seq IN
     <foreach item="resumeSeq" collection="resumeSeqList" open="(" separator="," close=")">
@@ -577,35 +571,6 @@ WHERE  M.CORP_NO = #{corpNo}
          </otherwise>
      </choose>
 </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
