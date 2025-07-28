@@ -55,38 +55,38 @@
 
   function loadTalentList(page = 1) {
 	    const pageSizeSelect = document.getElementById('pageSizeSelect');
-	    const talentListEl = document.querySelector('.talent-list');
 	    const size = pageSizeSelect?.value || '5';
+	    const talentListContainer = document.querySelector('.talent-list');
 
-	    const activeTab = document.querySelector('.tab-item.active')?.dataset.tab || 'recently_viewed';  // 값 정리
+	    fetch(`/corp/talentPool/sort?listType=recent&page=${page}&size=${size}&sortBy=${currentSortBy}&order=${currentOrder}`)
+	      .then(res => res.text())
+	      .then(html => {
+	        if (!talentListContainer) return;
 
-	    let url = '';
+	        // HTML 문자열을 파싱
+	        const parser = new DOMParser();
+	        const parsedDoc = parser.parseFromString(html, 'text/html');
 
-	    if (activeTab === 'recently_viewed') {
-	    	
-	    	url = `/corp/talentPool/recently_viewed-fragment?page=${page}&size=${size}`;
-	    } else if (activeTab === 'scrap') {
-	        url = `/corp/talentPool/scrap-fragment?page=${page}&size=${size}&sortBy=${currentSortBy}&order=${currentOrder}`;
-	    } else {
-	        url = `/sort?page=${page}&size=${size}&sortBy=${currentSortBy}&order=${currentOrder}`;
-	    }
+	        // 파싱된 새 .talent-list 추출
+	        const newTalentList = parsedDoc.querySelector('.talent-list');
+	        if (!newTalentList) return;
 
-	    fetch(url, {
-	        headers: {
-	            'X-Requested-With': 'XMLHttpRequest'
-	        }
-	    })
-	    .then(res => res.text())
-	    .then(html => {
-	        if (!talentListEl) return;
-	        talentListEl.innerHTML = html;  // 프래그먼트만 갱신
+	        // 새 HTML로 교체
+	        talentListContainer.innerHTML = newTalentList.innerHTML;
 
+	        // totalPages 업데이트
+	        const updatedTotalPages = newTalentList.dataset.totalPages;
+	        totalPages = parseInt(updatedTotalPages || '1');
+			//화면 상단으로 이동 
+	        window.scrollTo({ top: 0, behavior: 'smooth' });
 	        currentPage = page;
 	        bindListEvents();
 	        renderPagination();
-	    })
-	    .catch(err => console.error('목록 로딩 실패:', err));
-	}
+
+	        console.log("Updated totalPages after fetch:", totalPages);
+	      })
+	      .catch(err => console.error('목록 로딩 실패:', err));
+	  }
 
 
 
