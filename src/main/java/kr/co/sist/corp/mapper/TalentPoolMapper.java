@@ -56,7 +56,7 @@ public interface TalentPoolMapper {
       @Param("resumeSeqList") List<Integer> resumeSeqList,
       @Param("sortBy") String sortBy,
       @Param("order") String order
-  );
+  );  
 
   //============기능 부분===============
   //툴바
