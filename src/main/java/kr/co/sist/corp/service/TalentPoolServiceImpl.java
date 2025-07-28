@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,10 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import kr.co.sist.corp.dto.InterviewOfferDTO;
 import kr.co.sist.corp.dto.MessageDTO;
-import kr.co.sist.corp.dto.RecentlyViewedDTO;
-import kr.co.sist.corp.dto.ResumeDetailDTO;
 import kr.co.sist.corp.dto.ResumeScrapDTO;
 import kr.co.sist.corp.dto.TalentFilterDTO;
 import kr.co.sist.corp.dto.TalentPoolDTO;
 import kr.co.sist.corp.mapper.TalentPoolMapper;
-import kr.co.sist.util.CipherUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -110,13 +108,23 @@ public class TalentPoolServiceImpl implements TalentPoolService {
       params.put("corpNo", corpNo);
       params.put("startRow", startRow);
       params.put("endRow", endRow);
+      List<Integer> result = talentPoolMapper.getRecentlyViewedResumes(params);
+
+      System.out.println("최근 열람 이력서 번호들 (corpNo=" + corpNo + "): " + result);
+
       return talentPoolMapper.getRecentlyViewedResumes(params);
   }
   //최근본 인재 리스트 인재 정보
   @Override
   public List<TalentPoolDTO> getResumeDetailsBySeqs(List<Integer> resumeSeqs, String sortBy, String order) {
-    List<TalentPoolDTO> talents = talentPoolMapper.selectResumeMemberInfo(resumeSeqs, sortBy, order);
+    resumeSeqs = resumeSeqs.stream().distinct().collect(Collectors.toList());
 
+    
+    List<TalentPoolDTO> talents = talentPoolMapper.selectResumeMemberInfo(resumeSeqs, sortBy, order);
+    
+    System.out.println("이력서 상세 정보 조회 결과 개수: " + talents.size());
+    System.out.println("입력된 resumeSeqs: " + resumeSeqs);
+    
     // 만 나이 계산
     for (TalentPoolDTO dto : talents) {
         String birthDateStr = dto.getBirth(); 

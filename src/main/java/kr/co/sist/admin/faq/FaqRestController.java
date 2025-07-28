@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/faq")
+@RequestMapping("admin/faq")
 public class FaqRestController {
 
     private final FaqService faqService;

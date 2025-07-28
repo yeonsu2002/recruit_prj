@@ -77,7 +77,7 @@ public class ResumeController {
 		model.addAttribute("resumes", resumes);
 		model.addAttribute("files", files);
 
-		return "/user/resume/resume_management";
+		return "user/resume/resume_management";
 	}
 
 	// 이력서 신규 작성
@@ -116,7 +116,7 @@ public class ResumeController {
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
-		return "/user/resume/resume_form";
+		return "user/resume/resume_form";
 	}
 
 	// 이력서 저장(수정)하기
@@ -184,7 +184,7 @@ public class ResumeController {
 		model.addAttribute("additionals", resumeData.getAdditionals());
 		model.addAttribute("introductions", resumeData.getIntroductions());
 
-		return "/user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
+		return "user/resume/resume_preview"; // 실제 보여줄 미리보기 페이지 뷰 이름
 	}
 
 	// 이력서 다운로드(pdf생성)
@@ -205,10 +205,10 @@ public class ResumeController {
 		String profileImg = resumeData.getResume().getImage();
 		if (profileImg != null && !profileImg.isEmpty()) {
 			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
-			String imagePath = "/images/profileImg/" + profileImg;
+//			String imagePath = "/images/profileImg/" + profileImg;
 			
 			//배포시 사용
-//			String imagePath = saveDir + "/images/profileImg/" + profileImg;
+			String imagePath = saveDir + "/images/profileImg/" + profileImg;
 			map.put("profileImagePath", imagePath);
 		}
 		map.put("user", user);

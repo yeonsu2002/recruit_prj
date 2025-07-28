@@ -114,7 +114,7 @@ public class ApplicantController {
 		model.addAttribute("applicants", applicants);
 		model.addAttribute("search", searchDTO);
 
-		return "/corp/applicant/applicant";
+		return "corp/applicant/applicant";
 	}// applicant
 
 	// 공고 유형 선택에 따른 결과값 보내기(진행중, 마감된 공고)
@@ -213,7 +213,7 @@ public class ApplicantController {
 		model.addAttribute("jobPostingSeq", jobPostingSeq);
 		model.addAttribute("attachments", attachments);
 
-		return "/corp/applicant/applicant_resume";
+		return "corp/applicant/applicant_resume";
 	}
 
 	// 북마크 추가
@@ -264,12 +264,12 @@ public class ApplicantController {
 			String originalName = attachment.getOriginalName();
 
 			// 상대 경로 위해 사용
-			String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
-			String resourcePath = projectPath + "/src/main/resources/static/attachment";
+//			String projectPath = new File("").getAbsolutePath(); // 현재 프로젝트 루트
+//			String resourcePath = projectPath + "/src/main/resources/static/attachment";
 			// --------------------
 
 			// 배포시 사용
-//			String resourcePath = saveDir + "/attachment";
+			String resourcePath = saveDir + "/attachment";
 
 			File file = new File(resourcePath, fileName);
 
@@ -319,9 +319,9 @@ public class ApplicantController {
 		String profileImg = resumeData.getResume().getImage();
 		if (profileImg != null && !profileImg.isEmpty()) {
 			// 이미지 경로를 PDF에서 인식할 수 있도록 설정
-			String imagePath = "/images/profileImg/" + profileImg;
+//			String imagePath = "/images/profileImg/" + profileImg;
 			// 배포시 사용
-//		String imagePath = saveDir + "/images/profileImg/" + profileImg;
+			String imagePath = saveDir + "/images/profileImg/" + profileImg;
 			map.put("profileImagePath", imagePath);
 
 		}

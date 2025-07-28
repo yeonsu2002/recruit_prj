@@ -91,19 +91,19 @@ public class TalentPoolController {
         	} else if ("scrap".equals(listType)) { // 스크랩된 인재 처리 추가
         		talentList = talentPoolService.getScrappedTalents(corpNo, offset, size, filterDTO.getSortBy(), filterDTO.getOrder());
         		totalCount = talentPoolService.getScrappedTalentsTotalCount(corpNo);
-        	} else if ("recent".equals(listType)) { // 최근 열람 인재 처리 추가
-        		// 최근 열람은 startRow, endRow 기반으로 동작하므로 offset/size를 변환해야 합니다.
-        		int startRow = (page - 1) * size + 1;
-        		int endRow = startRow + size - 1;
-        		List<Integer> resumeSeqs = talentPoolService.getRecentlyViewedResumes(corpNo, startRow, endRow);
-        		if (!resumeSeqs.isEmpty()) {
-        			talentList = talentPoolService.getResumeDetailsBySeqs(resumeSeqs, filterDTO.getSortBy(), filterDTO.getOrder());
-        		}
-        		totalCount = talentPoolService.getRecentlyViewedTotalCount(corpNo);
-        	} else {
-        		// 예상치 못한 listType인 경우 BadRequest 응답
-        		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid list type: " + listType);
-        	 }
+        	} else if ("recent".equals(listType)) {
+            int startRow = (page - 1) * size + 1;
+            int endRow = startRow + size - 1;
+            // 최근 열람한 이력서 seq 목록 조회
+            List<Integer> resumeSeqs = talentPoolService.getRecentlyViewedResumes(corpNo, startRow, endRow);
+            if (!resumeSeqs.isEmpty()) {
+                talentList = talentPoolService.getResumeDetailsBySeqs(resumeSeqs, filterDTO.getSortBy(), filterDTO.getOrder());
+            } else {
+                talentList = new ArrayList<>();
+            }
+            totalCount = talentPoolService.getRecentlyViewedTotalCount(corpNo);
+        }
+
         
         int totalPages = (int) Math.ceil((double) totalCount / size);
         model.addAttribute("corpNo", corpNo);

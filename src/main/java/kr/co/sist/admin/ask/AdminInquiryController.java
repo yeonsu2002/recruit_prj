@@ -19,7 +19,7 @@ public class AdminInquiryController {
 	}
 	
 	
-	@GetMapping("/admin/admin_inquiry")
+	@GetMapping("admin/admin_inquiry")
 	public String jobPosting(
 			@RequestParam(defaultValue = "1") int currentPage,
       @RequestParam(defaultValue = "desc")String order,
