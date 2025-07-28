@@ -15,8 +15,8 @@ public class HelpNoticeDTO {
     private String adminId;
     private String title;
     private String content;
-    private LocalDateTime regsDate;
-    private LocalDateTime modifyDate;
+    private String regsdate;
+    private String modifyDate;
 
     public static HelpNoticeDTO fromEntity(HelpNoticeEntity entity) {
         return HelpNoticeDTO.builder()
@@ -24,7 +24,7 @@ public class HelpNoticeDTO {
                 .adminId(entity.getAdminId())
                 .title(entity.getTitle())
                 .content(entity.getContent())
-                .regsDate(entity.getRegsDate())
+                .regsdate(entity.getRegsDate())
                 .modifyDate(entity.getModifyDate())
                 .build();
     }

@@ -29,9 +29,9 @@ public class HelpNoticeEntity {
     @Column(name = "CONTENT")
     private String content;
 
-    @Column(name = "REGS_DATE")
-    private LocalDateTime regsDate;
-
-    @Column(name = "MODIFY_DATE")
-    private LocalDateTime modifyDate;
+   @Column(name = "REGS_DATE")
+   private String regsDate;
+   
+   @Column(name = "MODIFY_DATE")
+   private String modifyDate;
 }
