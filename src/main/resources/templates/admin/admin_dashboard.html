@@ -79,7 +79,7 @@
   	<span>답장되지않은 문의
   	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
   	&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-	<a href="#">전체보기</a>
+	<a href="/admin/admin_inquiry">전체보기</a>
 	</span>
   	<table class="table table-bordered table-fixed">
   <thead>
@@ -92,7 +92,14 @@
   <tbody>
     <tr th:each="ask : ${ask}">
       <td class="col-id" th:text="${ask.askSeq}"></td>
-      <td class="col-title"><a href="#" th:text="${ask.title}"></a></td>
+      <td class="col-title">
+<a th:href="@{/admin/admin_inquiry(
+      type='title', 
+      keyword=${ask.title}, 
+      category='전체', 
+      answer_stat='전체'
+  )}" th:text="${ask.title}"></a>
+        </td>
       <td class="col-status" th:text="${ask.answerStat}"></td>
     </tr>
   </tbody>
