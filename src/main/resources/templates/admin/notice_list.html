@@ -371,7 +371,9 @@ $(function() {
 <!-- 하단 버튼 -->
 <div class="admin-action-buttons">
   <button id="createBtn" class="delete-btn" type="button" style="background-color: green">작성</button>
+  <span sec:authorize="hasRole('팀장') or hasRole('SUPER')">
   <button id="btnDelete" class="delete-btn" type="button">삭제</button>
+  </span>
 </div>
 
 </section>
@@ -398,7 +400,9 @@ $(function() {
                     </tr>
                 </table>
                 <div class="modal-btn-group">
+                <span sec:authorize="hasRole('대리') or hasRole('과장') or hasRole('팀장') or hasRole('SUPER')">
                     <button type="submit" id="saveBtn" class="modal-btn save-btn">작성하기</button>
+                    </span>
                     <button type="button" class="modal-btn cancel-btn">취소</button>
                 </div>
             </form>

@@ -39,10 +39,10 @@ public class AdminCustomLoginFailureHandler implements AuthenticationFailureHand
 			errorMsg = "등록되지 않은 이메일입니다.";
 		} else if (exception instanceof BadCredentialsException) {
 			errorMsg = "이메일 또는 비밀번호가 일치하지 않습니다.";
-		} else if (exception instanceof LockedException) {
-			errorMsg = "계정이 잠겨 있습니다.";
-		} else if (exception instanceof DisabledException) {
-			errorMsg = "탈퇴한 계정입니다. 관리자에게 문의를 해 복구하실 수 있습니다.";
+		} else if (exception.getCause() instanceof LockedException) {
+			errorMsg = exception.getMessage(); // "탈퇴한 사용자입니다." 그대로 사용
+		} else if (exception.getCause() instanceof DisabledException) {
+			errorMsg = exception.getMessage(); // "탈퇴한 사용자입니다." 그대로 사용
 		} else if (exception instanceof AccountExpiredException) {
 			errorMsg = "계정이 만료되었습니다.";
 		}

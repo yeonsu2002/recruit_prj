@@ -48,36 +48,21 @@ public class SecurityConfig {
     // 🔥 문제의 AuthenticationManager Bean 삭제 또는 수정
     // 각 필터체인에서 개별적으로 userDetailsService를 설정하도록 변경
 
+    
     @Bean
     @Order(1)
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/admin/**")
             .authorizeHttpRequests(auth -> auth
-                // 로그인 페이지, 정적 자원 등은 모두 허용
                 .requestMatchers("/admin/admin_login", "/admin/css/**", "/admin/js/**").permitAll()
-                
-                // 🔒 구체적 경로 권한 먼저 명시 (더 구체적인 경로는 앞에)
-                .requestMatchers("/admin/admin_list").hasRole("SUPER")
-                .requestMatchers("/admin_dashboard").hasRole("SUPER")
-                .requestMatchers("/admin_resume").hasAnyRole("SUPER", "회원관리팀")
-                .requestMatchers("/admin_corp").hasAnyRole("SUPER", "기업관리팀")
-                .requestMatchers("/admin/admin_review").hasAnyRole("SUPER", "기업관리팀")
-                .requestMatchers("/admin/admin_jobPosting").hasAnyRole("SUPER", "기업관리팀")
-                .requestMatchers("/admin/admin_inquiry").hasAnyRole("SUPER", "고객센터팀")
-                .requestMatchers("/admin/admin_faq").hasAnyRole("SUPER", "고객센터팀")
-                .requestMatchers("/admin/notice_list").hasAnyRole("SUPER", "고객센터팀")
-                
-                // CRUD 권한 설정은 그 다음에 배치
                 .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("사원", "대리", "과장", "팀장", "SUPER")
                 .requestMatchers(HttpMethod.POST, "/admin/**").hasAnyRole("대리", "과장", "팀장", "SUPER")
                 .requestMatchers(HttpMethod.PUT, "/admin/**").hasAnyRole("사원", "대리", "과장", "팀장", "SUPER")
                 .requestMatchers(HttpMethod.DELETE, "/admin/**").hasAnyRole("팀장", "SUPER")
-                
-                // 그 외 인증만 되면 접근 허용
                 .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf.disable())
-            .userDetailsService(adminDetailsServiceImpl)
+            .userDetailsService(adminDetailsServiceImpl)  // 🔥 직접 설정
             .formLogin(auth -> auth
                 .loginPage("/admin/admin_login")
                 .loginProcessingUrl("/admin/login_process")
@@ -92,9 +77,10 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/admin/admin_login")
                 .invalidateHttpSession(true)
             );
-
+        
         return http.build();
     }
+    
 
 
 

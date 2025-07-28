@@ -400,8 +400,10 @@ $(function() {
 
     <div class="pagination-wrapper">
       <div class="button-group">
+      <span sec:authorize="hasRole('SUPER')">
         <button id="btnApprove" class="delete-btn" type="button">승인</button>
         <button id="btnWithdraw" class="delete-btn" type="button">탈퇴</button>
+        </span>
       </div>
 
       <nav class="pagination" aria-label="페이지 네비게이션">

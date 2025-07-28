@@ -21,6 +21,8 @@ public class AdminDetailsServiceImpl implements UserDetailsService {
     }
     @Override
     public UserDetails loadUserByUsername(String adminId) throws UsernameNotFoundException {
+    	
+
         
         AdminEntity admin = adminRepository.findById(adminId)
             .orElseThrow(() -> new UsernameNotFoundException("등록되지 않은 관리자 ID입니다."));
@@ -30,6 +32,9 @@ public class AdminDetailsServiceImpl implements UserDetailsService {
       }
         if ("탈퇴".equals(admin.getStat())) {
         	throw new DisabledException("탈퇴한 사용자입니다.");
+        }
+        if ("승인대기".equals(admin.getStat())) {
+        	throw new DisabledException("미승인 계정입니다.");
         }
         
         CustomAdmin customAdmin = new CustomAdmin(admin);
