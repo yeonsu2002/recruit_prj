@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("admin")
 public class AdminController {
 	
 	private final AdminService as;
