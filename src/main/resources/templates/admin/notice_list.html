@@ -370,7 +370,9 @@ $(function() {
 
 <!-- 하단 버튼 -->
 <div class="admin-action-buttons">
+<span sec:authorize="hasRole('대리') or hasRole('부장') or hasRole('팀장') or hasRole('SUPER')">
   <button id="createBtn" class="delete-btn" type="button" style="background-color: green">작성</button>
+  </span>
   <span sec:authorize="hasRole('팀장') or hasRole('SUPER')">
   <button id="btnDelete" class="delete-btn" type="button">삭제</button>
   </span>
