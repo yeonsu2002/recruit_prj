@@ -294,6 +294,12 @@ SELECT * FROM (
                 )
             )
         </if>
+        <if test="minAge != null">
+		  AND FLOOR(MONTHS_BETWEEN(SYSDATE, m.birth) / 12) <![CDATA[>=]]> #{minAge}
+		</if>
+		<if test="maxAge != null">
+		  AND FLOOR(MONTHS_BETWEEN(SYSDATE, m.birth) / 12) <![CDATA[<=]]> #{maxAge}
+		</if>
         <choose>
             <when test="sortBy == 'education'">
                 ORDER BY

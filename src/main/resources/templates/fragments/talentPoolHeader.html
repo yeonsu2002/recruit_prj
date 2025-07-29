@@ -27,6 +27,18 @@
 			      <option value="M" th:selected="${param.gender == 'M'}">남</option>
 			      <option value="F" th:selected="${param.gender == 'F'}">여</option>
 			    </select>
+			    
+			    <!-- 나이 -->
+				<select class="search-select" name="age" id="age">
+				  <option value="">나이</option>
+				  <option value="20-25" th:selected="${param.age == '20-25'}">20~25세</option>
+				  <option value="26-30" th:selected="${param.age == '26-30'}">26~30세</option>
+				  <option value="31-35" th:selected="${param.age == '31-35'}">31~35세</option>
+				  <option value="36-40" th:selected="${param.age == '36-40'}">36~40세</option>
+				  <option value="41-45" th:selected="${param.age == '41-45'}">41~45세</option>
+				  <option value="46-50" th:selected="${param.age == '46-50'}">46~50세</option>
+				  <option value="51+" th:selected="${param.age == '51+'}">51세 이상</option>
+				</select>
 			
 			    <!-- 경력 (단일 선택, DTO 필드명과 일치) -->
 			    <select class="search-select" name="career" id="career">
@@ -44,6 +56,7 @@
 			      <option value="경기" th:selected="${param.address == '경기'}">경기</option>
 			      <option value="인천" th:selected="${param.address == '인천'}">인천</option>
 			      <option value="부산" th:selected="${param.address == '부산'}">부산</option>
+			      <option value="광주" th:selected="${param.address == '광주'}">광주</option>
 			      <option value="기타" th:selected="${param.address == '기타'}">기타</option>
 			    </select>
 			
@@ -58,23 +71,34 @@
 			    </select>
 			
 			    <!-- 기술 스택 -->
-			    <select class="search-select" name="techStack" id="techStack">
-			      <option value="">기술스택</option>
-			      <option value="java" th:selected="${param.techStack == 'java'}">Java</option>
-			      <option value="cpp" th:selected="${param.techStack == 'cpp'}">C++</option>
-			      <option value="c" th:selected="${param.techStack == 'c'}">C</option>
-			      <option value="python" th:selected="${param.techStack == 'python'}">Python</option>
-			      <option value="기타" th:selected="${param.techStack == '기타'}">기타</option>
-			    </select>
+				<select class="search-select" name="techStack" id="techStack">
+				  <option value="">기술스택</option>
+				  <option value="Java" th:selected="${param.techStack == 'Java'}">Java</option>
+				  <option value="CSS" th:selected="${param.techStack == 'CSS'}">CSS</option>
+				  <option value="C" th:selected="${param.techStack == 'C'}">C</option>
+				  <option value="Python" th:selected="${param.techStack == 'Python'}">Python</option>
+				  <option value="기타" th:selected="${param.techStack == '기타'}">기타</option>
+				</select>
+
 			
 			    <!-- 희망 포지션 -->
 			    <select class="search-select" name="position" id="position">
-			      <option value="">포지션</option>
-			      <option value="backend" th:selected="${param.position == 'backend'}">백엔드</option>
-			      <option value="frontend" th:selected="${param.position == 'frontend'}">프론트엔드</option>
-			      <option value="fullstack" th:selected="${param.position == 'fullstack'}">풀스택</option>
+			      <option value="">희망 직종</option>
+			      <option value="서버/백엔드 개발자" th:selected="${param.position == 'backend'}">서버/백엔드 개발자</option>
+			      <option value="프론트엔드 개발자" th:selected="${param.position == 'frontend'}">프론트엔드 개발자</option>
+			      <option value="웹 풀스택 개발자" th:selected="${param.position == 'fullstack'}">웹 풀스택 개발자</option>
 			      <option value="기타" th:selected="${param.position == '기타'}">기타</option>
 			    </select>
+			    
+				<!-- 자격증 -->
+				<select class="search-select" name="certificate" id="certificate">
+				  <option value="">자격증</option>
+				  <option value="정보처리기사">정보처리기사</option>
+				  <option value="SQLD">SQLD</option>
+				  <option value="리눅스마스터">리눅스마스터</option>
+				  <option value="OCP">OCP</option>
+				  <option value="기타">기타</option>
+				</select>
 			  </div>
 		<div id="hiddenInputs" style="display: none;"></div>
 		<input type="hidden" name="corpNo" id="corpNo" th:value="${session.corpNo}" />
