@@ -88,6 +88,6 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 <br/>
 
 ## 💾 ERD
-<img src=["[https://github.com/user-attachments/assets/58bf7531-c2bc-4302-8024-9d3f1777c466]" width="600"/>
+<img src="https://github.com/user-attachments/assets/58bf7531-c2bc-4302-8024-9d3f1777c466" width="600"/>
 
 <br/>
