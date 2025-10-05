@@ -51,8 +51,9 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 - 📢 공지사항 등록
 
 
-## 🎬 시연영상
-[![Video Label](http://img.youtube.com/vi/tjNUuQWwKHk/0.jpg)](https://www.youtube.com/watch?v=tjNUuQWwKHk)
+## 🎬 시연 영상
+[![시연 영상 보기](https://img.shields.io/badge/🎥-시연%20영상%20보기-blue?style=for-the-badge)](https://drive.google.com/file/d/1B6kaK7r0I3_FCmLY1X_DrFh_81D7m8m1/view?usp=drive_link))
+
 
 </br>
 
