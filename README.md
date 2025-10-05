@@ -1,3 +1,8 @@
+<h1 align="center">👷‍♂️ 민기인력 (Mingi Workforce)</h1>
+<p align="center">
+  구직자와 기업을 연결하는 채용공고 웹 플랫폼
+</p>
+
 </br>
 
 ## 📝 프로젝트 소개
