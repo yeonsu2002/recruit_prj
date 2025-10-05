@@ -58,7 +58,7 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 
 <p align="center">
   <a href="https://drive.google.com/file/d/1B6kaK7r0I3_FCmLY1X_DrFh_81D7m8m1/view?usp=drive_link" target="_blank">
-    <img src="https://img.shields.io/badge/🎥 시연 영상 보기-1E90FF?style=for-the-badge&logo=youtube&logoColor=white"/>
+    <img src="https://img.youtube.com/vi/영상ID/0.jpg" alt="시연 영상 썸네일" width="600">
   </a>
 </p>
 
