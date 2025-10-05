@@ -58,8 +58,12 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 
 <p align="center">
   <a href="https://drive.google.com/file/d/1B6kaK7r0I3_FCmLY1X_DrFh_81D7m8m1/view?usp=drive_link" target="_blank">
-    <img src="https://img.youtube.com/vi/영상ID/0.jpg" alt="시연 영상 썸네일" width="600">
+    <img src="https://img.shields.io/badge/▶%20시연영상%20바로가기-FF0000?style=for-the-badge&logo=google-drive&logoColor=white"/>
   </a>
+</p>
+
+<p align="center">
+  🎥 **구글 드라이브에서 영상 바로 보기**
 </p>
 
 
