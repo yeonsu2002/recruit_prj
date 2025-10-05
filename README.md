@@ -55,7 +55,12 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 
 
 ## 🎬 시연 영상
-[![시연 영상 보기](https://img.shields.io/badge/🎥-시연%20영상%20보기-blue?style=for-the-badge)](https://drive.google.com/file/d/1B6kaK7r0I3_FCmLY1X_DrFh_81D7m8m1/view?usp=drive_link)
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/1B6kaK7r0I3_FCmLY1X_DrFh_81D7m8m1/view?usp=drive_link" target="_blank">
+    <img src="https://img.shields.io/badge/🎥 시연 영상 보기-1E90FF?style=for-the-badge&logo=youtube&logoColor=white"/>
+  </a>
+</p>
 
 
 </br>
@@ -97,4 +102,4 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 <br/>
 
 > ## 📄 Portfolio Note
-이 프로젝트는 팀 프로젝트로 진행되었습니다.
+이 프로젝트는 팀 프로젝트로 실제 구직 플랫폼 기능 구현을 목표로 진행되었습니다.
