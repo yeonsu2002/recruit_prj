@@ -86,7 +86,7 @@ Spring Boot와 Thymeleaf를 기반으로 구현하였으며, Ajax와 Oracle DB�
 - [신민기](https://github.com/mingi-Shin)<br/>
   ✔ 기업 : 통합 회원가입(사용자, 기업), 로그인, 기업메인헤더, 공고관리, 지원자통계<br/>
 - [유연수](https://github.com/yeonsu2002)<br/>
-  ✔ 사용자 : 메인페이지, 개발자채용, 기업 정보, 기업리뷰, 공고 및 기업 스크랩 및 URL 공유<br/>
+  ✔ 사용자 : 메인페이지, 개발자채용, 지원하기(이력서 및 첨부파일 불러오기) 기업 정보, 기업리뷰, 공고 및 기업 스크랩 및 URL 공유<br/>
 - [장준녕](https://github.com/jjn841)<br/>
   ✔ 기업 : 기업 인재관리, 전체 인재, 스크랩한인재, 최근본인재<br/>
 - [이호빈](https://github.com/leehobin7)<br/>
